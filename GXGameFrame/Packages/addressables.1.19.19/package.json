@@ -1,0 +1,70 @@
+{
+  "name": "com.unity.addressables",
+  "displayName": "Addressables",
+  "version": "1.19.19",
+  "unity": "2019.4",
+  "description": "The Addressable Asset System allows the developer to ask for an asset via its address. Once an asset (e.g. a prefab) is marked \"addressable\", it generates an address which can be called from anywhere. Wherever the asset resides (local or remote), the system will locate it and its dependencies, then return it.\n\nUse 'Window->Asset Management->Addressables' to begin working with the system.\n\nAddressables use asynchronous loading to support loading from any location with any collection of dependencies. Whether you have been using direct references, traditional asset bundles, or Resource folders, addressables provide a simpler way to make your game more dynamic. Addressables simultaneously opens up the world of asset bundles while managing all the complexity.\n\nFor usage samples, see github.com/Unity-Technologies/Addressables-Sample",
+  "keywords": [
+    "asset",
+    "resources",
+    "bundle",
+    "bundles",
+    "assetbundles"
+  ],
+  "dependencies": {
+    "com.unity.scriptablebuildpipeline": "1.19.6",
+    "com.unity.modules.assetbundle": "1.0.0",
+    "com.unity.modules.imageconversion": "1.0.0",
+    "com.unity.modules.jsonserialize": "1.0.0",
+    "com.unity.modules.unitywebrequest": "1.0.0",
+    "com.unity.modules.unitywebrequestassetbundle": "1.0.0"
+  },
+  "repository": {
+    "url": "https://github.cds.internal.unity3d.com/unity/Addressables.git",
+    "type": "git",
+    "revision": "2ac2ed2277c173a9a41ffeafa080525578c38e4f"
+  },
+  "upm": {
+    "changelog": "- Improved message of InvalidKeyException errors.,- Improved exception message of RemoteProviderExceptions,- Fixed issue where Clear Cache Behavior setting was getting reverted when changed while multi-selecting schemas,- Fixed an issue where when building with Missing References in the groups window a NullRefException would occur,- Added documentation explaining why the user might hit a deadlock when calling WaitForCompletion when loading multiple scenes in succession,- Fixed issue where DownloadDependenciesAsync with merge mode did not unload AssetBundles correctly,- Added ComponentReference and Custom Analyze Rule to Samples folder.,- Fixed issue where BundledAssetGroupSchema custom paths reset to default local paths after a domain reload.,- Added assemblyInfo to manage visible internals,- Fixed issue causing InvalidOperationException when loading Addressable Settings from OnPostProcessAllAsset during a project load without a cached AssetDatabase,- Fixed an issue where calling LoadSceneAsync.WaitForCompletion immediately after loading a scene singly would cause a freeze"
+  },
+  "upmCi": {
+    "footprint": "69a0ec9ac0d649931fd174de8af7cbe3ce5cc509"
+  },
+  "samples": [
+    {
+      "displayName": "Addressables Utility",
+      "description": "This sample contains a set of utility functions for Addressables.",
+      "path": "Samples~/AddressablesUtility"
+    },
+    {
+      "displayName": "ComponentReference",
+      "description": "This sample creates an AssetReference that is restricted to having a specific Component. See the ComponentReference sample project located at github.com/Unity-Technologies/Addressables-Sample",
+      "path": "Samples~/ComponentReference"
+    },
+    {
+      "displayName": "Custom Analyze Rules",
+      "description": "This sample shows how to create custom AnalyzeRules for use within the Analyze window. Both rules follow the recommended pattern for adding themselves to the UI. See the Custom Analyze Rules sample project located at github.com/Unity-Technologies/Addressables-Sample",
+      "path": "Samples~/CustomAnalyzeRules"
+    },
+    {
+      "displayName": "Custom Build and Playmode Scripts",
+      "description": "Example custom build and play mode scripts provided.  Along with a README discussing how to add them to the Addressables system.",
+      "path": "Samples~/CustomBuildAndPlaymodeScripts"
+    },
+    {
+      "displayName": "Disable AssetImport on Build",
+      "description": "A script that disables asset importing during a player build.  This improves build performance since AssetBundles are copied into StreamingAssets at build time.",
+      "path": "Samples~/DisableAssetImportOnBuild"
+    },
+    {
+      "displayName": "Import Groups Tool",
+      "description": "A tool that imports group assets (for example from a custom package) to the current project.",
+      "path": "Samples~/ImportExistingGroup"
+    },
+    {
+      "displayName": "Prefab Spawner",
+      "description": "A basic script that instantiates and destroys a prefab AssetReference.",
+      "path": "Samples~/PrefabSpawner"
+    }
+  ]
+}

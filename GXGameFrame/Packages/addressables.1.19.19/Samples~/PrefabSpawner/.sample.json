@@ -1,0 +1,4 @@
+{
+    "displayName": "Prefab Spawner",
+    "description": "A basic script that instantiates and destroys a prefab AssetReference."
+}

@@ -1,0 +1,28 @@
+{
+    "name": "Unity.Addressables.Tests",
+    "references": [
+        "Unity.Addressables",
+        "Unity.ResourceManager",
+        "Unity.Addressables.Editor",
+        "Unity.ScriptableBuildPipeline.Editor"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+	"versionDefines": [
+        {
+            "name": "Unity",
+            "expression": "2021.2.0a19",
+            "define": "ENABLE_ASYNC_ASSETBUNDLE_UWR"
+        }
+    ]
+}
