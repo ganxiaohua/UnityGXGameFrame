@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 468a46d0ae32c3544b7d98094e6448a9, type: 3}
   m_Name: AddressableAssetSettings
   m_EditorClassIdentifier: 
-  m_DefaultGroup: 9eb49010b0c894d44afa35ef439ef112
+  m_DefaultGroup: d0c7684ef2f0bba438e6442097f2799b
   m_CachedHash:
     serializedVersion: 2
     Hash: 00000000000000000000000000000000
@@ -40,7 +40,12 @@ MonoBehaviour:
   m_ContentStateBuildPath: 
   m_BuildAddressablesWithPlayerBuild: 0
   m_overridePlayerVersion: eden.zip
-  m_GroupAssets: []
+  m_GroupAssets:
+  - {fileID: 0}
+  - {fileID: 11400000, guid: 43fe9f7b588e0a74690ce3efcedabf8e, type: 2}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: b81a663e2b3cbad4cadc4d175074d5d2, type: 2}
+  - {fileID: 11400000, guid: 6c62f4060e87aa14388d2e29e56a62b5, type: 2}
   m_BuildSettings:
     m_CompileScriptsInVirtualMode: 0
     m_CleanupStreamingAssetsAfterBuilds: 1
@@ -113,6 +118,7 @@ MonoBehaviour:
     - Decorate_3
     - Decorate_0
     - Theme
+    - Mode1
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: a95052cee2284dd49ab7974223b3cb80, type: 2}

@@ -21,13 +21,14 @@ namespace Eden.Editor
 
         static readonly string DefaultProfileId = "7d72f42cde32f304595d34a6eab45502";
         static readonly string RemoteProfileId = "c0313e369c48c164b9b196ec6f7a7bc4";
+
         static readonly Dictionary<string, string> UpdateURL = new Dictionary<string, string>()
         {
             [DefaultProfileId] = "http://192.168.100.230/eden/aa",
             [RemoteProfileId] = "https://res-qzsj.2144gy.com/eden/aa",
         };
 
-        static readonly string[] patchFilterFiles = new string[] { "catalog.bundle", "settings.json", "addressables_content_state.bin" };
+        static readonly string[] patchFilterFiles = new string[] {"catalog.bundle", "settings.json", "addressables_content_state.bin"};
 
         private static readonly double[] byteUnits =
         {
@@ -62,7 +63,9 @@ namespace Eden.Editor
             AddressableAssetGroup group = null;
             if (create)
             {
-                group = AssetSettings.CreateGroup(name, false, false, false, AssetSettings.DefaultGroup.Schemas);
+                AddressableAssetGroupTemplate addressableAssetGroupTemplate = AssetSettings.GroupTemplateObjects[0] as AddressableAssetGroupTemplate;
+                group = AssetSettings.CreateGroup(name, false, false, false, AssetSettings.DefaultGroup.Schemas, addressableAssetGroupTemplate.GetTypes());
+                addressableAssetGroupTemplate.ApplyToAddressableAssetGroup(group);
             }
 
             return group;
@@ -275,6 +278,7 @@ namespace Eden.Editor
                 var versionJson = File.ReadAllText(versionPath);
                 lastVersions = AddressablesHelper.LoadFromJson<PlayerAssets>(versionJson);
             }
+
             var patchFolder = $"Patch_{lastVersions.version + 1}";
             var toPath = $"ServerData/{BuildTarget}/{patchFolder}";
             CreateDirectory(toPath);
@@ -288,11 +292,13 @@ namespace Eden.Editor
                     //保留当前资源版本信息,不包含旧的版本信息
                     newVersions.data.Add(filePath);
                 }
+
                 if (lastVersions.data.Contains(filePath))
                 {
                     //未修改资源不用复制到补丁目录
                     continue;
                 }
+
                 var path = Path.Combine(toPath, filePath);
                 CreateDirectory(path);
                 //进行压缩或者加密
@@ -306,6 +312,7 @@ namespace Eden.Editor
                 {
                     File.Copy(item, path, true);
                 }
+
                 // CopyToLocalServer(path, filePath);
                 var fileInfo = new FileInfo(item);
                 if (fileInfo.Name.Length > nameLengthMax)
@@ -316,6 +323,7 @@ namespace Eden.Editor
                 files.Add(fileInfo);
                 totalSize += fileInfo.Length;
             }
+
             newVersions.version = lastVersions.version + 1;
             File.WriteAllText(versionPath, JsonUtility.ToJson(newVersions));
             var updateInfo = ScriptableObject.CreateInstance<UpdateInfo>();
@@ -325,11 +333,12 @@ namespace Eden.Editor
             File.WriteAllText(updateFilePath, JsonUtility.ToJson(updateInfo));
             // CopyToLocalServer(updateFilePath, UpdateInfo.Filename);
             log.AppendLine($"totalSize:{FormatBytes(totalSize)}");
-            files.Sort((a, b) => (int)(b.Length - a.Length));
+            files.Sort((a, b) => (int) (b.Length - a.Length));
             foreach (var file in files)
             {
                 log.AppendLine($"{file.Name.PadRight(nameLengthMax)}\t{FormatBytes(file.Length)}");
             }
+
             ModifyCDNConfig(toPath);
             return log.ToString();
         }
@@ -491,14 +500,17 @@ namespace Eden.Editor
             {
                 throw new ArgumentNullException(nameof(productName));
             }
+
             if (string.IsNullOrEmpty(version))
             {
                 throw new ArgumentNullException(nameof(version));
             }
+
             if (string.IsNullOrEmpty(packageName))
             {
                 throw new ArgumentNullException(nameof(packageName));
             }
+
             PlayerSettings.productName = productName;
             PlayerSettings.bundleVersion = version;
             PlayerSettings.applicationIdentifier = packageName;
@@ -512,7 +524,7 @@ namespace Eden.Editor
             var patchPath = Path.GetFullPath(folder).Replace("\\", "\\\\");
             var filePath = Path.GetFullPath("Tools/cdn/config.toml");
             var lines = File.ReadAllLines(filePath);
-            for(int i = 0; i < lines.Length; i++)
+            for (int i = 0; i < lines.Length; i++)
             {
                 if (lines[i].StartsWith("LocalRoot="))
                 {
@@ -520,6 +532,7 @@ namespace Eden.Editor
                     break;
                 }
             }
+
             File.WriteAllLines(filePath, lines);
         }
 

@@ -19,7 +19,7 @@ namespace Eden.Editor
             {
                 if (s_Settings == null)
                 {
-                    s_Settings = AssetDatabase.LoadAssetAtPath<AssetGroupSettings>("Assets/AddressableAssetsData/AssetGroups/AssetGroupSettings.asset");
+                    s_Settings = AssetDatabase.LoadAssetAtPath<AssetGroupSettings>("Assets/AddressableAssetsData/AssetGroupSettings.asset");
                 }
                 return s_Settings;
             }

@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: AssetGroupSettings
   m_EditorClassIdentifier: 
   data:
-  - groupName: 
-    searchPaths: []
-    filter: 
+  - groupName: Mode1
+    searchPaths:
+    - Assets/Test/Model
+    filter: t:sprite
     simplifyAddressName: 1
     packByDir: 0
     bundleMode: 1
