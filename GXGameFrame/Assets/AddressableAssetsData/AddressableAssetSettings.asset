@@ -40,26 +40,7 @@ MonoBehaviour:
   m_ContentStateBuildPath: 
   m_BuildAddressablesWithPlayerBuild: 0
   m_overridePlayerVersion: eden.zip
-  m_GroupAssets:
-  - {fileID: 11400000, guid: 419e152f2b1ae3a47aeda5e01eeb4b52, type: 2}
-  - {fileID: 11400000, guid: df36a808f8df57040b1c2b2ac4e3713c, type: 2}
-  - {fileID: 11400000, guid: 1cfb703adcf71d44bb95dd0f6dfdcf85, type: 2}
-  - {fileID: 11400000, guid: 80fc09d239602ae48bed7a0ed42d0261, type: 2}
-  - {fileID: 11400000, guid: 1a186401568c1d6419fa89f110ec497a, type: 2}
-  - {fileID: 11400000, guid: 8e69456e4dbda85489584bf45f6cb5b1, type: 2}
-  - {fileID: 11400000, guid: 066a6c7689b26654db8b299fb06694e1, type: 2}
-  - {fileID: 11400000, guid: 8858aba4315bce44d8f69089bbfea1da, type: 2}
-  - {fileID: 11400000, guid: bf9903d5d62d16c4a8376f03c1f9f449, type: 2}
-  - {fileID: 11400000, guid: 07ca4807e6ca52c429093ce9c5a8936e, type: 2}
-  - {fileID: 11400000, guid: ead320f173fdd70498cbb14b0cb5a935, type: 2}
-  - {fileID: 11400000, guid: 0bcb7941a6557f34cb9142c5ce6ed0c0, type: 2}
-  - {fileID: 11400000, guid: dbfde28b27e307f43b390746a89ec140, type: 2}
-  - {fileID: 11400000, guid: 6a42e1b744901534a921b2005d63de51, type: 2}
-  - {fileID: 11400000, guid: f4cc934a92bb5064ea1a23505dcd78ff, type: 2}
-  - {fileID: 11400000, guid: 61e6dde309588b04ca89854ea20960f9, type: 2}
-  - {fileID: 11400000, guid: 48a9c8f8d98cefc4c9245db67fc17dee, type: 2}
-  - {fileID: 11400000, guid: 581458d428f81224ba9901caea696b9b, type: 2}
-  - {fileID: 11400000, guid: be484e171194f994d836ba5b62a8dd6e, type: 2}
+  m_GroupAssets: []
   m_BuildSettings:
     m_CompileScriptsInVirtualMode: 0
     m_CleanupStreamingAssetsAfterBuilds: 1
