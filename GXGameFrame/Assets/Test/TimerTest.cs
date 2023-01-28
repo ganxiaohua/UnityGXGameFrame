@@ -38,13 +38,16 @@ public class TimerTest : MonoBehaviour
         
         if (Input.GetKeyDown(KeyCode.F))
         {
-            TimerComponent.Instance.CancelTimer(); 
+            TimerComponent.Instance.CancelTimer(id); 
         }
     }
 
     async UniTaskVoid Test()
     {
-        await TimerComponent.Instance.OnceTimerAsync(3000);
+        await TimerComponent.Instance.OnceTimerAsync(3000,(x)=>
+        {
+            id = x;
+        }, () => { Debug.Log("取消的调用");});
         Debug.Log("异步延迟调用");
     }
 }

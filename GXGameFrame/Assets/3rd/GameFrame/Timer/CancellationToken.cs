@@ -4,7 +4,7 @@ using LuaInterface;
 
 namespace GameFrame
 {
-    public class CancellationToken
+    public class CancellationToken : IReference
     {
         private HashSet<Action> actions = new HashSet<Action>();
 
@@ -13,7 +13,7 @@ namespace GameFrame
             // 如果action是null，绝对不能添加,要抛异常，说明有协程泄漏
             this.actions.Add(callback);
         }
-        
+
         public void Remove(Action callback)
         {
             this.actions?.Remove(callback);
@@ -24,17 +24,8 @@ namespace GameFrame
             return this.actions == null;
         }
 
-        public void Cancel()
-        {
-            if (this.actions == null)
-            {
-                return;
-            }
 
-            this.Invoke();
-        }
-
-        private void Invoke()
+        public void Invoke()
         {
             HashSet<Action> runActions = this.actions;
             this.actions = null;
@@ -49,6 +40,15 @@ namespace GameFrame
             {
                 Debugger.Log(e.Message);
             }
+        }
+
+        public void Clear()
+        {
+            if (this.actions == null)
+            {
+                return;
+            }
+            actions.Clear();
         }
     }
 }

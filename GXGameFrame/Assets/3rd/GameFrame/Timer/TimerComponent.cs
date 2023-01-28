@@ -55,6 +55,10 @@ namespace GameFrame.Timer
             public TimerType TimerType { get; private set; }
 
             /// <summary>
+            /// timer 类型
+            /// </summary>
+            public bool Cancel { get;  set; }
+            /// <summary>
             /// 计时结束回调函数
             /// </summary>
             public object Callback { get; private set; }
@@ -83,6 +87,8 @@ namespace GameFrame.Timer
             /// ID
             /// </summary>
             public int ID { get; private set; }
+
+            public CancellationToken CancellationToken{ get; set; }
 
             /// <summary>
             /// 创建定时器
@@ -117,6 +123,16 @@ namespace GameFrame.Timer
                 UpdateCallBack = null;
                 RepeatCount = 0;
                 TimerType = TimerType.None;
+
+                if (CancellationToken != null && Cancel)
+                {
+                    CancellationToken.Invoke();
+                    ReferencePool.Release(CancellationToken);
+                }
+                else if(CancellationToken != null && !Cancel)
+                {
+                    ReferencePool.Release(CancellationToken);
+                }
             }
         }
 
@@ -337,7 +353,8 @@ namespace GameFrame.Timer
         /// 删除定时器
         /// </summary>
         /// <param name="id">定时器ID</param>
-        private void RemoveTimer(int id)
+        /// <param name="cancel">是否被强制取消</param>
+        private void RemoveTimer(int id,bool cancel = false)
         {
             m_Timers.TryGetValue(id, out Timer timer);
             if (timer == null)
@@ -345,7 +362,7 @@ namespace GameFrame.Timer
                 Debug.LogError($"删除了不存在的Timer ID:{id}");
                 return;
             }
-
+            timer.Cancel = cancel;
             ReferencePool.Release(timer);
             m_Timers.Remove(id);
             m_UpdateTimer.Remove(id);
@@ -370,7 +387,7 @@ namespace GameFrame.Timer
                 return;
             }
 
-            RemoveTimer(id);
+            RemoveTimer(id,true);
         }
 
         /// <summary>
@@ -494,7 +511,7 @@ namespace GameFrame.Timer
         /// <param name="time">定时时间</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async UniTask<bool> OnceTimerAsync(long time, CancellationToken cancellationToken = null)
+        public async UniTask<bool> OnceTimerAsync(long time,Action<int> idback, Action cancelBack=null)
         {
             long nowTime = TimerTimeUtility.Now();
             if (time <= 0)
@@ -508,7 +525,13 @@ namespace GameFrame.Timer
             int timerId = timer.ID;
 
             AddTimer(nowTime + time, timerId);
+            CancellationToken cancellationToken = ReferencePool.Acquire<CancellationToken>();
+            if (cancelBack != null)
+            {
+                cancellationToken.Add(cancelBack);
+            }
 
+            timer.CancellationToken = cancellationToken;
             void CancelAction()
             {
                 RemoveTimer(timerId);
@@ -519,6 +542,7 @@ namespace GameFrame.Timer
             try
             {
                 cancellationToken?.Add(CancelAction);
+                idback?.Invoke(timer.ID);
                 result = await tcs.Task;
             }
             finally
@@ -533,9 +557,9 @@ namespace GameFrame.Timer
         /// 可等待的帧定时器
         /// </summary>
         /// <returns>定时器 ID</returns>
-        public async UniTask<bool> FrameAsync(CancellationToken cancellationToken = null)
+        public async UniTask<bool> FrameAsync(Action<int> idback, Action cancelBack=null)
         {
-            return await OnceTimerAsync(1, cancellationToken);
+            return await OnceTimerAsync(1, idback,cancelBack);
         }
 
         /// <summary>
