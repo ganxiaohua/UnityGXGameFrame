@@ -166,6 +166,7 @@ namespace Eden.Editor
             {
                 foreach (var path in assetGroup.searchPaths)
                 {
+                    Debug.Log(System.Environment.CurrentDirectory);
                     var dirs = Directory.GetDirectories(path, "*", SearchOption.AllDirectories);
                     foreach (var dir in dirs)
                     {
@@ -305,7 +306,7 @@ namespace Eden.Editor
                 {
                     File.Copy(item, path, true);
                 }
-                CopyToLocalServer(path, filePath);
+                // CopyToLocalServer(path, filePath);
                 var fileInfo = new FileInfo(item);
                 if (fileInfo.Name.Length > nameLengthMax)
                 {
@@ -322,7 +323,7 @@ namespace Eden.Editor
             updateInfo.timestamp = GetTimestamp();
             var updateFilePath = $"{toPath}/{UpdateInfo.Filename}";
             File.WriteAllText(updateFilePath, JsonUtility.ToJson(updateInfo));
-            CopyToLocalServer(updateFilePath, UpdateInfo.Filename);
+            // CopyToLocalServer(updateFilePath, UpdateInfo.Filename);
             log.AppendLine($"totalSize:{FormatBytes(totalSize)}");
             files.Sort((a, b) => (int)(b.Length - a.Length));
             foreach (var file in files)
