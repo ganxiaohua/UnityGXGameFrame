@@ -1,0 +1,6 @@
+#!/bin/bash
+dir="$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)"
+cd $dir
+./Jenny/Jenny auto-import -s
+./Jenny/Jenny doctor
+read -n 1 -srp "Press any key to continue"

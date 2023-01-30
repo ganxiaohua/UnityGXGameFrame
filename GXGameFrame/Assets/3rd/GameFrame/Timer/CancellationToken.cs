@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using LuaInterface;
+using System.Threading;
 
 namespace GameFrame
 {
@@ -28,7 +28,6 @@ namespace GameFrame
         public void Invoke()
         {
             HashSet<Action> runActions = this.actions;
-            this.actions = null;
             try
             {
                 foreach (Action action in runActions)

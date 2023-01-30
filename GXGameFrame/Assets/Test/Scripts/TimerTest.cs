@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using GameFrame.Timer;
-using LuaInterface;
+using GameFrame;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class TimerTest : MonoBehaviour
@@ -12,7 +13,6 @@ public class TimerTest : MonoBehaviour
 
     void Start()
     {
-        
     }
 
     // Update is called once per frame
@@ -20,34 +20,35 @@ public class TimerTest : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.A))
         {
-           id =  TimerComponent.Instance.AddOnceTimer(2000, () =>
-            {
-                Debug.Log("延迟调用");
-            });
+            id = TimerComponent.Instance.AddOnceTimer(2000, () => { Debug.Log("延迟调用"); });
         }
 
         if (Input.GetKeyDown(KeyCode.S))
         {
             TimerComponent.Instance.CancelTimer(id);
         }
-        
+
         if (Input.GetKeyDown(KeyCode.D))
         {
             Test();
         }
-        
+
         if (Input.GetKeyDown(KeyCode.F))
         {
-            TimerComponent.Instance.CancelTimer(id); 
+            TimerComponent.Instance.CancelTimer(id);
         }
     }
 
     async UniTaskVoid Test()
     {
-        await TimerComponent.Instance.OnceTimerAsync(3000,(x)=>
+        bool notcanel = await TimerComponent.Instance.OnceTimerAsync(10000, (x) => { id = x; });
+        if (notcanel)
         {
-            id = x;
-        }, () => { Debug.Log("取消的调用");});
-        Debug.Log("异步延迟调用");
+            Debug.Log("异步延迟调用");
+        }
+        else
+        {
+            Debug.Log("取消调用");
+        }
     }
 }
