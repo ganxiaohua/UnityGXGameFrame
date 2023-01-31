@@ -57,7 +57,7 @@ namespace GameFrame
             sb.CopyToString(dest);
             return dest;
         }
-
+        
         public static void Log(string str)
         {
             str = GetLogFormat(str);            

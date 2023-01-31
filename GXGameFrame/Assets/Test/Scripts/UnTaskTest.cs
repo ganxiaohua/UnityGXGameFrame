@@ -29,20 +29,20 @@ public class UnTaskTest : MonoBehaviour
 
     async UniTask Test1()
     {
-        UnityEngine.Debug.Log("DEB1");
-
-        await UniTask.DelayFrame(30, PlayerLoopTiming.Update, this.GetCancellationTokenOnDestroy());
-
-        UnityEngine.Debug.Log("DEB END1");
+        // UnityEngine.Debug.Log("DEB1");
+        //
+        // await UniTask.DelayFrame(30, PlayerLoopTiming.Update, this.GetCancellationTokenOnDestroy());
+        //
+        // UnityEngine.Debug.Log("DEB END1");
     }
 
     async UniTaskVoid Test2()
     {
-        UnityEngine.Debug.Log("DEB2");
-
-        await UniTask.DelayFrame(30);
-
-        UnityEngine.Debug.Log("DEB END2");
+        // UnityEngine.Debug.Log("DEB2");
+        //
+        // await UniTask.DelayFrame(30);
+        //
+        // UnityEngine.Debug.Log("DEB END2");
     }
 
     async UniTask Start()
