@@ -23,17 +23,18 @@ public class GameMain : MonoBehaviour
     }
 
     // Update is called once per frame
+    private int Entity1id;
     void Update()
     {
         GXGmeFrameMain.Instance.Update();
         if (Input.GetKeyDown(KeyCode.A))
         {
-            EnitityHouse.Instance.GetSceneEntity<BattlegroundScene>().AddComponent<Entity1>();
+            Entity1id = EnitityHouse.Instance.GetScene<BattlegroundScene>().AddChild<Entity1>().ID;
         }
 
         if (Input.GetKeyDown(KeyCode.S))
         {
-            EnitityHouse.Instance.GetSceneEntity<BattlegroundScene>().RemoveComponent<Entity1>(); 
+            EnitityHouse.Instance.GetScene<BattlegroundScene>().RemoveChild(Entity1id); 
         }
     }
 }

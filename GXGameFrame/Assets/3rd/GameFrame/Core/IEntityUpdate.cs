@@ -22,4 +22,9 @@
         {
         }
     }
+    // -------------------------------------------
+    public interface IECSUpdateSystem : ISystem
+    {
+        void Update();
+    }
 }

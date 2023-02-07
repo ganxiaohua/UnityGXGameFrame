@@ -15,12 +15,28 @@ namespace GameFrame
             {
                 initsys.Run(entity);
             }
+            else if (system is IECSInitSystem ecsinitsystem)
+            {
+                Context context = entity as Context;
+                if (context == null)
+                {
+                    throw new Exception($"{entity.GetType()} not has Content");
+                }
+
+                ecsinitsystem.Initialize(context);
+            }
         }
 
         public static bool IsUpdateSystem(this ISystem system)
         {
             if (system is IUpdateSystem updateSytem)
             {
+                return true;
+            }
+            else if (system is IECSUpdateSystem ecsUpdatesystem)
+            {
+
+                ecsUpdatesystem.Update();
                 return true;
             }
 
@@ -36,7 +52,7 @@ namespace GameFrame
                 if (es.SystemObject.System is IUpdateSystem updatesystem)
                 {
                     updatesystem.Run(es.Entity);
-                }   
+                }
             }
         }
 

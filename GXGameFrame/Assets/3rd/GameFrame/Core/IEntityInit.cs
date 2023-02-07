@@ -22,4 +22,10 @@
         {
         }
     }
+// --------------------------
+    public interface IECSInitSystem:ISystem
+    {
+        void Initialize(Context entity);
+    }
+
 }

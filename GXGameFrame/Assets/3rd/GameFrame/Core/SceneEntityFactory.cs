@@ -11,7 +11,7 @@
 
         public static void RemoveScene<T>() where T : SceneEntityType
         {
-            SceneEntity sceneEntity = EnitityHouse.Instance.GetSceneEntity<T>();
+            SceneEntity sceneEntity = EnitityHouse.Instance.GetScene<T>();
             RemoveScene(sceneEntity);
         }
         public static void RemoveScene (SceneEntity sceneEntity)

@@ -105,7 +105,7 @@ namespace GameFrame
             AddEntity(entity);
         }
 
-        public SceneEntity GetSceneEntity<T>() where T : SceneEntityType
+        public SceneEntity GetScene<T>() where T : SceneEntityType
         {
             Type type = typeof(T);
             if (!m_EverySceneEntity.TryGetValueKv(type, out SceneEntity sceneEntity))

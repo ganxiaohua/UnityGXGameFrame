@@ -18,6 +18,9 @@ namespace GameFrame
 
         private Dictionary<Type, Entity> m_Components;
 
+
+        private Dictionary<long, Entity> m_Children;
+
         private EntityStatus m_EntityStatus;
 
         public int ID { get; private set; }
@@ -26,18 +29,27 @@ namespace GameFrame
 
         protected Entity()
         {
-            m_Components = new Dictionary<Type, Entity>();
+            m_Components = new();
+            m_Children = new();
             ID = ++m_SerialId;
         }
 
-        private Entity Create<T>() where T : Entity
+        protected virtual Entity Create<T>(bool isComponent) where T : Entity
         {
             Type type = typeof(T);
             Entity entity = ReferencePool.Acquire(type) as Entity;
             entity.m_EntityStatus = EntityStatus.IsCreated;
             entity.ComponentParent = this;
-            m_Components.Add(type, entity);
+            if (isComponent)
+            {
+                m_Components.Add(type, entity);
+            }
+            else
+            {
+                m_Children.Add(entity.ID, entity);
+            }
             entity.InitializeSystem();
+
             EnitityHouse.Instance.AddEntity(entity);
             return entity;
         }
@@ -51,7 +63,22 @@ namespace GameFrame
             }
 
             entity.m_EntityStatus = EntityStatus.IsClear;
+
             m_Components.Remove(type);
+
+            EnitityHouse.Instance.RemoveEntity(entity);
+            ReferencePool.Release(entity);
+        }
+        
+        private void Remove(int id)
+        {
+            if (!m_Children.TryGetValue(id,out var entity))
+            {
+                throw new Exception($"entity not already  child: {id}");
+            }
+
+            entity.m_EntityStatus = EntityStatus.IsClear;
+            m_Children.Remove(id);
             EnitityHouse.Instance.RemoveEntity(entity);
             ReferencePool.Release(entity);
         }
@@ -69,7 +96,8 @@ namespace GameFrame
             {
                 throw new Exception($"entity already has component: {type.FullName}");
             }
-            Entity component = Create<T>();
+
+            Entity component = Create<T>(true);
             return component as T;
         }
 
@@ -81,7 +109,7 @@ namespace GameFrame
         {
             Remove<T>();
         }
-        
+
         /// <summary>
         /// 挂载实体
         /// </summary>
@@ -90,21 +118,26 @@ namespace GameFrame
         public T AddChild<T>() where T : Entity
         {
             Type type = typeof(T);
-            Entity component = Create<T>();
+            Entity component = Create<T>(false);
             return component as T;
         }
-        
+
         /// <summary>
         /// 删除实体
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public void RemoveChild<T>() where T : Entity
+        public void RemoveChild(int id)
         {
-            Remove<T>();
+            Remove(id);
         }
 
-        public abstract void InitializeSystem();
+        public virtual void InitializeSystem()
+        {
+            
+        }
+        
+
         /// <summary>
         /// 清除
         /// </summary>
@@ -114,6 +147,7 @@ namespace GameFrame
             {
                 components.Value.Clear();
             }
+
             m_Components.Clear();
         }
     }

@@ -61,23 +61,3 @@ public static class Entity1System
 }
 
 #endregion
-
-#region 演示Ecs形式
-
-public static class Entity2System
-{
-    public static void Entity2Func1(this Entity2 self)
-    {
-        
-    }
-}
-
-public class Entity2 : Entity, IInit
-{
-    public override void InitializeSystem()
-    {
-        
-    }
-}
-
-#endregion
