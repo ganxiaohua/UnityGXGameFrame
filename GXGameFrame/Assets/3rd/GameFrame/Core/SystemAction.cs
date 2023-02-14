@@ -29,17 +29,10 @@ namespace GameFrame
 
         public static bool IsUpdateSystem(this ISystem system)
         {
-            if (system is IUpdateSystem updateSytem)
+            if (system is IUpdateSystem || system is IECSUpdateSystem)
             {
                 return true;
             }
-            else if (system is IECSUpdateSystem ecsUpdatesystem)
-            {
-
-                ecsUpdatesystem.Update();
-                return true;
-            }
-
             return false;
         }
 
@@ -52,6 +45,9 @@ namespace GameFrame
                 if (es.SystemObject.System is IUpdateSystem updatesystem)
                 {
                     updatesystem.Run(es.Entity);
+                }else if (es.SystemObject.System is IECSUpdateSystem ecsupdatesystem)
+                {
+                    ecsupdatesystem.Update();
                 }
             }
         }

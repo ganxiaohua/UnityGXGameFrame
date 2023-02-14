@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using GameFrame;
 using UnityEngine;
 
@@ -15,16 +16,16 @@ public class Bttleground : Context
 
 public class CreateMonsterSystem : IECSInitSystem
 {
-    public  void Initialize(Context entity)
+    public void Initialize(Context entity)
     {
         entity.AddChild<Monster>();
         entity.AddChild<Monster>();
         entity.AddChild<Monster>();
+        entity.AddChild<Wood>();
     }
-    
+
     public void Clear()
     {
-        
     }
 }
 
@@ -34,16 +35,22 @@ public class MoveSystem : ReactiveSystem
     {
         base.Initialize(entity);
     }
-    protected override HashSet<int> GetTrigger(Context context)
+
+    protected override Collector GetTrigger(Context context) => Collector.CreateCollector(context, typeof(Pos), typeof(Rotate));
+    protected override bool Filter(ECSEntity entity)
     {
-        //TODO进行筛选
-        return null;
+        return true;
     }
 
     protected override void Update(List<ECSEntity> entities)
     {
-       
+        foreach (var entity in entities)
+        { 
+            Debug.Log("xxxxxxxxxxxx");
+            var pos = entity.GetPos();
+        }
     }
+
     public override void Clear()
     {
     }
@@ -54,8 +61,16 @@ public class Monster : ECSEntity
 {
     public override void InitComponent()
     {
-        AddComponent<Pos>();
-        AddComponent<Rotate>();
+        this.AddPos(Vector2.down);
+        this.AddRotate(Vector2.left);
+    }
+}
+
+public class Wood: ECSEntity
+{
+    public override void InitComponent()
+    {
+        this.AddPos(Vector2.down);
     }
 }
 
@@ -69,6 +84,34 @@ public class Rotate : Entity
     public Vector3 vec;
 }
 
-
+/// <summary>
+/// 自动生成
+/// </summary>
+public static class ManInnt
+{
+    public static void AddPos(this ECSEntity ecsEntity, Vector2 vector2)
+    {
+        Pos p = ecsEntity.AddComponent<Pos>();
+        p.vec = vector2;
+    }
+    
+    public static Pos GetPos(this ECSEntity ecsEntity)
+    {
+        Pos p = ecsEntity.GetComponent<Pos>();
+        return p;
+    }
+    
+    public static void AddRotate(this ECSEntity ecsEntity, Vector2 vector2)
+    {
+        Rotate p = ecsEntity.AddComponent<Rotate>();
+        p.vec = vector2;
+    }
+    
+    public static Rotate GetRotate(this ECSEntity ecsEntity)
+    {
+        Rotate p = ecsEntity.GetComponent<Rotate>();
+        return p;
+    }
+}
 
 #endregion

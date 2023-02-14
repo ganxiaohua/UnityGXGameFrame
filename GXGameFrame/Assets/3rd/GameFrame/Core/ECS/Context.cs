@@ -2,25 +2,28 @@
 
 namespace GameFrame
 {
-    public class Context:Entity
+    public class Context : Entity
     {
         private Dictionary<Matcher, Group> m_Groups;
-        
-        protected override Entity Create<T>(bool isComponent)
+
+        protected override void ThisInit()
         {
-            Context entity = base.Create<T>(isComponent) as Context;
-            entity.m_Groups = new();
-            return entity;
+            m_Groups= new();
         }
 
         public Group GetGroup(Matcher matcher)
         {
-            if (!m_Groups.TryGetValue(matcher, out Group grop ))
+            if (!m_Groups.TryGetValue(matcher, out Group grop))
             {
-                grop =  Group.CreateGroup();
-                m_Groups.Add(matcher,grop);
+                grop = Group.CreateGroup(matcher);
+                foreach (var item in Children)
+                {
+                    grop.HandleEntitySilently(item.Value);
+                }
+                m_Groups.Add(matcher, grop);
             }
             return grop;
         }
+        
     }
 }

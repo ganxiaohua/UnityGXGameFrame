@@ -2,7 +2,7 @@
 
 namespace GameFrame
 {
-    public class GXGmeFrameMain:SingletonMono<GXGmeFrameMain>
+    public class GXGameFrameMain:SingletonMono<GXGameFrameMain>
     {
         public void Start()
         {

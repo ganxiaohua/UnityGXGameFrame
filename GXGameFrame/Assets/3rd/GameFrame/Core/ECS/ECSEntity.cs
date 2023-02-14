@@ -2,11 +2,9 @@
 {
     public abstract class ECSEntity : Entity
     {
-        protected override Entity Create<T>(bool isComponent)
+        protected override void ThisInit()
         {
-            ECSEntity entity = base.Create<T>(isComponent) as ECSEntity;
-            entity.InitComponent();
-            return entity;
+            InitComponent();
         }
 
         public abstract void InitComponent();

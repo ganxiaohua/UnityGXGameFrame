@@ -17,9 +17,14 @@ namespace GameFrame
         protected Entity ComponentParent;
 
         private Dictionary<Type, Entity> m_Components;
+        public Dictionary<Type, Entity> Components => m_Components;
 
+        private List<int> TypeHashCode;
 
         private Dictionary<long, Entity> m_Children;
+        
+        public Dictionary<long, Entity> Children => m_Children;
+
 
         private EntityStatus m_EntityStatus;
 
@@ -31,6 +36,7 @@ namespace GameFrame
         {
             m_Components = new();
             m_Children = new();
+            TypeHashCode = new(8);
             ID = ++m_SerialId;
         }
 
@@ -40,14 +46,17 @@ namespace GameFrame
             Entity entity = ReferencePool.Acquire(type) as Entity;
             entity.m_EntityStatus = EntityStatus.IsCreated;
             entity.ComponentParent = this;
+            entity.ThisInit();
             if (isComponent)
             {
                 m_Components.Add(type, entity);
+                TypeHashCode.Add(type.GetHashCode());
             }
             else
             {
                 m_Children.Add(entity.ID, entity);
             }
+
             entity.InitializeSystem();
 
             EnitityHouse.Instance.AddEntity(entity);
@@ -65,14 +74,15 @@ namespace GameFrame
             entity.m_EntityStatus = EntityStatus.IsClear;
 
             m_Components.Remove(type);
+            TypeHashCode.Add(type.GetHashCode());
 
             EnitityHouse.Instance.RemoveEntity(entity);
             ReferencePool.Release(entity);
         }
-        
+
         private void Remove(int id)
         {
-            if (!m_Children.TryGetValue(id,out var entity))
+            if (!m_Children.TryGetValue(id, out var entity))
             {
                 throw new Exception($"entity not already  child: {id}");
             }
@@ -99,6 +109,54 @@ namespace GameFrame
 
             Entity component = Create<T>(true);
             return component as T;
+        }
+
+        public T GetComponent<T>() where T : Entity
+        {
+            Type type = typeof(T);
+            Entity value = null;
+            if (this.m_Components != null && !this.m_Components.TryGetValue(type, out value))
+            {
+                throw new Exception($"entity not has component: {type.FullName}");
+            }
+
+            return value as T;
+        }
+
+        /// <summary>
+        /// 全部包含
+        /// </summary>
+        /// <param name="hascode"></param>
+        /// <returns></returns>
+        public bool HasComponents(int[] hascode)
+        {
+            for (int index = 0; index < hascode.Length; ++index)
+            {
+                if (!TypeHashCode.Contains(hascode[index]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// 包含任意一个
+        /// </summary>
+        /// <param name="indices"></param>
+        /// <returns></returns>
+        public bool HasAnyComponent(int[] indices)
+        {
+            for (int index = 0; index < indices.Length; ++index)
+            {
+                if (TypeHashCode.Contains(indices[index]))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -134,9 +192,12 @@ namespace GameFrame
 
         public virtual void InitializeSystem()
         {
-            
         }
-        
+
+        protected virtual void ThisInit()
+        {
+        }
+
 
         /// <summary>
         /// 清除
@@ -148,6 +209,7 @@ namespace GameFrame
                 components.Value.Clear();
             }
 
+            TypeHashCode.Clear();
             m_Components.Clear();
         }
     }

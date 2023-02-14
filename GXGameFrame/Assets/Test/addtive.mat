@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: addtive
-  m_Shader: {fileID: 4800000, guid: afc6cd9457a1d604aa1109166c1a1089, type: 3}
+  m_Shader: {fileID: 4800000, guid: dae03b9a000258a4c9900c1bbffe844d, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -64,6 +64,7 @@ Material:
     - _DeadStrength: 0
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
+    - _Gloss: 0.5
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
