@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using Cysharp.Threading.Tasks;
 using GameFrame;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -73,7 +74,7 @@ public class AssetManager : Singleton<AssetManager>
 
             if (--Count == 0)
             {
-                WaitReleaseAsset.CreateWaitReleaseAsset(AsyncOperationHandle,DelayDelete);
+                WaitReleaseAsset.CreateWaitReleaseAsset(AsyncOperationHandle, DelayDelete);
                 CallBackList.Clear();
                 return true;
             }
@@ -84,8 +85,8 @@ public class AssetManager : Singleton<AssetManager>
             }
         }
     }
-    
-    
+
+
     private readonly Dictionary<string, Assets> CacheAssetDic = new Dictionary<string, Assets>(16);
 
     public T Load<T>(string path)
@@ -131,6 +132,21 @@ public class AssetManager : Singleton<AssetManager>
         };
     }
 
+    public async UniTask<T> LoadAsyncTask<T>(string path)
+    {
+        var handle = Addressables.LoadAssetAsync<T>(path);
+        if (!CacheAssetDic.TryGetValue(path, out Assets asset))
+        {
+            CacheAssetDic.Add(path, new Assets(handle, path, typeof(T), null));
+        }
+        else
+        {
+            asset.Add(path, typeof(T), null);
+        }
+        var obj = await handle.Task;
+        return obj;
+    }
+
     /// <summary>
     /// 异步加载 确保和Unload成对出现
     /// </summary>
@@ -146,7 +162,7 @@ public class AssetManager : Singleton<AssetManager>
             return;
         }
 
-        AsyncOperationHandle handle = FiltrateTypeLoad(type,path);
+        AsyncOperationHandle handle = FiltrateTypeLoad(type, path);
 
         if (!CacheAssetDic.TryGetValue(path, out Assets asset))
         {
@@ -166,7 +182,7 @@ public class AssetManager : Singleton<AssetManager>
             }
         };
     }
-    
+
 
     /// <summary>
     /// 异步加载 返回object和路径
@@ -182,7 +198,8 @@ public class AssetManager : Singleton<AssetManager>
             Debugger.LogError("创建类型不准是 GameObject");
             return;
         }
-        AsyncOperationHandle handle = FiltrateTypeLoad(type,path);
+
+        AsyncOperationHandle handle = FiltrateTypeLoad(type, path);
 
         if (!CacheAssetDic.TryGetValue(path, out Assets asset))
         {
@@ -202,8 +219,8 @@ public class AssetManager : Singleton<AssetManager>
             }
         };
     }
-    
-        
+
+
     /// <summary>
     /// 异步加载 确保和Unload成对出现
     /// </summary>
@@ -211,7 +228,7 @@ public class AssetManager : Singleton<AssetManager>
     /// <param name="type"></param>
     /// <param name="completed"></param>
     /// <returns></returns>
-    public void LoadAsyncWithLable(string label, Type type, Action<object> oneComleted,  Action<object, string>  completed = null)
+    public void LoadAsyncWithLable(string label, Type type, Action<object> oneComleted, Action<object, string> completed = null)
     {
         if (type == typeof(GameObject))
         {
@@ -219,7 +236,7 @@ public class AssetManager : Singleton<AssetManager>
             return;
         }
 
-        AsyncOperationHandle handle = FiltrateTypeLoads(type,label,oneComleted);
+        AsyncOperationHandle handle = FiltrateTypeLoads(type, label, oneComleted);
 
         if (!CacheAssetDic.TryGetValue(label, out Assets asset))
         {
@@ -235,7 +252,7 @@ public class AssetManager : Singleton<AssetManager>
             //防止在加载过程中卸载，由于延迟卸载特性而触发回调。
             if (CacheAssetDic.TryGetValue(label, out Assets assets) && assets.CheckCallBack(completed))
             {
-                completed?.Invoke(handle.Result,label);
+                completed?.Invoke(handle.Result, label);
             }
         };
     }
@@ -289,7 +306,7 @@ public class AssetManager : Singleton<AssetManager>
         }
     }
 
-    protected  void OnDestroy()
+    protected void OnDestroy()
     {
         CacheAssetDic.Clear();
     }
@@ -299,7 +316,7 @@ public class AssetManager : Singleton<AssetManager>
         return AddressablesHelper.AssetVersion.ToString();
     }
 
-    public AsyncOperationHandle FiltrateTypeLoad( Type type,string path)
+    public AsyncOperationHandle FiltrateTypeLoad(Type type, string path)
     {
         AsyncOperationHandle handle;
         if (type == typeof(Sprite))
@@ -318,28 +335,30 @@ public class AssetManager : Singleton<AssetManager>
         {
             handle = Addressables.LoadAssetAsync<object>(path);
         }
+
         return handle;
     }
-    
-    public AsyncOperationHandle FiltrateTypeLoads( Type type,string path,Action<object> callback)
+
+    public AsyncOperationHandle FiltrateTypeLoads(Type type, string path, Action<object> callback)
     {
         AsyncOperationHandle handle;
         if (type == typeof(Sprite))
         {
-            handle = Addressables.LoadAssetsAsync<Sprite>(path,callback);
+            handle = Addressables.LoadAssetsAsync<Sprite>(path, callback);
         }
         else if (type == typeof(Object))
         {
-            handle = Addressables.LoadAssetsAsync<Object>(path,callback);
+            handle = Addressables.LoadAssetsAsync<Object>(path, callback);
         }
         else if (type == typeof(Material))
         {
-            handle = Addressables.LoadAssetsAsync<Material>(path,callback);
+            handle = Addressables.LoadAssetsAsync<Material>(path, callback);
         }
         else
         {
-            handle = Addressables.LoadAssetsAsync<object>(path,callback);
+            handle = Addressables.LoadAssetsAsync<object>(path, callback);
         }
+
         return handle;
     }
 

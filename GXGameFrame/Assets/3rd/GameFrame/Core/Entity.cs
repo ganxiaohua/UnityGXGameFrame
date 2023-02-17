@@ -21,9 +21,9 @@ namespace GameFrame
 
         private List<int> TypeHashCode;
 
-        private Dictionary<long, Entity> m_Children;
+        private Dictionary<int, Entity> m_Children;
         
-        public Dictionary<long, Entity> Children => m_Children;
+        public Dictionary<int, Entity> Children => m_Children;
 
 
         private EntityStatus m_EntityStatus;
@@ -70,25 +70,24 @@ namespace GameFrame
             {
                 throw new Exception($"entity not already  component: {type.FullName}");
             }
-
-            entity.m_EntityStatus = EntityStatus.IsClear;
-
             m_Components.Remove(type);
-            TypeHashCode.Add(type.GetHashCode());
-
-            EnitityHouse.Instance.RemoveEntity(entity);
-            ReferencePool.Release(entity);
+            TypeHashCode.Remove(type.GetHashCode());
+            Remove(entity);
+            
         }
-
         private void Remove(int id)
         {
             if (!m_Children.TryGetValue(id, out var entity))
             {
                 throw new Exception($"entity not already  child: {id}");
             }
-
+            m_Children.Remove(id); 
+            Remove(entity);
+        }
+        
+        private void Remove(Entity entity)
+        {
             entity.m_EntityStatus = EntityStatus.IsClear;
-            m_Children.Remove(id);
             EnitityHouse.Instance.RemoveEntity(entity);
             ReferencePool.Release(entity);
         }
@@ -117,9 +116,8 @@ namespace GameFrame
             Entity value = null;
             if (this.m_Components != null && !this.m_Components.TryGetValue(type, out value))
             {
-                throw new Exception($"entity not has component: {type.FullName}");
+                return null;
             }
-
             return value as T;
         }
 
@@ -173,7 +171,7 @@ namespace GameFrame
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T AddChild<T>() where T : Entity
+        public  T AddChild<T>() where T : Entity
         {
             Type type = typeof(T);
             Entity component = Create<T>(false);
@@ -190,27 +188,48 @@ namespace GameFrame
             Remove(id);
         }
 
+        /// <summary>
+        /// 清理所有的子对象
+        /// </summary>
+        public void ClearAllChild()
+        {
+            foreach (var item in m_Children)
+            {
+                item.Value.Remove(item.Value);
+            }
+            m_Children.Clear();
+        }
+        
+        /// <summary>
+        /// 清理所有的组件
+        /// </summary>
+        public void ClearAllComponent()
+        {
+            foreach (var item in m_Components)
+            {
+                item.Value.Remove(item.Value);
+            }
+            m_Components.Clear();
+            TypeHashCode.Clear();
+        }
+
         public virtual void InitializeSystem()
         {
+            
         }
 
         protected virtual void ThisInit()
         {
         }
 
-
         /// <summary>
         /// 清除
         /// </summary>
         public virtual void Clear()
         {
-            foreach (var components in m_Components)
-            {
-                components.Value.Clear();
-            }
-
-            TypeHashCode.Clear();
-            m_Components.Clear();
+            ComponentParent = null;
+            ClearAllChild();
+            ClearAllComponent();
         }
     }
 }

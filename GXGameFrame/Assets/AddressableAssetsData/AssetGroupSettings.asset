@@ -21,3 +21,11 @@ MonoBehaviour:
     packByDir: 0
     bundleMode: 1
     compression: 1
+  - groupName: Model2
+    searchPaths:
+    - Assets/Rec
+    filter: t:Prefab
+    simplifyAddressName: 1
+    packByDir: 0
+    bundleMode: 1
+    compression: 1

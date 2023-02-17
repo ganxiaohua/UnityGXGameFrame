@@ -8,54 +8,60 @@ namespace GameFrame
 
     public interface IAnyOfMatcher
     {
-        
     }
+
     public interface INoneOfIndices
     {
     }
 
-    public class Matcher : IAllOfMatcher,INoneOfIndices, IAnyOfMatcher, IReference
+    public class Matcher : IAllOfMatcher, INoneOfIndices, IAnyOfMatcher, IReference
     {
         //全部包含
-        private int[] AllOfIndices;
+        private int[] m_AllOfIndices;
+
         //任意一个
-        private int[] AnyOfIndices;
+        private int[] m_AnyOfIndices;
+
         //除了这个之外
-        private int[] NoneOfIndices; 
-        
+        private int[] m_NoneOfIndices;
+
+
         public static Matcher SetAllOfIndices(params Type[] snitiyHasCodes)
         {
             int count = snitiyHasCodes.Length;
             Matcher matcher = CreateMatcher();
-            matcher.AllOfIndices = new int[count];
-            for (int i = 0; i <count ; i++)
+            matcher.m_AllOfIndices = new int[count];
+            for (int i = 0; i < count; i++)
             {
-                matcher.AllOfIndices[i] = snitiyHasCodes[i].GetHashCode();
+                matcher.m_AllOfIndices[i] = snitiyHasCodes[i].GetHashCode();
             }
+
             return matcher;
         }
-        
+
         public static Matcher SetAnyOfIndices(params Type[] snitiyHasCodes)
         {
             int count = snitiyHasCodes.Length;
             Matcher matcher = CreateMatcher();
-            matcher.AnyOfIndices = new int[count];
-            for (int i = 0; i <count ; i++)
+            matcher.m_AnyOfIndices = new int[count];
+            for (int i = 0; i < count; i++)
             {
-                matcher.AnyOfIndices[i] = snitiyHasCodes[i].GetHashCode();
+                matcher.m_AnyOfIndices[i] = snitiyHasCodes[i].GetHashCode();
             }
+
             return matcher;
         }
-        
+
         public static Matcher SetNonefIndices(params Type[] snitiyHasCodes)
         {
             int count = snitiyHasCodes.Length;
             Matcher matcher = CreateMatcher();
-            matcher.NoneOfIndices = new int[count];
-            for (int i = 0; i <count ; i++)
+            matcher.m_NoneOfIndices = new int[count];
+            for (int i = 0; i < count; i++)
             {
-                matcher.NoneOfIndices[i] = snitiyHasCodes[i].GetHashCode();
+                matcher.m_NoneOfIndices[i] = snitiyHasCodes[i].GetHashCode();
             }
+
             return matcher;
         }
 
@@ -65,13 +71,18 @@ namespace GameFrame
             return matcher;
         }
 
+        public static void RemoveMatcher(Matcher matcher)
+        {
+            ReferencePool.Release(matcher);
+        }
+
         public bool Match(Entity entity)
         {
-            if (this.AllOfIndices != null && !entity.HasComponents(this.AllOfIndices) || this.AnyOfIndices != null && !entity.HasAnyComponent(this.AnyOfIndices))
+            if (this.m_AllOfIndices != null && !entity.HasComponents(this.m_AllOfIndices) ||
+                this.m_AnyOfIndices != null && !entity.HasAnyComponent(this.m_AnyOfIndices))
                 return false;
-            return this.NoneOfIndices == null || !entity.HasAnyComponent(this.NoneOfIndices);
+            return this.m_NoneOfIndices == null || !entity.HasAnyComponent(this.m_NoneOfIndices);
         }
-        
 
 
         public void Clear()

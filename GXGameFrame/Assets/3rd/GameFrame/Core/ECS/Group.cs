@@ -1,54 +1,62 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Principal;
 
 namespace GameFrame
 {
-    public class Group :IReference
+    public class Group : IReference
     {
         private Matcher Matcher;
-        private HashSet<Entity> m_EntitiesMap;
-        
-        public HashSet<Entity> EntitiesMap =>m_EntitiesMap;
+        private HashSet<ECSEntity> m_EntitiesMap;
+        public event GroupChanged GroupAdd;
+        public event GroupChanged GroupRomve;
+        public HashSet<ECSEntity> EntitiesMap => m_EntitiesMap;
 
         public static Group CreateGroup(Matcher matcher)
         {
-            Group Group =  ReferencePool.Acquire<Group>();
+            Group Group = ReferencePool.Acquire<Group>();
             Group.Matcher = matcher;
             Group.m_EntitiesMap = new();
             return Group;
         }
 
-        public void AddComponent(Entity entity)
+        public static void RemoveGroup(Group group)
         {
-            if (m_EntitiesMap.Contains(entity))
-            {
-                throw new Exception($"Group have entity{entity.GetType()}");
-            }
-            m_EntitiesMap.Add(entity);
+            ReferencePool.Release(group);
         }
 
-        public void RemoveComponent(Entity entity)
+        public void AddComponent(ECSEntity entity)
         {
-            if (m_EntitiesMap.Contains(entity))
+            if (m_EntitiesMap.Add(entity))
             {
-                throw new Exception($"Group not have entity{entity.GetType()}");
+                GroupAdd?.Invoke(this, entity);
             }
-            m_EntitiesMap.Remove(entity);
         }
 
-        public void HandleEntitySilently(Entity entity)
+        public void RemoveComponent(ECSEntity entity)
+        {
+            if (m_EntitiesMap.Remove(entity))
+            {
+                GroupRomve?.Invoke(this, entity);
+            }
+        }
+
+        public int HandleEntitySilently(ECSEntity entity)
         {
             if (this.Matcher.Match(entity))
                 this.AddComponent(entity);
             else
                 this.RemoveComponent(entity);
+            return m_EntitiesMap.Count;
         }
-
 
 
         public void Clear()
         {
+            GroupAdd -= GroupAdd;
+            GroupRomve -= GroupRomve;
+            Matcher = null;
             m_EntitiesMap.Clear();
         }
     }

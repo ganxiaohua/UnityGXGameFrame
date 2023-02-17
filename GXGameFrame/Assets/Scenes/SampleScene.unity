@@ -204,13 +204,14 @@ GameObject:
   - component: {fileID: 1675738214}
   - component: {fileID: 1675738215}
   - component: {fileID: 1675738216}
+  - component: {fileID: 1675738217}
   m_Layer: 0
   m_Name: Test
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1675738212
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -270,11 +271,24 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1675738211}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bc8ca884c2afe584a90108a936a82944, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1675738217
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1675738211}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de2f04b1fe08e7043a69e0e22f84a1af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  str: "\u4ECA\u5929\u676D\u5DDE\u5929\u6C14\u600E\u4E48\u6837"
 --- !u!1 &2019716502
 GameObject:
   m_ObjectHideFlags: 0
@@ -293,7 +307,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!81 &2019716503
 AudioListener:
   m_ObjectHideFlags: 0
