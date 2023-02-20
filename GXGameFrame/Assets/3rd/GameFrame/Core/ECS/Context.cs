@@ -33,19 +33,8 @@ namespace GameFrame
             foreach (var groupkv in m_Groups)
             {
                 Group gourp = groupkv.Value;
-                int count = gourp.HandleEntitySilently(ecsEntity);
-                if (count == 0)
-                {
-                    m_RemoveGroup.Add(groupkv);
-                }
+                gourp.HandleEntitySilently(ecsEntity);
             }
-            foreach (var groupkv in m_RemoveGroup)
-            {
-                Matcher.RemoveMatcher(groupkv.Key);
-                Group.RemoveGroup(groupkv.Value);
-                m_Groups.Remove(groupkv.Key);
-            }
-            m_RemoveGroup.Clear();
         }
 
         public Group GetGroup(Matcher matcher)

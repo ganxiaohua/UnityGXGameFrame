@@ -75,7 +75,7 @@ public class ViewSystem : ReactiveSystem
 
 public class MoveSystem : ReactiveSystem
 {
-    protected override Collector GetTrigger(Context context) => Collector.CreateCollector(context, typeof(Pos), typeof(Rotate));
+    protected override Collector GetTrigger(Context context) => Collector.CreateCollector(context, typeof(Pos), typeof(InputSystem));
 
     protected override bool Filter(ECSEntity entity)
     {
@@ -87,6 +87,11 @@ public class MoveSystem : ReactiveSystem
         foreach (var entity in entities)
         {
             var pos = entity.GetPos();
+            entity.SetPos(pos.vec+entity.GetInputVec().vec);
+            if (pos.vec.x > 5)
+            {
+                entity.AddDestroy();
+            }
         }
     }
 
@@ -109,7 +114,7 @@ public class DestroySystem : ReactiveSystem
 
     protected override bool Filter(ECSEntity entity)
     {
-        return entity.GetDestroy().Value;
+        return true;
     }
 
     protected override void Update(List<ECSEntity> entities)
@@ -128,7 +133,7 @@ public class DestroySystem : ReactiveSystem
 
 public class InputSystem : ReactiveSystem
 {
-    protected override Collector GetTrigger(Context context) => Collector.CreateCollector(context, typeof(Pos), typeof(Rotate));
+    protected override Collector GetTrigger(Context context) => Collector.CreateCollector(context, typeof(InputVec));
 
     protected override bool Filter(ECSEntity entity)
     {
@@ -141,12 +146,8 @@ public class InputSystem : ReactiveSystem
         {
             foreach (var entitie in entities)
             {
-                Pos vect = entitie.GetPos();
-                entitie.SetPos(vect.vec + Vector2.one * Time.deltaTime * 2);
-                if (vect.vec.x>5)
-                {
-                    entitie.GetDestroy().Value = true;
-                }
+                var vect = entitie.GetInputVec();
+                entitie.SetInputVec(Vector2.one * Time.deltaTime * 2);
             }
         }
     }
@@ -165,12 +166,18 @@ public class Monster : ECSEntity
         this.AddPos();
         this.AddRotate();
         this.AddAsset("Cube");
-        this.AddDestroy();
+        this.AddInputVec();
     }
 }
 
 // [evet]
 public class Pos : Entity
+{
+    public Vector2 vec;
+}
+
+
+public class InputVec : Entity
 {
     public Vector2 vec;
 }
@@ -236,19 +243,6 @@ public class GameObjectView : IView
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 /// <summary>
 /// 自动生成
 /// </summary>
@@ -300,7 +294,6 @@ public static class ManInnt
         {
             Event.PosEntityComponentNumericalChange(pos, ecsEntity);
         }
-
         return ecsEntity;
     }
 
@@ -332,7 +325,26 @@ public static class ManInnt
         Rotate p = ecsEntity.GetComponent<Rotate>();
         return p;
     }
-    
+
+
+    public static void AddInputVec(this ECSEntity ecsEntity)
+    {
+        InputVec p = ecsEntity.AddComponent<InputVec>();
+    }
+
+
+    public static InputVec GetInputVec(this ECSEntity ecsEntity)
+    {
+        InputVec p = ecsEntity.GetComponent<InputVec>();
+        return p;
+    }
+
+    public static InputVec SetInputVec(this ECSEntity ecsEntity, Vector2 vect)
+    {
+        InputVec p = ecsEntity.GetComponent<InputVec>();
+        p.vec = vect;
+        return p;
+    }
 }
 
 #endregion
