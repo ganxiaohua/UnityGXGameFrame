@@ -10,8 +10,6 @@ using Timer = System.Threading.Timer;
 #region 演示Ecs形式
 
 //TODO:代码自动生成
-//TODO:中途加入或者删除的实体之后的操作
-// TODO:View和Logic的链接问题(完成)
 public class Bttleground : Context
 {
     public override void InitializeSystem()
@@ -23,6 +21,8 @@ public class Bttleground : Context
         this.AddSystem<DestroySystem>();
     }
 }
+
+
 
 public class CreateMonsterSystem : IECSInitSystem
 {
@@ -38,6 +38,7 @@ public class CreateMonsterSystem : IECSInitSystem
 
 public class ViewSystem : ReactiveSystem
 {
+    
     public override void Initialize(Context entity)
     {
         base.Initialize(entity);
@@ -70,12 +71,13 @@ public class ViewSystem : ReactiveSystem
 
     public override void Clear()
     {
+        
     }
 }
 
 public class MoveSystem : ReactiveSystem
 {
-    protected override Collector GetTrigger(Context context) => Collector.CreateCollector(context, typeof(Pos), typeof(InputSystem));
+    protected override Collector GetTrigger(Context context) => Collector.CreateCollector(context, typeof(Pos), typeof(InputVec));
 
     protected override bool Filter(ECSEntity entity)
     {
@@ -195,7 +197,7 @@ public class Asset : Entity
 }
 
 //---------------------------------------------------------------------
-public class GameObjectView : IView
+public class GameObjectView : IEceView
 {
     private ECSEntity Entity;
     private GameObject Obj;

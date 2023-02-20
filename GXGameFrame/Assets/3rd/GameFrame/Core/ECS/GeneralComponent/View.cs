@@ -2,12 +2,12 @@
 {
     public class View : Entity
     {
-        public IView Value;
+        public IEceView Value;
     }
 
     public static class ViewOperation
     {
-        public static View AddView(this ECSEntity ecsEntity, IView view)
+        public static View AddView(this ECSEntity ecsEntity, IEceView view)
         {
             View p = ecsEntity.AddComponent<View>();
             p.Value = view;
@@ -20,7 +20,7 @@
             return p;
         }
 
-        public static View SetView(this ECSEntity ecsEntit, IView view)
+        public static View SetView(this ECSEntity ecsEntit, IEceView view)
         {
             View p = ecsEntit.GetView();
             p.Value = view;
