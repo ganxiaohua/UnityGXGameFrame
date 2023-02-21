@@ -8,12 +8,12 @@ namespace GameFrame
         private Dictionary<Matcher, Group> m_Groups;
         private List<KeyValuePair<Matcher,Group>> m_RemoveGroup;
 
-        protected override void ThisInit()
+        public override void Initialize()
         {
             m_Groups = new();
             m_RemoveGroup = new();
         }
-
+        
         public T AddChild<T>() where T : ECSEntity
         {
             T ecsEntity = base.AddChild<T>();

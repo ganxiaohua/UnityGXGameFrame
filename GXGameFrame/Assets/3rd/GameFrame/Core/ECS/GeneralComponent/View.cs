@@ -1,8 +1,12 @@
 ﻿namespace GameFrame
 {
-    public class View : Entity
+    public class View : IECSComponent
     {
         public IEceView Value;
+        public void Clear()
+        {
+            
+        }
     }
 
     public static class ViewOperation

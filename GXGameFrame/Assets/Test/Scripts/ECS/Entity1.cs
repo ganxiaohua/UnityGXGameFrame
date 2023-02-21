@@ -10,7 +10,7 @@ using Entity = GameFrame.Entity;
 
 public class Entity1 : Entity, IInit, IDestroy, IUpdate
 {
-    public override void InitializeSystem()
+    public override void Initialize()
     {
         this.AddSystem<Entity1System.Entity1InitSystem>();
         this.AddSystem<Entity1System.Entity1DestroySystem>();
@@ -23,14 +23,15 @@ public class Entity1 : Entity, IInit, IDestroy, IUpdate
 
     public string b;
 
-    public Vector2 c
+    private Vector2 c;
+    public Vector2 C
     {
-        get => c;
         set
         {
             c = value;
             view.Position(c);
         }
+        get => c;
     }
 }
 
@@ -50,7 +51,10 @@ public static class Entity1System
     {
         protected override void Update(Entity1 self)
         {
-            Debug.Log("Entity1 Update");
+            if (Input.GetKeyDown(KeyCode.W))
+            {
+                self.C +=  Vector2.one * Time.deltaTime;
+            }
         }
     }
 

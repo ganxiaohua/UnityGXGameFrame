@@ -18,11 +18,6 @@ namespace GameFrame
             EnitityHouse.Instance.AddSceneEntity<T>(this);
         }
 
-        public override void InitializeSystem()
-        {
-            
-        }
-
         public override void Clear()
         {
             EnitityHouse.Instance.RemoveSceneEntity(this);

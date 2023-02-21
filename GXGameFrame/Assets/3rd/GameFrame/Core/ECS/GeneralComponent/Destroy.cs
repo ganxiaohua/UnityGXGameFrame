@@ -1,8 +1,11 @@
 ﻿namespace GameFrame
 {
-    public class Destroy : Entity
+    public class Destroy : IECSComponent
     {
-    
+        public void Clear()
+        {
+        
+        }
     }
 
     public static class DestroyOperation
@@ -10,7 +13,6 @@
         public static Destroy AddDestroy(this ECSEntity ecsEntity)
         {
             Destroy p = ecsEntity.AddComponent<Destroy>();
-
             return p;
         }
 

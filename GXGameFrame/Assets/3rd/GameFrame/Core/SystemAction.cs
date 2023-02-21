@@ -4,12 +4,12 @@ using UnityEngine;
 
 namespace GameFrame
 {
-    using DDictionaryETS = DDictionary<Entity, Type, SystemObject>;
+    using DDictionaryETS = DDictionary<IEntity, Type, SystemObject>;
     using DDictionaryET = Dictionary<Type, SystemObject>;
 
     public static class SystemAction
     {
-        public static void SystemInit(this ISystem system, Entity entity)
+        public static void SystemInit(this ISystem system, IEntity entity)
         {
             if (system is IIInitSystem initsys)
             {
@@ -52,7 +52,7 @@ namespace GameFrame
             }
         }
 
-        public static void SystemDestroy(this DDictionaryET system, Entity entity)
+        public static void SystemDestroy(this DDictionaryET system, IEntity entity)
         {
             foreach (var vt in system)
             {

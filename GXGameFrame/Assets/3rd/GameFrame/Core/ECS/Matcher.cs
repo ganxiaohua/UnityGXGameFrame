@@ -25,15 +25,18 @@ namespace GameFrame
         //除了这个之外
         private int[] m_NoneOfIndices;
 
-
+        //除了这个之外
+        private string[] m_IndicesName;
         public static Matcher SetAllOfIndices(params Type[] snitiyHasCodes)
         {
             int count = snitiyHasCodes.Length;
             Matcher matcher = CreateMatcher();
             matcher.m_AllOfIndices = new int[count];
+            matcher.m_IndicesName = new string[count];
             for (int i = 0; i < count; i++)
             {
                 matcher.m_AllOfIndices[i] = snitiyHasCodes[i].GetHashCode();
+                matcher.m_IndicesName[i] = snitiyHasCodes[i].Name;
             }
 
             return matcher;
@@ -44,9 +47,11 @@ namespace GameFrame
             int count = snitiyHasCodes.Length;
             Matcher matcher = CreateMatcher();
             matcher.m_AnyOfIndices = new int[count];
+            matcher.m_IndicesName = new string[count];
             for (int i = 0; i < count; i++)
             {
                 matcher.m_AnyOfIndices[i] = snitiyHasCodes[i].GetHashCode();
+                matcher.m_IndicesName[i] = snitiyHasCodes[i].Name;
             }
 
             return matcher;
@@ -57,9 +62,11 @@ namespace GameFrame
             int count = snitiyHasCodes.Length;
             Matcher matcher = CreateMatcher();
             matcher.m_NoneOfIndices = new int[count];
+            matcher.m_IndicesName = new string[count];
             for (int i = 0; i < count; i++)
             {
                 matcher.m_NoneOfIndices[i] = snitiyHasCodes[i].GetHashCode();
+                matcher.m_IndicesName[i] = snitiyHasCodes[i].Name;
             }
 
             return matcher;
@@ -76,7 +83,7 @@ namespace GameFrame
             ReferencePool.Release(matcher);
         }
 
-        public bool Match(Entity entity)
+        public bool Match(ECSEntity entity)
         {
             if (this.m_AllOfIndices != null && !entity.HasComponents(this.m_AllOfIndices) ||
                 this.m_AnyOfIndices != null && !entity.HasAnyComponent(this.m_AnyOfIndices))

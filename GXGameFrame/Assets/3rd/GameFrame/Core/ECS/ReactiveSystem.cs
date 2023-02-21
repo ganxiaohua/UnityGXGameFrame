@@ -31,7 +31,7 @@ namespace GameFrame
 
         public void Update()
         {
-            foreach (Entity collectedEntity in this.m_Collector.CollectedEntities)
+            foreach (ECSEntity collectedEntity in this.m_Collector.CollectedEntities)
             {
                 var ecsentity = collectedEntity as ECSEntity;
                 if (this.Filter(ecsentity))

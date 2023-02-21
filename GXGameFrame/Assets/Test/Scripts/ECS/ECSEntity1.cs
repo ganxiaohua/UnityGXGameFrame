@@ -4,16 +4,15 @@ using Cysharp.Threading.Tasks;
 using GameFrame;
 using Unity.VisualScripting;
 using UnityEngine;
-using Object = UnityEngine.Object;
-using Timer = System.Threading.Timer;
 
 #region 演示Ecs形式
 
 //TODO:代码自动生成
 public class Bttleground : Context
 {
-    public override void InitializeSystem()
+    public override void Initialize()
     {
+        base.Initialize();
         this.AddSystem<CreateMonsterSystem>();
         this.AddSystem<MoveSystem>();
         this.AddSystem<ViewSystem>();
@@ -23,12 +22,13 @@ public class Bttleground : Context
 }
 
 
-
 public class CreateMonsterSystem : IECSInitSystem
 {
     public void Initialize(Context entity)
     {
-        entity.AddChild<Monster>().SetPos(Vector2.one).SetRotate(new Vector2(30, 0));
+       var xx =   entity.AddChild<Monster>();
+        
+       xx.SetPos(Vector2.one).SetRotate(new Vector2(30, 0));
     }
 
     public void Clear()
@@ -38,7 +38,6 @@ public class CreateMonsterSystem : IECSInitSystem
 
 public class ViewSystem : ReactiveSystem
 {
-    
     public override void Initialize(Context entity)
     {
         base.Initialize(entity);
@@ -71,7 +70,6 @@ public class ViewSystem : ReactiveSystem
 
     public override void Clear()
     {
-        
     }
 }
 
@@ -89,7 +87,7 @@ public class MoveSystem : ReactiveSystem
         foreach (var entity in entities)
         {
             var pos = entity.GetPos();
-            entity.SetPos(pos.vec+entity.GetInputVec().vec);
+            entity.SetPos(pos.vec + entity.GetInputVec().vec);
             if (pos.vec.x > 5)
             {
                 entity.AddDestroy();
@@ -163,7 +161,7 @@ public class InputSystem : ReactiveSystem
 // -------------------------------------------------
 public class Monster : ECSEntity
 {
-    public override void InitComponent()
+    public override void Initialize()
     {
         this.AddPos();
         this.AddRotate();
@@ -173,27 +171,40 @@ public class Monster : ECSEntity
 }
 
 // [evet]
-public class Pos : Entity
+public class Pos : IECSComponent
 {
     public Vector2 vec;
+    public void Clear()
+    {
+ 
+    }
 }
 
 
-public class InputVec : Entity
+public class InputVec : IECSComponent
 {
     public Vector2 vec;
+    public void Clear()
+    {
+    }
 }
 
 // [evet]
-public class Rotate : Entity
+public class Rotate : IECSComponent
 {
     public Vector2 vec;
+    public void Clear()
+    {
+    }
 }
 
 
-public class Asset : Entity
+public class Asset : IECSComponent
 {
     public string Path;
+    public void Clear()
+    {
+    }
 }
 
 //---------------------------------------------------------------------
@@ -296,6 +307,7 @@ public static class ManInnt
         {
             Event.PosEntityComponentNumericalChange(pos, ecsEntity);
         }
+
         return ecsEntity;
     }
 

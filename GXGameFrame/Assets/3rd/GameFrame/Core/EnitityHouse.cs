@@ -4,7 +4,7 @@ using System.Security.Principal;
 
 namespace GameFrame
 {
-    using DDictionaryETC = DDictionary<Entity, Type, SystemObject>;
+    using DDictionaryETC = DDictionary<IEntity, Type, SystemObject>;
 
     public class EnitityHouse : Singleton<EnitityHouse>
     {
@@ -18,9 +18,9 @@ namespace GameFrame
         public class SystemEnitiy : IReference
         {
             public SystemObject SystemObject { get; set; }
-            public Entity Entity { get; set; }
+            public IEntity Entity { get; set; }
 
-            public void Create(SystemObject systemobject, Entity entity)
+            public void Create(SystemObject systemobject, IEntity entity)
             {
                 SystemObject = systemobject;
                 Entity = entity;
@@ -33,7 +33,7 @@ namespace GameFrame
             }
         }
 
-        private HashSet<Entity> m_EveryEntity = new();
+        private HashSet<IEntity> m_EveryEntity = new();
 
         private DoubleMap<Type, SceneEntity> m_EverySceneEntity = new();
 
@@ -53,7 +53,7 @@ namespace GameFrame
         }
 
 
-        public void AddEntity(Entity entity)
+        public void AddEntity(IEntity entity)
         {
             if (m_EveryEntity.Contains(entity))
             {
@@ -63,7 +63,7 @@ namespace GameFrame
             m_EveryEntity.Add(entity);
         }
 
-        public void RemoveEntity(Entity entity)
+        public void RemoveEntity(IEntity entity)
         {
             if (!m_EveryEntity.Contains(entity))
             {
@@ -76,7 +76,7 @@ namespace GameFrame
             RemoveUpdateSystem(entity);
         }
 
-        private void RemoveUpdateSystem(Entity entity)
+        private void RemoveUpdateSystem(IEntity entity)
         {
             for (int z = 0; z < UpdateSystemEnitiys.Length; z++)
             {
@@ -139,7 +139,7 @@ namespace GameFrame
             RemoveEntity(sceneEntity);
         }
 
-        public void AddSystem<T>(Entity entity) where T : ISystem
+        public void AddSystem<T>(IEntity entity) where T : ISystem
         {
             Type type = typeof(T);
             m_SystemObjects.TryGetValue(type, out SystemObject systemObject);
