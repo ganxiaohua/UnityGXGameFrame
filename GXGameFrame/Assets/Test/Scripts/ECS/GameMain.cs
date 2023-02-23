@@ -41,5 +41,10 @@ public class GameMain : MonoBehaviour
         {
             EnitityHouse.Instance.GetScene<BattlegroundScene>().AddComponent<Bttleground>();
         }
+        
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            EnitityHouse.Instance.GetScene<BattlegroundScene>().RemoveComponent<Bttleground>();
+        }
     }
 }

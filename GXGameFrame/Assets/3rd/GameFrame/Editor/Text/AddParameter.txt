@@ -1,0 +1,7 @@
+
+         public static void Add{0}(this ECSEntity ecsEntity,{1} param)
+         {{
+             var p  =  ecsEntity.AddComponent<{0}>();
+             p.{2} = param;
+         }}
+         

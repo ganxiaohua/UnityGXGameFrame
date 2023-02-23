@@ -5,7 +5,7 @@
         public IEceView Value;
         public void Clear()
         {
-            
+            ReferencePool.Release(Value);
         }
     }
 

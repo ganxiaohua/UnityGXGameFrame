@@ -170,11 +170,9 @@ namespace GameFrame
                 {
                     entity.ClearAllChild();
                 }
-
                 Remove(item.Value);
                 item.Value.ClearAllComponent();
             }
-
             m_Children.Clear();
         }
 

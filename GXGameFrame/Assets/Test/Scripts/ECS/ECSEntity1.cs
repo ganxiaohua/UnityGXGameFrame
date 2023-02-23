@@ -26,9 +26,9 @@ public class CreateMonsterSystem : IECSInitSystem
 {
     public void Initialize(Context entity)
     {
-       var xx =   entity.AddChild<Monster>();
-        
-       xx.SetPos(Vector2.one).SetRotate(new Vector2(30, 0));
+        var xx = entity.AddChild<Monster>();
+
+        xx.SetPos(Vector2.one).SetRotate(new Vector2(30, 0));
     }
 
     public void Clear()
@@ -64,7 +64,7 @@ public class ViewSystem : ReactiveSystem
     {
         ecsentity.AddView();
         GameObjectView gv = ReferencePool.Acquire<GameObjectView>();
-        gv.Link(ecsentity, ecsentity.GetAsset());
+        gv.Link(ecsentity, ecsentity.GetAsset().Path);
         ecsentity.SetView(gv);
     }
 
@@ -142,12 +142,15 @@ public class InputSystem : ReactiveSystem
 
     protected override void Update(List<ECSEntity> entities)
     {
-        if (Input.GetKey(KeyCode.W))
+        foreach (var entitie in entities)
         {
-            foreach (var entitie in entities)
+            if (Input.GetKey(KeyCode.W))
             {
-                var vect = entitie.GetInputVec();
                 entitie.SetInputVec(Vector2.one * Time.deltaTime * 2);
+            }
+            else
+            {
+                entitie.SetInputVec(Vector2.zero); ;
             }
         }
     }
@@ -174,9 +177,9 @@ public class Monster : ECSEntity
 public class Pos : IECSComponent
 {
     public Vector2 vec;
+
     public void Clear()
     {
- 
     }
 }
 
@@ -184,6 +187,7 @@ public class Pos : IECSComponent
 public class InputVec : IECSComponent
 {
     public Vector2 vec;
+
     public void Clear()
     {
     }
@@ -193,6 +197,7 @@ public class InputVec : IECSComponent
 public class Rotate : IECSComponent
 {
     public Vector2 vec;
+
     public void Clear()
     {
     }
@@ -202,6 +207,7 @@ public class Rotate : IECSComponent
 public class Asset : IECSComponent
 {
     public string Path;
+
     public void Clear()
     {
     }
@@ -265,100 +271,100 @@ public static class Event
     public static EntityComponentNumericalChange<Rotate> RotateEntityComponentNumericalChange;
 }
 
-public static class ManInnt
-{
-    public static Asset AddAsset(this ECSEntity ecsEntity, string path)
-    {
-        Asset p = ecsEntity.AddComponent<Asset>();
-        p.Path = path;
-        return p;
-    }
-
-    public static string GetAsset(this ECSEntity ecsEntity)
-    {
-        Asset p = ecsEntity.GetComponent<Asset>();
-        return p.Path;
-    }
-
-
-    public static void AddPos(this ECSEntity ecsEntity, Vector2 vector2)
-    {
-        Pos p = ecsEntity.AddComponent<Pos>();
-        p.vec = vector2;
-    }
-
-    public static void AddPos(this ECSEntity ecsEntity)
-    {
-        Pos p = ecsEntity.AddComponent<Pos>();
-    }
-
-    public static Pos GetPos(this ECSEntity ecsEntity)
-    {
-        Pos p = ecsEntity.GetComponent<Pos>();
-        return p;
-    }
-
-
-    public static ECSEntity SetPos(this ECSEntity ecsEntity, Vector2 vector2)
-    {
-        var pos = ecsEntity.GetPos();
-        pos.vec = vector2;
-        if (Event.PosEntityComponentNumericalChange != null)
-        {
-            Event.PosEntityComponentNumericalChange(pos, ecsEntity);
-        }
-
-        return ecsEntity;
-    }
-
-    public static void AddRotate(this ECSEntity ecsEntity, Vector2 vector2)
-    {
-        Rotate p = ecsEntity.AddComponent<Rotate>();
-        p.vec = vector2;
-    }
-
-    public static void AddRotate(this ECSEntity ecsEntity)
-    {
-        Rotate p = ecsEntity.AddComponent<Rotate>();
-    }
-
-    public static Rotate SetRotate(this ECSEntity ecsEntity, Vector2 vector2)
-    {
-        Rotate p = ecsEntity.GetRotate();
-        p.vec = vector2;
-        if (Event.RotateEntityComponentNumericalChange != null)
-        {
-            Event.RotateEntityComponentNumericalChange(p, ecsEntity);
-        }
-
-        return p;
-    }
-
-    public static Rotate GetRotate(this ECSEntity ecsEntity)
-    {
-        Rotate p = ecsEntity.GetComponent<Rotate>();
-        return p;
-    }
-
-
-    public static void AddInputVec(this ECSEntity ecsEntity)
-    {
-        InputVec p = ecsEntity.AddComponent<InputVec>();
-    }
-
-
-    public static InputVec GetInputVec(this ECSEntity ecsEntity)
-    {
-        InputVec p = ecsEntity.GetComponent<InputVec>();
-        return p;
-    }
-
-    public static InputVec SetInputVec(this ECSEntity ecsEntity, Vector2 vect)
-    {
-        InputVec p = ecsEntity.GetComponent<InputVec>();
-        p.vec = vect;
-        return p;
-    }
-}
+// public static class ManInnt
+// {
+//     public static Asset AddAsset(this ECSEntity ecsEntity, string path)
+//     {
+//         Asset p = ecsEntity.AddComponent<Asset>();
+//         p.Path = path;
+//         return p;
+//     }
+//
+//     public static string GetAsset(this ECSEntity ecsEntity)
+//     {
+//         Asset p = ecsEntity.GetComponent<Asset>();
+//         return p.Path;
+//     }
+//
+//
+//     public static void AddPos(this ECSEntity ecsEntity, Vector2 vector2)
+//     {
+//         Pos p = ecsEntity.AddComponent<Pos>();
+//         p.vec = vector2;
+//     }
+//
+//     public static void AddPos(this ECSEntity ecsEntity)
+//     {
+//         Pos p = ecsEntity.AddComponent<Pos>();
+//     }
+//
+//     public static Pos GetPos(this ECSEntity ecsEntity)
+//     {
+//         Pos p = ecsEntity.GetComponent<Pos>();
+//         return p;
+//     }
+//
+//
+//     public static ECSEntity SetPos(this ECSEntity ecsEntity, Vector2 vector2)
+//     {
+//         var pos = ecsEntity.GetPos();
+//         pos.vec = vector2;
+//         if (Event.PosEntityComponentNumericalChange != null)
+//         {
+//             Event.PosEntityComponentNumericalChange(pos, ecsEntity);
+//         }
+//
+//         return ecsEntity;
+//     }
+//
+//     public static void AddRotate(this ECSEntity ecsEntity, Vector2 vector2)
+//     {
+//         Rotate p = ecsEntity.AddComponent<Rotate>();
+//         p.vec = vector2;
+//     }
+//
+//     public static void AddRotate(this ECSEntity ecsEntity)
+//     {
+//         Rotate p = ecsEntity.AddComponent<Rotate>();
+//     }
+//
+//     public static Rotate SetRotate(this ECSEntity ecsEntity, Vector2 vector2)
+//     {
+//         Rotate p = ecsEntity.GetRotate();
+//         p.vec = vector2;
+//         if (Event.RotateEntityComponentNumericalChange != null)
+//         {
+//             Event.RotateEntityComponentNumericalChange(p, ecsEntity);
+//         }
+//
+//         return p;
+//     }
+//
+//     public static Rotate GetRotate(this ECSEntity ecsEntity)
+//     {
+//         Rotate p = ecsEntity.GetComponent<Rotate>();
+//         return p;
+//     }
+//
+//
+//     public static void AddInputVec(this ECSEntity ecsEntity)
+//     {
+//         InputVec p = ecsEntity.AddComponent<InputVec>();
+//     }
+//
+//
+//     public static InputVec GetInputVec(this ECSEntity ecsEntity)
+//     {
+//         InputVec p = ecsEntity.GetComponent<InputVec>();
+//         return p;
+//     }
+//
+//     public static InputVec SetInputVec(this ECSEntity ecsEntity, Vector2 vect)
+//     {
+//         InputVec p = ecsEntity.GetComponent<InputVec>();
+//         p.vec = vect;
+//         return p;
+//     }
+// }
 
 #endregion
