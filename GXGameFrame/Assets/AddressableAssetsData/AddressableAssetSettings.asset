@@ -64,7 +64,7 @@ MonoBehaviour:
       - m_Id: 7ab829e58b1639a45b9ae5003edc3e15
         m_Value: ServerData/[BuildTarget]
       - m_Id: 780dc118169b44f4980c8ef19f0d1dc3
-        m_Value: http://192.168.100.230/eden/aa/[BuildTarget]
+        m_Value: http://192.168.62.31/[BuildTarget]
     - m_InheritedParent: 
       m_Id: c0313e369c48c164b9b196ec6f7a7bc4
       m_ProfileName: res-qzsj.2144gy.com

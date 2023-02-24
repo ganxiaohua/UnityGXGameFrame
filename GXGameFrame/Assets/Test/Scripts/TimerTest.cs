@@ -2,8 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using GameFrame.Timer;
-using GameFrame;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class TimerTest : MonoBehaviour

@@ -218,6 +218,7 @@ public class GameObjectView : IEceView
     private ECSEntity Entity;
     private GameObject Obj;
     private Transform Trans;
+    private string LoadPath;
 
     public void Link(ECSEntity ecsEntity, string path)
     {
@@ -227,7 +228,12 @@ public class GameObjectView : IEceView
 
     public async UniTask Load(string path)
     {
+        LoadPath = path;
         var go = await AssetManager.Instance.LoadAsyncTask<GameObject>(path);
+        if (go == null)
+        {
+            return;
+        }
         Obj = GameObject.Instantiate(go);
         Trans = Obj.transform;
         Position(Entity.GetPos(), Entity);
@@ -252,6 +258,7 @@ public class GameObjectView : IEceView
 
     public void Clear()
     {
+        AssetManager.Instance.UnLoad(LoadPath);
         //对象池操作可以是
         ViewBindEventClass.PosEntityComponentNumericalChange -= Position;
         ViewBindEventClass.RotateEntityComponentNumericalChange -= Rotate;

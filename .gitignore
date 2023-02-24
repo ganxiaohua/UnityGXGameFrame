@@ -9,6 +9,7 @@
 /GXGameFrame/[Bb]uilds/
 /GXGameFrame/[Ll]ogs/
 /GXGameFrame/[Uu]ser[Ss]ettings/
+/GXGameFrame/ServerData/
 
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
@@ -67,3 +68,4 @@ crashlytics-build.properties
 #/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
 
 
+*.bundle
