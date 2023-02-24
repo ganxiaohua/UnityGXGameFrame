@@ -16,13 +16,16 @@ namespace GameFrame.Editor
         AddParameter,
         Get,
         Set,
+        EventClass,
+        Event,
     }
 
     public class AutoCreate
     {
         private static string sGameFramePath = "Assets/3rd/GameFrame/";
-        private static string OutPutPath = "Assets/Test/Scripts/ECS/Auto";
+        private static string OutPutPath = "Assets/Test/Scripts/ECS/Auto/";
         private static Dictionary<CreateAuto, string> s_TextDictionary;
+        private static StringBuilder s_EventSb = new StringBuilder(1024);
 
         [MenuItem("Tool/生成ECS绑定脚本")]
         public static void AutoCreateScript()
@@ -45,11 +48,15 @@ namespace GameFrame.Editor
             string addparameter = sGameFramePath + "Editor/Text/AddParameter.txt";
             string get = sGameFramePath + "Editor/Text/Get.txt";
             string set = sGameFramePath + "Editor/Text/Set.txt";
+            string eventClass = sGameFramePath + "Editor/Text/EventClass.txt";
+            string Event = sGameFramePath + "Editor/Text/Event.txt";
             string stradd = File.ReadAllText(add);
             string strcls = File.ReadAllText(cls);
             string straddparameter = File.ReadAllText(addparameter);
             string strget = File.ReadAllText(get);
             string strset = File.ReadAllText(set);
+            string strEventClass = File.ReadAllText(eventClass);
+            string strEvent = File.ReadAllText(Event);
             if (s_TextDictionary == null)
             {
                 s_TextDictionary = new Dictionary<CreateAuto, string>();
@@ -61,18 +68,27 @@ namespace GameFrame.Editor
             s_TextDictionary.Add(CreateAuto.AddParameter, straddparameter);
             s_TextDictionary.Add(CreateAuto.Get, strget);
             s_TextDictionary.Add(CreateAuto.Set, strset);
+            s_TextDictionary.Add(CreateAuto.EventClass, strEventClass);
+            s_TextDictionary.Add(CreateAuto.Event, strEvent);
         }
 
         public static void FindAllECSCom(Assembly assembly)
         {
+            s_EventSb.Clear();
             Type[] types = assembly.GetTypes();
             foreach (var tp in types)
             {
                 if (typeof(IECSComponent).IsAssignableFrom(tp) && tp.IsClass)
                 {
                     CreateCSHAP(tp);
+                    var vb = tp.GetCustomAttribute<ViewBindAttribute>();
+                    if (vb != null)
+                    {
+                        AddEvent(tp);
+                    }
                 }
             }
+            CreateEvent();
         }
 
         //创建c#脚本
@@ -94,6 +110,7 @@ namespace GameFrame.Editor
                 {
                     fieldTypeName = "string";
                 }
+
                 addParameter = string.Format(s_TextDictionary[CreateAuto.AddParameter], typeName, fieldTypeName, fieldName);
                 abSet = string.Format(s_TextDictionary[CreateAuto.Set], typeName, fieldTypeName, fieldName);
             }
@@ -102,9 +119,34 @@ namespace GameFrame.Editor
             sb.Append(addParameter);
             sb.Append(abGet);
             sb.Append(abSet);
-            string lastText =  string.Format(abcls, typeName,sb.ToString());
-            File.WriteAllText($"{OutPutPath}{typeName}Auto.cs",lastText);
+            string lastText = string.Format(abcls, typeName, sb.ToString());
+            CreateDirectory(OutPutPath);
+            File.WriteAllText($"{OutPutPath}{typeName}Auto.cs", lastText);
             AssetDatabase.Refresh();
+        }
+
+        public static void AddEvent(Type type)
+        {
+            string typeName = type.Name;
+            string str = string.Format(s_TextDictionary[CreateAuto.Event], typeName);
+            s_EventSb.Append(str);
+        }
+
+        public static void CreateEvent()
+        {
+            if (s_EventSb.Length == 0)
+                return;
+            string last = string.Format(s_TextDictionary[CreateAuto.EventClass], s_EventSb);
+            File.WriteAllText($"{OutPutPath}ViewBindEventAuto.cs", last);
+        }
+
+        public static void CreateDirectory(string path)
+        {
+            path = Path.GetDirectoryName(path);
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
         }
     }
 }

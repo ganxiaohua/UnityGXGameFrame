@@ -173,7 +173,7 @@ public class Monster : ECSEntity
     }
 }
 
-// [evet]
+[ViewBind]
 public class Pos : IECSComponent
 {
     public Vector2 vec;
@@ -183,8 +183,8 @@ public class Pos : IECSComponent
     }
 }
 
-
-public class InputVec : IECSComponent
+[ViewBind]
+public class Rotate : IECSComponent
 {
     public Vector2 vec;
 
@@ -193,8 +193,7 @@ public class InputVec : IECSComponent
     }
 }
 
-// [evet]
-public class Rotate : IECSComponent
+public class InputVec : IECSComponent
 {
     public Vector2 vec;
 
@@ -233,8 +232,8 @@ public class GameObjectView : IEceView
         Trans = Obj.transform;
         Position(Entity.GetPos(), Entity);
         Rotate(Entity.GetRotate(), Entity);
-        Event.PosEntityComponentNumericalChange += Position;
-        Event.RotateEntityComponentNumericalChange += Rotate;
+        ViewBindEventClass.PosEntityComponentNumericalChange += Position;
+        ViewBindEventClass.RotateEntityComponentNumericalChange += Rotate;
     }
 
     private void Position(Pos pos, ECSEntity ecsEntity)
@@ -254,8 +253,8 @@ public class GameObjectView : IEceView
     public void Clear()
     {
         //对象池操作可以是
-        Event.PosEntityComponentNumericalChange -= Position;
-        Event.RotateEntityComponentNumericalChange -= Rotate;
+        ViewBindEventClass.PosEntityComponentNumericalChange -= Position;
+        ViewBindEventClass.RotateEntityComponentNumericalChange -= Rotate;
         GameObject.Destroy(Obj);
         Entity = null;
     }
@@ -265,11 +264,11 @@ public class GameObjectView : IEceView
 /// <summary>
 /// 自动生成
 /// </summary>
-public static class Event
-{
-    public static EntityComponentNumericalChange<Pos> PosEntityComponentNumericalChange;
-    public static EntityComponentNumericalChange<Rotate> RotateEntityComponentNumericalChange;
-}
+// public static class Event
+// {
+//     public static EntityComponentNumericalChange<Pos> PosEntityComponentNumericalChange;
+//     public static EntityComponentNumericalChange<Rotate> RotateEntityComponentNumericalChange;
+// }
 
 // public static class ManInnt
 // {

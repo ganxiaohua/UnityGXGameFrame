@@ -41,8 +41,7 @@ public class ChatGpt : MonoBehaviour
         request.downloadHandler = (DownloadHandler) new DownloadHandlerBuffer();
         request.disposeDownloadHandlerOnDispose = true;
         request.disposeUploadHandlerOnDispose = true;
-
-        // yield return request.SendWebRequest();
+        
         await  request.SendWebRequest();
 
         if (request.result == UnityWebRequest.Result.Success)

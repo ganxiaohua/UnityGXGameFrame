@@ -1,0 +1,2 @@
+ public static EntityComponentNumericalChange<{0}> {0}EntityComponentNumericalChange;
+ 
