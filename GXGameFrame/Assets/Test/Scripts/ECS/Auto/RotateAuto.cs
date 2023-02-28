@@ -23,6 +23,7 @@
          {
               var p = ecsEntity.GetComponent<Rotate>();
               p.vec = param;
+              ViewBindEventClass.RotateEntityComponentNumericalChange?.Invoke(p,ecsEntity);
               return ecsEntity;
          }
               

@@ -3,6 +3,7 @@
          {{
               var p = ecsEntity.GetComponent<{0}>();
               p.{2} = param;
+              {3}
               return ecsEntity;
          }}
          

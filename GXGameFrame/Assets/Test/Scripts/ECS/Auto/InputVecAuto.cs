@@ -23,6 +23,7 @@
          {
               var p = ecsEntity.GetComponent<InputVec>();
               p.vec = param;
+              
               return ecsEntity;
          }
               

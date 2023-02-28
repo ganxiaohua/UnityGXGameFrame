@@ -23,6 +23,7 @@
          {
               var p = ecsEntity.GetComponent<Asset>();
               p.Path = param;
+              
               return ecsEntity;
          }
               

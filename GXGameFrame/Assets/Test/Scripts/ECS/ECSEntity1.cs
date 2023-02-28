@@ -2,22 +2,28 @@
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using GameFrame;
+using Sirenix.Utilities.Editor;
 using Unity.VisualScripting;
 using UnityEngine;
 
 #region 演示Ecs形式
 
-//TODO:代码自动生成
 public class Bttleground : Context
 {
     public override void Initialize()
     {
+        ObjectPoolManager.Instance.GetObjectPool<GameObjectObjectBase>("Gameobject");
         base.Initialize();
         this.AddSystem<CreateMonsterSystem>();
         this.AddSystem<MoveSystem>();
         this.AddSystem<ViewSystem>();
         this.AddSystem<InputSystem>();
         this.AddSystem<DestroySystem>();
+    }
+
+    public override void Clear()
+    {
+        ObjectPoolManager.Instance.DeleteObjectPool<GameObjectObjectBase>("Gameobject");
     }
 }
 
@@ -150,7 +156,8 @@ public class InputSystem : ReactiveSystem
             }
             else
             {
-                entitie.SetInputVec(Vector2.zero); ;
+                entitie.SetInputVec(Vector2.zero);
+                ;
             }
         }
     }
@@ -213,20 +220,66 @@ public class Asset : IECSComponent
 }
 
 //---------------------------------------------------------------------
-public class GameObjectView : IEceView
+
+public class GameObjectObjectBase : ObjectBase
 {
-    private ECSEntity Entity;
     private GameObject Obj;
     private Transform Trans;
+    private Vector3 CurPos;
+    private Quaternion CurRot;
     private string LoadPath;
 
-    public void Link(ECSEntity ecsEntity, string path)
+    public Vector3 Pos
     {
-        Entity = ecsEntity;
-        Load(path);
+        get
+        {
+            if (Trans != null)
+            {
+                return Trans.position;
+            }
+
+            return Vector3.zero;
+        }
+        set
+        {
+            CurPos = value;
+            if (Trans != null)
+            {
+                Trans.position = value;
+            }
+        }
     }
 
-    public async UniTask Load(string path)
+    public Quaternion Rot
+    {
+        get
+        {
+            if (Trans != null)
+            {
+                return Trans.rotation;
+            }
+
+            return Quaternion.identity;
+        }
+        set
+        {
+            CurRot = value;
+            if (Trans != null)
+            {
+                Trans.rotation = value;
+            }
+        }
+    }
+
+
+    internal override void Initialize(object initObject)
+    {
+        base.Initialize(initObject);
+        Load(m_InitData as string);
+        Debug.Log("初始化");
+    }
+
+    private async UniTask Load(string path)
     {
         LoadPath = path;
         var go = await AssetManager.Instance.LoadAsyncTask<GameObject>(path);
@@ -236,6 +289,64 @@ public class GameObjectView : IEceView
         }
         Obj = GameObject.Instantiate(go);
         Trans = Obj.transform;
+        Pos = CurPos;
+        Rot = CurRot;
+    }
+
+    /// <summary>
+    /// 获取对象时的事件。
+    /// </summary>
+    internal override void OnSpawn()
+    {
+        Debug.Log("创建");
+    }
+
+    /// <summary>
+    /// 回收对象时的事件。
+    /// </summary>
+    internal override void OnUnspawn()
+    {
+        CurPos = Vector3.zero;
+        CurRot = Quaternion.identity;
+        Debug.Log("回收");
+    }
+
+    /// <summary>
+    /// 清理对象基类。
+    /// </summary>
+    public override void Clear()
+    {
+        CurPos = Vector3.zero;
+        CurRot = Quaternion.identity;
+        AssetManager.Instance.UnLoad(LoadPath);
+        GameObject.Destroy(Obj);
+        Debug.Log("清理");
+    }
+}
+
+public class GameObjectView : IEceView
+{
+    private ECSEntity Entity;
+    private string LoadPath;
+    private ObjectPool<GameObjectObjectBase> objectPool;
+    private GameObjectObjectBase GameObject;
+
+    public void Link(ECSEntity ecsEntity, string path)
+    {
+        Entity = ecsEntity;
+        Init(path);
+    }
+
+
+    public void Init(string path)
+    {
+        if (objectPool == null)
+        {
+            objectPool = ObjectPoolManager.Instance.CreateObjectPool<GameObjectObjectBase>("Gameobject", 10, path);
+        }
+
+        GameObject = objectPool.Spawn();
+        LoadPath = path;
         Position(Entity.GetPos(), Entity);
         Rotate(Entity.GetRotate(), Entity);
         ViewBindEventClass.PosEntityComponentNumericalChange += Position;
@@ -246,131 +357,27 @@ public class GameObjectView : IEceView
     {
         if (Entity != ecsEntity)
             return;
-        Trans.position = pos.vec;
+        GameObject.Pos = pos.vec;
     }
 
     private void Rotate(Rotate pos, ECSEntity ecsEntity)
     {
         if (Entity != ecsEntity)
             return;
-        Trans.rotation = Quaternion.Euler(pos.vec);
+        GameObject.Rot = Quaternion.Euler(pos.vec);
     }
 
     public void Clear()
     {
-        AssetManager.Instance.UnLoad(LoadPath);
         //对象池操作可以是
         ViewBindEventClass.PosEntityComponentNumericalChange -= Position;
         ViewBindEventClass.RotateEntityComponentNumericalChange -= Rotate;
-        GameObject.Destroy(Obj);
+        objectPool.UnSpawn(GameObject);
+        objectPool = null;
         Entity = null;
     }
 }
 
 
-/// <summary>
-/// 自动生成
-/// </summary>
-// public static class Event
-// {
-//     public static EntityComponentNumericalChange<Pos> PosEntityComponentNumericalChange;
-//     public static EntityComponentNumericalChange<Rotate> RotateEntityComponentNumericalChange;
-// }
-
-// public static class ManInnt
-// {
-//     public static Asset AddAsset(this ECSEntity ecsEntity, string path)
-//     {
-//         Asset p = ecsEntity.AddComponent<Asset>();
-//         p.Path = path;
-//         return p;
-//     }
-//
-//     public static string GetAsset(this ECSEntity ecsEntity)
-//     {
-//         Asset p = ecsEntity.GetComponent<Asset>();
-//         return p.Path;
-//     }
-//
-//
-//     public static void AddPos(this ECSEntity ecsEntity, Vector2 vector2)
-//     {
-//         Pos p = ecsEntity.AddComponent<Pos>();
-//         p.vec = vector2;
-//     }
-//
-//     public static void AddPos(this ECSEntity ecsEntity)
-//     {
-//         Pos p = ecsEntity.AddComponent<Pos>();
-//     }
-//
-//     public static Pos GetPos(this ECSEntity ecsEntity)
-//     {
-//         Pos p = ecsEntity.GetComponent<Pos>();
-//         return p;
-//     }
-//
-//
-//     public static ECSEntity SetPos(this ECSEntity ecsEntity, Vector2 vector2)
-//     {
-//         var pos = ecsEntity.GetPos();
-//         pos.vec = vector2;
-//         if (Event.PosEntityComponentNumericalChange != null)
-//         {
-//             Event.PosEntityComponentNumericalChange(pos, ecsEntity);
-//         }
-//
-//         return ecsEntity;
-//     }
-//
-//     public static void AddRotate(this ECSEntity ecsEntity, Vector2 vector2)
-//     {
-//         Rotate p = ecsEntity.AddComponent<Rotate>();
-//         p.vec = vector2;
-//     }
-//
-//     public static void AddRotate(this ECSEntity ecsEntity)
-//     {
-//         Rotate p = ecsEntity.AddComponent<Rotate>();
-//     }
-//
-//     public static Rotate SetRotate(this ECSEntity ecsEntity, Vector2 vector2)
-//     {
-//         Rotate p = ecsEntity.GetRotate();
-//         p.vec = vector2;
-//         if (Event.RotateEntityComponentNumericalChange != null)
-//         {
-//             Event.RotateEntityComponentNumericalChange(p, ecsEntity);
-//         }
-//
-//         return p;
-//     }
-//
-//     public static Rotate GetRotate(this ECSEntity ecsEntity)
-//     {
-//         Rotate p = ecsEntity.GetComponent<Rotate>();
-//         return p;
-//     }
-//
-//
-//     public static void AddInputVec(this ECSEntity ecsEntity)
-//     {
-//         InputVec p = ecsEntity.AddComponent<InputVec>();
-//     }
-//
-//
-//     public static InputVec GetInputVec(this ECSEntity ecsEntity)
-//     {
-//         InputVec p = ecsEntity.GetComponent<InputVec>();
-//         return p;
-//     }
-//
-//     public static InputVec SetInputVec(this ECSEntity ecsEntity, Vector2 vect)
-//     {
-//         InputVec p = ecsEntity.GetComponent<InputVec>();
-//         p.vec = vect;
-//         return p;
-//     }
-// }
 
 #endregion

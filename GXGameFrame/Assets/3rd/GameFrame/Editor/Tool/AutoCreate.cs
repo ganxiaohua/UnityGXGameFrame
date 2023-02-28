@@ -2,6 +2,7 @@
 using System.Text;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Sirenix.Utilities.Editor;
 using UnityEditor;
@@ -25,6 +26,7 @@ namespace GameFrame.Editor
         private static string sGameFramePath = "Assets/3rd/GameFrame/";
         private static string OutPutPath = "Assets/Test/Scripts/ECS/Auto/";
         private static Dictionary<CreateAuto, string> s_TextDictionary;
+        private static Dictionary<Type, string> s_EventDictionary;
         private static StringBuilder s_EventSb = new StringBuilder(1024);
 
         [MenuItem("Tool/生成ECS绑定脚本")]
@@ -57,11 +59,15 @@ namespace GameFrame.Editor
             string strset = File.ReadAllText(set);
             string strEventClass = File.ReadAllText(eventClass);
             string strEvent = File.ReadAllText(Event);
+            if (s_EventDictionary == null)
+            {
+                s_EventDictionary = new Dictionary<Type, string>();
+            }
+            s_EventDictionary.Clear();
             if (s_TextDictionary == null)
             {
                 s_TextDictionary = new Dictionary<CreateAuto, string>();
             }
-
             s_TextDictionary.Clear();
             s_TextDictionary.Add(CreateAuto.Class, strcls);
             s_TextDictionary.Add(CreateAuto.Add, stradd);
@@ -80,14 +86,15 @@ namespace GameFrame.Editor
             {
                 if (typeof(IECSComponent).IsAssignableFrom(tp) && tp.IsClass)
                 {
-                    CreateCSHAP(tp);
                     var vb = tp.GetCustomAttribute<ViewBindAttribute>();
                     if (vb != null)
                     {
                         AddEvent(tp);
                     }
+                    CreateCSHAP(tp);
                 }
             }
+
             CreateEvent();
         }
 
@@ -112,7 +119,12 @@ namespace GameFrame.Editor
                 }
 
                 addParameter = string.Format(s_TextDictionary[CreateAuto.AddParameter], typeName, fieldTypeName, fieldName);
-                abSet = string.Format(s_TextDictionary[CreateAuto.Set], typeName, fieldTypeName, fieldName);
+                string evetString = "";
+                if (s_EventDictionary.TryGetValue(type, out  evetString))
+                {
+                    
+                }
+                abSet = string.Format(s_TextDictionary[CreateAuto.Set], typeName, fieldTypeName, fieldName,evetString);
             }
 
             sb.Append(abAdd);
@@ -130,6 +142,7 @@ namespace GameFrame.Editor
             string typeName = type.Name;
             string str = string.Format(s_TextDictionary[CreateAuto.Event], typeName);
             s_EventSb.Append(str);
+            s_EventDictionary.Add(type,$"ViewBindEventClass.{typeName}EntityComponentNumericalChange?.Invoke(p,ecsEntity);");
         }
 
         public static void CreateEvent()

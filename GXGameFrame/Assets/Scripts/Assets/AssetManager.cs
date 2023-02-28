@@ -304,6 +304,10 @@ public class AssetManager : Singleton<AssetManager>
                 CacheAssetDic.Remove(path);
             }
         }
+        else
+        {
+            throw new Exception($"no have {path}");
+        }
     }
 
     protected void OnDestroy()

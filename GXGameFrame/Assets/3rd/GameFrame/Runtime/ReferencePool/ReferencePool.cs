@@ -107,6 +107,7 @@ namespace GameFrame
             InternalCheckReferenceType(referenceType);
             return GetReferenceCollection(referenceType).Acquire();
         }
+        
 
         /// <summary>
         /// 将引用归还引用池。
@@ -224,8 +225,8 @@ namespace GameFrame
                     s_ReferenceCollections.Add(referenceType, referenceCollection);
                 }
             }
-
             return referenceCollection;
         }
+        //
     }
 }

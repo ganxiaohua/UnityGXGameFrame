@@ -23,6 +23,7 @@
          {
               var p = ecsEntity.GetComponent<View>();
               p.Value = param;
+              
               return ecsEntity;
          }
               

@@ -23,6 +23,7 @@
          {
               var p = ecsEntity.GetComponent<Pos>();
               p.vec = param;
+              ViewBindEventClass.PosEntityComponentNumericalChange?.Invoke(p,ecsEntity);
               return ecsEntity;
          }
               

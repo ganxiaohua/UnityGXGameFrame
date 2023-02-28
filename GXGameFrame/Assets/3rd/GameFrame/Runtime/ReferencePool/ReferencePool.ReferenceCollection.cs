@@ -110,6 +110,7 @@ namespace GameFrame
                 m_AddReferenceCount++;
                 return (IReference) Activator.CreateInstance(m_ReferenceType);
             }
+            
 
             public void Release(IReference reference)
             {
