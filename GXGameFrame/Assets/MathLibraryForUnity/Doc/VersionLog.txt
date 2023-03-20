@@ -1,0 +1,80 @@
+Version 1.0.0
+- Initial release.
+
+Version 1.1.0
+- Added ConvexHull class which allows to create hulls for 2D and 3D point sets (with test prefabs). See documentation for the description.
+- Added implicit conversions between some library type and Unity types (Ray and Ray3, Plane and Plane3, Bounds and AAB3)
+- Added Rectangle3 constructors from 4 points (with test prefab)
+- Added Mathfex.RandomBool()
+- Fixed Polygon3 intersection methods names
+- Fixed various typos in the documentation and code comments
+- Changed MathfEx, Vector2Ex, Vector3Ex, Matrix4x4Ex to Mathfex, Vector2ex, Vector3ex, Matrix4x4ex accordingly (more convenient to type). Use "Search and Replace" to fix the code.
+- Updated documentation
+
+Version 1.2.0
+- Added pseudo random number generator class (Xorshift128 algorithm) with large amount of useful methods (test prefabs included). Users can create any number of streams of random numbers. The class is released in source code.
+- Added weighted sampler (samples index using an array of weighrs), triangle set sample (can sample meshes), poisson disk sampler (generates point set in 2D rectangular domain where distance between samples is not less than specified threshold). Also added 3D point set distance filtering which allows to filter existing 3D point sets so that distance between samples is not less than specified threshold. See documentation for more information and test prefabs. The classes are released in source code.
+- Added ShuffleBag class for generating endless random sequences of weighted values. See the documentation for more details. The class is released in source code.
+- Added Util static class. At the moment it contains only extension Shuffle() methods for arrays and IList collections. The method permutes item order in a collection. The class is released in source code.
+- Added Vector3ex.Barycentric(). It calculates barycentric coordinates of a point given triangle vertices.
+- Added PositiveInfinity and NegativeInfinity vectors to Vector2ex and Vector3ex.
+- Added SetEndpoints(), SetCenterDirectionExtent() methods to Segment2 and Segment3.
+- Added overloads which accept ref parameters to all Include and Contains methods of the primitive objects. It is advisable to use overloads with ref parameters.
+- Added overloads which accept arrays to AAB2/AAB3 CreateFromPoints() methods.
+- Added overloads which fill input arrays with vertices to Box2/Box3/Rectangle3 CalcVertices() methods.
+- Added CalcVertices() methods to AAB2/AAB3 which are similar to corresponding Box2/Box3 methods.
+- Documentation now includes description of the default constructor for each of the primitive objects. It is still preferable to use constructors with parameters.
+- Removed previously added Mathfex.RandomBool(). See new Rand class for the replacement.
+- Fixed various typos in the documentation and code comments
+- Fixed documentation for aab/box/circle/sphere static constructors (in some places functions were incorrectly describing parameter as array, where it should be IList).
+- Moved all test scripts to the separate namespace.
+- Polygon2 and Polygon3 default constructors made private so users won't accidentaly use them.
+- Slightly changed behavior of aab/box/circle/sphere CreateFromPoints methods when input set is empty. Now the methods won't throw an exception, but return empty instance.
+- Test scripts now use AAB2/AAB3/Box2/Box3/Rectangle3 CalcVertices() methods to draw primitives.
+
+Version 1.2.1
+- Updated documentation
+
+Version 1.3.0
+- Added new type of splines - cubic splines (natural and closed). These splines have continious second derivative. Natural cubic splines have zero second derivative at the ends, closed cubic splines have similar first and second derivative of the first and last spline points.
+- Catmull-Rom and cubic splines now derive from the base spline class.
+- Added methods which calculate Frenet frame, curvature and torsion to the base spline class.
+- Added test prefab Test_CubicSpline3 which shows curvature calculation of cubic spline.
+
+Version 1.3.1
+- Added Vector2/3ex.SetLength() and GrowLength() non-extension methods. Also added Vector3ex.AngleDeg(), AngleRad(), SignedAngleDeg(), SignedAngleRad() extension methods for getting angle between vectors.
+- Added Vector2/3ex.Length() and LengthSqr() extension methods for those who don't like magnitude and sqrMagnitude names.
+- Created Quaternionex class. Added extension method DeltaTo() which calculates difference between quaternions (delta rotation which when applied to the first quaternion will lead to the second quaternion). Also added ToStringEx() similar to Vector*ex methods (do not round the values).
+- Added Matrix4x4ex.CreateRotation() method. It allows to create rotation matrix around given point (no translation or scaling, for that use CreateSRT or CreateRT).
+- Added implicit conversion between AAB2 and UnityEngine.Rect. See AAB2 docs.
+- Added Plane3.AngleBetweenPlaneNormalAndLine() and Plane3.AngleBetweenPlaneAndLine() overloads which accept Vector3 rather than Line3.
+- Added several interpolation methods to the Mathfex: Lerp, LerpUnclamped, SinInterp, CosInterp, WobbleInterp, CurveInterp, FuncInterp. Also added Test_Interpolation test prefab showing these methods in action. See docs for more info.
+- Added Mathfex.Near() and Mathfex.NearZero(). Handy methods for comparing floats with each other and with zero using epsilon-check.
+- Fixed Matrix4x4ex.CreateSRT, Matrix4x4ex.CreateRT overloads which accepted rotationOrigin parameter.
+- Changed Mathfex.InterpolateBySigmoid() method name to Mathfex.SigmoidInterp().
+
+Version 1.3.2
+- Added ToSegmentArray() method to Polygon2/Polygon3 objects. It will convert a polygon to Segment2[] or Segment3[].
+- Added Intersection.TestRay2Polygon2(), Intersection.FindRay2Polygon2() methods. They allow to find intersection between a generic polygon and a ray. Each method has two overloads. One that accepts Polygon2 and other accepts Segment2[] parameter. Overloads which accept array work faster and also allow to pass non-closed polylines. Read the docs for more info.
+- Added Triangle2/3.CalcArea() static method for calculating area without constructing the triangle
+- Added Triangle2/3.CalcAnglesDeg/Rad() member and static methods for calculating triangle angles in degrees and radians.
+- Added Triangle2/3.EvalBarycentric() overload which accepts all 3 coordinates instead of calculating third one.
+- Added Vector2ex.AngleDeg/Rad() extension methods similar to Vector3ex methods (calcs angle between vectors).
+- Added more overloads for Vector2ex.Dot/DotPerp() and Vector3ex.Dot/Cross/UnitCross() (extension and static overloads accepting refs).
+- Moved Vector3ex.Barycentric() methods to Triangle3 object (also added member overloads). They are now called CalcBarycentricCoords(). Similar methods are added to Triangle2.
+
+Version 1.3.3
+- Added Capsule3 primitive.
+- Added Distance.Line3Box3() and Distance.Segment3Box3() methods.
+- Added Intersection.TestBox3Capsule3() method.
+- Fixed bug in spline vertex placement code.
+
+Version 1.3.4
+The library now includes all source code files! To use them follow these steps:
+- Backup and remove Lib folder from the project
+- Head to the LibSrc folder and unzip LibSrc.zip file
+- Remove LibSrc.zip
+LibSrc.zip contains the files compiled into the DestMath.dll in the Lib folder.
+
+Version 1.3.5
+- Added Unity5 version.

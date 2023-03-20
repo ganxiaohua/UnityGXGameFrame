@@ -35,7 +35,7 @@ namespace GameFrame
 
         public Dictionary<int, IEntity> Children => m_Children;
 
-        public int ID { get;  set; }
+        public int ID { get; set; }
         public IEntity.EntityStatus m_EntityStatus { get; set; }
 
         private static int m_SerialId;
@@ -64,6 +64,7 @@ namespace GameFrame
             {
                 m_Children.Add(entity.ID, entity);
             }
+
             entity.Initialize();
             EnitityHouse.Instance.AddEntity(entity);
             return entity;
@@ -128,7 +129,7 @@ namespace GameFrame
 
             return value as T;
         }
-        
+
         /// <summary>
         /// 删除组件
         /// </summary>
@@ -170,15 +171,16 @@ namespace GameFrame
                 {
                     entity.ClearAllChild();
                 }
+
                 Remove(item.Value);
                 item.Value.ClearAllComponent();
             }
+
             m_Children.Clear();
         }
 
         public virtual void Initialize()
         {
-
         }
 
         /// <summary>
@@ -197,6 +199,7 @@ namespace GameFrame
                     ReferencePool.Release(ecsEntity);
                 }
             }
+
             m_Components.Clear();
             TypeHashCode.Clear();
         }

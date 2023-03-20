@@ -5,7 +5,7 @@ namespace GameFrame
     public abstract class ReactiveSystem : IECSInitSystem, IECSUpdateSystem
     {
         /// <summary>
-        /// 挂载父实体
+        /// 挂载的父实体
         /// </summary>
         protected Context Context;
 

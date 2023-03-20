@@ -18,23 +18,18 @@ public class Entity1 : Entity, IInit, IDestroy, IUpdate
     }
     
     public Eniti1View view;
-
-    public int a;
-
-    public string b;
-
+    
     private Vector2 c;
     public Vector2 C
     {
         set
         {
             c = value;
-            view.Position(c);
+            view?.Position(c);
         }
         get => c;
     }
 }
-
 public static class Entity1System
 {
     public class Entity1InitSystem : InitSystem<Entity1>
@@ -98,6 +93,79 @@ public class Eniti1View : IView
     {
         GameObject.Destroy(Obj);
         Entity = null;
+    }
+}
+
+// --------------------------------------------------------------------
+public class CreateComponent : Entity, IInit
+{
+    public int cank = 0;
+    public int cank2 = 0;
+}
+
+public static class ComponentSystem
+{
+    public class CreateComponentSystem: InitSystem<CreateComponent>
+    {
+        protected override void Init(CreateComponent self)
+        {
+            
+        }
+    }
+}
+
+
+// ----------------------事件系统测试-------------------------------------
+public class EventTest : IMessenger
+{
+    private int A;
+    private int B;
+
+    public int CA
+    {
+        get { return A; }
+    }
+    
+    public int CB
+    {
+        get { return B; }
+    }
+
+    private EnitityEvnetDo enitityEvnetDo;
+    public void Init(int a, int b)
+    {
+        A = a;
+        B = b;
+    }
+
+    public void Send()
+    { 
+        enitityEvnetDo = ReferencePool.Acquire<EnitityEvnetDo>();
+        enitityEvnetDo.Do(this);
+    }
+
+    public void Clear()
+    {
+        ReferencePool.Release(enitityEvnetDo);
+    }
+}
+
+public class EnitityEvnetDo:IAddressee
+{
+    public void Do(IMessenger messenger)
+    {
+        EventTest eventTest = messenger as EventTest;
+        CreateComponent createComponent =  EnitityHouse.Instance.GetScene<BattlegroundScene>().GetComponent<CreateComponent>();
+        if (createComponent == null)
+        {
+            return;
+        }
+        createComponent.cank = eventTest.CA;
+    }
+    
+    public void Clear()
+    {
+        
     }
 }
 

@@ -11,27 +11,52 @@ namespace GameFrame
 
         private Dictionary<T, string> m_ActionObjectWithName;
 
+        /// <summary>
+        /// 对象池最大数量
+        /// </summary>
         private int m_MaxCacheNum;
 
+        /// <summary>
+        /// 对象池当前数量
+        /// </summary>
         private int m_CurCacheNum;
 
         public TypeNamePair TypeName;
 
+        /// <summary>
+        /// 对象池需要携带的内容
+        /// </summary>
         private object m_InitData;
+
+        /// <summary>
+        /// 对象池当前轮训的事件
+        /// </summary>
+        private float m_CurAutoReleaseTime;
+
+        /// <summary>
+        /// 对象池轮训检查时间
+        /// </summary>
+        private float m_AutoReleaseInterval;
+
+        /// <summary>
+        /// 对象池内部对象进入HitObjet列表之后的到期事件
+        /// </summary>
+        private float m_ExpireTime;
 
         // private List<ObjectBase> m_ActionObjects;
         private Type m_ObjectType;
 
-        public static ObjectPool<T> Create(TypeNamePair typeName, Type objectType, int maxNum,object initData)
+        public static ObjectPool<T> Create(TypeNamePair typeName, Type objectType, int maxNum, object initData)
         {
             Type objectPoolType = typeof(ObjectPool<>).MakeGenericType(objectType);
             ObjectPool<T> objectPool = ReferencePool.Acquire(objectPoolType) as ObjectPool<T>;
             objectPool.Initialize(typeName);
             objectPool.m_MaxCacheNum = maxNum;
             objectPool.m_InitData = initData;
+            objectPool.m_ExpireTime = 120;
+            objectPool.m_AutoReleaseInterval = 5;
             return objectPool;
         }
-
 
         private void Initialize(TypeNamePair typeName)
         {
@@ -42,6 +67,27 @@ namespace GameFrame
             m_ActionObject = new();
             m_HitObject = new();
         }
+
+        /// <summary>
+        /// 设置 对象池的到期事件和检查时间
+        /// </summary>
+        /// <param name="autoReleaseInterval">定期检查时间</param>
+        /// <param name="expireTime">进入不活跃对象池之后的到期时间</param>
+        public void SetExamineTime(float autoReleaseInterval, float expireTime)
+        {
+            m_AutoReleaseInterval = autoReleaseInterval;
+            m_ExpireTime = expireTime;
+        }
+
+        public void Update(float elapseSeconds, float realElapseSeconds)
+        {
+            m_CurAutoReleaseTime += realElapseSeconds;
+            if (m_CurAutoReleaseTime > m_AutoReleaseInterval)
+            {
+                TimeCheck();
+            }
+        }
+        
 
         /// <summary>
         /// 吐出
@@ -114,16 +160,17 @@ namespace GameFrame
 
             m_CurCacheNum++;
             objectList.Add(t);
+            t.LastUseTime = DateTime.UtcNow;
             t.OnUnspawn();
-            Check();
+            AmountCheck();
         }
 
-        public void Check()
+        public void AmountCheck()
         {
             if (m_CurCacheNum <= m_MaxCacheNum)
                 return;
             List<T> needClearList = new List<T>();
-            int clearNum = m_MaxCacheNum / 3;
+            int clearNum = m_MaxCacheNum / 2;
             int curClearNum = 0;
             foreach (var item in m_HitObject)
             {
@@ -135,16 +182,29 @@ namespace GameFrame
                     curClearNum++;
                     if (curClearNum == clearNum)
                     {
-                        break;
+                        Clear(needClearList);
+                        return;
                     }
                 }
+            }
+        }
 
-                if (curClearNum == clearNum)
+        public void TimeCheck()
+        {
+            List<T> needClearList = new List<T>();
+            foreach (var item in m_HitObject)
+            {
+                List<T> list = item.Value;
+                for (int i = list.Count - 1; i >= 0; i--)
                 {
-                    break;
+                    DateTime expireTime = DateTime.UtcNow.AddSeconds(-m_ExpireTime);
+                    if (expireTime >= list[i].LastUseTime)
+                    {
+                        needClearList.Add(list[i]);
+                        list.RemoveAt(i);
+                    }
                 }
             }
-
             Clear(needClearList);
         }
 

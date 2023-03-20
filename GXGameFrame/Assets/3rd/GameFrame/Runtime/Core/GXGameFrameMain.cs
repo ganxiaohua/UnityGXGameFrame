@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace GameFrame
 {
@@ -12,6 +13,7 @@ namespace GameFrame
         public void Update()
         {
             EnitityHouse.Instance.Update();
+            ObjectPoolManager.Instance.Update(Time.deltaTime,Time.realtimeSinceStartup);
         }
 
         public void LateUpdate()
@@ -21,7 +23,7 @@ namespace GameFrame
 
         public void OnDisable()
         {
-            
+            EnitityHouse.Instance.Disable();
         }
     }
 }

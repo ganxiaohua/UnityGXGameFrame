@@ -33,7 +33,6 @@ public class CreateMonsterSystem : IECSInitSystem
     public void Initialize(Context entity)
     {
         var xx = entity.AddChild<Monster>();
-
         xx.SetPos(Vector2.one).SetRotate(new Vector2(30, 0));
     }
 
@@ -287,6 +286,7 @@ public class GameObjectObjectBase : ObjectBase
         {
             return;
         }
+
         Obj = GameObject.Instantiate(go);
         Trans = Obj.transform;
         Pos = CurPos;
@@ -298,6 +298,10 @@ public class GameObjectObjectBase : ObjectBase
     /// </summary>
     internal override void OnSpawn()
     {
+        if (Obj != null)
+        {
+            Obj.SetActive(true);
+        }
         Debug.Log("创建");
     }
 
@@ -308,6 +312,10 @@ public class GameObjectObjectBase : ObjectBase
     {
         CurPos = Vector3.zero;
         CurRot = Quaternion.identity;
+        if (Obj != null)
+        {
+            Obj.SetActive(false);
+        }
         Debug.Log("回收");
     }
 
@@ -377,7 +385,5 @@ public class GameObjectView : IEceView
         Entity = null;
     }
 }
-
-
 
 #endregion

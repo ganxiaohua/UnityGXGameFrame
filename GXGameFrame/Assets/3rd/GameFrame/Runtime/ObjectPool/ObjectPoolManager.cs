@@ -7,6 +7,15 @@ namespace GameFrame
     {
         private Dictionary<TypeNamePair, IObjectPoolBase> s_ObjectPoolBase = new Dictionary<TypeNamePair, IObjectPoolBase>();
 
+        
+        public void Update(float elapseSeconds,float realElapseSeconds)
+        {
+            foreach (IObjectPoolBase objectpool in s_ObjectPoolBase.Values)
+            {
+                objectpool.Update(elapseSeconds,realElapseSeconds);
+            }
+        }
+        
         /// <summary>
         /// 创建一个对象池
         /// </summary>
@@ -30,6 +39,12 @@ namespace GameFrame
         }
 
 
+        /// <summary>
+        /// 获得一个对象池
+        /// </summary>
+        /// <param name="name"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public ObjectPool<T> GetObjectPool<T>(string name) where T : ObjectBase, new()
         {
             Type type = typeof(T);
@@ -87,5 +102,6 @@ namespace GameFrame
             }
             return false;
         }
+        
     }
 }
