@@ -6,13 +6,14 @@ namespace GameFrame
     public interface IECSComponent : IReference
     {
     }
+    
 
     /// <summary>
     /// ECSEntity挂载的一定是Context
     /// </summary>
     public abstract class ECSEntity : IEntity
     {
-        public IEntity ComponentParent { get; set; }
+        public IEntity ComponentParent { get;  set; }
         public int ID { get; set; }
         public IEntity.EntityStatus m_EntityStatus { get; set; }
 
@@ -27,8 +28,20 @@ namespace GameFrame
             TypeHashCode = new(8);
         }
 
-        // public abstract void InitComponent();
-
+        /// <summary>
+        /// 通用书初始化
+        /// </summary>
+        public virtual void Initialize()
+        {
+        }
+        
+    
+        /// <summary>
+        /// 加入组件
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public T AddComponent<T>() where T : class, IECSComponent
         {
             Type type = typeof(T);
@@ -41,10 +54,15 @@ namespace GameFrame
             IECSComponent entity = ReferencePool.Acquire(type) as IECSComponent;
             TypeHashCode.Add(type.GetHashCode());
             m_ECSComponents.Add(type, entity);
-            (ComponentParent as Context).ChangeAddRomoveChildOrCompone(this);
+            ((Context)ComponentParent).ChangeAddRomoveChildOrCompone(this);
             return entity as T;
         }
 
+        /// <summary>
+        /// 删除组件
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <exception cref="Exception"></exception>
         public void RemoveComponent<T>() where T : class, IECSComponent
         {
             Type type = typeof(T);
@@ -56,9 +74,14 @@ namespace GameFrame
             m_ECSComponents.Remove(type);
             TypeHashCode.Remove(type.GetHashCode());
             ReferencePool.Release(entity);
-            (ComponentParent as Context).ChangeAddRomoveChildOrCompone(this);
+            ((Context)ComponentParent).ChangeAddRomoveChildOrCompone(this);
         }
 
+        /// <summary>
+        /// 获得组件
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public T GetComponent<T>() where T : class, IECSComponent
         {
             Type type = typeof(T);
@@ -106,20 +129,20 @@ namespace GameFrame
 
             return false;
         }
-
-        public virtual void Initialize()
-        {
-        }
-
+    
+        /// <summary>
+        /// 清除所有组件
+        /// </summary>
         public void ClearAllComponent()
         {
             foreach (var item in m_ECSComponents)
             {
                 ReferencePool.Release(item.Value);
             }
+
             m_ECSComponents.Clear();
             TypeHashCode.Clear();
-            (ComponentParent as Context).ChangeAddRomoveChildOrCompone(this);
+            ((Context)ComponentParent).ChangeAddRomoveChildOrCompone(this);
         }
 
         public void Clear()

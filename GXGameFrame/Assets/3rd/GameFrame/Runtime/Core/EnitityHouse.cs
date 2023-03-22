@@ -8,36 +8,16 @@ namespace GameFrame
 
     public class EnitityHouse : Singleton<EnitityHouse>
     {
-        enum UpdateType 
+        enum UpdateType
         {
             Update = 0,
             LateUpdate,
             FixUpdate,
         }
 
-        public class SystemEnitiy : IReference
-        {
-            public SystemObject SystemObject { get; set; }
-            public IEntity Entity { get; set; }
-
-            public void Create(SystemObject systemobject, IEntity entity)
-            {
-                SystemObject = systemobject;
-                Entity = entity;
-            }
-
-            public void Clear()
-            {
-                SystemObject = null;
-                Entity = null;
-            }
-        }
-
-        private HashSet<IEntity> m_EveryEntity = new();
+        // private HashSet<IEntity> m_EveryEntity = new();
 
         private DoubleMap<Type, SceneEntity> m_EverySceneEntity = new();
-
-        private Dictionary<Type, SystemObject> m_SystemObjects = new();
 
         private DDictionaryETC m_EntitySystems = new();
 
@@ -53,35 +33,36 @@ namespace GameFrame
         }
 
 
-        public void AddEntity(IEntity entity)
-        {
-            if (m_EveryEntity.Contains(entity))
-            {
-                throw new Exception($"have enitiy:{entity.ID}");
-            }
+        // public void AddEntity(IEntity entity)
+        // {
+        //     if (m_EveryEntity.Contains(entity))
+        //     {
+        //         throw new Exception($"have enitiy:{entity.ID}");
+        //     }
+        //
+        //     m_EveryEntity.Add(entity);
+        // }
 
-            m_EveryEntity.Add(entity);
-        }
+        // public void RemoveEntity(IEntity entity)
+        // {
+        //     if (!m_EveryEntity.Contains(entity))
+        //     {
+        //         throw new Exception($"EveryEntity not have enitiy:{entity.ID}");
+        //     }
+        //
+        //     m_EveryEntity.Remove(entity);
+        //     m_EntitySystems.GetValue(entity)?.SystemDestroy(entity);
+        //     m_EntitySystems.RemoveTkey(entity);
+        //     RemoveUpdateSystem(entity);
+        // }
 
-        public void RemoveEntity(IEntity entity)
-        {
-            if (!m_EveryEntity.Contains(entity))
-            {
-                throw new Exception($"EveryEntity not have enitiy:{entity.ID}");
-            }
-
-            m_EveryEntity.Remove(entity);
-            m_EntitySystems.GetValue(entity)?.SystemDestroy(entity);
-            m_EntitySystems.RemoveTkey(entity);
-            RemoveUpdateSystem(entity);
-        }
-
+        //TODO:这里有新能瓶颈,需要优化一下
         private void RemoveUpdateSystem(IEntity entity)
         {
             for (int z = 0; z < UpdateSystemEnitiys.Length; z++)
             {
                 List<SystemEnitiy> systemEnitiys = UpdateSystemEnitiys[z];
-                for (int i =systemEnitiys.Count - 1; i >= 0; i--)
+                for (int i = systemEnitiys.Count - 1; i >= 0; i--)
                 {
                     SystemEnitiy systemenitiy = systemEnitiys[i];
                     if (systemenitiy.Entity == entity)
@@ -89,11 +70,11 @@ namespace GameFrame
                         ReferencePool.Release(systemenitiy);
                         systemEnitiys.RemoveAt(i);
                     }
-                }   
+                }
             }
         }
 
-        public void AddSceneEntity<T>(SceneEntity entity) where T : SceneEntityType
+        public void AddSceneEntity<T>(SceneEntity entity) where T : IScene
         {
             Type type = typeof(T);
             if (m_EverySceneEntity.ContainsKey(type))
@@ -102,10 +83,9 @@ namespace GameFrame
             }
 
             m_EverySceneEntity.Add(type, entity);
-            AddEntity(entity);
         }
 
-        public SceneEntity GetScene<T>() where T : SceneEntityType
+        public SceneEntity GetScene<T>() where T : IScene
         {
             Type type = typeof(T);
             if (!m_EverySceneEntity.TryGetValueKv(type, out SceneEntity sceneEntity))
@@ -116,7 +96,7 @@ namespace GameFrame
             return sceneEntity;
         }
 
-        public void RemoveSceneEntity<T>() where T : SceneEntityType
+        public void RemoveSceneEntity<T>() where T : IScene
         {
             Type type = typeof(T);
             if (!m_EverySceneEntity.TryGetValueKv(type, out SceneEntity sceneEntity))
@@ -125,7 +105,6 @@ namespace GameFrame
             }
 
             m_EverySceneEntity.RemoveByKey(type);
-            RemoveEntity(sceneEntity);
         }
 
         public void RemoveSceneEntity(SceneEntity sceneEntity)
@@ -136,32 +115,26 @@ namespace GameFrame
             }
 
             m_EverySceneEntity.RemoveByValue(sceneEntity);
-            RemoveEntity(sceneEntity);
         }
 
         public void AddSystem<T>(IEntity entity) where T : ISystem
         {
             Type type = typeof(T);
-            m_SystemObjects.TryGetValue(type, out SystemObject systemObject);
-            if (systemObject == null)
-            {
-                systemObject = ReferencePool.Acquire<SystemObject>();
-                systemObject.AddSystem<T>();
-                m_SystemObjects.Add(type, systemObject);
-            }
-
             if (m_EntitySystems.ContainsTk(entity, type))
             {
                 throw new Exception($"EntitySystems have system:{type}");
             }
 
-            m_EntitySystems.Add(entity, type, systemObject);
-            systemObject.System.SystemInit(entity);
-            //update系统特殊处理.
-            if (systemObject.System.IsUpdateSystem())
+            SystemObject sysObject = ReferencePool.Acquire<SystemObject>();
+            sysObject.AddSystem<T>();
+            m_EntitySystems.Add(entity, type, sysObject);
+            if (sysObject.System.SystemInit(entity))
+            {
+            }
+            else if (sysObject.System.IsUpdateSystem())
             {
                 SystemEnitiy systenitiy = ReferencePool.Acquire<SystemEnitiy>();
-                systenitiy.Create(systemObject, entity);
+                systenitiy.Create(sysObject, entity);
                 UpdateSystemEnitiys[(int) UpdateType.Update].Add(systenitiy);
             }
         }
@@ -169,13 +142,16 @@ namespace GameFrame
         public void RemoveSystem<T>(Entity entity)
         {
             Type type = typeof(T);
-            m_SystemObjects.TryGetValue(type, out SystemObject systemObject);
-            m_EntitySystems.RemoveKkey(entity, type);
+            SystemObject systemObject = m_EntitySystems.RemoveKkey(entity, type);
+            if (systemObject != null)
+            {
+                ReferencePool.Release(systemObject);
+            }
         }
 
-        public void Update()
+        public void Update(float elapseSeconds, float realElapseSeconds)
         {
-            UpdateSystemEnitiys[(int) UpdateType.Update].SystemUpdate();
+            UpdateSystemEnitiys[(int) UpdateType.Update].SystemUpdate(elapseSeconds, realElapseSeconds);
         }
 
         public void Disable()

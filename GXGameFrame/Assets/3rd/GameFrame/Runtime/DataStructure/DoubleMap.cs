@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace GameFrame
 {
+    //KV 双向结构   
     public class DoubleMap<K, V>
     {
         private readonly Dictionary<K, V> kv = new Dictionary<K, V>();

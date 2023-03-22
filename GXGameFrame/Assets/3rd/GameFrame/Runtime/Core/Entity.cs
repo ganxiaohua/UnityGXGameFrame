@@ -10,11 +10,11 @@ namespace GameFrame
         public enum EntityStatus : byte
         {
             None = 0,
-            IsCreated = 1 << 1,
-            IsClear = 1 << 2,
+            IsCreated,
+            IsClear
         }
 
-        public IEntity ComponentParent { get; set; }
+        public IEntity ComponentParent { get;  set; }
         public int ID { get; set; }
 
         public EntityStatus m_EntityStatus { get; set; }
@@ -22,18 +22,22 @@ namespace GameFrame
         public void Initialize();
         public void ClearAllComponent();
     }
+    
+
 
     public abstract class Entity : IEntity
     {
-        public IEntity ComponentParent { get; set; }
+        public IEntity ComponentParent { get;  set; }
         private Dictionary<Type, IEntity> m_Components;
         public Dictionary<Type, IEntity> Components => m_Components;
 
         private List<int> TypeHashCode;
 
         private Dictionary<int, IEntity> m_Children;
-
+        
         public Dictionary<int, IEntity> Children => m_Children;
+
+        protected Parameter Parameter;
 
         public int ID { get; set; }
         public IEntity.EntityStatus m_EntityStatus { get; set; }
@@ -47,6 +51,10 @@ namespace GameFrame
             TypeHashCode = new(8);
         }
 
+        public virtual void Initialize()
+        {
+        }
+
 
         protected virtual IEntity Create<T>(bool isComponent) where T : IEntity
         {
@@ -55,6 +63,7 @@ namespace GameFrame
             entity.m_EntityStatus = IEntity.EntityStatus.IsCreated;
             entity.ComponentParent = this;
             entity.ID = ++m_SerialId;
+            
             if (isComponent)
             {
                 m_Components.Add(type, entity);
@@ -66,7 +75,7 @@ namespace GameFrame
             }
 
             entity.Initialize();
-            EnitityHouse.Instance.AddEntity(entity);
+            // EnitityHouse.Instance.AddEntity(entity);
             return entity;
         }
 
@@ -83,6 +92,11 @@ namespace GameFrame
             Remove(entity);
         }
 
+        /// <summary>
+        /// 删除children
+        /// </summary>
+        /// <param name="id"></param>
+        /// <exception cref="Exception"></exception>
         private void Remove(int id)
         {
             if (!m_Children.TryGetValue(id, out var entity))
@@ -94,10 +108,33 @@ namespace GameFrame
             Remove(entity);
         }
 
+        /// <summary>
+        /// 删除组件
+        /// </summary>
+        /// <param name="entity"></param>
         private void Remove(IEntity entity)
         {
-            EnitityHouse.Instance.RemoveEntity(entity);
+            // EnitityHouse.Instance.RemoveEntity(entity);
             ReferencePool.Release(entity);
+        }
+
+
+        /// <summary>
+        /// 创建一个组件
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        private IEntity CreateComponent<T>() where T : class, IEntity
+        {
+            Type type = typeof(T);
+            if (this.m_Components != null && this.m_Components.ContainsKey(type))
+            {
+                throw new Exception($"entity already has component: {type.FullName}");
+            }
+
+            IEntity component = Create<T>(true);
+            return component;
         }
 
         /// <summary>
@@ -108,14 +145,39 @@ namespace GameFrame
         /// <exception cref="Exception"></exception>
         public T AddComponent<T>() where T : class, IEntity
         {
-            Type type = typeof(T);
-            if (this.m_Components != null && this.m_Components.ContainsKey(type))
-            {
-                throw new Exception($"entity already has component: {type.FullName}");
-            }
+            IEntity component = CreateComponent<T>();
+            component.Initialize();
 
-            IEntity component = Create<T>(true);
-            return component as T;
+            return (T) component;
+        }
+
+
+        public T AddComponent<T, P1>(P1 p1) where T : class, IEntity
+        {
+            IEntity component = CreateComponent<T>();
+            var x  = new ParameterP1<P1>();
+            x.Set(p1);
+            Parameter = x;
+            return (T) component;
+        }
+
+        public T AddComponent<T, P1, P2>(P1 p1, P2 p2) where T : class, IEntity
+        {
+            IEntity component = CreateComponent<T>();
+            component.Initialize();
+            return (T) component;
+        }
+
+        public T AddComponent<T, P1, P2, P3>(P1 p1, P2 p2, P3 p3) where T : class, IEntity
+        {
+            IEntity component = CreateComponent<T>();
+            return (T) component;
+        }
+
+        public T AddComponent<T, P1, P2, P3, P4>(P1 p1, P2 p2, P3 p3, P4 p4) where T : class, IEntity
+        {
+            IEntity component = CreateComponent<T>();
+            return (T) component;
         }
 
         public T GetComponent<T>() where T : class, IEntity
@@ -145,6 +207,31 @@ namespace GameFrame
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         public T AddChild<T>() where T : class, IEntity
+        {
+            IEntity component = Create<T>(false);
+            component.Initialize();
+            return component as T;
+        }
+
+        public T AddChild<T, P1>(P1 p1) where T : class, IEntity
+        {
+            IEntity component = Create<T>(false);
+            return component as T;
+        }
+
+        public T AddChild<T, P1, P2>(P1 p1, P2 p2) where T : class, IEntity
+        {
+            IEntity component = Create<T>(false);
+            return component as T;
+        }
+
+        public T AddChild<T, P1, P2, P3>(P1 p1, P2 p2, P3 p3) where T : class, IEntity
+        {
+            IEntity component = Create<T>(false);
+            return component as T;
+        }
+
+        public T AddChild<T, P1, P2, P3, P4>(P1 p1, P2 p2, P3 p3, P4 p4) where T : class, IEntity
         {
             IEntity component = Create<T>(false);
             return component as T;
@@ -179,10 +266,6 @@ namespace GameFrame
             m_Children.Clear();
         }
 
-        public virtual void Initialize()
-        {
-        }
-
         /// <summary>
         /// 清理所有的组件
         /// </summary>
@@ -204,7 +287,7 @@ namespace GameFrame
             TypeHashCode.Clear();
         }
 
-
+        
         /// <summary>
         /// 清除
         /// </summary>

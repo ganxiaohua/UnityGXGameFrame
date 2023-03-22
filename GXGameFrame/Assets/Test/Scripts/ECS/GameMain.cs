@@ -3,11 +3,7 @@ using System.Collections.Generic;
 using GameFrame;
 using UnityEngine;
 
-struct GameInitScene : SceneEntityType
-{
-}
-
-struct BattlegroundScene : SceneEntityType
+struct BattlegroundScene : IScene
 {
 }
 
@@ -17,10 +13,8 @@ public class GameMain : MonoBehaviour
 
     void Start()
     {
-        GXGameFrameMain.Instance.Start();
-        var MainScene = SceneEntityFactory.CreateScene<GameInitScene>();
-
-        SceneEntityFactory.CreateScene<BattlegroundScene>(MainScene);
+        GXGameFrame.Instance.Start();
+        SceneEntityFactory.CreateScene<BattlegroundScene>(GXGameFrame.Instance.MainScene);
     }
 
     // Update is called once per frame
@@ -28,11 +22,11 @@ public class GameMain : MonoBehaviour
 
     void Update()
     {
-        GXGameFrameMain.Instance.Update();
+        GXGameFrame.Instance.Update();
         if (Input.GetKeyDown(KeyCode.A))
         {
             Entity1id = EnitityHouse.Instance.GetScene<BattlegroundScene>().AddChild<Entity1>().ID;
-            EnitityHouse.Instance.GetScene<BattlegroundScene>().AddComponent<CreateComponent>();
+            EnitityHouse.Instance.GetScene<BattlegroundScene>().AddComponent<CreateComponent,int>(1);
         }
 
         if (Input.GetKeyDown(KeyCode.D))

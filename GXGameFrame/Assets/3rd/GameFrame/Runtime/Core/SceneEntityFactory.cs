@@ -1,22 +1,32 @@
-﻿namespace GameFrame
+﻿using System;
+using UnityEngine;
+
+namespace GameFrame
 {
     public static class SceneEntityFactory
     {
-        public static SceneEntity CreateScene<T>(Entity parent = null) where T : SceneEntityType
+        public static SceneEntity CreateScene<T>(SceneEntity parent) where T : IScene
         {
-            SceneEntity sceneEntity = ReferencePool.Acquire<SceneEntity>();
-            sceneEntity.Init<T>(parent);
+            if (parent == null)
+            {
+                throw new Exception("SceneEntityFactory parent is null");
+            }
+
+            SceneEntity sceneEntity = parent.AddChild<SceneEntity>();
+            EnitityHouse.Instance.AddSceneEntity<T>(sceneEntity);
             return sceneEntity;
         }
 
-        public static void RemoveScene<T>() where T : SceneEntityType
+        public static void RemoveScene<T>() where T : IScene
         {
             SceneEntity sceneEntity = EnitityHouse.Instance.GetScene<T>();
             RemoveScene(sceneEntity);
         }
-        public static void RemoveScene (SceneEntity sceneEntity)
+
+        public static void RemoveScene(SceneEntity sceneEntity)
         {
-            ReferencePool.Release(sceneEntity);
+            EnitityHouse.Instance.RemoveSceneEntity(sceneEntity);
+            ((SceneEntity) sceneEntity.ComponentParent).RemoveChild(sceneEntity.ID);
         }
     }
 }

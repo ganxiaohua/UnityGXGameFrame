@@ -1,25 +1,28 @@
 using System.Collections;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
-using Entitas;
 using GameFrame;
 using UnityEngine;
 using Entity = GameFrame.Entity;
 
 #region 演示传统对象形式
 
-public class Entity1 : Entity, IInit, IDestroy, IUpdate
+public class Entity1 : Entity, IStart, IDestroy, IUpdate
 {
     public override void Initialize()
     {
-        this.AddSystem<Entity1System.Entity1InitSystem>();
+        var x = (ParameterP1<int>) Parameter;
+        c.x = x.p1;
+        // Debug.Log("xxxxxxxxxxxxxxxxx"+x.p1);
+        this.AddSystem<Entity1System.Entity1StartSystem>();
         this.AddSystem<Entity1System.Entity1DestroySystem>();
         this.AddSystem<Entity1System.Entity1UpdateSystem>();
     }
-    
+
     public Eniti1View view;
-    
+
     private Vector2 c;
+
     public Vector2 C
     {
         set
@@ -30,11 +33,12 @@ public class Entity1 : Entity, IInit, IDestroy, IUpdate
         get => c;
     }
 }
+
 public static class Entity1System
 {
-    public class Entity1InitSystem : InitSystem<Entity1>
+    public class Entity1StartSystem : StartSystem<Entity1, int>
     {
-        protected override void Init(Entity1 self)
+        protected override void Init(Entity1 self, int param)
         {
             Eniti1View eniti1View = ReferencePool.Acquire<Eniti1View>();
             eniti1View.Link(self, "Cube");
@@ -48,7 +52,7 @@ public static class Entity1System
         {
             if (Input.GetKeyDown(KeyCode.W))
             {
-                self.C +=  Vector2.one * Time.deltaTime;
+                self.C += Vector2.one * Time.deltaTime;
             }
         }
     }
@@ -97,19 +101,22 @@ public class Eniti1View : IView
 }
 
 // --------------------------------------------------------------------
-public class CreateComponent : Entity, IInit
+public class CreateComponent : Entity, IStart
 {
+    // public override void Initialize<P1, P2, P3>(P1 p1, P2 p2, P3 p3) where P1:int 
+    // {
+    //     
+    // }
     public int cank = 0;
     public int cank2 = 0;
 }
 
 public static class ComponentSystem
 {
-    public class CreateComponentSystem: InitSystem<CreateComponent>
+    public class CreateComponentSystem : StartSystem<CreateComponent>
     {
-        protected override void Init(CreateComponent self)
+        protected override void Start(CreateComponent self)
         {
-            
         }
     }
 }
@@ -125,13 +132,14 @@ public class EventTest : IMessenger
     {
         get { return A; }
     }
-    
+
     public int CB
     {
         get { return B; }
     }
 
     private EnitityEvnetDo enitityEvnetDo;
+
     public void Init(int a, int b)
     {
         A = a;
@@ -139,7 +147,7 @@ public class EventTest : IMessenger
     }
 
     public void Send()
-    { 
+    {
         enitityEvnetDo = ReferencePool.Acquire<EnitityEvnetDo>();
         enitityEvnetDo.Do(this);
     }
@@ -150,22 +158,22 @@ public class EventTest : IMessenger
     }
 }
 
-public class EnitityEvnetDo:IAddressee
+public class EnitityEvnetDo : IAddressee
 {
     public void Do(IMessenger messenger)
     {
         EventTest eventTest = messenger as EventTest;
-        CreateComponent createComponent =  EnitityHouse.Instance.GetScene<BattlegroundScene>().GetComponent<CreateComponent>();
+        CreateComponent createComponent = EnitityHouse.Instance.GetScene<BattlegroundScene>().GetComponent<CreateComponent>();
         if (createComponent == null)
         {
             return;
         }
+
         createComponent.cank = eventTest.CA;
     }
-    
+
     public void Clear()
     {
-        
     }
 }
 

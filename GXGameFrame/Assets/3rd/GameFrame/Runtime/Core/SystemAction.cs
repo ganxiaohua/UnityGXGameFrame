@@ -9,43 +9,48 @@ namespace GameFrame
 
     public static class SystemAction
     {
-        public static void SystemInit(this ISystem system, IEntity entity)
+        public static bool SystemInit(this ISystem system, IEntity entity)
         {
-            if (system is IIInitSystem initsys)
+            if (system is IStartSystem initsys)
             {
                 initsys.Run(entity);
+                return true;
             }
             else if (system is IECSInitSystem ecsinitsystem)
             {
-                Context context = entity as Context;
-                if (context == null)
+                if (entity is not Context context)
                 {
                     throw new Exception($"{entity.GetType()} not has Content");
                 }
 
                 ecsinitsystem.Initialize(context);
+                return true;
             }
+
+            return false;
         }
 
         public static bool IsUpdateSystem(this ISystem system)
         {
-            if (system is IUpdateSystem || system is IECSUpdateSystem)
+            if (system is IUpdateSystem or IECSUpdateSystem)
             {
                 return true;
             }
+
             return false;
         }
 
-        public static void SystemUpdate(this List<EnitityHouse.SystemEnitiy> ets)
+        public static void SystemUpdate(this List<SystemEnitiy> ets, float elapseSeconds, float realElapseSeconds)
         {
             int count = ets.Count;
             for (int i = 0; i < count; i++)
             {
-                EnitityHouse.SystemEnitiy es = ets[i];
+                SystemEnitiy es = ets[i];
                 if (es.SystemObject.System is IUpdateSystem updatesystem)
                 {
                     updatesystem.Run(es.Entity);
-                }else if (es.SystemObject.System is IECSUpdateSystem ecsupdatesystem)
+                }
+                else if (es.SystemObject.System is IECSUpdateSystem ecsupdatesystem)
                 {
                     ecsupdatesystem.Update();
                 }

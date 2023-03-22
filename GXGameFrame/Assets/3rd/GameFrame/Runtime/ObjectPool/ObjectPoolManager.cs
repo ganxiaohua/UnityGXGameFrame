@@ -93,6 +93,19 @@ namespace GameFrame
             DeleteObjectPool(objectPool);
         }
 
+        /// <summary>
+        /// 删除所有对象池
+        /// </summary>
+        public void DeleteAll()
+        {
+            foreach (KeyValuePair<TypeNamePair, IObjectPoolBase> objectPool in s_ObjectPoolBase)
+            {
+                ReferencePool.Release(objectPool.Value);
+            }
+            s_ObjectPoolBase.Clear();
+        }
+        
+
 
         public bool HasPool(TypeNamePair typeNamePair)
         {
