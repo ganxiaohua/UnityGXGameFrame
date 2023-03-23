@@ -17,6 +17,26 @@ namespace GameFrame
             private int m_AddReferenceCount;
             private int m_RemoveReferenceCount;
 
+            /// <summary>
+            /// 引用池当前轮训的时间
+            /// </summary>
+            private float m_CurAutoReleaseTime;
+
+            /// <summary>
+            /// 引用池轮训检查时间
+            /// </summary>
+            private float m_AutoReleaseInterval;
+
+            /// <summary>
+            /// 引用池内部对象进入HitObjet列表之后的到期事件
+            /// </summary>
+            private float m_ExpireTime;
+
+            /// <summary>
+            /// 最后一次使用对象池的事件
+            /// </summary>
+            public DateTime m_LastUseTime;
+
             public ReferenceCollection(Type referenceType)
             {
                 m_References = new Queue<IReference>();
@@ -27,6 +47,10 @@ namespace GameFrame
                 m_ReleaseReferenceCount = 0;
                 m_AddReferenceCount = 0;
                 m_RemoveReferenceCount = 0;
+                m_AutoReleaseInterval = 20;
+                m_CurAutoReleaseTime = 0;
+                m_ExpireTime = 60; //如果这个池子超过一分钟没有使用则释放所有的引用
+
             }
 
             public Type ReferenceType
@@ -107,10 +131,11 @@ namespace GameFrame
                     }
                 }
 
+                m_LastUseTime = DateTime.UtcNow;
                 m_AddReferenceCount++;
                 return (IReference) Activator.CreateInstance(m_ReferenceType);
             }
-            
+
 
             public void Release(IReference reference)
             {
@@ -131,6 +156,8 @@ namespace GameFrame
                 {
                     Remove(m_ReleaseReferenceCount / 2);
                 }
+
+                m_LastUseTime = DateTime.UtcNow;
             }
 
             public void Add<T>(int count) where T : class, IReference, new()
@@ -148,6 +175,8 @@ namespace GameFrame
                         m_References.Enqueue(new T());
                     }
                 }
+
+                m_LastUseTime = DateTime.UtcNow;
             }
 
             public void Add(int count)
@@ -160,6 +189,8 @@ namespace GameFrame
                         m_References.Enqueue((IReference) Activator.CreateInstance(m_ReferenceType));
                     }
                 }
+
+                m_LastUseTime = DateTime.UtcNow;
             }
 
             public void Remove(int count)
@@ -177,6 +208,8 @@ namespace GameFrame
                         m_References.Dequeue();
                     }
                 }
+
+                m_LastUseTime = DateTime.UtcNow;
             }
 
             public void RemoveAll()
@@ -185,6 +218,20 @@ namespace GameFrame
                 {
                     m_RemoveReferenceCount += m_References.Count;
                     m_References.Clear();
+                    m_CurAutoReleaseTime = 0;
+                }
+            }
+            
+            public void Update(float elapseSeconds, float realElapseSeconds)
+            {
+                m_CurAutoReleaseTime += realElapseSeconds;
+                if (m_CurAutoReleaseTime > m_AutoReleaseInterval)
+                {
+                    DateTime expireTime = DateTime.UtcNow.AddSeconds(-m_ExpireTime);
+                    if (expireTime >= m_LastUseTime)
+                    {
+                        RemoveAll();
+                    }
                 }
             }
         }

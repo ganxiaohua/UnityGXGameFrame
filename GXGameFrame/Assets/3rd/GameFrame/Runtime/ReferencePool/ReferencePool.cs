@@ -52,6 +52,14 @@ namespace GameFrame
             return results;
         }
 
+        public static void Update(float elapseSeconds, float realElapseSeconds)
+        {
+            foreach (ReferenceCollection objectpool in s_ReferenceCollections.Values)
+            {
+                objectpool.Update(elapseSeconds, realElapseSeconds);
+            }
+        }
+
         /// <summary>
         /// 清除所有引用池。
         /// </summary>
@@ -107,7 +115,7 @@ namespace GameFrame
             InternalCheckReferenceType(referenceType);
             return GetReferenceCollection(referenceType).Acquire();
         }
-        
+
 
         /// <summary>
         /// 将引用归还引用池。
@@ -225,6 +233,7 @@ namespace GameFrame
                     s_ReferenceCollections.Add(referenceType, referenceCollection);
                 }
             }
+
             return referenceCollection;
         }
         //

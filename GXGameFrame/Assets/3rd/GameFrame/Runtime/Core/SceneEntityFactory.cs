@@ -26,7 +26,7 @@ namespace GameFrame
         public static void RemoveScene(SceneEntity sceneEntity)
         {
             EnitityHouse.Instance.RemoveSceneEntity(sceneEntity);
-            ((SceneEntity) sceneEntity.ComponentParent).RemoveChild(sceneEntity.ID);
+            ((SceneEntity) sceneEntity.Parent).RemoveChild(sceneEntity.ID);
         }
     }
 }

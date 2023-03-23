@@ -13,11 +13,18 @@ namespace GameFrame
     /// </summary>
     public abstract class ECSEntity : IEntity
     {
-        public IEntity ComponentParent { get;  set; }
-        public int ID { get; set; }
         public IEntity.EntityStatus m_EntityStatus { get; set; }
+        
+        public IEntity SceneParent { get; set; }
+        
+        public IEntity Parent { get;  set; }
+        
+        public Parameter Parameter { get; set; }
+        
+        public int ID { get; set; }
 
         private Dictionary<Type, IECSComponent> m_ECSComponents;
+        
         public Dictionary<Type, IECSComponent> ECSComponents => m_ECSComponents;
 
         private List<int> TypeHashCode;
@@ -54,7 +61,7 @@ namespace GameFrame
             IECSComponent entity = ReferencePool.Acquire(type) as IECSComponent;
             TypeHashCode.Add(type.GetHashCode());
             m_ECSComponents.Add(type, entity);
-            ((Context)ComponentParent).ChangeAddRomoveChildOrCompone(this);
+            ((Context)Parent).ChangeAddRomoveChildOrCompone(this);
             return entity as T;
         }
 
@@ -74,7 +81,7 @@ namespace GameFrame
             m_ECSComponents.Remove(type);
             TypeHashCode.Remove(type.GetHashCode());
             ReferencePool.Release(entity);
-            ((Context)ComponentParent).ChangeAddRomoveChildOrCompone(this);
+            ((Context)Parent).ChangeAddRomoveChildOrCompone(this);
         }
 
         /// <summary>
@@ -142,7 +149,7 @@ namespace GameFrame
 
             m_ECSComponents.Clear();
             TypeHashCode.Clear();
-            ((Context)ComponentParent).ChangeAddRomoveChildOrCompone(this);
+            ((Context)Parent).ChangeAddRomoveChildOrCompone(this);
         }
 
         public void Clear()

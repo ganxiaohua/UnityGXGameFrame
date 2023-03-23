@@ -11,9 +11,6 @@ public class Entity1 : Entity, IStart, IDestroy, IUpdate
 {
     public override void Initialize()
     {
-        var x = (ParameterP1<int>) Parameter;
-        c.x = x.p1;
-        // Debug.Log("xxxxxxxxxxxxxxxxx"+x.p1);
         this.AddSystem<Entity1System.Entity1StartSystem>();
         this.AddSystem<Entity1System.Entity1DestroySystem>();
         this.AddSystem<Entity1System.Entity1UpdateSystem>();
@@ -103,10 +100,13 @@ public class Eniti1View : IView
 // --------------------------------------------------------------------
 public class CreateComponent : Entity, IStart
 {
-    // public override void Initialize<P1, P2, P3>(P1 p1, P2 p2, P3 p3) where P1:int 
-    // {
-    //     
-    // }
+    public override void Initialize()
+    {
+        var x = (ParameterP1<int>) Parameter;
+        cank = x.Param1;
+        Debug.Log("创建Component");
+    }
+    
     public int cank = 0;
     public int cank2 = 0;
 }
@@ -170,6 +170,7 @@ public class EnitityEvnetDo : IAddressee
         }
 
         createComponent.cank = eventTest.CA;
+        Debug.Log("接受到了消息");
     }
 
     public void Clear()

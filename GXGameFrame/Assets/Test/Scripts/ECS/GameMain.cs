@@ -29,24 +29,24 @@ public class GameMain : MonoBehaviour
             EnitityHouse.Instance.GetScene<BattlegroundScene>().AddComponent<CreateComponent,int>(1);
         }
 
-        if (Input.GetKeyDown(KeyCode.D))
+        if (Input.GetKeyDown(KeyCode.S))
         {
             EventTest text = EventManager.Instance.CreateEvent<EventTest>();
             text.Init(10,15);
             EventManager.Instance.Send(text);
         }
 
-        if (Input.GetKeyDown(KeyCode.S))
+        if (Input.GetKeyDown(KeyCode.D))
         {
             EnitityHouse.Instance.GetScene<BattlegroundScene>().RemoveChild(Entity1id);
         }
 
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (Input.GetKeyDown(KeyCode.W))
         {
             EnitityHouse.Instance.GetScene<BattlegroundScene>().AddComponent<Bttleground>();
         }
 
-        if (Input.GetKeyDown(KeyCode.Z))
+        if (Input.GetKeyDown(KeyCode.E))
         {
             EnitityHouse.Instance.GetScene<BattlegroundScene>().RemoveComponent<Bttleground>();
         }

@@ -14,34 +14,42 @@ namespace GameFrame
             IsClear
         }
 
-        public IEntity ComponentParent { get;  set; }
+        public IEntity SceneParent { set; }
+        
+        public IEntity Parent {  set; }
+
+        public Parameter Parameter { set; }
         public int ID { get; set; }
 
-        public EntityStatus m_EntityStatus { get; set; }
+        public EntityStatus m_EntityStatus { set; }
 
         public void Initialize();
         public void ClearAllComponent();
     }
-    
 
 
     public abstract class Entity : IEntity
     {
-        public IEntity ComponentParent { get;  set; }
+        public IEntity.EntityStatus m_EntityStatus { get; set; }
+
+        public IEntity SceneParent { get; set; }
+
+        public IEntity Parent { get; set; }
+        
+        public Parameter Parameter { get; set; }
+
+        public int ID { get; set; }
+
         private Dictionary<Type, IEntity> m_Components;
+
         public Dictionary<Type, IEntity> Components => m_Components;
 
         private List<int> TypeHashCode;
 
         private Dictionary<int, IEntity> m_Children;
-        
+
         public Dictionary<int, IEntity> Children => m_Children;
-
-        protected Parameter Parameter;
-
-        public int ID { get; set; }
-        public IEntity.EntityStatus m_EntityStatus { get; set; }
-
+        
         private static int m_SerialId;
 
         protected Entity()
@@ -56,14 +64,21 @@ namespace GameFrame
         }
 
 
-        protected virtual IEntity Create<T>(bool isComponent) where T : IEntity
+        protected virtual IEntity Create<T>(bool isComponent,Parameter parameter = null) where T : IEntity
         {
             Type type = typeof(T);
             IEntity entity = ReferencePool.Acquire(type) as IEntity;
             entity.m_EntityStatus = IEntity.EntityStatus.IsCreated;
-            entity.ComponentParent = this;
+            entity.Parent = this;
+            if (this is SceneEntity)
+            {
+                entity.SceneParent = this;
+            }
+            else
+            {
+                entity.SceneParent = SceneParent;
+            }
             entity.ID = ++m_SerialId;
-            
             if (isComponent)
             {
                 m_Components.Add(type, entity);
@@ -74,8 +89,8 @@ namespace GameFrame
                 m_Children.Add(entity.ID, entity);
             }
 
+            entity.Parameter = parameter;
             entity.Initialize();
-            // EnitityHouse.Instance.AddEntity(entity);
             return entity;
         }
 
@@ -125,7 +140,7 @@ namespace GameFrame
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        private IEntity CreateComponent<T>() where T : class, IEntity
+        private IEntity CreateComponent<T>(Parameter paramter = null) where T :  IEntity
         {
             Type type = typeof(T);
             if (this.m_Components != null && this.m_Components.ContainsKey(type))
@@ -133,7 +148,7 @@ namespace GameFrame
                 throw new Exception($"entity already has component: {type.FullName}");
             }
 
-            IEntity component = Create<T>(true);
+            IEntity component = Create<T>(true,paramter);
             return component;
         }
 
@@ -146,37 +161,31 @@ namespace GameFrame
         public T AddComponent<T>() where T : class, IEntity
         {
             IEntity component = CreateComponent<T>();
-            component.Initialize();
-
             return (T) component;
         }
 
 
         public T AddComponent<T, P1>(P1 p1) where T : class, IEntity
         {
-            IEntity component = CreateComponent<T>();
-            var x  = new ParameterP1<P1>();
-            x.Set(p1);
-            Parameter = x;
+            var p = ReferencePool.Acquire<ParameterP1<P1>>();
+            p.Set(p1);
+            IEntity component = CreateComponent<T>(p);
             return (T) component;
         }
 
         public T AddComponent<T, P1, P2>(P1 p1, P2 p2) where T : class, IEntity
         {
-            IEntity component = CreateComponent<T>();
-            component.Initialize();
+            var p = ReferencePool.Acquire<ParameterP2<P1,P2>>();
+            p.Set(p1,p2);
+            IEntity component = CreateComponent<T>(p);
             return (T) component;
         }
 
         public T AddComponent<T, P1, P2, P3>(P1 p1, P2 p2, P3 p3) where T : class, IEntity
         {
-            IEntity component = CreateComponent<T>();
-            return (T) component;
-        }
-
-        public T AddComponent<T, P1, P2, P3, P4>(P1 p1, P2 p2, P3 p3, P4 p4) where T : class, IEntity
-        {
-            IEntity component = CreateComponent<T>();
+            var p = ReferencePool.Acquire<ParameterP3<P1,P2,P3>>();
+            p.Set(p1,p2,p3);
+            IEntity component = CreateComponent<T>(p);
             return (T) component;
         }
 
@@ -209,33 +218,33 @@ namespace GameFrame
         public T AddChild<T>() where T : class, IEntity
         {
             IEntity component = Create<T>(false);
-            component.Initialize();
             return component as T;
         }
 
         public T AddChild<T, P1>(P1 p1) where T : class, IEntity
         {
-            IEntity component = Create<T>(false);
+            var p = ReferencePool.Acquire<ParameterP1<P1>>();
+            p.Set(p1);
+            IEntity component = Create<T>(false,p);
             return component as T;
         }
 
         public T AddChild<T, P1, P2>(P1 p1, P2 p2) where T : class, IEntity
         {
-            IEntity component = Create<T>(false);
+            var p = ReferencePool.Acquire<ParameterP2<P1,P2>>();
+            p.Set(p1,p2);
+            IEntity component = Create<T>(false,p);
             return component as T;
         }
 
         public T AddChild<T, P1, P2, P3>(P1 p1, P2 p2, P3 p3) where T : class, IEntity
         {
-            IEntity component = Create<T>(false);
+            var p = ReferencePool.Acquire<ParameterP3<P1,P2,P3>>();
+            p.Set(p1,p2,p3);
+            IEntity component = Create<T>(false,p);
             return component as T;
         }
-
-        public T AddChild<T, P1, P2, P3, P4>(P1 p1, P2 p2, P3 p3, P4 p4) where T : class, IEntity
-        {
-            IEntity component = Create<T>(false);
-            return component as T;
-        }
+        
 
         /// <summary>
         /// 删除实体
@@ -287,14 +296,14 @@ namespace GameFrame
             TypeHashCode.Clear();
         }
 
-        
+
         /// <summary>
         /// 清除
         /// </summary>
         public virtual void Clear()
         {
             m_EntityStatus = IEntity.EntityStatus.IsClear;
-            ComponentParent = null;
+            Parent = null;
             ClearAllChild();
             ClearAllComponent();
         }

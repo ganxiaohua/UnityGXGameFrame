@@ -8,6 +8,7 @@ namespace GameFrame
 
         public DateTime m_LastUseTime;
         
+        
         /// <summary>
         /// 进入不活跃列表之后进行设置
         /// </summary>

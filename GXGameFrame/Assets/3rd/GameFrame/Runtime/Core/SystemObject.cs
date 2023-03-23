@@ -6,9 +6,9 @@ namespace GameFrame
     {
         enum ISystemType : byte
         {
-            None,
-            IsCreated = 1 << 1,
-            IsClear = 1 << 2,
+            None = 0,
+            IsCreated = 1,
+            IsClear = 2,
         }
 
         private ISystemType m_ISystemType;

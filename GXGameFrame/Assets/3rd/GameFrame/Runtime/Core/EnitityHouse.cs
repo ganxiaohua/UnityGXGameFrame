@@ -8,14 +8,15 @@ namespace GameFrame
 
     public class EnitityHouse : Singleton<EnitityHouse>
     {
-        enum UpdateType
+        enum UpdateType : byte
         {
             Update = 0,
             LateUpdate,
             FixUpdate,
         }
+        
 
-        // private HashSet<IEntity> m_EveryEntity = new();
+        // private Dictionary<Type, List<IEntity>> m_TypeWithEntitys = new();
 
         private DoubleMap<Type, SceneEntity> m_EverySceneEntity = new();
 
@@ -31,16 +32,21 @@ namespace GameFrame
                 UpdateSystemEnitiys[i] = new List<SystemEnitiy>();
             }
         }
-
-
-        // public void AddEntity(IEntity entity)
+        
+        // public void AddEntityWithType(IEntity entity)
         // {
-        //     if (m_EveryEntity.Contains(entity))
+        //     Type type = entity.GetType();
+        //     if (!m_TypeWithEntitys.TryGetValue(type,out List<IEntity> entities))
         //     {
-        //         throw new Exception($"have enitiy:{entity.ID}");
+        //         entities = new List<IEntity>();
+        //         m_TypeWithEntitys.Add(type,entities);
         //     }
         //
-        //     m_EveryEntity.Add(entity);
+        //     if (entities.Contains(entity))
+        //     {
+        //         throw new Exception($"m_TypeWithEntitys  have enitiy:{entity.ID}");
+        //     }
+        //     entities.Add(entity);
         // }
 
         // public void RemoveEntity(IEntity entity)
@@ -135,7 +141,7 @@ namespace GameFrame
             {
                 SystemEnitiy systenitiy = ReferencePool.Acquire<SystemEnitiy>();
                 systenitiy.Create(sysObject, entity);
-                UpdateSystemEnitiys[(int) UpdateType.Update].Add(systenitiy);
+                UpdateSystemEnitiys[(byte) UpdateType.Update].Add(systenitiy);
             }
         }
 
@@ -151,7 +157,7 @@ namespace GameFrame
 
         public void Update(float elapseSeconds, float realElapseSeconds)
         {
-            UpdateSystemEnitiys[(int) UpdateType.Update].SystemUpdate(elapseSeconds, realElapseSeconds);
+            UpdateSystemEnitiys[(byte) UpdateType.Update].SystemUpdate(elapseSeconds, realElapseSeconds);
         }
 
         public void Disable()

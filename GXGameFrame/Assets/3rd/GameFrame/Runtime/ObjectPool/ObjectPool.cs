@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Security.Principal;
+using Unity.VisualScripting;
 
 namespace GameFrame
 {
@@ -10,6 +11,8 @@ namespace GameFrame
         private Dictionary<string, List<T>> m_HitObject;
 
         private Dictionary<T, string> m_ActionObjectWithName;
+
+        private List<T> NeedClearList;
 
         /// <summary>
         /// 对象池最大数量
@@ -50,11 +53,13 @@ namespace GameFrame
         {
             Type objectPoolType = typeof(ObjectPool<>).MakeGenericType(objectType);
             ObjectPool<T> objectPool = ReferencePool.Acquire(objectPoolType) as ObjectPool<T>;
+            objectPool.NeedClearList = new List<T>();
             objectPool.Initialize(typeName);
             objectPool.m_MaxCacheNum = maxNum;
             objectPool.m_InitData = initData;
             objectPool.m_ExpireTime = 120;
             objectPool.m_AutoReleaseInterval = 5;
+            objectPool.m_CurAutoReleaseTime = 0;
             return objectPool;
         }
 
@@ -87,7 +92,7 @@ namespace GameFrame
                 TimeCheck();
             }
         }
-        
+
 
         /// <summary>
         /// 吐出
@@ -169,7 +174,7 @@ namespace GameFrame
         {
             if (m_CurCacheNum <= m_MaxCacheNum)
                 return;
-            List<T> needClearList = new List<T>();
+            NeedClearList.Clear();
             int clearNum = m_MaxCacheNum / 2;
             int curClearNum = 0;
             foreach (var item in m_HitObject)
@@ -177,12 +182,12 @@ namespace GameFrame
                 List<T> list = item.Value;
                 for (int i = list.Count - 1; i >= 0; i--)
                 {
-                    needClearList.Add(list[i]);
+                    NeedClearList.Add(list[i]);
                     list.RemoveAt(i);
                     curClearNum++;
                     if (curClearNum == clearNum)
                     {
-                        Clear(needClearList);
+                        ClearPasdue(NeedClearList);
                         return;
                     }
                 }
@@ -191,7 +196,7 @@ namespace GameFrame
 
         public void TimeCheck()
         {
-            List<T> needClearList = new List<T>();
+            NeedClearList.Clear();
             foreach (var item in m_HitObject)
             {
                 List<T> list = item.Value;
@@ -200,20 +205,27 @@ namespace GameFrame
                     DateTime expireTime = DateTime.UtcNow.AddSeconds(-m_ExpireTime);
                     if (expireTime >= list[i].LastUseTime)
                     {
-                        needClearList.Add(list[i]);
+                        NeedClearList.Add(list[i]);
                         list.RemoveAt(i);
                     }
                 }
             }
-            Clear(needClearList);
+
+            ClearPasdue(NeedClearList);
         }
 
-        public void Clear(List<T> list)
+        public void ClearPasdue(List<T> pasdue)
         {
-            foreach (var item in list)
+            if (pasdue.Count == 0)
+            {
+                return;
+            }
+            foreach (var item in pasdue)
             {
                 ReferencePool.Release(item);
             }
+
+            m_CurAutoReleaseTime = 0;
         }
 
 
@@ -224,10 +236,10 @@ namespace GameFrame
                 foreach (var objectListKV in dic)
                 {
                     List<T> objectList = objectListKV.Value;
-                    Clear(objectList);
+                    ClearPasdue(objectList);
                 }
             }
-
+            m_CurAutoReleaseTime = 0;
             ClearDic(m_ActionObject);
             ClearDic(m_HitObject);
             m_ActionObject.Clear();
