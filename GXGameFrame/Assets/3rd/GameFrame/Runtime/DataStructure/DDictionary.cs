@@ -62,7 +62,6 @@ namespace GameFrame
         {
             if (!DDTKV.TryGetValue(t, out Dictionary<K, V> kv))
             {
-                Debugger.LogWarning($"not have T {typeof(T).Name}");
                 return null;
             }
             return kv;

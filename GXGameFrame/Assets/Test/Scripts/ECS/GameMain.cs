@@ -55,12 +55,12 @@ public class GameMain : MonoBehaviour
             EnitityHouse.Instance.GetScene<BattlegroundScene>().RemoveChild(Entity1id);
         }
 
-        if (Input.GetKeyDown(KeyCode.W))
+        if (Input.GetKeyDown(KeyCode.Z))
         {
             EnitityHouse.Instance.GetScene<BattlegroundScene>().AddComponent<Bttleground>();
         }
 
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.X))
         {
             EnitityHouse.Instance.GetScene<BattlegroundScene>().RemoveComponent<Bttleground>();
         }

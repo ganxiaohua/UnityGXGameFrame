@@ -108,6 +108,7 @@ namespace GameFrame
             {
                 throw new Exception($"EverySceneEntity not have enitiy:{type}");
             }
+
             m_EverySceneEntity.RemoveByKey(type);
         }
 
@@ -122,6 +123,7 @@ namespace GameFrame
             {
                 throw new Exception($"EverySceneEntity not have enitiy:{type}");
             }
+
             m_EverySceneEntity.RemoveByValue(sceneEntity);
         }
 
@@ -136,10 +138,8 @@ namespace GameFrame
             SystemObject sysObject = ReferencePool.Acquire<SystemObject>();
             sysObject.AddSystem<T>();
             m_EntitySystems.Add(entity, type, sysObject);
-            if (sysObject.System.SystemInit(entity))
-            {
-            }
-            else if (sysObject.System.IsUpdateSystem())
+            sysObject.System.SystemInit(entity);
+            if (sysObject.System.IsUpdateSystem())
             {
                 SystemEnitiy systenitiy = ReferencePool.Acquire<SystemEnitiy>();
                 systenitiy.Create(sysObject, entity);
@@ -171,14 +171,16 @@ namespace GameFrame
             var allSystemDic = m_EntitySystems.GetValue(entity);
             if (allSystemDic == null)
             {
-                //这个实体上不存在实体
+                //这个实体上不存在系统
                 return;
             }
+
             allSystemDic.SystemDestroy(entity);
-            foreach (KeyValuePair<Type,SystemObject> typeSystem in allSystemDic)
+            foreach (KeyValuePair<Type, SystemObject> typeSystem in allSystemDic)
             {
                 ReferencePool.Release(typeSystem.Value);
             }
+
             m_EntitySystems.RemoveTkey(entity);
             RemoveUpdateSystem(entity);
         }
