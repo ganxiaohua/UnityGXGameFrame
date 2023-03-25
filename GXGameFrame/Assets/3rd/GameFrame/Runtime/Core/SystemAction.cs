@@ -16,14 +16,14 @@ namespace GameFrame
                 initsys.Run(entity);
                 return true;
             }
-            else if (system is IECSInitSystem ecsinitsystem)
+            else if (system is IECSStartSystem ecsinitsystem)
             {
                 if (entity is not Context context)
                 {
                     throw new Exception($"{entity.GetType()} not has Content");
                 }
 
-                ecsinitsystem.Initialize(context);
+                ecsinitsystem.Start(context);
                 return true;
             }
 
@@ -48,7 +48,7 @@ namespace GameFrame
                 SystemEnitiy es = ets[i];
                 if (es.SystemObject.System is IUpdateSystem updatesystem)
                 {
-                    updatesystem.Run(es.Entity);
+                    updatesystem.Run(es.Entity,elapseSeconds,realElapseSeconds);
                 }
                 else if (es.SystemObject.System is IECSUpdateSystem ecsupdatesystem)
                 {
@@ -61,7 +61,7 @@ namespace GameFrame
         {
             foreach (var vt in system)
             {
-                if (vt.Value.System is IDestroySystem dessys)
+                if (vt.Value.System is IClearSystem dessys)
                 {
                     dessys.Run(entity);
                 }

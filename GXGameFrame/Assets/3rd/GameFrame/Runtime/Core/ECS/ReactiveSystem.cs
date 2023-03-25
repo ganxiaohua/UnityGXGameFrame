@@ -2,7 +2,7 @@
 
 namespace GameFrame
 {
-    public abstract class ReactiveSystem : IECSInitSystem, IECSUpdateSystem
+    public abstract class ReactiveSystem : IECSStartSystem, IECSUpdateSystem
     {
         /// <summary>
         /// 挂载的父实体
@@ -17,7 +17,7 @@ namespace GameFrame
         private Collector m_Collector;
 
         // private = new List<ECSEntity>();
-        public virtual void Initialize(Context entity)
+        public virtual void Start(Context entity)
         {
             m_Buffer = new List<ECSEntity>();
             Context = entity;

@@ -9,10 +9,10 @@
         void Run(object o);
     }
 
-    public interface IStartSystem<P1>
-    {
-        void Run(object o, P1 p1);
-    }
+    // public interface IStartSystem<P1>
+    // {
+    //     void Run(object o, P1 p1);
+    // }
 
     public abstract class StartSystem<T> : ISystem, IStartSystem where T : IStart
     {
@@ -27,24 +27,24 @@
         {
         }
     }
-
-    public abstract class StartSystem<T, P1> : ISystem, IStartSystem<P1> where T : IStart
-    {
-        public void Run(object o, P1 p1)
-        {
-            this.Init((T) o, p1);
-        }
-
-        protected abstract void Init(T self, P1 p1);
-
-        public void Clear()
-        {
-        }
-    }
+    //
+    // public abstract class StartSystem<T, P1> : ISystem, IStartSystem<P1> where T : IStart
+    // {
+    //     public void Run(object o, P1 p1)
+    //     {
+    //         this.Start((T) o, p1);
+    //     }
+    //
+    //     protected abstract void Start(T self, P1 p1);
+    //
+    //     public void Clear()
+    //     {
+    //     }
+    // }
 
 // --------------------------
-    public interface IECSInitSystem : ISystem
+    public interface IECSStartSystem : ISystem
     {
-        void Initialize(Context entity);
+        void Start(Context entity);
     }
 }

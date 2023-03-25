@@ -12,8 +12,8 @@ public class Bttleground : Context
 {
     public override void Initialize()
     {
-        ObjectPoolManager.Instance.GetObjectPool<GameObjectObjectBase>("Gameobject");
         base.Initialize();
+        ObjectPoolManager.Instance.GetObjectPool<GameObjectObjectBase>("Gameobject");
         this.AddSystem<CreateMonsterSystem>();
         this.AddSystem<MoveSystem>();
         this.AddSystem<ViewSystem>();
@@ -23,14 +23,15 @@ public class Bttleground : Context
 
     public override void Clear()
     {
+        base.Clear();
         ObjectPoolManager.Instance.DeleteObjectPool<GameObjectObjectBase>("Gameobject");
     }
 }
 
 
-public class CreateMonsterSystem : IECSInitSystem
+public class CreateMonsterSystem : IECSStartSystem
 {
-    public void Initialize(Context entity)
+    public void Start(Context entity)
     {
         var xx = entity.AddChild<Monster>();
         xx.SetPos(Vector2.one).SetRotate(new Vector2(30, 0));
@@ -43,9 +44,9 @@ public class CreateMonsterSystem : IECSInitSystem
 
 public class ViewSystem : ReactiveSystem
 {
-    public override void Initialize(Context entity)
+    public override void Start(Context entity)
     {
-        base.Initialize(entity);
+        base.Start(entity);
     }
 
     protected override Collector GetTrigger(Context context) => Collector.CreateCollector(context, typeof(Asset));
@@ -109,10 +110,10 @@ public class DestroySystem : ReactiveSystem
 {
     private Context context;
 
-    public override void Initialize(Context entity)
+    public override void Start(Context entity)
     {
         context = entity;
-        base.Initialize(entity);
+        base.Start(entity);
     }
 
     protected override Collector GetTrigger(Context context) => Collector.CreateCollector(context, typeof(Destroy));

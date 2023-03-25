@@ -4,14 +4,15 @@ using Unity.VisualScripting;
 
 namespace GameFrame
 {
-    public class DDictionary<T, K, V>:  IEnumerable<KeyValuePair<T, Dictionary<K,V>>>
+    public class DDictionary<T, K, V> : IEnumerable<KeyValuePair<T, Dictionary<K, V>>>
     {
         private readonly Dictionary<T, Dictionary<K, V>> DDTKV = new();
+
         public void Add(T t, K k, V v)
         {
             if (!DDTKV.TryGetValue(t, out Dictionary<K, V> kv))
             {
-                kv = new();
+                kv = new(1);
                 DDTKV.Add(t, kv);
             }
 
@@ -25,14 +26,15 @@ namespace GameFrame
             }
         }
 
-        public void RemoveTkey(T t)
+        public Dictionary<K, V> RemoveTkey(T t)
         {
             if (!DDTKV.TryGetValue(t, out Dictionary<K, V> kv))
             {
-                return;
+                return null;
             }
 
             DDTKV.Remove(t);
+            return kv;
         }
 
         public V RemoveKkey(T t, K k)
@@ -55,14 +57,14 @@ namespace GameFrame
 
             return value;
         }
-        
-        public  Dictionary<K, V> GetValue(T t)
+
+        public Dictionary<K, V> GetValue(T t)
         {
             if (!DDTKV.TryGetValue(t, out Dictionary<K, V> kv))
             {
+                Debugger.LogWarning($"not have T {typeof(T).Name}");
                 return null;
             }
-
             return kv;
         }
 
@@ -72,12 +74,12 @@ namespace GameFrame
             {
                 return false;
             }
+
             return true;
         }
 
 
-
-        IEnumerator<KeyValuePair<T, Dictionary<K,V>>> IEnumerable<KeyValuePair<T, Dictionary<K,V>>>.GetEnumerator()
+        IEnumerator<KeyValuePair<T, Dictionary<K, V>>> IEnumerable<KeyValuePair<T, Dictionary<K, V>>>.GetEnumerator()
         {
             return DDTKV.GetEnumerator();
         }

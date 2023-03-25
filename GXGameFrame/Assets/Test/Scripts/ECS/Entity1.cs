@@ -7,7 +7,7 @@ using Entity = GameFrame.Entity;
 
 #region 演示传统对象形式
 
-public class Entity1 : Entity, IStart, IDestroy, IUpdate
+public class Entity1 : Entity, IStart, IClear, IUpdate
 {
     public override void Initialize()
     {
@@ -33,19 +33,20 @@ public class Entity1 : Entity, IStart, IDestroy, IUpdate
 
 public static class Entity1System
 {
-    public class Entity1StartSystem : StartSystem<Entity1, int>
+    public class Entity1StartSystem : StartSystem<Entity1>
     {
-        protected override void Init(Entity1 self, int param)
+        protected override void Start(Entity1 self)
         {
             Eniti1View eniti1View = ReferencePool.Acquire<Eniti1View>();
             eniti1View.Link(self, "Cube");
             self.view = eniti1View;
         }
+        
     }
 
     public class Entity1UpdateSystem : UpdateSystem<Entity1>
     {
-        protected override void Update(Entity1 self)
+        protected override void Update(Entity1 self,float elapseSeconds, float realElapseSeconds)
         {
             if (Input.GetKeyDown(KeyCode.W))
             {
@@ -54,9 +55,9 @@ public static class Entity1System
         }
     }
 
-    public class Entity1DestroySystem : DestroySystem<Entity1>
+    public class Entity1DestroySystem : ClearSystem<Entity1>
     {
-        protected override void Destroy(Entity1 self)
+        protected override void Clear(Entity1 self)
         {
             Debug.Log("Entity1 destroy");
             ReferencePool.Release(self.view);
@@ -98,13 +99,14 @@ public class Eniti1View : IView
 }
 
 // --------------------------------------------------------------------
-public class CreateComponent : Entity, IStart
+public class CreateComponent : Entity, IStart,IClear
 {
     public override void Initialize()
     {
         var x = (ParameterP1<int>) Parameter;
         cank = x.Param1;
-        Debug.Log("创建Component");
+        this.AddSystem<ComponentSystem.CreateComponentStartSystem>();
+        this.AddSystem<ComponentSystem.CreateComponentClearSystem>();
     }
     
     public int cank = 0;
@@ -113,10 +115,19 @@ public class CreateComponent : Entity, IStart
 
 public static class ComponentSystem
 {
-    public class CreateComponentSystem : StartSystem<CreateComponent>
+    public class CreateComponentStartSystem : StartSystem<CreateComponent>
     {
         protected override void Start(CreateComponent self)
         {
+            Debug.Log("CreateComponent Start");
+        }
+    }
+    
+    public class CreateComponentClearSystem : ClearSystem<CreateComponent>
+    {
+        protected override void Clear(CreateComponent self)
+        {
+            Debug.Log("CreateComponent clear");
         }
     }
 }

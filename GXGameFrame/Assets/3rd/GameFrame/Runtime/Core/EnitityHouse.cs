@@ -14,7 +14,7 @@ namespace GameFrame
             LateUpdate,
             FixUpdate,
         }
-        
+
 
         // private Dictionary<Type, List<IEntity>> m_TypeWithEntitys = new();
 
@@ -32,7 +32,7 @@ namespace GameFrame
                 UpdateSystemEnitiys[i] = new List<SystemEnitiy>();
             }
         }
-        
+
         // public void AddEntityWithType(IEntity entity)
         // {
         //     Type type = entity.GetType();
@@ -49,14 +49,8 @@ namespace GameFrame
         //     entities.Add(entity);
         // }
 
-        // public void RemoveEntity(IEntity entity)
+        // public void RemoveSystem(IEntity entity)
         // {
-        //     if (!m_EveryEntity.Contains(entity))
-        //     {
-        //         throw new Exception($"EveryEntity not have enitiy:{entity.ID}");
-        //     }
-        //
-        //     m_EveryEntity.Remove(entity);
         //     m_EntitySystems.GetValue(entity)?.SystemDestroy(entity);
         //     m_EntitySystems.RemoveTkey(entity);
         //     RemoveUpdateSystem(entity);
@@ -102,6 +96,11 @@ namespace GameFrame
             return sceneEntity;
         }
 
+        /// <summary>
+        /// 更具scene的类型删除scene
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <exception cref="Exception"></exception>
         public void RemoveSceneEntity<T>() where T : IScene
         {
             Type type = typeof(T);
@@ -109,17 +108,20 @@ namespace GameFrame
             {
                 throw new Exception($"EverySceneEntity not have enitiy:{type}");
             }
-
             m_EverySceneEntity.RemoveByKey(type);
         }
 
+        /// <summary>
+        /// 更具本身删除scene
+        /// </summary>
+        /// <param name="sceneEntity"></param>
+        /// <exception cref="Exception"></exception>
         public void RemoveSceneEntity(SceneEntity sceneEntity)
         {
             if (!m_EverySceneEntity.TryGetValueVk(sceneEntity, out Type type))
             {
                 throw new Exception($"EverySceneEntity not have enitiy:{type}");
             }
-
             m_EverySceneEntity.RemoveByValue(sceneEntity);
         }
 
@@ -145,7 +147,12 @@ namespace GameFrame
             }
         }
 
-        public void RemoveSystem<T>(Entity entity)
+        /// <summary>
+        /// 删除实体身上的某一个系统
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <typeparam name="T"></typeparam>
+        public void RemoveSystem<T>(IEntity entity)
         {
             Type type = typeof(T);
             SystemObject systemObject = m_EntitySystems.RemoveKkey(entity, type);
@@ -153,6 +160,27 @@ namespace GameFrame
             {
                 ReferencePool.Release(systemObject);
             }
+        }
+
+        /// <summary>
+        /// 删除实体身上的所有系统
+        /// </summary>
+        /// <param name="entity"></param>
+        public void RemoveAllSystem(IEntity entity)
+        {
+            var allSystemDic = m_EntitySystems.GetValue(entity);
+            if (allSystemDic == null)
+            {
+                //这个实体上不存在实体
+                return;
+            }
+            allSystemDic.SystemDestroy(entity);
+            foreach (KeyValuePair<Type,SystemObject> typeSystem in allSystemDic)
+            {
+                ReferencePool.Release(typeSystem.Value);
+            }
+            m_EntitySystems.RemoveTkey(entity);
+            RemoveUpdateSystem(entity);
         }
 
         public void Update(float elapseSeconds, float realElapseSeconds)

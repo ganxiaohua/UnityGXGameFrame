@@ -3,9 +3,23 @@ using UnityEngine;
 
 namespace GameFrame
 {
-    struct MainScene : IScene
+    class MainScene : IScene
     {
+        public void Start(SceneEntity sceneEntity)
+        {
+            
+        }
+
+        public void Update(float elapseSeconds, float realElapseSeconds)
+        {
+            
+        }
         
+        public void Clear()
+        {
+            
+        }
+
     }
 
     public class GXGameFrame : Singleton<GXGameFrame>

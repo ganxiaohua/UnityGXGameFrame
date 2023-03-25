@@ -15,8 +15,8 @@ namespace GameFrame
         }
 
         public IEntity SceneParent { set; }
-        
-        public IEntity Parent {  set; }
+
+        public IEntity Parent { set; }
 
         public Parameter Parameter { set; }
         public int ID { get; set; }
@@ -35,7 +35,7 @@ namespace GameFrame
         public IEntity SceneParent { get; set; }
 
         public IEntity Parent { get; set; }
-        
+
         public Parameter Parameter { get; set; }
 
         public int ID { get; set; }
@@ -49,7 +49,7 @@ namespace GameFrame
         private Dictionary<int, IEntity> m_Children;
 
         public Dictionary<int, IEntity> Children => m_Children;
-        
+
         private static int m_SerialId;
 
         protected Entity()
@@ -64,7 +64,7 @@ namespace GameFrame
         }
 
 
-        protected virtual IEntity Create<T>(bool isComponent,Parameter parameter = null) where T : IEntity
+        protected virtual IEntity Create<T>(bool isComponent, Parameter parameter = null) where T : IEntity
         {
             Type type = typeof(T);
             IEntity entity = ReferencePool.Acquire(type) as IEntity;
@@ -78,6 +78,7 @@ namespace GameFrame
             {
                 entity.SceneParent = SceneParent;
             }
+
             entity.ID = ++m_SerialId;
             if (isComponent)
             {
@@ -91,6 +92,11 @@ namespace GameFrame
 
             entity.Parameter = parameter;
             entity.Initialize();
+            if (Parameter != null)
+            {
+                ReferencePool.Release(Parameter);
+            }
+
             return entity;
         }
 
@@ -129,8 +135,8 @@ namespace GameFrame
         /// <param name="entity"></param>
         private void Remove(IEntity entity)
         {
-            // EnitityHouse.Instance.RemoveEntity(entity);
             ReferencePool.Release(entity);
+            EnitityHouse.Instance.RemoveAllSystem(entity);
         }
 
 
@@ -140,7 +146,7 @@ namespace GameFrame
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        private IEntity CreateComponent<T>(Parameter paramter = null) where T :  IEntity
+        private IEntity CreateComponent<T>(Parameter paramter = null) where T : IEntity
         {
             Type type = typeof(T);
             if (this.m_Components != null && this.m_Components.ContainsKey(type))
@@ -148,7 +154,7 @@ namespace GameFrame
                 throw new Exception($"entity already has component: {type.FullName}");
             }
 
-            IEntity component = Create<T>(true,paramter);
+            IEntity component = Create<T>(true, paramter);
             return component;
         }
 
@@ -175,16 +181,16 @@ namespace GameFrame
 
         public T AddComponent<T, P1, P2>(P1 p1, P2 p2) where T : class, IEntity
         {
-            var p = ReferencePool.Acquire<ParameterP2<P1,P2>>();
-            p.Set(p1,p2);
+            var p = ReferencePool.Acquire<ParameterP2<P1, P2>>();
+            p.Set(p1, p2);
             IEntity component = CreateComponent<T>(p);
             return (T) component;
         }
 
         public T AddComponent<T, P1, P2, P3>(P1 p1, P2 p2, P3 p3) where T : class, IEntity
         {
-            var p = ReferencePool.Acquire<ParameterP3<P1,P2,P3>>();
-            p.Set(p1,p2,p3);
+            var p = ReferencePool.Acquire<ParameterP3<P1, P2, P3>>();
+            p.Set(p1, p2, p3);
             IEntity component = CreateComponent<T>(p);
             return (T) component;
         }
@@ -225,26 +231,26 @@ namespace GameFrame
         {
             var p = ReferencePool.Acquire<ParameterP1<P1>>();
             p.Set(p1);
-            IEntity component = Create<T>(false,p);
+            IEntity component = Create<T>(false, p);
             return component as T;
         }
 
         public T AddChild<T, P1, P2>(P1 p1, P2 p2) where T : class, IEntity
         {
-            var p = ReferencePool.Acquire<ParameterP2<P1,P2>>();
-            p.Set(p1,p2);
-            IEntity component = Create<T>(false,p);
+            var p = ReferencePool.Acquire<ParameterP2<P1, P2>>();
+            p.Set(p1, p2);
+            IEntity component = Create<T>(false, p);
             return component as T;
         }
 
         public T AddChild<T, P1, P2, P3>(P1 p1, P2 p2, P3 p3) where T : class, IEntity
         {
-            var p = ReferencePool.Acquire<ParameterP3<P1,P2,P3>>();
-            p.Set(p1,p2,p3);
-            IEntity component = Create<T>(false,p);
+            var p = ReferencePool.Acquire<ParameterP3<P1, P2, P3>>();
+            p.Set(p1, p2, p3);
+            IEntity component = Create<T>(false, p);
             return component as T;
         }
-        
+
 
         /// <summary>
         /// 删除实体
@@ -267,7 +273,6 @@ namespace GameFrame
                 {
                     entity.ClearAllChild();
                 }
-
                 Remove(item.Value);
                 item.Value.ClearAllComponent();
             }

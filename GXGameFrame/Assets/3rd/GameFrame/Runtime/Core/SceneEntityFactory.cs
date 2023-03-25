@@ -5,14 +5,14 @@ namespace GameFrame
 {
     public static class SceneEntityFactory
     {
-        public static SceneEntity CreateScene<T>(SceneEntity parent) where T : IScene
+        public static SceneEntity CreateScene<T>(SceneEntity parent) where T : class, IScene, new()
         {
             if (parent == null)
             {
                 throw new Exception("SceneEntityFactory parent is null");
             }
-
-            SceneEntity sceneEntity = parent.AddChild<SceneEntity>();
+            
+            SceneEntity sceneEntity = parent.AddChild<SceneEntity,Type>(typeof(T));
             EnitityHouse.Instance.AddSceneEntity<T>(sceneEntity);
             return sceneEntity;
         }

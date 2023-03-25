@@ -3,8 +3,21 @@ using System.Collections.Generic;
 using GameFrame;
 using UnityEngine;
 
-struct BattlegroundScene : IScene
+
+class BattlegroundScene : IScene
 {
+    public void Start(SceneEntity sceneEntity)
+    {
+    }
+
+    public void Update(float elapseSeconds, float realElapseSeconds)
+    {
+    }
+
+    public void Clear()
+    {
+        Debug.Log("BattlegroundScene clear");
+    }
 }
 
 public class GameMain : MonoBehaviour
@@ -26,14 +39,15 @@ public class GameMain : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.A))
         {
             Entity1id = EnitityHouse.Instance.GetScene<BattlegroundScene>().AddChild<Entity1>().ID;
-            EnitityHouse.Instance.GetScene<BattlegroundScene>().AddComponent<CreateComponent,int>(1);
+            EnitityHouse.Instance.GetScene<BattlegroundScene>().AddComponent<CreateComponent, int>(1);
         }
 
         if (Input.GetKeyDown(KeyCode.S))
         {
-            EventTest text = EventManager.Instance.CreateEvent<EventTest>();
-            text.Init(10,15);
-            EventManager.Instance.Send(text);
+            SceneEntityFactory.RemoveScene<BattlegroundScene>();
+            // EventTest text = EventManager.Instance.CreateEvent<EventTest>();
+            // text.Init(10, 15);
+            // EventManager.Instance.Send(text);
         }
 
         if (Input.GetKeyDown(KeyCode.D))
