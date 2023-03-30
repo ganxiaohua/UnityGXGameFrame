@@ -1,6 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using GameFrame;
+using GameFrame.Timer;
 using UnityEngine;
 
 
@@ -23,7 +26,6 @@ class BattlegroundScene : IScene
 public class GameMain : MonoBehaviour
 {
     // Start is called before the first frame updat
-
     void Start()
     {
         GXGameFrame.Instance.Start();
@@ -44,10 +46,9 @@ public class GameMain : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.S))
         {
+            AsynTest();
+            EventManager.Instance.Send<EventTest, int, int>(1, 2);
             SceneEntityFactory.RemoveScene<BattlegroundScene>();
-            // EventTest text = EventManager.Instance.CreateEvent<EventTest>();
-            // text.Init(10, 15);
-            // EventManager.Instance.Send(text);
         }
 
         if (Input.GetKeyDown(KeyCode.D))
@@ -64,5 +65,11 @@ public class GameMain : MonoBehaviour
         {
             EnitityHouse.Instance.GetScene<BattlegroundScene>().RemoveComponent<Bttleground>();
         }
+    }
+
+    public async UniTask AsynTest()
+    {
+        await EventManager.Instance.SendAsyn<EventTestAsyn,string>("你好");
+        Debug.Log("時間等待結束");
     }
 }

@@ -23,12 +23,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - Preload
     - Mode1
-  - m_GUID: 35f1c8ec295e24144b856b7ba030dc37
-    m_Address: Decorate_1_2
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Preload
-    - Mode1
   - m_GUID: 513df5101a0f04349a5498d24a193702
     m_Address: Decorate_1_3
     m_ReadOnly: 0

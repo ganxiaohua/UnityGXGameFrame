@@ -5,29 +5,7 @@ using UnityEngine;
 
 namespace GameFrame
 {
-    public interface IEntity : IReference
-    {
-        public enum EntityStatus : byte
-        {
-            None = 0,
-            IsCreated,
-            IsClear
-        }
-
-        public IEntity SceneParent { set; }
-
-        public IEntity Parent { set; }
-
-        public Parameter Parameter { set; }
-        public int ID { get; set; }
-
-        public EntityStatus m_EntityStatus { set; }
-
-        public void Initialize();
-        public void ClearAllComponent();
-    }
-
-
+    
     public abstract class Entity : IEntity
     {
         public IEntity.EntityStatus m_EntityStatus { get; set; }
@@ -92,6 +70,7 @@ namespace GameFrame
 
             entity.Parameter = parameter;
             entity.Initialize();
+            EnitityHouse.Instance.AddEntity(entity);
             if (Parameter != null)
             {
                 ReferencePool.Release(Parameter);
@@ -136,6 +115,7 @@ namespace GameFrame
         private void Remove(IEntity entity)
         {
             ReferencePool.Release(entity);
+            EnitityHouse.Instance.RemoveEntity(entity);
             EnitityHouse.Instance.RemoveAllSystem(entity);
         }
 

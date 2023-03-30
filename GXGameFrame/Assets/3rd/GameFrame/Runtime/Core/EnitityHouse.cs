@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Principal;
 
 namespace GameFrame
 {
-    using DDictionaryETC = DDictionary<IEntity, Type, SystemObject>;
+    using DDictionaryETC = DDictionary<Type, Type, SystemObject>;
 
     public class EnitityHouse : Singleton<EnitityHouse>
     {
@@ -16,7 +17,7 @@ namespace GameFrame
         }
 
 
-        // private Dictionary<Type, List<IEntity>> m_TypeWithEntitys = new();
+        private Dictionary<Type, List<IEntity>> m_TypeWithEntitys = new();
 
         private DoubleMap<Type, SceneEntity> m_EverySceneEntity = new();
 
@@ -33,30 +34,72 @@ namespace GameFrame
             }
         }
 
-        // public void AddEntityWithType(IEntity entity)
-        // {
-        //     Type type = entity.GetType();
-        //     if (!m_TypeWithEntitys.TryGetValue(type,out List<IEntity> entities))
-        //     {
-        //         entities = new List<IEntity>();
-        //         m_TypeWithEntitys.Add(type,entities);
-        //     }
-        //
-        //     if (entities.Contains(entity))
-        //     {
-        //         throw new Exception($"m_TypeWithEntitys  have enitiy:{entity.ID}");
-        //     }
-        //     entities.Add(entity);
-        // }
+        /// <summary>
+        /// 增加实体 所有的实体都会加入到这里
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <exception cref="Exception"></exception>
+        public void AddEntity(IEntity entity)
+        {
+            Type type = entity.GetType();
+            if (!m_TypeWithEntitys.TryGetValue(type, out var entityList))
+            {
+                entityList = new List<IEntity>();
+                m_TypeWithEntitys.Add(type, entityList);
+            }
 
-        // public void RemoveSystem(IEntity entity)
-        // {
-        //     m_EntitySystems.GetValue(entity)?.SystemDestroy(entity);
-        //     m_EntitySystems.RemoveTkey(entity);
-        //     RemoveUpdateSystem(entity);
-        // }
+            if (entityList.Contains(entity))
+            {
+                throw new Exception($"TypeWithEntitys have enitiy:{entity.ID}");
+            }
 
-        //TODO:这里有新能瓶颈,需要优化一下
+            entityList.Add(entity);
+        }
+
+        public List<T> GetEntity<T>() where T : class, IEntity, new()
+        {
+            if (!m_TypeWithEntitys.TryGetValue(typeof(T), out var entityList))
+            {
+                throw new Exception($"TypeWithEntitys not have {typeof(T)}");
+            }
+
+            return entityList as List<T>;
+        }
+
+
+        /// <summary>
+        /// 删除实体
+        /// </summary>
+        /// <param name="entity"></param>
+        public void RemoveEntity(IEntity entity)
+        {
+            Type type = entity.GetType();
+            if (!m_TypeWithEntitys.TryGetValue(type, out var entityList) || !entityList.Contains(entity))
+            {
+                throw new Exception($"TypeWithEntitys not have enitiy:{entity.ID}");
+            }
+
+            entityList.Remove(entity);
+        }
+
+        /// <summary>
+        /// 获得此类型的实体的数量
+        /// </summary>
+        public int GetEntityCount(Type entityType)
+        {
+            if (m_TypeWithEntitys.TryGetValue(entityType, out var entityList))
+            {
+                return entityList.Count;
+            }
+
+            return 0;
+        }
+
+
+        /// <summary>
+        /// 删除一个updatesystem
+        /// </summary>
+        /// <param name="entity"></param>
         private void RemoveUpdateSystem(IEntity entity)
         {
             for (int z = 0; z < UpdateSystemEnitiys.Length; z++)
@@ -130,14 +173,15 @@ namespace GameFrame
         public void AddSystem<T>(IEntity entity) where T : ISystem
         {
             Type type = typeof(T);
-            if (m_EntitySystems.ContainsTk(entity, type))
+            Type entityType = entity.GetType();
+            SystemObject sysObject = m_EntitySystems.GetVValue(entityType, type);
+            if (sysObject == null)
             {
-                throw new Exception($"EntitySystems have system:{type}");
+                sysObject = ReferencePool.Acquire<SystemObject>();
+                sysObject.AddSystem<T>();
+                m_EntitySystems.Add(entityType, type, sysObject);
             }
 
-            SystemObject sysObject = ReferencePool.Acquire<SystemObject>();
-            sysObject.AddSystem<T>();
-            m_EntitySystems.Add(entity, type, sysObject);
             sysObject.System.SystemInit(entity);
             if (sysObject.System.IsUpdateSystem())
             {
@@ -155,20 +199,25 @@ namespace GameFrame
         public void RemoveSystem<T>(IEntity entity)
         {
             Type type = typeof(T);
-            SystemObject systemObject = m_EntitySystems.RemoveKkey(entity, type);
+            Type entityType = entity.GetType();
+            SystemObject systemObject = m_EntitySystems.GetVValue(entityType, type);
             if (systemObject != null)
             {
-                ReferencePool.Release(systemObject);
+                if (systemObject.System.IsUpdateSystem())
+                {
+                    RemoveUpdateSystem(entity);
+                }
             }
         }
 
         /// <summary>
-        /// 删除实体身上的所有系统
+        /// 有实体进行销毁
         /// </summary>
         /// <param name="entity"></param>
         public void RemoveAllSystem(IEntity entity)
         {
-            var allSystemDic = m_EntitySystems.GetValue(entity);
+            Type entityType = entity.GetType();
+            var allSystemDic = m_EntitySystems.GetValue(entityType);
             if (allSystemDic == null)
             {
                 //这个实体上不存在系统
@@ -176,14 +225,17 @@ namespace GameFrame
             }
 
             allSystemDic.SystemDestroy(entity);
-            foreach (KeyValuePair<Type, SystemObject> typeSystem in allSystemDic)
-            {
-                ReferencePool.Release(typeSystem.Value);
-            }
-
-            m_EntitySystems.RemoveTkey(entity);
             RemoveUpdateSystem(entity);
+            if (GetEntityCount(entityType) == 0)
+            {
+                var item = m_EntitySystems.RemoveTkey(entityType);
+                foreach (KeyValuePair<Type, SystemObject> typeSystem in item)
+                {
+                    ReferencePool.Release(typeSystem.Value);
+                }
+            }
         }
+
 
         public void Update(float elapseSeconds, float realElapseSeconds)
         {

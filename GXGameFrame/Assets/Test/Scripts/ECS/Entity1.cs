@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using GameFrame;
+using GameFrame.Timer;
 using UnityEngine;
 using Entity = GameFrame.Entity;
 
@@ -41,12 +42,11 @@ public static class Entity1System
             eniti1View.Link(self, "Cube");
             self.view = eniti1View;
         }
-        
     }
 
     public class Entity1UpdateSystem : UpdateSystem<Entity1>
     {
-        protected override void Update(Entity1 self,float elapseSeconds, float realElapseSeconds)
+        protected override void Update(Entity1 self, float elapseSeconds, float realElapseSeconds)
         {
             if (Input.GetKeyDown(KeyCode.W))
             {
@@ -99,7 +99,7 @@ public class Eniti1View : IView
 }
 
 // --------------------------------------------------------------------
-public class CreateComponent : Entity, IStart,IClear
+public class CreateComponent : Entity, IStart, IClear
 {
     public override void Initialize()
     {
@@ -108,7 +108,7 @@ public class CreateComponent : Entity, IStart,IClear
         this.AddSystem<ComponentSystem.CreateComponentStartSystem>();
         this.AddSystem<ComponentSystem.CreateComponentClearSystem>();
     }
-    
+
     public int cank = 0;
     public int cank2 = 0;
 }
@@ -122,7 +122,7 @@ public static class ComponentSystem
             Debug.Log("CreateComponent Start");
         }
     }
-    
+
     public class CreateComponentClearSystem : ClearSystem<CreateComponent>
     {
         protected override void Clear(CreateComponent self)
@@ -134,54 +134,31 @@ public static class ComponentSystem
 
 
 // ----------------------事件系统测试-------------------------------------
-public class EventTest : IMessenger
+public class EventTest : IMessenger<int, int>
 {
-    private int A;
-    private int B;
-
-    public int CA
+    public void Send(int p1, int p2)
     {
-        get { return A; }
-    }
-
-    public int CB
-    {
-        get { return B; }
-    }
-
-    private EnitityEvnetDo enitityEvnetDo;
-
-    public void Init(int a, int b)
-    {
-        A = a;
-        B = b;
-    }
-
-    public void Send()
-    {
-        enitityEvnetDo = ReferencePool.Acquire<EnitityEvnetDo>();
-        enitityEvnetDo.Do(this);
-    }
-
-    public void Clear()
-    {
-        ReferencePool.Release(enitityEvnetDo);
-    }
-}
-
-public class EnitityEvnetDo : IAddressee
-{
-    public void Do(IMessenger messenger)
-    {
-        EventTest eventTest = messenger as EventTest;
+        List<CreateComponent> list = EnitityHouse.Instance.GetEntity<CreateComponent>();
         CreateComponent createComponent = EnitityHouse.Instance.GetScene<BattlegroundScene>().GetComponent<CreateComponent>();
         if (createComponent == null)
         {
             return;
         }
 
-        createComponent.cank = eventTest.CA;
-        Debug.Log("接受到了消息");
+        Debug.Log($"接收到事件*EventTest {p1}{p2}");
+    }
+
+    public void Clear()
+    {
+    }
+}
+
+public class EventTestAsyn : IMessengerAsyn<string>
+{
+    public async UniTask Send(string p1)
+    {
+        Debug.Log(p1);
+        await TimerComponent.Instance.OnceTimerAsync(1000, null);
     }
 
     public void Clear()

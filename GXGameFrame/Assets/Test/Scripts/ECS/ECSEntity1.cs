@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using GameFrame;
-using Sirenix.Utilities.Editor;
-using Unity.VisualScripting;
 using UnityEngine;
 
 #region 演示Ecs形式
@@ -303,6 +301,7 @@ public class GameObjectObjectBase : ObjectBase
         {
             Obj.SetActive(true);
         }
+
         Debug.Log("创建");
     }
 
@@ -317,6 +316,7 @@ public class GameObjectObjectBase : ObjectBase
         {
             Obj.SetActive(false);
         }
+
         Debug.Log("回收");
     }
 
@@ -335,55 +335,62 @@ public class GameObjectObjectBase : ObjectBase
 
 public class GameObjectView : IEceView
 {
-    private ECSEntity Entity;
-    private string LoadPath;
-    private ObjectPool<GameObjectObjectBase> objectPool;
-    private GameObjectObjectBase GameObject;
+    private ECSEntity m_BindEntity;
+    private string m_LoadPath;
+    private ObjectPool<GameObjectObjectBase> m_ObjectPool;
+    private GameObjectObjectBase m_GameObject;
+    private EntityComponentNumericalChange<Pos> m_PosDelegate;
+    private EntityComponentNumericalChange<Rotate> m_RotDelegate;
 
     public void Link(ECSEntity ecsEntity, string path)
     {
-        Entity = ecsEntity;
+        m_BindEntity = ecsEntity;
         Init(path);
     }
 
 
     public void Init(string path)
     {
-        if (objectPool == null)
+        if (m_ObjectPool == null)
         {
-            objectPool = ObjectPoolManager.Instance.CreateObjectPool<GameObjectObjectBase>("Gameobject", 10, path);
+            m_ObjectPool = ObjectPoolManager.Instance.CreateObjectPool<GameObjectObjectBase>("Gameobject", 10, path);
         }
 
-        GameObject = objectPool.Spawn();
-        LoadPath = path;
-        Position(Entity.GetPos(), Entity);
-        Rotate(Entity.GetRotate(), Entity);
-        ViewBindEventClass.PosEntityComponentNumericalChange += Position;
-        ViewBindEventClass.RotateEntityComponentNumericalChange += Rotate;
+        m_GameObject = m_ObjectPool.Spawn();
+        m_LoadPath = path;
+        Position(m_BindEntity.GetPos(), m_BindEntity);
+        Rotate(m_BindEntity.GetRotate(), m_BindEntity);
+        m_PosDelegate = Position;
+        m_RotDelegate = Rotate;
+        ViewBindEventClass.PosEntityComponentNumericalChange -= m_PosDelegate;
+        ViewBindEventClass.PosEntityComponentNumericalChange += m_PosDelegate;
+        ViewBindEventClass.RotateEntityComponentNumericalChange -= m_RotDelegate;
+        ViewBindEventClass.RotateEntityComponentNumericalChange += m_RotDelegate;
     }
 
     private void Position(Pos pos, ECSEntity ecsEntity)
     {
-        if (Entity != ecsEntity)
+        if (m_BindEntity.ID != ecsEntity.ID)
             return;
-        GameObject.Pos = pos.vec;
+        m_GameObject.Pos = pos.vec;
     }
 
     private void Rotate(Rotate pos, ECSEntity ecsEntity)
     {
-        if (Entity != ecsEntity)
+        if (m_BindEntity.ID != ecsEntity.ID)
             return;
-        GameObject.Rot = Quaternion.Euler(pos.vec);
+        m_GameObject.Rot = Quaternion.Euler(pos.vec);
     }
 
     public void Clear()
     {
-        //对象池操作可以是
-        ViewBindEventClass.PosEntityComponentNumericalChange -= Position;
-        ViewBindEventClass.RotateEntityComponentNumericalChange -= Rotate;
-        objectPool.UnSpawn(GameObject);
-        objectPool = null;
-        Entity = null;
+        ViewBindEventClass.PosEntityComponentNumericalChange -= m_PosDelegate;
+        ViewBindEventClass.RotateEntityComponentNumericalChange -= m_RotDelegate;
+        m_ObjectPool.UnSpawn(m_GameObject);
+        m_PosDelegate = null;
+        m_RotDelegate = null;
+        m_ObjectPool = null;
+        m_BindEntity = null;
     }
 }
 

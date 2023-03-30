@@ -17,7 +17,7 @@ namespace GameFrame
         public Dictionary<ECSEntity, int> m_EntityDictonary;
 
         public HashSet<ECSEntity> CollectedEntities => m_CollectedEntities;
-        
+
 
         public static Collector CreateCollector(Context context, params Type[] types)
         {
@@ -27,6 +27,7 @@ namespace GameFrame
                 Matcher matcher = Matcher.SetAllOfIndices(types[i]);
                 groups[i] = context.GetGroup(matcher);
             }
+
             Collector collector = ReferencePool.Acquire<Collector>();
             collector.InitCollector(groups);
             return collector;
@@ -36,12 +37,14 @@ namespace GameFrame
         {
             m_CollectedEntities = new HashSet<ECSEntity>();
             m_EntityDictonary = new();
+            var temAdd = new GroupChanged(this.EventAdd);
+            var temremove = new GroupChanged(this.EventRemove);
             foreach (var item in group)
             {
-                item.GroupAdd -= EventAdd;
-                item.GroupRomve -= EventRemove;
-                item.GroupAdd += EventAdd;
-                item.GroupRomve += EventRemove;
+                item.GroupAdd -= temAdd;
+                item.GroupAdd += temAdd;
+                item.GroupRomve -= temremove;
+                item.GroupRomve += temremove;
                 Add(item);
             }
         }
@@ -55,21 +58,23 @@ namespace GameFrame
                 {
                     m_EntityDictonary[item] = 0;
                 }
+
                 m_EntityDictonary[item]++;
             }
         }
 
-        public void EventAdd(Group group,ECSEntity ecsEntity)
+        public void EventAdd(Group group, ECSEntity ecsEntity)
         {
             m_CollectedEntities.Add(ecsEntity);
             if (!m_EntityDictonary.ContainsKey(ecsEntity))
             {
                 m_EntityDictonary[ecsEntity] = 0;
             }
+
             m_EntityDictonary[ecsEntity]++;
         }
-        
-        public void EventRemove(Group group,ECSEntity ecsEntity)
+
+        public void EventRemove(Group group, ECSEntity ecsEntity)
         {
             if (m_EntityDictonary.ContainsKey(ecsEntity))
             {

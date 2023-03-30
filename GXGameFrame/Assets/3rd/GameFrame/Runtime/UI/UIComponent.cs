@@ -1,6 +1,6 @@
 ﻿namespace GameFrame
 {
-    public class UIComponent:Entity
+    public class UIComponent : Entity
     {
         
     }

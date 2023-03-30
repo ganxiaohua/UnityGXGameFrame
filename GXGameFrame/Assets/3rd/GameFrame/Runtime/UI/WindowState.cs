@@ -3,7 +3,7 @@
     /// <summary>
     /// 在下一个节点的UI本窗口打开的
     /// </summary>
-    public enum WindowType
+    public enum WindowState
     {
         /// <summary>
         ///隐藏窗口

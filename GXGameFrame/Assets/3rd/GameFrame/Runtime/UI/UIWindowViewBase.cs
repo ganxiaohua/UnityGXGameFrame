@@ -2,8 +2,9 @@
 
 namespace GameFrame
 {
-    public abstract class UIViewBase:Window,IView
+    public abstract class UIViewBase : Window, IView
     {
+        protected Entity UIBase;
         public override void Dispose()
         {
             base.Dispose();
@@ -34,14 +35,18 @@ namespace GameFrame
             base.DoHideAnimation();
         }
 
+        public void Update(float elapseSeconds, float realElapseSeconds)
+        {
+        }
+
         public void Clear()
         {
             Dispose();
         }
 
-        public void Link(Entity ecsEntity, string path)
+        public void Link(Entity uiBase, string path)
         {
-            
+            UIBase = uiBase;
         }
     }
 }

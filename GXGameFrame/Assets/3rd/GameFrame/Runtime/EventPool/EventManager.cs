@@ -1,27 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Security.Principal;
-using UnityEditor.UI;
+using Cysharp.Threading.Tasks;
 
 namespace GameFrame
 {
     public class EventManager : Singleton<EventManager>
     {
-        public T CreateEvent<T>() where T : class, IMessenger, new()
+        public void Send<T, P1>(P1 p1) where T : class, IMessenger<P1>, new()
         {
             T t = ReferencePool.Acquire<T>();
-            return t;
+            t.Send(p1);
+            RecycleEvent(t);
         }
 
-        public void Send<T>(T t) where T : class, IMessenger, new()
+        public void Send<T, P1, P2>(P1 p1, P2 p2) where T : class, IMessenger<P1, P2>, new()
         {
-            if (t == null)
-            {
-                throw new Exception($"{t.GetType().Name} is null");
-            }
-
-            t.Send();
+            T t = ReferencePool.Acquire<T>();
+            t.Send(p1, p2);
             RecycleEvent(t);
+        }
+
+        public void Send<T, P1, P2, P3>(P1 p1, P2 p2, P3 p3) where T : class, IMessenger<P1, P2, P3>, new()
+        {
+            T t = ReferencePool.Acquire<T>();
+            t.Send(p1, p2, p3);
+            RecycleEvent(t);
+        }
+
+        public async UniTask SendAsyn<T, P1>(P1 p1) where T : class, IMessengerAsyn<P1>, new()
+        {
+            T t = ReferencePool.Acquire<T>();
+            await t.Send(p1);
         }
 
         private void RecycleEvent(IReference messager)
@@ -30,6 +40,7 @@ namespace GameFrame
             {
                 throw new Exception($"{messager.GetType().Name} is null");
             }
+
             ReferencePool.Release(messager);
         }
     }

@@ -14,6 +14,11 @@ namespace GameFrame
         /// 打开窗口的类型
         /// </summary>
         public Type WindowType;
+
+        /// <summary>
+        /// 窗口的状态
+        /// </summary>
+        public WindowState WindowState;
         
         /// <summary>
         /// 是否正在加载资源
@@ -23,6 +28,6 @@ namespace GameFrame
         /// <summary>
         /// 加载的窗体
         /// </summary>
-        public UIBase Window;
+        public UIWindow Window;
     }
 }

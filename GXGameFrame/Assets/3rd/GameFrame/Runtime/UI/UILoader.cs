@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -13,10 +15,10 @@ namespace GameFrame
         /// <summary>
         /// UIPack数据类
         /// </summary>
-        private sealed class UIPackageData
+        public sealed class UIPackageData
         {
             /// <summary>
-            /// 被加载的次数,主包 和子包加载都会加1
+            /// 被加载的次数
             /// </summary>
             public int Count = 0;
 
@@ -32,7 +34,7 @@ namespace GameFrame
             }
 
             /// <summary>
-            /// 包的一个子UI被加载了
+            /// 包被加载了
             /// </summary>
             /// <param name="childName"></param>
             public void AddReferenceCount()
@@ -41,7 +43,7 @@ namespace GameFrame
             }
 
             /// <summary>
-            /// 包的一个子UI被消除了
+            /// 包被消除了
             /// </summary>
             /// <param name="childName"></param>
             public bool SubReferenceCount()
@@ -99,6 +101,7 @@ namespace GameFrame
         }
 
         Dictionary<string, UIPackageData> packages = new Dictionary<string, UIPackageData>();
+        private StringBuilder m_TempSb = new StringBuilder(128);
 
         /// <summary>
         /// 加载包
@@ -196,27 +199,29 @@ namespace GameFrame
                 return;
             }
 
-            AssetManager.Instance.LoadAsync<object>(resPath,
-                (x) =>
+            LoadResPath(resPath, item, uiPackAgeData);
+        }
+
+        public async UniTask LoadResPath(string path, PackageItem package,UIPackageData uiPackAgeData)
+        {
+            object x = await AssetManager.Instance.LoadAsyncTask<object>(path);
+            package.owner.SetItemAsset(package, x, DestroyMethod.None);
+            try
+            {
+                if (package.owner.ReadyLoadFileLoadOver(path))
                 {
-                    item.owner.SetItemAsset(item, x, DestroyMethod.None);
-                    try
-                    {
-                        if (item.owner.ReadyLoadFileLoadOver(name + extension))
-                        {
-                            var callback = uiPackAgeData.Completed;
-                            uiPackAgeData.LoadOver = true;
-                            callback?.Invoke();
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        //当有个资源没在预加载列表的时候,不至于卡在那边
-                        Debugger.LogError($"LoadPackageInternalAsync path:{resPath}, error:{e.Message}");
-                        uiPackAgeData.LoadOver = true;
-                        uiPackAgeData.Completed?.Invoke();
-                    }
-                });
+                    var callback = uiPackAgeData.Completed;
+                    uiPackAgeData.LoadOver = true;
+                    callback?.Invoke();
+                }
+            }
+            catch (Exception e)
+            {
+                //当有个资源没在预加载列表的时候,不至于卡在那边
+                Debugger.LogError($"LoadPackageInternalAsync path:{path}, error:{e.Message}");
+                uiPackAgeData.LoadOver = true;
+                uiPackAgeData.Completed?.Invoke();
+            }
         }
     }
 }

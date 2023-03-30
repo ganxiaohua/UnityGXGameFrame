@@ -12,11 +12,11 @@ namespace GameFrame
         {
             if (!DDTKV.TryGetValue(t, out Dictionary<K, V> kv))
             {
-                kv = new(1);
+                kv = new();
                 DDTKV.Add(t, kv);
             }
 
-            if (kv.TryGetValue(k, out V value))
+            if (kv.ContainsKey(k))
             {
                 Debugger.LogWarning($"kv  have t:{typeof(K)}");
             }
