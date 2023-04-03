@@ -20,7 +20,6 @@ public class AssetManager : Singleton<AssetManager>
         private string Path;
         private Type Type;
         private List<object> CallBackList; //这个资源现在拥有的callback数量
-
         public Assets(AsyncOperationHandle asyncOperationHandle, string path, Type type, object action)
         {
             AsyncOperationHandle = asyncOperationHandle;
@@ -88,7 +87,7 @@ public class AssetManager : Singleton<AssetManager>
 
 
     private readonly Dictionary<string, Assets> CacheAssetDic = new Dictionary<string, Assets>(16);
-
+    public UILoader UILoader = new UILoader();
     public T Load<T>(string path)
     {
         var handle = Addressables.LoadAssetAsync<T>(path);

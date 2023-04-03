@@ -108,7 +108,7 @@ namespace GameFrame
         /// </summary>
         /// <param name="descFileName">包名</param>
         /// <param name="onCompleted">回调函数</param>
-        public async UniTask AddPackage(string descFileName, System.Action onCompleted = null)
+        public void AddPackage(string descFileName, System.Action onCompleted = null)
         {
             if (packages.TryGetValue(descFileName, out UIPackageData uiPackAgeData))
             {
@@ -132,28 +132,24 @@ namespace GameFrame
 
             packages.Add(descFileName, uiPackAgeData);
             uiPackAgeData.Completed = onCompleted;
-
-            var asset = await AssetManager.Instance.LoadAsyncTask<TextAsset>(desPath);
-            if (asset == null)
+            AssetManager.Instance.LoadAsync<TextAsset>(desPath, (asset) =>
             {
-                return;
-            }
+                if (uiPackAgeData.CancelOver)
+                {
+                    AssetManager.Instance.UnLoad(desPath);
+                    return;
+                }
 
-            if (uiPackAgeData.CancelOver)
-            {
+                var desText = asset as TextAsset;
+                var uipackage = UIPackage.AddPackage(desText.bytes, descFileName, LoadPackageInternalAsync);
+                uiPackAgeData.SetUIPackage(uipackage);
+                uipackage.LoadAllAssets();
                 AssetManager.Instance.UnLoad(desPath);
-                return;
-            }
-
-            var desText = asset;
-            var uipackage = UIPackage.AddPackage(desText.bytes, descFileName, LoadPackageInternalAsync);
-            uiPackAgeData.SetUIPackage(uipackage);
-            uipackage.LoadAllAssets();
-            AssetManager.Instance.UnLoad(desPath);
-            if (uipackage.LoadOver())
-            {
-                uiPackAgeData.Completed?.Invoke();
-            }
+                if (uipackage.LoadOver())
+                {
+                    uiPackAgeData.Completed?.Invoke();
+                }
+            });
         }
 
         /// <summary>
@@ -202,7 +198,7 @@ namespace GameFrame
             LoadResPath(resPath, item, uiPackAgeData);
         }
 
-        public async UniTask LoadResPath(string path, PackageItem package,UIPackageData uiPackAgeData)
+        public async UniTask LoadResPath(string path, PackageItem package, UIPackageData uiPackAgeData)
         {
             object x = await AssetManager.Instance.LoadAsyncTask<object>(path);
             package.owner.SetItemAsset(package, x, DestroyMethod.None);

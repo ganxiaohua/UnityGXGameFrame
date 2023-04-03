@@ -1,4 +1,6 @@
-﻿namespace GameFrame
+﻿using System;
+
+namespace GameFrame
 {
     public interface IStart
     {
@@ -19,6 +21,11 @@
         public void Run(object o)
         {
             this.Start((T) o);
+        }
+        
+        public Type SystemType()
+        {
+            return typeof(IStartSystem);
         }
 
         protected abstract void Start(T self);

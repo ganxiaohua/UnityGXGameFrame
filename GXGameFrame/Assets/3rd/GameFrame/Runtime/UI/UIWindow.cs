@@ -2,7 +2,7 @@
 
 namespace GameFrame
 {
-    public class UIWindow : Entity, IStart, IUpdate, IClear
+    public class UIWindow : Entity, IStart, IUpdate, IClear,IShow,IHide
     {
         public override void Initialize()
         {

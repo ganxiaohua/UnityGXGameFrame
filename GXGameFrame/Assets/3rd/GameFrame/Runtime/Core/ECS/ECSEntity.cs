@@ -97,7 +97,6 @@ namespace GameFrame
             {
                 return null;
             }
-
             return value as T;
         }
 

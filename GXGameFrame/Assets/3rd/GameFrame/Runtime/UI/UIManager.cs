@@ -10,6 +10,23 @@ namespace GameFrame
         private Queue<UINode> m_WaitOpenUIList;
         private Queue<UINode> m_WaitCloseUIList;
 
+        /// <summary>
+        /// 是否需要等待上一级窗口关闭
+        /// </summary>
+        private bool m_DontWaitPreWinClose
+        {
+            get
+            {
+                UINode node = GetCurUINode();
+                if (node == null || (node.Window != null && node.NextActionState == WindowState.Exist))
+                {
+                    return true;
+                }
+
+                return false;
+            }
+        }
+
         public UIManager()
         {
             m_UILinkedList = new();
@@ -17,29 +34,36 @@ namespace GameFrame
             m_WaitCloseUIList = new();
         }
 
-        public void OpenUI<T>() where T : UIViewBase
+        public void OpenUI<T>() where T : Entity
         {
+            //如果打开的UI就是最上层的UI
             Type type = typeof(T);
-            UINode findUINode = GetCurUINode();
+            UINode curUINode = GetCurUINode();
 
-            if (findUINode == null || (type == findUINode.WindowType))
+            if (curUINode == null || (type == curUINode.WindowType))
             {
                 return;
             }
-            //TODO:如果打开的窗口在队列之中那就将至拉到最上层
-            findUINode = (FindUINode(type));
+            //如果需要打开的UI在列表中
+            UINode findUINode = FindUINode(type);
             if (findUINode != null)
             {
                 RemoveNode(findUINode);
                 AddLastNode(findUINode);
+                UIHideOrDisposeWithNextUIType(curUINode);
+                findUINode.Show();
+                return;
             }
-
-            //TODO:如果没有这个东西那进行打开程序
+            //打开新窗口
+            Open<T>();
         }
 
-        private void Open<T>() where T : UIViewBase
+        private void Open<T>() where T : Entity
         {
-            //TODO:先加载资源,创建实例化,等这些完成之后播放本层的动画
+            UINode uinode = UINode.CreateNode<T>();
+            m_UILinkedList.AddLast(uinode);
+            //TODO:加载资源
+          
         }
 
         private void AddWaitDestroyWindowList(UINode uiNode)
@@ -81,6 +105,7 @@ namespace GameFrame
                     return node;
                 }
             }
+
             return null;
         }
 
@@ -88,7 +113,7 @@ namespace GameFrame
         {
             m_UILinkedList.Remove(uinode);
         }
-        
+
         private void AddLastNode(UINode uinode)
         {
             m_UILinkedList.AddLast(uinode);
@@ -105,9 +130,17 @@ namespace GameFrame
                 return;
             }
 
-            if (uiNode.WindowState == WindowState.Destroy)
+            if (uiNode.NextActionState == WindowState.Destroy)
             {
-                
+                RemoveNode(uiNode);
+                UINode.RecycleNode(uiNode);
+            }
+            else if (uiNode.NextActionState == WindowState.Hide)
+            {
+                uiNode.Hide();
+            }
+            else if (uiNode.NextActionState == WindowState.Exist)
+            {
             }
         }
     }

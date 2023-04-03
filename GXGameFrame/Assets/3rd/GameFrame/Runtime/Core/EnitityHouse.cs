@@ -16,22 +16,19 @@ namespace GameFrame
             FixUpdate,
         }
 
-
+        /// <summary>
+        /// 不会包含EcsEntity
+        /// </summary>
         private Dictionary<Type, List<IEntity>> m_TypeWithEntitys = new();
 
         private DoubleMap<Type, SceneEntity> m_EverySceneEntity = new();
 
         private DDictionaryETC m_EntitySystems = new();
 
-        private List<SystemEnitiy>[] UpdateSystemEnitiys;
+        private UpdateSystems m_UpdateSystems = new UpdateSystems();
 
         public void Init()
         {
-            UpdateSystemEnitiys = new List<SystemEnitiy>[3];
-            for (int i = 0; i < UpdateSystemEnitiys.Length; i++)
-            {
-                UpdateSystemEnitiys[i] = new List<SystemEnitiy>();
-            }
         }
 
         /// <summary>
@@ -96,27 +93,6 @@ namespace GameFrame
         }
 
 
-        /// <summary>
-        /// 删除一个updatesystem
-        /// </summary>
-        /// <param name="entity"></param>
-        private void RemoveUpdateSystem(IEntity entity)
-        {
-            for (int z = 0; z < UpdateSystemEnitiys.Length; z++)
-            {
-                List<SystemEnitiy> systemEnitiys = UpdateSystemEnitiys[z];
-                for (int i = systemEnitiys.Count - 1; i >= 0; i--)
-                {
-                    SystemEnitiy systemenitiy = systemEnitiys[i];
-                    if (systemenitiy.Entity == entity)
-                    {
-                        ReferencePool.Release(systemenitiy);
-                        systemEnitiys.RemoveAt(i);
-                    }
-                }
-            }
-        }
-
         public void AddSceneEntity<T>(SceneEntity entity) where T : IScene
         {
             Type type = typeof(T);
@@ -170,9 +146,34 @@ namespace GameFrame
             m_EverySceneEntity.RemoveByValue(sceneEntity);
         }
 
+        public Type GetParentType(Type t)
+        {
+            if (t.IsAssignableFrom(typeof(IStartSystem)))
+            {
+                t = typeof(IStartSystem);
+            }
+            else if (t.IsAssignableFrom(typeof(IUpdateSystem)))
+            {
+                t = typeof(IUpdateSystem);
+            }
+            else if (t.IsAssignableFrom(typeof(IClearSystem)))
+            {
+                t = typeof(IClearSystem);
+            }
+            else if (t.IsAssignableFrom(typeof(IShowSystem)))
+            {
+                t = typeof(IShowSystem);
+            }
+            else if (t.IsAssignableFrom(typeof(IHideSystem)))
+            {
+                t = typeof(IHideSystem);
+            }
+            return t;
+        }
+
         public void AddSystem<T>(IEntity entity) where T : ISystem
         {
-            Type type = typeof(T);
+            Type type =GetParentType(typeof(T));
             Type entityType = entity.GetType();
             SystemObject sysObject = m_EntitySystems.GetVValue(entityType, type);
             if (sysObject == null)
@@ -181,14 +182,55 @@ namespace GameFrame
                 sysObject.AddSystem<T>();
                 m_EntitySystems.Add(entityType, type, sysObject);
             }
-
-            sysObject.System.SystemInit(entity);
+            sysObject.System.SystemStart(entity);
+            sysObject.System.SystemShow(entity);
             if (sysObject.System.IsUpdateSystem())
             {
-                SystemEnitiy systenitiy = ReferencePool.Acquire<SystemEnitiy>();
-                systenitiy.Create(sysObject, entity);
-                UpdateSystemEnitiys[(byte) UpdateType.Update].Add(systenitiy);
+                m_UpdateSystems.AddUpdateSystem(entity, sysObject);
             }
+        }
+
+        /// <summary>
+        /// 删除一个updatesystem
+        /// </summary>
+        /// <param name="entity"></param>
+        private void RemoveUpdateSystem(IEntity entity)
+        {
+            m_UpdateSystems.RemoveUpdateSystem(entity);
+        }
+
+
+        /// <summary>
+        /// 运行showsystem
+        /// </summary>
+        /// <param name="entity"></param>
+        public void RunShowSystem(IEntity entity)
+        {
+            SystemObject sysObject = m_EntitySystems.GetVValue(entity.GetType(), typeof(IShowSystem));
+            if (sysObject == null)
+            {
+                Debugger.LogWarning("not have entity showSystem");
+                return;
+            }
+            sysObject.System.SystemShow(entity);
+            SystemObject updateScene = m_EntitySystems.GetVValue(entity.GetType(), typeof(IUpdateSystem));
+            m_UpdateSystems.AddUpdateSystem(entity, updateScene);
+        }
+
+        /// <summary>
+        /// 运行隐藏system
+        /// </summary>
+        /// <param name="entity"></param>
+        public void RunHideSystem(IEntity entity)
+        {
+            SystemObject sysObject = m_EntitySystems.GetVValue(entity.GetType(), typeof(IHideSystem));
+            if (sysObject != null)
+            {
+                Debugger.LogWarning("not have entity hideSystem");
+                return;
+            }
+            RemoveUpdateSystem(entity);
+            sysObject.System.SystemHide(entity);
         }
 
         /// <summary>
@@ -236,10 +278,9 @@ namespace GameFrame
             }
         }
 
-
         public void Update(float elapseSeconds, float realElapseSeconds)
         {
-            UpdateSystemEnitiys[(byte) UpdateType.Update].SystemUpdate(elapseSeconds, realElapseSeconds);
+            m_UpdateSystems.UpdateSystemEnitiys.SystemUpdate(elapseSeconds, realElapseSeconds);
         }
 
         public void Disable()

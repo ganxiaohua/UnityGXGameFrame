@@ -7,30 +7,27 @@ namespace GameFrame
     {
         public void Start(SceneEntity sceneEntity)
         {
-            
         }
 
         public void Update(float elapseSeconds, float realElapseSeconds)
         {
-            
-        }
-        
-        public void Clear()
-        {
-            
         }
 
+        public void Clear()
+        {
+        }
     }
 
     public class GXGameFrame : Singleton<GXGameFrame>
     {
-        public SceneEntity MainScene;
+        public SceneEntity MainScene { get; private set; }
 
         public void Start()
         {
             EnitityHouse.Instance.Init();
             MainScene = ReferencePool.Acquire<SceneEntity>();
             EnitityHouse.Instance.AddSceneEntity<MainScene>(MainScene);
+            MainScene.AddComponent<UIComponent>();
         }
 
         public void Update()

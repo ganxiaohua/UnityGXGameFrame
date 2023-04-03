@@ -9,7 +9,7 @@ namespace GameFrame
 
     public static class SystemAction
     {
-        public static bool SystemInit(this ISystem system, IEntity entity)
+        public static bool SystemStart(this ISystem system, IEntity entity)
         {
             if (system is IStartSystem initsys)
             {
@@ -29,6 +29,30 @@ namespace GameFrame
 
             return false;
         }
+
+        
+        public static bool SystemShow(this ISystem system, IEntity entity)
+        {
+            if (system is IShowSystem showsystem)
+            {
+                showsystem.Run(entity);
+                return true;
+            }
+
+            return false;
+        }
+        
+        public static bool SystemHide(this ISystem system, IEntity entity)
+        {
+            if (system is IHideSystem showsystem)
+            {
+                showsystem.Run(entity);
+                return true;
+            }
+
+            return false;
+        }
+
 
         public static bool IsUpdateSystem(this ISystem system)
         {

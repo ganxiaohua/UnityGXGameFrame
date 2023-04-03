@@ -9,17 +9,13 @@ namespace GameFrame
         {
             protected override void Start(UIWindow self)
             {
-                Type type = ((ParameterP1<Type>) self.Parameter).Param1;
-                self.UIBase = (UIViewBase) ReferencePool.Acquire(type);
-                self.UIBase.Init();
             }
         }
-        
+
         public class UIWindowUpdateSystem : UpdateSystem<UIWindow>
         {
             protected override void Update(UIWindow self, float elapseSeconds, float realElapseSeconds)
             {
-                self.UIBase.Update(elapseSeconds,realElapseSeconds);
             }
         }
 
@@ -27,9 +23,21 @@ namespace GameFrame
         {
             protected override void Clear(UIWindow self)
             {
-                ReferencePool.Release(self.UIBase);
             }
         }
-        
+
+        public class UIShowSystem : ShowSystem<UIWindow>
+        {
+            protected override void Show(UIWindow self)
+            {
+            }
+        }
+
+        public class UIHideSystem : HideSystem<UIWindow>
+        {
+            protected override void Hide(UIWindow self)
+            {
+            }
+        }
     }
 }

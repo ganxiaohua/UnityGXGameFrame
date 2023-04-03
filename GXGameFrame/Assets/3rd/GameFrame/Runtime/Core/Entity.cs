@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace GameFrame
 {
-    
     public abstract class Entity : IEntity
     {
         public IEntity.EntityStatus m_EntityStatus { get; set; }
@@ -82,6 +81,11 @@ namespace GameFrame
         private void Remove<T>() where T : IEntity
         {
             Type type = typeof(T);
+            Remove(type);
+        }
+
+        private void Remove(Type type)
+        {
             if (!m_Components.TryGetValue(type, out IEntity entity))
             {
                 throw new Exception($"entity not already  component: {type.FullName}");
@@ -196,6 +200,14 @@ namespace GameFrame
             Remove<T>();
         }
 
+        public void RemoveComponent(Type type)
+        {
+            if (type is IEntity)
+            {
+                Remove(type);
+            }
+        }
+
         /// <summary>
         /// 挂载实体
         /// </summary>
@@ -253,6 +265,7 @@ namespace GameFrame
                 {
                     entity.ClearAllChild();
                 }
+
                 Remove(item.Value);
                 item.Value.ClearAllComponent();
             }

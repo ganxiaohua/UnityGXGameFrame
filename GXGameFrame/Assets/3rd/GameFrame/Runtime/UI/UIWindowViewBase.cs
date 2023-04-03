@@ -4,7 +4,15 @@ namespace GameFrame
 {
     public abstract class UIViewBase : Window, IView
     {
-        protected Entity UIBase;
+        protected Entity m_UIBase;
+
+        protected abstract string m_WindName { get; set; }
+
+        public string WindName
+        {
+            get { return m_WindName; }
+        }
+
         public override void Dispose()
         {
             base.Dispose();
@@ -46,7 +54,7 @@ namespace GameFrame
 
         public void Link(Entity uiBase, string path)
         {
-            UIBase = uiBase;
+            m_UIBase = uiBase;
         }
     }
 }
