@@ -18,9 +18,7 @@ namespace GameFrame
         public IEntity SceneParent { get; set; }
         
         public IEntity Parent { get;  set; }
-        
-        public Parameter Parameter { get; set; }
-        
+
         public int ID { get; set; }
 
         private Dictionary<Type, IECSComponent> m_ECSComponents;
@@ -145,7 +143,6 @@ namespace GameFrame
             {
                 ReferencePool.Release(item.Value);
             }
-
             m_ECSComponents.Clear();
             TypeHashCode.Clear();
             ((Context)Parent).ChangeAddRomoveChildOrCompone(this);

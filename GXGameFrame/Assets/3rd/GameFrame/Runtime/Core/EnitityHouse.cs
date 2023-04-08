@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Principal;
+using Unity.VisualScripting;
 
 namespace GameFrame
 {
@@ -76,6 +77,13 @@ namespace GameFrame
                 throw new Exception($"TypeWithEntitys not have enitiy:{entity.ID}");
             }
 
+            Type entityType = entity.GetType();
+            var allSystemDic = m_EntitySystems.GetValue(entityType);
+            if (allSystemDic != null)
+            {
+                allSystemDic.SystemDestroy(entity);
+            }
+
             entityList.Remove(entity);
         }
 
@@ -146,42 +154,37 @@ namespace GameFrame
             m_EverySceneEntity.RemoveByValue(sceneEntity);
         }
 
-        public Type GetParentType(Type t)
-        {
-            if (t.IsAssignableFrom(typeof(IStartSystem)))
-            {
-                t = typeof(IStartSystem);
-            }
-            else if (t.IsAssignableFrom(typeof(IUpdateSystem)))
-            {
-                t = typeof(IUpdateSystem);
-            }
-            else if (t.IsAssignableFrom(typeof(IClearSystem)))
-            {
-                t = typeof(IClearSystem);
-            }
-            else if (t.IsAssignableFrom(typeof(IShowSystem)))
-            {
-                t = typeof(IShowSystem);
-            }
-            else if (t.IsAssignableFrom(typeof(IHideSystem)))
-            {
-                t = typeof(IHideSystem);
-            }
-            return t;
-        }
-
         public void AddSystem<T>(IEntity entity) where T : ISystem
         {
-            Type type =GetParentType(typeof(T));
+            AddSystem(entity, typeof(T));
+        }
+
+        /// <summary>
+        /// 创建获得得到一个SystemObject
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="system"> 这个type不是具体的type而是父节点 类似 IStartSystem</param>
+        /// <returns></returns>
+        private SystemObject CreateSystem(IEntity entity, Type system)
+        {
             Type entityType = entity.GetType();
-            SystemObject sysObject = m_EntitySystems.GetVValue(entityType, type);
+            SystemObject sysObject = m_EntitySystems.GetVValue(entityType, system);
             if (sysObject == null)
             {
                 sysObject = ReferencePool.Acquire<SystemObject>();
-                sysObject.AddSystem<T>();
-                m_EntitySystems.Add(entityType, type, sysObject);
+                Type entitySystem = AutoBindSystem.Instance.GetEnitiySystem(entityType, system);
+                sysObject.AddSystem(entitySystem);
+                m_EntitySystems.Add(entityType, system, sysObject);
             }
+
+            return sysObject;
+        }
+
+        public void AddSystem(IEntity entity, Type type)
+        {
+            Type entityType = entity.GetType();
+            Type systemType = AutoBindSystem.Instance.GetIsystem(entityType, type);
+            SystemObject sysObject = CreateSystem(entity, systemType);
             sysObject.System.SystemStart(entity);
             sysObject.System.SystemShow(entity);
             if (sysObject.System.IsUpdateSystem())
@@ -189,6 +192,46 @@ namespace GameFrame
                 m_UpdateSystems.AddUpdateSystem(entity, sysObject);
             }
         }
+
+        public void AddStartSystem<P1>(IEntity entity, P1 p1)
+        {
+            Type entityType = entity.GetType();
+            Type systemType = typeof(IStartSystem<P1>);
+            if (AutoBindSystem.Instance.GetEnitiySystem(entityType, systemType) == default(Type))
+            {
+                throw new Exception($"not have IStartSystem<P1>");
+            }
+
+            SystemObject sysObject = CreateSystem(entity, systemType);
+            sysObject.System.SystemStart(entity, p1);
+        }
+
+        public void AddStartSystem<P1, P2>(IEntity entity, P1 p1, P2 p2)
+        {
+            Type entityType = entity.GetType();
+            Type systemType = typeof(IStartSystem<P1, P2>);
+            if (AutoBindSystem.Instance.GetEnitiySystem(entityType, systemType) == default(Type))
+            {
+                throw new Exception($"not have IStartSystem<P1>");
+            }
+
+            SystemObject sysObject = CreateSystem(entity, systemType);
+            sysObject.System.SystemStart(entity, p1, p2);
+        }
+
+        // public void AddShowSystem<P1>(IEntity entity, Type type, P1 p1)
+        // {
+        //     Type systemType = AutoBindSystem.Instance.GetIsystem(typeof(Entity), type);
+        //     SystemObject sysObject = CreateSystem(entity, systemType);
+        //     sysObject.System.SystemShow(entity, p1);
+        // }
+        //
+        // public void AddShowSystem<P1, P2>(IEntity entity, Type type, P1 p1, P2 p2)
+        // {
+        //     Type systemType = AutoBindSystem.Instance.GetIsystem(typeof(Entity), type);
+        //     SystemObject sysObject = CreateSystem(entity, systemType);
+        //     sysObject.System.SystemShow(entity, p1, p2);
+        // }
 
         /// <summary>
         /// 删除一个updatesystem
@@ -212,6 +255,7 @@ namespace GameFrame
                 Debugger.LogWarning("not have entity showSystem");
                 return;
             }
+
             sysObject.System.SystemShow(entity);
             SystemObject updateScene = m_EntitySystems.GetVValue(entity.GetType(), typeof(IUpdateSystem));
             m_UpdateSystems.AddUpdateSystem(entity, updateScene);
@@ -229,6 +273,7 @@ namespace GameFrame
                 Debugger.LogWarning("not have entity hideSystem");
                 return;
             }
+
             RemoveUpdateSystem(entity);
             sysObject.System.SystemHide(entity);
         }

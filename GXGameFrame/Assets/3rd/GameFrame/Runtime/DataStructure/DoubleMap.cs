@@ -143,7 +143,7 @@ namespace GameFrame
 
             return false;
         }
-        
+
         public bool TryGetValueVk(V value, out K key)
         {
             if (vk.TryGetValue(value, out key))
@@ -152,6 +152,11 @@ namespace GameFrame
             }
 
             return false;
+        }
+
+        public Dictionary<K, V>.ValueCollection GetAllV()
+        {
+            return kv.Values;
         }
 
         public bool Contains(K key, V value)

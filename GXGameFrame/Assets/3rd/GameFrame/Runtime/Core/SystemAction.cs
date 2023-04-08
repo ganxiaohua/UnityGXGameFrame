@@ -30,7 +30,29 @@ namespace GameFrame
             return false;
         }
 
-        
+        public static bool SystemStart<P1>(this ISystem system, IEntity entity, P1 p1)
+        {
+            if (system is IStartSystem<P1> initsys)
+            {
+                initsys.Run(entity, p1);
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool SystemStart<P1, P2>(this ISystem system, IEntity entity, P1 p1, P2 p2)
+        {
+            if (system is IStartSystem<P1, P2> initsys)
+            {
+                initsys.Run(entity, p1, p2);
+                return true;
+            }
+
+            return false;
+        }
+
+
         public static bool SystemShow(this ISystem system, IEntity entity)
         {
             if (system is IShowSystem showsystem)
@@ -41,7 +63,29 @@ namespace GameFrame
 
             return false;
         }
-        
+
+        public static bool SystemShow<P1>(this ISystem system, IEntity entity, P1 p1)
+        {
+            if (system is IShowSystem showsystem)
+            {
+                showsystem.Run(entity);
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool SystemShow<P1, P2>(this ISystem system, IEntity entity, P1 p1, P2 p2)
+        {
+            if (system is IShowSystem showsystem)
+            {
+                showsystem.Run(entity);
+                return true;
+            }
+
+            return false;
+        }
+
         public static bool SystemHide(this ISystem system, IEntity entity)
         {
             if (system is IHideSystem showsystem)
@@ -72,7 +116,7 @@ namespace GameFrame
                 SystemEnitiy es = ets[i];
                 if (es.SystemObject.System is IUpdateSystem updatesystem)
                 {
-                    updatesystem.Run(es.Entity,elapseSeconds,realElapseSeconds);
+                    updatesystem.Run(es.Entity, elapseSeconds, realElapseSeconds);
                 }
                 else if (es.SystemObject.System is IECSUpdateSystem ecsupdatesystem)
                 {

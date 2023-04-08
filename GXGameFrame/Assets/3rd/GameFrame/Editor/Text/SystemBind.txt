@@ -1,0 +1,12 @@
+using System;
+using GameFrame;
+public partial class AutoBindSystem
+{{
+    public void AddSystem()
+    {{
+        {0}
+    }}
+}}
+
+#
+        m_SystemBind.Add({0},{1},{2});

@@ -22,8 +22,10 @@ namespace GameFrame
     {
         public SceneEntity MainScene { get; private set; }
 
+
         public void Start()
         {
+            AutoBindSystem.Instance.AddSystem();
             EnitityHouse.Instance.Init();
             MainScene = ReferencePool.Acquire<SceneEntity>();
             EnitityHouse.Instance.AddSceneEntity<MainScene>(MainScene);

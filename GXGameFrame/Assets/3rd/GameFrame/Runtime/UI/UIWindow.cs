@@ -7,9 +7,6 @@ namespace GameFrame
         public override void Initialize()
         {
             base.Initialize();
-            this.AddSystem<UIWindowSystem.UIWindowStartSystem>();
-            this.AddSystem<UIWindowSystem.UIWindowUpdateSystem>();
-            this.AddSystem<UIWindowSystem.UIWindowClearSystem>();
         }
         public UIViewBase UIBase;
     }

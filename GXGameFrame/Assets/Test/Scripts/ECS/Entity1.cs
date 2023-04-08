@@ -10,13 +10,6 @@ using Entity = GameFrame.Entity;
 
 public class Entity1 : Entity, IStart, IClear, IUpdate
 {
-    public override void Initialize()
-    {
-        this.AddSystem<Entity1System.Entity1StartSystem>();
-        this.AddSystem<Entity1System.Entity1DestroySystem>();
-        this.AddSystem<Entity1System.Entity1UpdateSystem>();
-    }
-
     public Eniti1View view;
 
     private Vector2 c;
@@ -34,16 +27,18 @@ public class Entity1 : Entity, IStart, IClear, IUpdate
 
 public static class Entity1System
 {
-    public class Entity1StartSystem : StartSystem<Entity1>
+    [SystemBind]
+    public class Entity1StartSystem : StartSystem<Entity1, int>
     {
-        protected override void Start(Entity1 self)
+        protected override void Show(Entity1 self, int p1)
         {
+            Debug.Log("参数传递:" + p1);
             Eniti1View eniti1View = ReferencePool.Acquire<Eniti1View>();
             eniti1View.Link(self, "Cube");
             self.view = eniti1View;
         }
     }
-
+    [SystemBind]
     public class Entity1UpdateSystem : UpdateSystem<Entity1>
     {
         protected override void Update(Entity1 self, float elapseSeconds, float realElapseSeconds)
@@ -55,7 +50,9 @@ public static class Entity1System
         }
     }
 
-    public class Entity1DestroySystem : ClearSystem<Entity1>
+    
+    [SystemBind]
+    public class Entity1ClearSystem : ClearSystem<Entity1>
     {
         protected override void Clear(Entity1 self)
         {
@@ -101,28 +98,23 @@ public class Eniti1View : IView
 // --------------------------------------------------------------------
 public class CreateComponent : Entity, IStart, IClear
 {
-    public override void Initialize()
-    {
-        var x = (ParameterP1<int>) Parameter;
-        cank = x.Param1;
-        this.AddSystem<ComponentSystem.CreateComponentStartSystem>();
-        this.AddSystem<ComponentSystem.CreateComponentClearSystem>();
-    }
-
     public int cank = 0;
     public int cank2 = 0;
 }
 
-public static class ComponentSystem
+public static class CreateComponentSystem
 {
-    public class CreateComponentStartSystem : StartSystem<CreateComponent>
+    [SystemBind]
+    public class CreateComponentStartSystem : StartSystem<CreateComponent, int>
     {
-        protected override void Start(CreateComponent self)
+        protected override void Show(CreateComponent self, int p1)
         {
-            Debug.Log("CreateComponent Start");
+            self.cank = p1;
+            Debug.Log("CreateComponent Start" + p1);
         }
     }
 
+    [SystemBind]
     public class CreateComponentClearSystem : ClearSystem<CreateComponent>
     {
         protected override void Clear(CreateComponent self)

@@ -8,9 +8,18 @@ namespace GameFrame
     /// </summary>
     public static partial class ReferencePool
     {
+        /// <summary>
+        /// 引用池当前轮训的时间
+        /// </summary>
+        private static float m_CurAutoReleaseTime;
+
+        /// <summary>
+        /// 引用池轮训检查时间
+        /// </summary>
+        private static float m_AutoReleaseInterval = 10;
         private static readonly Dictionary<Type, ReferenceCollection> s_ReferenceCollections = new Dictionary<Type, ReferenceCollection>();
         private static bool m_EnableStrictCheck = false;
-
+        private static List<Type> m_WaitDesroyList = new();
         /// <summary>
         /// 获取或设置是否开启强制检查。
         /// </summary>
@@ -54,9 +63,23 @@ namespace GameFrame
 
         public static void Update(float elapseSeconds, float realElapseSeconds)
         {
-            foreach (ReferenceCollection objectpool in s_ReferenceCollections.Values)
+            m_CurAutoReleaseTime += realElapseSeconds;
+            if (m_CurAutoReleaseTime >= m_AutoReleaseInterval)
             {
-                objectpool.Update(elapseSeconds, realElapseSeconds);
+                m_WaitDesroyList.Clear();
+                m_CurAutoReleaseTime = 0;
+                foreach (ReferenceCollection objectpool in s_ReferenceCollections.Values)
+                {
+                    if (objectpool.UnusedCheck())
+                    {
+                        m_WaitDesroyList.Add(objectpool.ReferenceType);
+                    }
+                }
+
+                foreach (Type type  in m_WaitDesroyList)
+                {
+                    RemoveAll(type);
+                }
             }
         }
 
@@ -192,6 +215,7 @@ namespace GameFrame
         {
             InternalCheckReferenceType(referenceType);
             GetReferenceCollection(referenceType).RemoveAll();
+            s_ReferenceCollections.Remove(referenceType);
         }
 
         private static void InternalCheckReferenceType(Type referenceType)

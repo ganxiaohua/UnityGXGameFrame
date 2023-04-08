@@ -11,8 +11,7 @@
         public IEntity SceneParent { set; }
 
         public IEntity Parent { set; }
-
-        public Parameter Parameter { set; }
+        
         public int ID { get; set; }
 
         public EntityStatus m_EntityStatus { set; }

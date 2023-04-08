@@ -10,12 +10,17 @@ namespace GameFrame
     {
         void Run(object o);
     }
+    
+    public interface IStartSystem<P1>
+    {
+        void Run(object o, P1 p1);
+    }
 
-    // public interface IStartSystem<P1>
-    // {
-    //     void Run(object o, P1 p1);
-    // }
-
+    public interface IStartSystem<P1, P2>
+    {
+        void Run(object o, P1 p1, P2 p2);
+    }
+    
     public abstract class StartSystem<T> : ISystem, IStartSystem where T : IStart
     {
         public void Run(object o)
@@ -34,20 +39,35 @@ namespace GameFrame
         {
         }
     }
-    //
-    // public abstract class StartSystem<T, P1> : ISystem, IStartSystem<P1> where T : IStart
-    // {
-    //     public void Run(object o, P1 p1)
-    //     {
-    //         this.Start((T) o, p1);
-    //     }
-    //
-    //     protected abstract void Start(T self, P1 p1);
-    //
-    //     public void Clear()
-    //     {
-    //     }
-    // }
+    
+    
+    public abstract class StartSystem<T, P1> : ISystem, IStartSystem<P1> where T : IStart
+    {
+        public void Run(object o, P1 p1)
+        {
+            this.Show((T) o, p1);
+        }
+
+        protected abstract void Show(T self, P1 p1);
+
+        public void Clear()
+        {
+        }
+    }
+
+    public abstract class StartSystem<T, P1, P2> : ISystem, IStartSystem<P1, P2> where T : IStart
+    {
+        public void Run(object o, P1 p1, P2 p2)
+        {
+            this.Start((T) o, p1, p2);
+        }
+
+        protected abstract void Start(T self, P1 p1, P2 p2);
+
+        public void Clear()
+        {
+        }
+    }
 
 // --------------------------
     public interface IECSStartSystem : ISystem

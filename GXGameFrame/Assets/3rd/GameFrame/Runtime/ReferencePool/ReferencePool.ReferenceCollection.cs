@@ -17,15 +17,6 @@ namespace GameFrame
             private int m_AddReferenceCount;
             private int m_RemoveReferenceCount;
 
-            /// <summary>
-            /// 引用池当前轮训的时间
-            /// </summary>
-            private float m_CurAutoReleaseTime;
-
-            /// <summary>
-            /// 引用池轮训检查时间
-            /// </summary>
-            private float m_AutoReleaseInterval;
 
             /// <summary>
             /// 引用池内部对象进入HitObjet列表之后的到期事件
@@ -47,10 +38,7 @@ namespace GameFrame
                 m_ReleaseReferenceCount = 0;
                 m_AddReferenceCount = 0;
                 m_RemoveReferenceCount = 0;
-                m_AutoReleaseInterval = 20;
-                m_CurAutoReleaseTime = 0;
                 m_ExpireTime = 60; //如果这个池子超过一分钟没有使用则释放所有的引用
-
             }
 
             public Type ReferenceType
@@ -218,21 +206,17 @@ namespace GameFrame
                 {
                     m_RemoveReferenceCount += m_References.Count;
                     m_References.Clear();
-                    m_CurAutoReleaseTime = 0;
                 }
             }
-            
-            public void Update(float elapseSeconds, float realElapseSeconds)
+
+            public bool UnusedCheck()
             {
-                m_CurAutoReleaseTime += realElapseSeconds;
-                if (m_CurAutoReleaseTime > m_AutoReleaseInterval)
+                DateTime expireTime = DateTime.UtcNow.AddSeconds(-m_ExpireTime);
+                if (expireTime >= m_LastUseTime)
                 {
-                    DateTime expireTime = DateTime.UtcNow.AddSeconds(-m_ExpireTime);
-                    if (expireTime >= m_LastUseTime)
-                    {
-                        RemoveAll();
-                    }
+                    return true;
                 }
+                return false;
             }
         }
     }

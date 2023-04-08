@@ -17,6 +17,11 @@ namespace GameFrame
         public void AddSystem<T>() where T : ISystem
         {
             Type type = typeof(T);
+            AddSystem(type);
+        }
+
+        public void AddSystem(Type type)
+        {
             var system = ReferencePool.Acquire(type) as ISystem;
             System = system;
             m_ISystemType = ISystemType.IsCreated;

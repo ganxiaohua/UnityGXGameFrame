@@ -2,17 +2,19 @@
 
 namespace GameFrame
 {
-    public static class SceneSystem
+    public static class SceneEntitySystem
     {
-        public class SceneStartSystem : StartSystem<SceneEntity>
+        [SystemBind]
+        public class SceneEntityStartSystem : StartSystem<SceneEntity, Type>
         {
-            protected override void Start(SceneEntity self)
+            protected override void Show(SceneEntity self, Type p1)
             {
-                self.Scene.Start(self);
+                self.Scene = (IScene) ReferencePool.Acquire(p1);
             }
         }
 
-        public class SceneUpdateSystem : UpdateSystem<SceneEntity>
+        [SystemBind]
+        public class SceneEntityUpdateSystem : UpdateSystem<SceneEntity>
         {
             protected override void Update(SceneEntity self, float elapseSeconds, float realElapseSeconds)
             {
@@ -20,7 +22,8 @@ namespace GameFrame
             }
         }
 
-        public class SceneClearSystem : ClearSystem<SceneEntity>
+        [SystemBind]
+        public class SceneEntityClearSystem : ClearSystem<SceneEntity>
         {
             protected override void Clear(SceneEntity self)
             {
