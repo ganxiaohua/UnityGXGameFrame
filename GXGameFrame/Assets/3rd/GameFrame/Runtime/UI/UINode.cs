@@ -4,7 +4,7 @@ using UnityEditor.Experimental.GraphView;
 
 namespace GameFrame
 {
-    public class UINode : IReference
+    public class UINode : ObjectBase
     {
         /// <summary>
         /// 窗体的名字
@@ -31,33 +31,37 @@ namespace GameFrame
         /// </summary>
         public Entity Window;
 
-        public static UINode CreateNode<T>() where T : Entity
+        private static ObjectPool<UINode> sObjectPool;
+
+        public static UINode CreateNode(Type windowType) 
         {
-            Type windowType = typeof(T);
-            UINode uiNode = ReferencePool.Acquire<UINode>();
+            if (sObjectPool == null)
+                sObjectPool = ObjectPoolManager.Instance.CreateObjectPool<UINode>("UI", 16, windowType);
+            UINode uiNode = sObjectPool.Spawn();
             uiNode.Name = windowType.Name;
             uiNode.WindowType = windowType;
             uiNode.NextActionState = WindowState.Hide;
             uiNode.IsLoading = true;
-            uiNode.Window = GXGameFrame.Instance.MainScene.GetComponent<UIComponent>().AddComponent<T>();
+            uiNode.Window = (Entity)GXGameFrame.Instance.MainScene.GetComponent<UIComponent>().AddComponent(windowType);
             return uiNode;
         }
 
-        public static void RecycleNode(UINode uinode)
+        public static void DestroyNode(UINode uinode)
         {
-            ReferencePool.Release(uinode);
+            uinode.Hide();
+            sObjectPool.UnSpawn(uinode);
         }
-        
+
         public void Show()
         {
             EnitityHouse.Instance.RunShowSystem(Window);
         }
-        
+
         public void Hide()
         {
-          EnitityHouse.Instance.RunHideSystem(Window);
+            EnitityHouse.Instance.RunHideSystem(Window);
         }
-        
+
         public void Clear()
         {
             GXGameFrame.Instance.MainScene.GetComponent<UIComponent>().RemoveComponent(this.WindowType);

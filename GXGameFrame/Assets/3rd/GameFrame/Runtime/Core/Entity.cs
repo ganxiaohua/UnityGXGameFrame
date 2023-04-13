@@ -43,6 +43,11 @@ namespace GameFrame
         protected virtual IEntity Create<T>(bool isComponent) where T : IEntity
         {
             Type type = typeof(T);
+            return Create(type, isComponent);
+        }
+
+        private IEntity Create(Type type, bool isComponent)
+        {
             IEntity entity = ReferencePool.Acquire(type) as IEntity;
             entity.m_EntityStatus = IEntity.EntityStatus.IsCreated;
             entity.Parent = this;
@@ -132,12 +137,17 @@ namespace GameFrame
         private IEntity CreateComponent<T>() where T : IEntity
         {
             Type type = typeof(T);
+            return CreateComponent(type);
+        }
+
+        private IEntity CreateComponent(Type type)
+        {
             if (this.m_Components != null && this.m_Components.ContainsKey(type))
             {
                 throw new Exception($"entity already has component: {type.FullName}");
             }
 
-            IEntity component = Create<T>(true);
+            IEntity component = Create(type, true);
             return component;
         }
 
@@ -149,32 +159,55 @@ namespace GameFrame
         /// <exception cref="Exception"></exception>
         public T AddComponent<T>() where T : class, IEntity
         {
-            IEntity component = CreateComponent<T>();
-            AddSystem<T>(component);
-            return (T) component;
+            Type type = typeof(T);
+            return (T) AddComponent(type);
+        }
+
+        public IEntity AddComponent(Type type)
+        {
+            IEntity component = CreateComponent(type);
+            AddSystem(type, component);
+            return component;
         }
 
 
         public T AddComponent<T, P1>(P1 p1) where T : class, IEntity
         {
-            IEntity component = CreateComponent<T>();
+            Type type = typeof(T);
+            return (T) AddComponent(type, p1);
+        }
+
+        public IEntity AddComponent<P1>(Type type, P1 p1)
+        {
+            IEntity component = CreateComponent(type);
             component.AddStartSystem(p1);
-            AddSystem<T>(component);
-            return (T) component;
+            AddSystem(type, component);
+            return component;
         }
 
         public T AddComponent<T, P1, P2>(P1 p1, P2 p2) where T : class, IEntity
         {
-            IEntity component = CreateComponent<T>();
-            component.AddStartSystem(p1,p2);
-            AddSystem<T>(component);
-            return (T) component;
+            Type type = typeof(T);
+            return (T) AddComponent(type, p1, p2);
         }
-        
+
+        public IEntity AddComponent<P1, P2>(Type type, P1 p1, P2 p2)
+        {
+            IEntity component = CreateComponent(type);
+            component.AddStartSystem(p1, p2);
+            AddSystem(type, component);
+            return component;
+        }
+
 
         private void AddSystem<T>(IEntity entity) where T : class, IEntity
         {
             Type type = typeof(T);
+            AddSystem(type, entity);
+        }
+
+        private void AddSystem(Type type, IEntity entity)
+        {
             List<Type> systemTypesList = AutoBindSystem.Instance.GetEnitityAllSystem(type);
             if (systemTypesList != null)
             {
@@ -221,25 +254,43 @@ namespace GameFrame
         /// <returns></returns>
         public T AddChild<T>() where T : class, IEntity
         {
-            IEntity component = Create<T>(false);
-            AddSystem<T>(component);
-            return component as T;
+            Type type = typeof(T);
+            return (T) AddChild(type);
+        }
+
+        public IEntity AddChild(Type type)
+        {
+            IEntity component = Create(type, false);
+            AddSystem(type, component);
+            return component;
         }
 
         public T AddChild<T, P1>(P1 p1) where T : class, IEntity
         {
-            IEntity component = Create<T>(false);
+            Type type = typeof(T);
+            return (T) AddChild(type, p1);
+        }
+
+        public IEntity AddChild<P1>(Type type, P1 p1)
+        {
+            IEntity component = Create(type, false);
             component.AddStartSystem(p1);
-            AddSystem<T>(component);
-            return component as T;
+            AddSystem(type, component);
+            return component;
         }
 
         public T AddChild<T, P1, P2>(P1 p1, P2 p2) where T : class, IEntity
         {
-            IEntity component = Create<T>(false);
-            component.AddStartSystem(p1,p2);
-            AddSystem<T>(component);
-            return component as T;
+            Type type = typeof(T);
+            return (T) AddChild(type, p1, p2);
+        }
+
+        public IEntity AddChild<P1, P2>(Type type, P1 p1, P2 p2)
+        {
+            IEntity component = Create(type, false);
+            component.AddStartSystem(p1, p2);
+            AddSystem(type, component);
+            return component;
         }
 
         /// <summary>

@@ -38,6 +38,7 @@ namespace GameFrame
             float realtimeSinceStartup = Time.realtimeSinceStartup;
             EnitityHouse.Instance.Update(datetime, realtimeSinceStartup);
             ObjectPoolManager.Instance.Update(datetime, realtimeSinceStartup);
+            UIManager.Instance.Update(datetime, realtimeSinceStartup);
             ReferencePool.Update(datetime, realtimeSinceStartup);
         }
 

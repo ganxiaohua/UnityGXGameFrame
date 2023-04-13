@@ -1,17 +1,11 @@
-﻿using FairyGUI;
+﻿using System;
+using FairyGUI;
 
 namespace GameFrame
 {
-    public abstract class UIViewBase : Window, IView
+    public  class UIViewBase : Window, IView
     {
-        protected Entity m_UIBase;
-
-        protected abstract string m_WindName { get; set; }
-
-        public string WindName
-        {
-            get { return m_WindName; }
-        }
+        protected IEntity m_UIBase;
 
         public override void Dispose()
         {
@@ -41,6 +35,8 @@ namespace GameFrame
         protected override void DoHideAnimation()
         {
             base.DoHideAnimation();
+            //等待动画播放完毕之后发送一个事件
+            EventManager.Instance.Send<UICloseEvent,Type>(m_UIBase.GetType());
         }
 
         public void Update(float elapseSeconds, float realElapseSeconds)

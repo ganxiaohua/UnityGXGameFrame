@@ -9,6 +9,8 @@ namespace GameFrame
         {
             protected override void Start(UIWindow self)
             {
+                self.UIBase = ReferencePool.Acquire<UIViewBase>();
+                self.UIBase.Link(self,null);
             }
         }
 
@@ -16,6 +18,7 @@ namespace GameFrame
         {
             protected override void Update(UIWindow self, float elapseSeconds, float realElapseSeconds)
             {
+                
             }
         }
 
@@ -23,6 +26,7 @@ namespace GameFrame
         {
             protected override void Clear(UIWindow self)
             {
+                ReferencePool.Release(self.UIBase);
             }
         }
 
@@ -30,6 +34,7 @@ namespace GameFrame
         {
             protected override void Show(UIWindow self)
             {
+                self.UIBase.Show();
             }
         }
 
@@ -37,6 +42,7 @@ namespace GameFrame
         {
             protected override void Hide(UIWindow self)
             {
+                self.UIBase.Hide();
             }
         }
     }
