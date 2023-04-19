@@ -3,17 +3,14 @@ using FairyGUI;
 
 namespace GameFrame
 {
-    public  class UIViewBase : Window, IView
+    public class UIViewBase : Window, IView
     {
         protected IEntity m_UIBase;
 
-        public override void Dispose()
-        {
-            base.Dispose();
-        }
 
         protected override void OnInit()
         {
+            contentPane = UIPackage.CreateObject("Home", "HomeWindow").asCom;
             base.OnInit();
         }
 
@@ -27,6 +24,11 @@ namespace GameFrame
             base.OnHide();
         }
 
+        public override void Dispose()
+        {
+            base.Dispose();
+        }
+
         protected override void DoShowAnimation()
         {
             base.DoShowAnimation();
@@ -36,7 +38,7 @@ namespace GameFrame
         {
             base.DoHideAnimation();
             //等待动画播放完毕之后发送一个事件
-            EventManager.Instance.Send<UICloseEvent,Type>(m_UIBase.GetType());
+            EventManager.Instance.Send<UICloseEvent, Type>(m_UIBase.GetType());
         }
 
         public void Update(float elapseSeconds, float realElapseSeconds)

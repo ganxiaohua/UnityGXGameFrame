@@ -29,3 +29,11 @@ MonoBehaviour:
     packByDir: 0
     bundleMode: 1
     compression: 1
+  - groupName: UI
+    searchPaths:
+    - Assets/UI
+    filter: 
+    simplifyAddressName: 1
+    packByDir: 1
+    bundleMode: 1
+    compression: 1

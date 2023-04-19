@@ -7,7 +7,7 @@ namespace GameFrame
         [SystemBind]
         public class SceneEntityStartSystem : StartSystem<SceneEntity, Type>
         {
-            protected override void Show(SceneEntity self, Type p1)
+            protected override void Start(SceneEntity self, Type p1)
             {
                 self.Scene = (IScene) ReferencePool.Acquire(p1);
             }

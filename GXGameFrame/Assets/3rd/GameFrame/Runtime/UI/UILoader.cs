@@ -194,17 +194,16 @@ namespace GameFrame
             {
                 return;
             }
-
-            LoadResPath(resPath, item, uiPackAgeData);
+            LoadResPath(resPath, name + extension, item, uiPackAgeData);
         }
 
-        public async UniTask LoadResPath(string path, PackageItem package, UIPackageData uiPackAgeData)
+        public async UniTask LoadResPath(string path, string readyLoadName, PackageItem package, UIPackageData uiPackAgeData)
         {
             object x = await AssetManager.Instance.LoadAsyncTask<object>(path);
             package.owner.SetItemAsset(package, x, DestroyMethod.None);
             try
             {
-                if (package.owner.ReadyLoadFileLoadOver(path))
+                if (package.owner.ReadyLoadFileLoadOver(readyLoadName))
                 {
                     var callback = uiPackAgeData.Completed;
                     uiPackAgeData.LoadOver = true;

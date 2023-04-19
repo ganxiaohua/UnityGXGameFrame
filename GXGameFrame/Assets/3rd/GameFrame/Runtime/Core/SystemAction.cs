@@ -125,7 +125,7 @@ namespace GameFrame
             }
         }
 
-        public static void SystemDestroy(this DDictionaryET system, IEntity entity)
+        public static void SystemClear(this DDictionaryET system, IEntity entity)
         {
             foreach (var vt in system)
             {

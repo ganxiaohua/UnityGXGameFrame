@@ -30,6 +30,7 @@ public class GameMain : MonoBehaviour
     {
         GXGameFrame.Instance.Start();
         SceneEntityFactory.CreateScene<BattlegroundScene>(GXGameFrame.Instance.MainScene);
+        UIManager.Instance.OpenUI(typeof(UIWindow));
     }
 
     // Update is called once per frame

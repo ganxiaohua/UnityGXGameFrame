@@ -30,7 +30,7 @@ public static class Entity1System
     [SystemBind]
     public class Entity1StartSystem : StartSystem<Entity1, int>
     {
-        protected override void Show(Entity1 self, int p1)
+        protected override void Start(Entity1 self, int p1)
         {
             Debug.Log("参数传递:" + p1);
             Eniti1View eniti1View = ReferencePool.Acquire<Eniti1View>();
@@ -107,7 +107,7 @@ public static class CreateComponentSystem
     [SystemBind]
     public class CreateComponentStartSystem : StartSystem<CreateComponent, int>
     {
-        protected override void Show(CreateComponent self, int p1)
+        protected override void Start(CreateComponent self, int p1)
         {
             self.cank = p1;
             Debug.Log("CreateComponent Start" + p1);

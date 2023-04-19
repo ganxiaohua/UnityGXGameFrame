@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
+using UnityEngine;
 
 namespace GameFrame
 {
@@ -45,19 +47,17 @@ namespace GameFrame
                 {
                     uiNode.Show();
                 }
-
                 m_OpenUIList.Clear();
             }
         }
 
-        
+
         /// <summary>
         /// 打开预制列表
         /// </summary>
         /// <param name="uiTypelist"></param>
         public void OpenPrefabList(List<Type> uiTypelist)
         {
-            
         }
 
         public void OpenUI(Type type)
@@ -65,10 +65,10 @@ namespace GameFrame
             //如果打开的UI就是最上层的UI
             UINode curUINode = GetCurUINode();
 
-            if (curUINode == null || (type == curUINode.WindowType))
-            {
-                return;
-            }
+            // if (curUINode == null || (type == curUINode.WindowType))
+            // {
+            //     return;
+            // }
 
             //如果需要打开的UI在列表中
             UINode findUINode = FindUINode(type);
@@ -80,20 +80,25 @@ namespace GameFrame
                 UIHideOrDisposeWithNextUIType(curUINode);
                 return;
             }
+
             //打开新窗口
             Open(type);
         }
 
-        private void Open(Type type)
+        private async UniTask Open(Type type)
         {
             UINode curUINode = GetCurUINode();
             UINode uinode = UINode.CreateNode(type);
             m_UILinkedList.AddLast(uinode);
             //TODO:先加载依赖资源,在加载UI资源
-
+            await uinode.LoadDependentOver();
+            Debug.Log("资源加载结束");
             //加入等待打开的UI列表
             m_OpenUIList.Push(uinode);
-            UIHideOrDisposeWithNextUIType(curUINode);
+            if (curUINode != null)
+            {
+                UIHideOrDisposeWithNextUIType(curUINode);
+            }
         }
 
         private void AddWaitDestroyWindowList(UINode uiNode)
@@ -148,7 +153,7 @@ namespace GameFrame
         /// <returns></returns>
         private UINode FindUINode(Type type)
         {
-            var enumerator = m_UILinkedList.GetEnumerator();
+            // var enumerator = m_UILinkedList.GetEnumerator();
             foreach (UINode node in m_UILinkedList)
             {
                 if (node.WindowType == type)

@@ -45,10 +45,10 @@ namespace GameFrame
     {
         public void Run(object o, P1 p1)
         {
-            this.Show((T) o, p1);
+            this.Start((T) o, p1);
         }
 
-        protected abstract void Show(T self, P1 p1);
+        protected abstract void Start(T self, P1 p1);
 
         public void Clear()
         {

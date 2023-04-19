@@ -81,7 +81,7 @@ namespace GameFrame
             var allSystemDic = m_EntitySystems.GetValue(entityType);
             if (allSystemDic != null)
             {
-                allSystemDic.SystemDestroy(entity);
+                allSystemDic.SystemClear(entity);
             }
 
             entityList.Remove(entity);
@@ -176,7 +176,6 @@ namespace GameFrame
                 sysObject.AddSystem(entitySystem);
                 m_EntitySystems.Add(entityType, system, sysObject);
             }
-
             return sysObject;
         }
 
@@ -186,7 +185,6 @@ namespace GameFrame
             Type systemType = AutoBindSystem.Instance.GetIsystem(entityType, type);
             SystemObject sysObject = CreateSystem(entity, systemType);
             sysObject.System.SystemStart(entity);
-            sysObject.System.SystemShow(entity);
             if (sysObject.System.IsUpdateSystem())
             {
                 m_UpdateSystems.AddUpdateSystem(entity, sysObject);
@@ -257,8 +255,6 @@ namespace GameFrame
             }
 
             sysObject.System.SystemShow(entity);
-            SystemObject updateScene = m_EntitySystems.GetVValue(entity.GetType(), typeof(IUpdateSystem));
-            m_UpdateSystems.AddUpdateSystem(entity, updateScene);
         }
 
         /// <summary>
@@ -311,7 +307,7 @@ namespace GameFrame
                 return;
             }
 
-            allSystemDic.SystemDestroy(entity);
+            allSystemDic.SystemClear(entity);
             RemoveUpdateSystem(entity);
             if (GetEntityCount(entityType) == 0)
             {

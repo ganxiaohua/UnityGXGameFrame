@@ -1,4 +1,5 @@
 ﻿using System;
+using Cysharp.Threading.Tasks;
 using FairyGUI;
 using UnityEditor.Experimental.GraphView;
 
@@ -60,6 +61,16 @@ namespace GameFrame
         public void Hide()
         {
             EnitityHouse.Instance.RunHideSystem(Window);
+        }
+
+        public async UniTask LoadDependentOver()
+        {
+            DependentResources dependentResources = Window.GetComponent<DependentResources>();
+            if (dependentResources != null)
+            {
+                await dependentResources.WaitLoad();
+            }
+            IsLoading = false;
         }
 
         public void Clear()
