@@ -16,11 +16,11 @@ public partial class AutoBindSystem
         m_SystemBind.Add(typeof(SceneEntity),typeof(IClearSystem),typeof(GameFrame.SceneEntitySystem.SceneEntityClearSystem));
         m_SystemBind.Add(typeof(DependentResources),typeof(IStartSystem<List<string>>),typeof(GameFrame.DependentResourcesSystem.DependentResourcesStartSystem));
         m_SystemBind.Add(typeof(DependentResources),typeof(IClearSystem),typeof(GameFrame.DependentResourcesSystem.DependentResourcesClearSystem));
-        m_SystemBind.Add(typeof(UIWindow),typeof(IStartSystem),typeof(GameFrame.UIWindowSystem.UIWindowStartSystem));
-        m_SystemBind.Add(typeof(UIWindow),typeof(IUpdateSystem),typeof(GameFrame.UIWindowSystem.UIWindowUpdateSystem));
-        m_SystemBind.Add(typeof(UIWindow),typeof(IClearSystem),typeof(GameFrame.UIWindowSystem.UIWindowClearSystem));
-        m_SystemBind.Add(typeof(UIWindow),typeof(IShowSystem),typeof(GameFrame.UIWindowSystem.UIShowSystem));
-        m_SystemBind.Add(typeof(UIWindow),typeof(IHideSystem),typeof(GameFrame.UIWindowSystem.UIHideSystem));
+        m_SystemBind.Add(typeof(UIWindow),typeof(IStartSystem),typeof(UIWindowSystem.UIWindowStartSystem));
+        m_SystemBind.Add(typeof(UIWindow),typeof(IUpdateSystem),typeof(UIWindowSystem.UIWindowUpdateSystem));
+        m_SystemBind.Add(typeof(UIWindow),typeof(IClearSystem),typeof(UIWindowSystem.UIWindowClearSystem));
+        m_SystemBind.Add(typeof(UIWindow),typeof(IShowSystem),typeof(UIWindowSystem.UIShowSystem));
+        m_SystemBind.Add(typeof(UIWindow),typeof(IHideSystem),typeof(UIWindowSystem.UIHideSystem));
     }
 }
 

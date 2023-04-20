@@ -1,16 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
 using FairyGUI;
 
 namespace GameFrame
 {
     public class UIViewBase : Window, IView
     {
-        protected IEntity m_UIBase;
-
+        protected IEntity UIBase;
+        private PlayCompleteCallback m_PlayCompleteCallbackIn;
+        private PlayCompleteCallback m_PlayCompleteCallbackOut;
+        protected Dictionary<string, int> AnimationPlayDic;
+        private const string InAnimationName = "in";
+        private const string OutAnimationName = "out";
 
         protected override void OnInit()
         {
-            contentPane = UIPackage.CreateObject("Home", "HomeWindow").asCom;
+            m_PlayCompleteCallbackIn = AnimatoinInComplete;
+            m_PlayCompleteCallbackOut = AnimatoinOutComplete;
+            AnimationPlayDic = new();
             base.OnInit();
         }
 
@@ -26,20 +33,24 @@ namespace GameFrame
 
         public override void Dispose()
         {
+            m_PlayCompleteCallbackIn = null;
+            m_PlayCompleteCallbackOut = null;
+            AnimationPlayDic = null;
             base.Dispose();
         }
 
         protected override void DoShowAnimation()
         {
             base.DoShowAnimation();
+            PlayAnimation(InAnimationName, m_PlayCompleteCallbackIn);
         }
 
         protected override void DoHideAnimation()
         {
             base.DoHideAnimation();
-            //等待动画播放完毕之后发送一个事件
-            EventManager.Instance.Send<UICloseEvent, Type>(m_UIBase.GetType());
+            PlayAnimation(OutAnimationName, m_PlayCompleteCallbackOut);
         }
+
 
         public void Update(float elapseSeconds, float realElapseSeconds)
         {
@@ -52,7 +63,46 @@ namespace GameFrame
 
         public void Link(Entity uiBase, string path)
         {
-            m_UIBase = uiBase;
+            UIBase = uiBase;
+        }
+
+        protected void PlayAnimation(string animationName,PlayCompleteCallback compeleFunc)
+        {
+            var animatoins = contentPane.GetTransitionsInChildren(animationName);
+            if (animatoins.Length > 0)
+            {
+                AnimationPlayDic.Add(animationName,animatoins.Length);
+            }
+
+            foreach (var animatoin in animatoins)
+            {
+                animatoin.Play(compeleFunc);
+            }
+        }
+        protected void AnimatoinInComplete()
+        {
+            if (!AnimationPlayDic.ContainsKey(InAnimationName))
+            {
+                return;
+            }
+
+            if (--AnimationPlayDic[InAnimationName] == 0)
+            {
+                
+            }
+        }
+        
+        protected void AnimatoinOutComplete()
+        {
+            if (!AnimationPlayDic.ContainsKey(OutAnimationName))
+            {
+                return;
+            }
+            
+            if (--AnimationPlayDic[OutAnimationName] == 0)
+            {
+                EventManager.Instance.Send<UICloseEvent,Type>(UIBase.GetType());
+            }
         }
     }
 }
