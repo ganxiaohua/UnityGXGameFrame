@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using FairyGUI;
 using UnityEditor.Experimental.GraphView;
 
 namespace GameFrame
 {
-    public class UINode : ObjectBase
+    public class UINode : IReference
     {
         /// <summary>
         /// 窗体的名字
@@ -32,34 +33,54 @@ namespace GameFrame
         /// </summary>
         public Entity Window;
 
-        private static ObjectPool<UINode> sObjectPool;
+        public static List<Type> RecycleWindow = new();
 
-        public static UINode CreateNode(Type windowType) 
+        public static int MaxRecycleCount = 4;
+
+        public static UINode CreateEmptyNode(Type windowType)
         {
-            if (sObjectPool == null)
-                sObjectPool = ObjectPoolManager.Instance.CreateObjectPool<UINode>("UI", 16, windowType);
-            UINode uiNode = sObjectPool.Spawn();
+            UINode uiNode = ReferencePool.Acquire<UINode>();
+            uiNode.Window = null;
+            uiNode.WindowType = windowType;
+            return uiNode;
+        }
+
+        public static UINode CreateNode(Type windowType)
+        {
+            UINode uiNode = ReferencePool.Acquire<UINode>();
             uiNode.Name = windowType.Name;
             uiNode.WindowType = windowType;
             uiNode.NextActionState = WindowState.Hide;
             uiNode.IsLoading = true;
-            uiNode.Window = (Entity)GXGameFrame.Instance.MainScene.GetComponent<UIComponent>().AddComponent(windowType);
+            if (RecycleWindow.Contains(windowType))
+            {
+                uiNode.Window = (Entity) GXGameFrame.Instance.MainScene.GetComponent<UIComponent>().GetComponent(windowType);
+            }
+            else
+            {
+                uiNode.Window = (Entity) GXGameFrame.Instance.MainScene.GetComponent<UIComponent>().AddComponent(windowType);
+            }
+
             return uiNode;
         }
 
         public static void DestroyNode(UINode uinode)
         {
             uinode.Hide();
-            sObjectPool.UnSpawn(uinode);
+            ReferencePool.Release(uinode);
         }
 
         public void Show()
         {
+            if (Window == null)
+                return;
             EnitityHouse.Instance.RunShowSystem(Window);
         }
 
         public void Hide()
         {
+            if (Window == null)
+                return;
             EnitityHouse.Instance.RunHideSystem(Window);
         }
 
@@ -70,12 +91,23 @@ namespace GameFrame
             {
                 await dependentResources.WaitLoad();
             }
+
             IsLoading = false;
         }
 
         public void Clear()
         {
-            GXGameFrame.Instance.MainScene.GetComponent<UIComponent>().RemoveComponent(this.WindowType);
+            int recycleCount = RecycleWindow.Count;
+            if (recycleCount >= 4)
+            {
+                for (int i = MaxRecycleCount / 2 - 1; i >= 0; i--)
+                {
+                    GXGameFrame.Instance.MainScene.GetComponent<UIComponent>().RemoveComponent(RecycleWindow[i]);
+                    RecycleWindow.RemoveAt(i);
+                }
+            }
+
+            RecycleWindow.Add(WindowType);
         }
     }
 }

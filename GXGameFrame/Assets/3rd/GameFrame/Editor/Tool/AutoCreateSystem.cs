@@ -67,10 +67,7 @@ namespace GameFrame.Editor
                         types = itemType.GenericTypeArguments;
                         if (types.Length >= 1)
                         {
-                            foreach (var VARIABLE in types)
-                            {
-                                systemType = $"IStartSystem<{VARIABLE.Name}>";
-                            }
+                            systemType = $"IStartSystem{Typesjoint(types)}";
                         }
                         else
                         {
@@ -96,10 +93,7 @@ namespace GameFrame.Editor
                         types = itemType.GenericTypeArguments;
                         if (types.Length >= 1)
                         {
-                            foreach (var VARIABLE in types)
-                            {
-                                systemType = $"IShowSystem<{VARIABLE.Name}>";
-                            }
+                            systemType = $"IShowSystem{Typesjoint(types)}";
                         }
                         else
                         {
@@ -114,6 +108,36 @@ namespace GameFrame.Editor
 
                 AllAddText.Add(string.Format(AddText, $"typeof({enitiyType})", $"typeof({systemType})", $"typeof({enitiySystemType})"));
             }
+        }
+
+        private static string GetGenericityType(string typename, Type[] type)
+        {
+            if (!typename.Contains('`'))
+            {
+                return typename;
+            }
+
+            string name = typename.Split('`')[0];
+            return name + Typesjoint(type);
+        }
+
+        private static string Typesjoint(Type[] types)
+        {
+            string typesName = "<";
+            foreach (var item in types)
+            {
+                if (item.GenericTypeArguments.Length == 0)
+                {
+                    typesName += item.Name + ",";
+                }
+                else
+                {
+                    typesName += GetGenericityType(item.Name, item.GenericTypeArguments) + ",";
+                }
+            }
+
+            typesName = typesName.Substring(0, typesName.Length - 1) + ">";
+            return typesName;
         }
 
         private static void Create()

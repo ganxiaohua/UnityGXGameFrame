@@ -221,14 +221,20 @@ namespace GameFrame
         public T GetComponent<T>() where T : class, IEntity
         {
             Type type = typeof(T);
+            return (T) GetComponent(type);
+        }
+
+        public IEntity GetComponent(Type type)
+        {
             IEntity value = null;
             if (this.m_Components != null && !this.m_Components.TryGetValue(type, out value))
             {
                 return null;
             }
 
-            return value as T;
+            return value;
         }
+
 
         /// <summary>
         /// 删除组件
