@@ -1,0 +1,737 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!29 &1
+OcclusionCullingSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_OcclusionBakeSettings:
+    smallestOccluder: 5
+    smallestHole: 0.25
+    backfaceThreshold: 100
+  m_SceneGUID: 00000000000000000000000000000000
+  m_OcclusionCullingData: {fileID: 0}
+--- !u!104 &2
+RenderSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 9
+  m_Fog: 0
+  m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  m_FogMode: 3
+  m_FogDensity: 0.01
+  m_LinearFogStart: 0
+  m_LinearFogEnd: 300
+  m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
+  m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
+  m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
+  m_AmbientIntensity: 1
+  m_AmbientMode: 0
+  m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
+  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_HaloStrength: 0.5
+  m_FlareStrength: 1
+  m_FlareFadeSpeed: 3
+  m_HaloTexture: {fileID: 0}
+  m_SpotCookie: {fileID: 10001, guid: 0000000000000000e000000000000000, type: 0}
+  m_DefaultReflectionMode: 0
+  m_DefaultReflectionResolution: 128
+  m_ReflectionBounces: 1
+  m_ReflectionIntensity: 1
+  m_CustomReflection: {fileID: 0}
+  m_Sun: {fileID: 0}
+  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
+  m_UseRadianceAmbientProbe: 0
+--- !u!157 &3
+LightmapSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 12
+  m_GIWorkflowMode: 0
+  m_GISettings:
+    serializedVersion: 2
+    m_BounceScale: 1
+    m_IndirectOutputScale: 1
+    m_AlbedoBoost: 1
+    m_EnvironmentLightingMode: 0
+    m_EnableBakedLightmaps: 1
+    m_EnableRealtimeLightmaps: 1
+  m_LightmapEditorSettings:
+    serializedVersion: 12
+    m_Resolution: 2
+    m_BakeResolution: 40
+    m_AtlasSize: 1024
+    m_AO: 0
+    m_AOMaxDistance: 1
+    m_CompAOExponent: 1
+    m_CompAOExponentDirect: 0
+    m_ExtractAmbientOcclusion: 0
+    m_Padding: 2
+    m_LightmapParameters: {fileID: 0}
+    m_LightmapsBakeMode: 1
+    m_TextureCompression: 1
+    m_FinalGather: 0
+    m_FinalGatherFiltering: 1
+    m_FinalGatherRayCount: 256
+    m_ReflectionCompression: 2
+    m_MixedBakeMode: 2
+    m_BakeBackend: 1
+    m_PVRSampling: 1
+    m_PVRDirectSampleCount: 32
+    m_PVRSampleCount: 500
+    m_PVRBounces: 2
+    m_PVREnvironmentSampleCount: 500
+    m_PVREnvironmentReferencePointCount: 2048
+    m_PVRFilteringMode: 2
+    m_PVRDenoiserTypeDirect: 0
+    m_PVRDenoiserTypeIndirect: 0
+    m_PVRDenoiserTypeAO: 0
+    m_PVRFilterTypeDirect: 0
+    m_PVRFilterTypeIndirect: 0
+    m_PVRFilterTypeAO: 0
+    m_PVREnvironmentMIS: 0
+    m_PVRCulling: 1
+    m_PVRFilteringGaussRadiusDirect: 1
+    m_PVRFilteringGaussRadiusIndirect: 5
+    m_PVRFilteringGaussRadiusAO: 2
+    m_PVRFilteringAtrousPositionSigmaDirect: 0.5
+    m_PVRFilteringAtrousPositionSigmaIndirect: 2
+    m_PVRFilteringAtrousPositionSigmaAO: 1
+    m_ExportTrainingData: 0
+    m_TrainingDataDestination: TrainingData
+    m_LightProbeSampleCountMultiplier: 4
+  m_LightingDataAsset: {fileID: 0}
+  m_LightingSettings: {fileID: 4890085278179872738, guid: 5e52d30659351ce4b975ebf7751bc4ee,
+    type: 2}
+--- !u!196 &4
+NavMeshSettings:
+  serializedVersion: 2
+  m_ObjectHideFlags: 0
+  m_BuildSettings:
+    serializedVersion: 2
+    agentTypeID: 0
+    agentRadius: 0.5
+    agentHeight: 2
+    agentSlope: 45
+    agentClimb: 0.4
+    ledgeDropHeight: 0
+    maxJumpAcrossDistance: 0
+    minRegionArea: 2
+    manualCellSize: 0
+    cellSize: 0.16666667
+    manualTileSize: 0
+    tileSize: 256
+    accuratePlacement: 0
+    maxJobWorkers: 0
+    preserveTilesOutsideBounds: 0
+    debug:
+      m_Flags: 0
+  m_NavMeshData: {fileID: 0}
+--- !u!1 &535382105
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 535382108}
+  - component: {fileID: 535382107}
+  - component: {fileID: 535382106}
+  m_Layer: 0
+  m_Name: Camera
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!81 &535382106
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 535382105}
+  m_Enabled: 1
+--- !u!20 &535382107
+Camera:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 535382105}
+  m_Enabled: 1
+  serializedVersion: 2
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
+  m_projectionMatrixMode: 1
+  m_GateFitMode: 2
+  m_FOVAxisMode: 0
+  m_SensorSize: {x: 36, y: 24}
+  m_LensShift: {x: 0, y: 0}
+  m_FocalLength: 50
+  m_NormalizedViewPortRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+  near clip plane: 0.3
+  far clip plane: 1000
+  field of view: 60
+  orthographic: 0
+  orthographic size: 5
+  m_Depth: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RenderingPath: -1
+  m_TargetTexture: {fileID: 0}
+  m_TargetDisplay: 0
+  m_TargetEye: 3
+  m_HDR: 1
+  m_AllowMSAA: 1
+  m_AllowDynamicResolution: 0
+  m_ForceIntoRT: 0
+  m_OcclusionCulling: 1
+  m_StereoConvergence: 10
+  m_StereoSeparation: 0.022
+--- !u!4 &535382108
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 535382105}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 9.270972, y: 6.76, z: 37.15}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1172770065
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1172770068}
+  - component: {fileID: 1172770067}
+  - component: {fileID: 1172770066}
+  - component: {fileID: 1172770069}
+  m_Layer: 0
+  m_Name: Stage Camera
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1172770066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1172770065}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 367e80e3fa958344491a9a196a902b72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  constantSize: 1
+--- !u!20 &1172770067
+Camera:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1172770065}
+  m_Enabled: 1
+  serializedVersion: 2
+  m_ClearFlags: 3
+  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_projectionMatrixMode: 1
+  m_GateFitMode: 2
+  m_FOVAxisMode: 0
+  m_SensorSize: {x: 36, y: 24}
+  m_LensShift: {x: 0, y: 0}
+  m_FocalLength: 50
+  m_NormalizedViewPortRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+  near clip plane: -30
+  far clip plane: 30
+  field of view: 60
+  orthographic: 1
+  orthographic size: 5
+  m_Depth: 1
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 32
+  m_RenderingPath: -1
+  m_TargetTexture: {fileID: 0}
+  m_TargetDisplay: 0
+  m_TargetEye: 0
+  m_HDR: 0
+  m_AllowMSAA: 0
+  m_AllowDynamicResolution: 0
+  m_ForceIntoRT: 0
+  m_OcclusionCulling: 1
+  m_StereoConvergence: 10
+  m_StereoSeparation: 0.022
+--- !u!4 &1172770068
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1172770065}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 10.833333, y: -5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1172770069
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1172770065}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a723f7fd716aac049aa24e9186f18685, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scaleMode: 1
+  screenMatchMode: 0
+  designResolutionX: 1377
+  designResolutionY: 1331
+  fallbackScreenDPI: 96
+  defaultSpriteDPI: 96
+  constantScaleFactor: 1
+  ignoreOrientation: 0
+--- !u!1 &1450152504
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1450152506}
+  - component: {fileID: 1450152505}
+  - component: {fileID: 1450152507}
+  m_Layer: 5
+  m_Name: UIPanel
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1450152505
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1450152504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 024553ecf96a65649b929ee08c9214fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  packageName: Lottery
+  componentName: DesiredRoleWindow
+  fitScreen: 0
+  sortingOrder: 0
+  packagePath: Assets/UI/Lottery/Lottery/Lottery
+  renderMode: 0
+  renderCamera: {fileID: 0}
+  position: {x: 0, y: 0, z: 0}
+  scale: {x: 1, y: 1, z: 1}
+  rotation: {x: 0, y: 0, z: 0}
+  fairyBatching: 0
+  touchDisabled: 0
+  cachedUISize: {x: 1920, y: 1080}
+  hitTestMode: 0
+  setNativeChildrenOrder: 0
+--- !u!4 &1450152506
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1450152504}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.04, y: 0, z: 0}
+  m_LocalScale: {x: 0.007513148, y: 0.007513148, z: 0.007513148}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1450152507
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1450152504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6324845f5ccde24e85c6025adcaee48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dafaultPath: E:/UnityObject/Eden_client/Assets/Lua/UI
+  custom_Path: E:/UnityObject/Eden_client/Assets/Lua/UI/Lottery/DesiredRoleWindow
+  CheckResource: 0
+  className: UIDesiredRoleWindow
+  bindList:
+  - path: Mask
+    luaName: Mask
+    typeName: GGraph
+    Com: {fileID: 0}
+  - path: n1
+    luaName: n1
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: n2
+    luaName: n2
+    typeName: GButton
+    Com: {fileID: 0}
+  - path: n2.n0
+    luaName: n2_n0
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: n2.n1
+    luaName: n2_n1
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: n2.n2
+    luaName: n2_n2
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: n2.n3
+    luaName: n2_n3
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: n65
+    luaName: n65
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: n9
+    luaName: n9
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: n10
+    luaName: n10
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: n11
+    luaName: n11
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: n12
+    luaName: n12
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: n4
+    luaName: n4
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: n5
+    luaName: n5
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: n6
+    luaName: n6
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: n7
+    luaName: n7
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: n8
+    luaName: n8
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: DesiredRoleBtn01
+    luaName: DesiredRoleBtn01
+    typeName: GButton
+    Com: {fileID: 0}
+  - path: DesiredRoleBtn01.n3
+    luaName: DesiredRoleBtn01_n3
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: DesiredRoleBtn01.n4
+    luaName: DesiredRoleBtn01_n4
+    typeName: GTextField
+    Com: {fileID: 0}
+  - path: DesiredRoleBtn01.n6
+    luaName: DesiredRoleBtn01_n6
+    typeName: GLoader
+    Com: {fileID: 0}
+  - path: DesiredRoleBtn02
+    luaName: DesiredRoleBtn02
+    typeName: GButton
+    Com: {fileID: 0}
+  - path: DesiredRoleBtn02.n3
+    luaName: DesiredRoleBtn02_n3
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: DesiredRoleBtn02.n4
+    luaName: DesiredRoleBtn02_n4
+    typeName: GTextField
+    Com: {fileID: 0}
+  - path: DesiredRoleBtn02.n5
+    luaName: DesiredRoleBtn02_n5
+    typeName: GLoader
+    Com: {fileID: 0}
+  - path: DesiredRoleBtn03
+    luaName: DesiredRoleBtn03
+    typeName: GButton
+    Com: {fileID: 0}
+  - path: DesiredRoleBtn03.n3
+    luaName: DesiredRoleBtn03_n3
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: DesiredRoleBtn03.n4
+    luaName: DesiredRoleBtn03_n4
+    typeName: GTextField
+    Com: {fileID: 0}
+  - path: DesiredRoleBtn03.n5
+    luaName: DesiredRoleBtn03_n5
+    typeName: GLoader
+    Com: {fileID: 0}
+  - path: DesiredRoleBtn04
+    luaName: DesiredRoleBtn04
+    typeName: GButton
+    Com: {fileID: 0}
+  - path: DesiredRoleBtn04.n3
+    luaName: DesiredRoleBtn04_n3
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: DesiredRoleBtn04.n4
+    luaName: DesiredRoleBtn04_n4
+    typeName: GTextField
+    Com: {fileID: 0}
+  - path: DesiredRoleBtn04.n5
+    luaName: DesiredRoleBtn04_n5
+    typeName: GLoader
+    Com: {fileID: 0}
+  - path: DesiredRoleBtn05
+    luaName: DesiredRoleBtn05
+    typeName: GButton
+    Com: {fileID: 0}
+  - path: DesiredRoleBtn05.n0
+    luaName: DesiredRoleBtn05_n0
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: DesiredRoleBtn05.n4
+    luaName: DesiredRoleBtn05_n4
+    typeName: GTextField
+    Com: {fileID: 0}
+  - path: DesiredRoleBtn05.n5
+    luaName: DesiredRoleBtn05_n5
+    typeName: GLoader
+    Com: {fileID: 0}
+  - path: RoleHead
+    luaName: RoleHead
+    typeName: GList
+    Com: {fileID: 0}
+  - path: OneChaGetRole1
+    luaName: OneChaGetRole1
+    typeName: GComponent
+    Com: {fileID: 0}
+  - path: OneChaGetRole1.OneChaGetRole1
+    luaName: OneChaGetRole1_OneChaGetRole1
+    typeName: GComponent
+    Com: {fileID: 0}
+  - path: OneChaGetRole1.OneChaGetRole1.n0
+    luaName: OneChaGetRole1_OneChaGetRole1_n0
+    typeName: GButton
+    Com: {fileID: 0}
+  - path: OneChaGetRole1.OneChaGetRole1.n0.n0
+    luaName: OneChaGetRole1_OneChaGetRole1_n0_n0
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: OneChaGetRole1.OneChaGetRole1.n0.n1
+    luaName: OneChaGetRole1_OneChaGetRole1_n0_n1
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: OneChaGetRole1.OneChaGetRole1.n0.n2
+    luaName: OneChaGetRole1_OneChaGetRole1_n0_n2
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: OneChaGetRole1.OneChaGetRole1.n0.n3
+    luaName: OneChaGetRole1_OneChaGetRole1_n0_n3
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: OneChaGetRole1.OneChaGetRole1.n0.n4
+    luaName: OneChaGetRole1_OneChaGetRole1_n0_n4
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: OneChaGetRole1.OneChaGetRole1.n1
+    luaName: OneChaGetRole1_OneChaGetRole1_n1
+    typeName: GButton
+    Com: {fileID: 0}
+  - path: OneChaGetRole1.OneChaGetRole1.n1.n0
+    luaName: OneChaGetRole1_OneChaGetRole1_n1_n0
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: OneChaGetRole1.OneChaGetRole1.n1.n1
+    luaName: OneChaGetRole1_OneChaGetRole1_n1_n1
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: OneChaGetRole1.OneChaGetRole1.n1.n4
+    luaName: OneChaGetRole1_OneChaGetRole1_n1_n4
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: OneChaGetRole1.OneChaGetRole1.n3
+    luaName: OneChaGetRole1_OneChaGetRole1_n3
+    typeName: GComponent
+    Com: {fileID: 0}
+  - path: OneChaGetRole1.OneChaGetRole1.n3.n0
+    luaName: OneChaGetRole1_OneChaGetRole1_n3_n0
+    typeName: GLoader
+    Com: {fileID: 0}
+  - path: OneChaGetRole1.OneChaGetRole1.n3.n2
+    luaName: OneChaGetRole1_OneChaGetRole1_n3_n2
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: OneChaGetRole1.OneChaGetRole1.n4
+    luaName: OneChaGetRole1_OneChaGetRole1_n4
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: OneChaGetRole1.OneChaGetRole1.n5
+    luaName: OneChaGetRole1_OneChaGetRole1_n5
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: OneChaGetRole1.OneChaGetRole2
+    luaName: OneChaGetRole1_OneChaGetRole2
+    typeName: GComponent
+    Com: {fileID: 0}
+  - path: OneChaGetRole1.OneChaGetRole2.n0
+    luaName: OneChaGetRole1_OneChaGetRole2_n0
+    typeName: GButton
+    Com: {fileID: 0}
+  - path: OneChaGetRole1.OneChaGetRole2.n0.n0
+    luaName: OneChaGetRole1_OneChaGetRole2_n0_n0
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: OneChaGetRole1.OneChaGetRole2.n0.n1
+    luaName: OneChaGetRole1_OneChaGetRole2_n0_n1
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: OneChaGetRole1.OneChaGetRole2.n0.n2
+    luaName: OneChaGetRole1_OneChaGetRole2_n0_n2
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: OneChaGetRole1.OneChaGetRole2.n0.n3
+    luaName: OneChaGetRole1_OneChaGetRole2_n0_n3
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: OneChaGetRole1.OneChaGetRole2.n0.n4
+    luaName: OneChaGetRole1_OneChaGetRole2_n0_n4
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: OneChaGetRole1.OneChaGetRole2.n1
+    luaName: OneChaGetRole1_OneChaGetRole2_n1
+    typeName: GButton
+    Com: {fileID: 0}
+  - path: OneChaGetRole1.OneChaGetRole2.n1.n0
+    luaName: OneChaGetRole1_OneChaGetRole2_n1_n0
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: OneChaGetRole1.OneChaGetRole2.n1.n1
+    luaName: OneChaGetRole1_OneChaGetRole2_n1_n1
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: OneChaGetRole1.OneChaGetRole2.n1.n4
+    luaName: OneChaGetRole1_OneChaGetRole2_n1_n4
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: OneChaGetRole1.OneChaGetRole2.n3
+    luaName: OneChaGetRole1_OneChaGetRole2_n3
+    typeName: GComponent
+    Com: {fileID: 0}
+  - path: OneChaGetRole1.OneChaGetRole2.n3.n0
+    luaName: OneChaGetRole1_OneChaGetRole2_n3_n0
+    typeName: GLoader
+    Com: {fileID: 0}
+  - path: OneChaGetRole1.OneChaGetRole2.n3.n2
+    luaName: OneChaGetRole1_OneChaGetRole2_n3_n2
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: OneChaGetRole1.OneChaGetRole2.n4
+    luaName: OneChaGetRole1_OneChaGetRole2_n4
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: OneChaGetRole1.OneChaGetRole2.n5
+    luaName: OneChaGetRole1_OneChaGetRole2_n5
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: n41
+    luaName: n41
+    typeName: GTextField
+    Com: {fileID: 0}
+  - path: Line
+    luaName: Line
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: n60
+    luaName: n60
+    typeName: GButton
+    Com: {fileID: 0}
+  - path: n60.n0
+    luaName: n60_n0
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: n60.n1
+    luaName: n60_n1
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: n60.n2
+    luaName: n60_n2
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: n60.n3
+    luaName: n60_n3
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: n60.n4
+    luaName: n60_n4
+    typeName: GTextField
+    Com: {fileID: 0}
+  - path: n61
+    luaName: n61
+    typeName: GButton
+    Com: {fileID: 0}
+  - path: n61.n0
+    luaName: n61_n0
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: n61.n1
+    luaName: n61_n1
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: n61.n2
+    luaName: n61_n2
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: n61.n3
+    luaName: n61_n3
+    typeName: GImage
+    Com: {fileID: 0}
+  - path: n61.n4
+    luaName: n61_n4
+    typeName: GTextField
+    Com: {fileID: 0}

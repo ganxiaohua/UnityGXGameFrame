@@ -1,0 +1,70 @@
+using System;
+using GameFrame;
+
+
+public class {0} : Entity, IStart, IUpdate, IClear, IShow, IHide
+{
+    public {0}View {0}View;
+}
+#
+using System;
+using System.Collections.Generic;
+using GameFrame;
+
+public static class {0}System
+{
+    [SystemBind]
+    public class {0}StartSystem : StartSystem<{0}>
+    {
+        protected override void Start({0} self)
+        {
+            self.{0}View = ReferencePool.Acquire<{0}View>();
+            self.{0}View.Link(self, null);
+            List<string> temp = new List<string>();
+            temp.Add("{1}/{2}");
+            self.AddComponent<DependentResources, List<string>>(temp);
+        }
+    }
+    
+    [SystemBind]
+    public class {0}ShowSystem : ShowSystem<UIHome>
+    {
+        protected override void Show(UIHome self)
+        {
+            self.UIHomeView.Show();
+        }
+    }
+
+    [SystemBind]
+    public class UIHomeHideSystem : HideSystem<UIHome>
+    {
+        protected override void Hide(UIHome self)
+        {
+            self.UIHomeView.Hide();
+        }
+    }
+
+    [SystemBind]
+    public class UIHomeUpdateSystem : UpdateSystem<UIHome>
+    {
+        protected override void Update(UIHome self, float elapseSeconds, float realElapseSeconds)
+        {
+        }
+    }
+
+    [SystemBind]
+    public class UIHomeClearSystem : ClearSystem<UIHome>
+    {
+        protected override void Clear(UIHome self)
+        {
+            ReferencePool.Release(self.UIHomeView);
+        }
+    }
+    
+    public static void Cilck(this UIHome self)
+    {
+        
+    }
+    
+}
+

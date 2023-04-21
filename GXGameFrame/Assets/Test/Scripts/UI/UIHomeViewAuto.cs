@@ -1,7 +1,7 @@
 ﻿using FairyGUI;
 using GameFrame;
 
-public partial class UIViewHome : UIViewBase
+public partial class UIHomeView : UIViewBase
 {
     private GButton m_BtnDevelop;
 
