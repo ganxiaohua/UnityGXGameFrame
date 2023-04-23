@@ -5,7 +5,7 @@ namespace GXGame
 {{
     public class {0} : Entity, {1}
     {{
-            
+          {2}
     }}
 }}
 #

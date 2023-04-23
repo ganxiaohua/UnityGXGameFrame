@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
+  m_IndirectSpecularColor: {r: 0.12731749, g: 0.13414757, b: 0.1210787, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -98,8 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_LightingSettings: {fileID: 4890085278179872738, guid: 5e52d30659351ce4b975ebf7751bc4ee,
-    type: 2}
+  m_LightingSettings: {fileID: 4890085278179872738, guid: 5e52d30659351ce4b975ebf7751bc4ee, type: 2}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -291,7 +290,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1172770065}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 10.833333, y: -5, z: 0}
+  m_LocalPosition: {x: 8.888889, y: -5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -348,11 +347,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 024553ecf96a65649b929ee08c9214fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  packageName: Lottery
-  componentName: DesiredRoleWindow
+  packageName: Home
+  componentName: HomeMainPanel
   fitScreen: 0
   sortingOrder: 0
-  packagePath: Assets/UI/Lottery/Lottery/Lottery
+  packagePath: Assets/UI/Home/Home
   renderMode: 0
   renderCamera: {fileID: 0}
   position: {x: 0, y: 0, z: 0}
@@ -387,351 +386,338 @@ MonoBehaviour:
   m_GameObject: {fileID: 1450152504}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e6324845f5ccde24e85c6025adcaee48, type: 3}
+  m_Script: {fileID: 11500000, guid: 4cb45a8302c5713449dcf0bec31e3329, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dafaultPath: E:/UnityObject/Eden_client/Assets/Lua/UI
-  custom_Path: E:/UnityObject/Eden_client/Assets/Lua/UI/Lottery/DesiredRoleWindow
-  CheckResource: 0
-  className: UIDesiredRoleWindow
+  dafaultPath: E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Assets/Scripts/UI
+  custom_Path: E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Assets/Scripts/UI
+  className: UIHomeMainPanel
   bindList:
-  - path: Mask
-    luaName: Mask
-    typeName: GGraph
-    Com: {fileID: 0}
-  - path: n1
-    luaName: n1
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: n2
-    luaName: n2
-    typeName: GButton
-    Com: {fileID: 0}
-  - path: n2.n0
-    luaName: n2_n0
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: n2.n1
-    luaName: n2_n1
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: n2.n2
-    luaName: n2_n2
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: n2.n3
-    luaName: n2_n3
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: n65
-    luaName: n65
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: n9
-    luaName: n9
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: n10
-    luaName: n10
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: n11
-    luaName: n11
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: n12
-    luaName: n12
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: n4
-    luaName: n4
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: n5
-    luaName: n5
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: n6
-    luaName: n6
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: n7
-    luaName: n7
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: n8
-    luaName: n8
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: DesiredRoleBtn01
-    luaName: DesiredRoleBtn01
-    typeName: GButton
-    Com: {fileID: 0}
-  - path: DesiredRoleBtn01.n3
-    luaName: DesiredRoleBtn01_n3
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: DesiredRoleBtn01.n4
-    luaName: DesiredRoleBtn01_n4
-    typeName: GTextField
-    Com: {fileID: 0}
-  - path: DesiredRoleBtn01.n6
-    luaName: DesiredRoleBtn01_n6
-    typeName: GLoader
-    Com: {fileID: 0}
-  - path: DesiredRoleBtn02
-    luaName: DesiredRoleBtn02
-    typeName: GButton
-    Com: {fileID: 0}
-  - path: DesiredRoleBtn02.n3
-    luaName: DesiredRoleBtn02_n3
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: DesiredRoleBtn02.n4
-    luaName: DesiredRoleBtn02_n4
-    typeName: GTextField
-    Com: {fileID: 0}
-  - path: DesiredRoleBtn02.n5
-    luaName: DesiredRoleBtn02_n5
-    typeName: GLoader
-    Com: {fileID: 0}
-  - path: DesiredRoleBtn03
-    luaName: DesiredRoleBtn03
-    typeName: GButton
-    Com: {fileID: 0}
-  - path: DesiredRoleBtn03.n3
-    luaName: DesiredRoleBtn03_n3
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: DesiredRoleBtn03.n4
-    luaName: DesiredRoleBtn03_n4
-    typeName: GTextField
-    Com: {fileID: 0}
-  - path: DesiredRoleBtn03.n5
-    luaName: DesiredRoleBtn03_n5
-    typeName: GLoader
-    Com: {fileID: 0}
-  - path: DesiredRoleBtn04
-    luaName: DesiredRoleBtn04
-    typeName: GButton
-    Com: {fileID: 0}
-  - path: DesiredRoleBtn04.n3
-    luaName: DesiredRoleBtn04_n3
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: DesiredRoleBtn04.n4
-    luaName: DesiredRoleBtn04_n4
-    typeName: GTextField
-    Com: {fileID: 0}
-  - path: DesiredRoleBtn04.n5
-    luaName: DesiredRoleBtn04_n5
-    typeName: GLoader
-    Com: {fileID: 0}
-  - path: DesiredRoleBtn05
-    luaName: DesiredRoleBtn05
-    typeName: GButton
-    Com: {fileID: 0}
-  - path: DesiredRoleBtn05.n0
-    luaName: DesiredRoleBtn05_n0
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: DesiredRoleBtn05.n4
-    luaName: DesiredRoleBtn05_n4
-    typeName: GTextField
-    Com: {fileID: 0}
-  - path: DesiredRoleBtn05.n5
-    luaName: DesiredRoleBtn05_n5
-    typeName: GLoader
-    Com: {fileID: 0}
-  - path: RoleHead
-    luaName: RoleHead
-    typeName: GList
-    Com: {fileID: 0}
-  - path: OneChaGetRole1
-    luaName: OneChaGetRole1
-    typeName: GComponent
-    Com: {fileID: 0}
-  - path: OneChaGetRole1.OneChaGetRole1
-    luaName: OneChaGetRole1_OneChaGetRole1
-    typeName: GComponent
-    Com: {fileID: 0}
-  - path: OneChaGetRole1.OneChaGetRole1.n0
-    luaName: OneChaGetRole1_OneChaGetRole1_n0
-    typeName: GButton
-    Com: {fileID: 0}
-  - path: OneChaGetRole1.OneChaGetRole1.n0.n0
-    luaName: OneChaGetRole1_OneChaGetRole1_n0_n0
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: OneChaGetRole1.OneChaGetRole1.n0.n1
-    luaName: OneChaGetRole1_OneChaGetRole1_n0_n1
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: OneChaGetRole1.OneChaGetRole1.n0.n2
-    luaName: OneChaGetRole1_OneChaGetRole1_n0_n2
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: OneChaGetRole1.OneChaGetRole1.n0.n3
-    luaName: OneChaGetRole1_OneChaGetRole1_n0_n3
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: OneChaGetRole1.OneChaGetRole1.n0.n4
-    luaName: OneChaGetRole1_OneChaGetRole1_n0_n4
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: OneChaGetRole1.OneChaGetRole1.n1
-    luaName: OneChaGetRole1_OneChaGetRole1_n1
-    typeName: GButton
-    Com: {fileID: 0}
-  - path: OneChaGetRole1.OneChaGetRole1.n1.n0
-    luaName: OneChaGetRole1_OneChaGetRole1_n1_n0
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: OneChaGetRole1.OneChaGetRole1.n1.n1
-    luaName: OneChaGetRole1_OneChaGetRole1_n1_n1
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: OneChaGetRole1.OneChaGetRole1.n1.n4
-    luaName: OneChaGetRole1_OneChaGetRole1_n1_n4
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: OneChaGetRole1.OneChaGetRole1.n3
-    luaName: OneChaGetRole1_OneChaGetRole1_n3
-    typeName: GComponent
-    Com: {fileID: 0}
-  - path: OneChaGetRole1.OneChaGetRole1.n3.n0
-    luaName: OneChaGetRole1_OneChaGetRole1_n3_n0
-    typeName: GLoader
-    Com: {fileID: 0}
-  - path: OneChaGetRole1.OneChaGetRole1.n3.n2
-    luaName: OneChaGetRole1_OneChaGetRole1_n3_n2
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: OneChaGetRole1.OneChaGetRole1.n4
-    luaName: OneChaGetRole1_OneChaGetRole1_n4
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: OneChaGetRole1.OneChaGetRole1.n5
-    luaName: OneChaGetRole1_OneChaGetRole1_n5
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: OneChaGetRole1.OneChaGetRole2
-    luaName: OneChaGetRole1_OneChaGetRole2
-    typeName: GComponent
-    Com: {fileID: 0}
-  - path: OneChaGetRole1.OneChaGetRole2.n0
-    luaName: OneChaGetRole1_OneChaGetRole2_n0
-    typeName: GButton
-    Com: {fileID: 0}
-  - path: OneChaGetRole1.OneChaGetRole2.n0.n0
-    luaName: OneChaGetRole1_OneChaGetRole2_n0_n0
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: OneChaGetRole1.OneChaGetRole2.n0.n1
-    luaName: OneChaGetRole1_OneChaGetRole2_n0_n1
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: OneChaGetRole1.OneChaGetRole2.n0.n2
-    luaName: OneChaGetRole1_OneChaGetRole2_n0_n2
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: OneChaGetRole1.OneChaGetRole2.n0.n3
-    luaName: OneChaGetRole1_OneChaGetRole2_n0_n3
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: OneChaGetRole1.OneChaGetRole2.n0.n4
-    luaName: OneChaGetRole1_OneChaGetRole2_n0_n4
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: OneChaGetRole1.OneChaGetRole2.n1
-    luaName: OneChaGetRole1_OneChaGetRole2_n1
-    typeName: GButton
-    Com: {fileID: 0}
-  - path: OneChaGetRole1.OneChaGetRole2.n1.n0
-    luaName: OneChaGetRole1_OneChaGetRole2_n1_n0
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: OneChaGetRole1.OneChaGetRole2.n1.n1
-    luaName: OneChaGetRole1_OneChaGetRole2_n1_n1
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: OneChaGetRole1.OneChaGetRole2.n1.n4
-    luaName: OneChaGetRole1_OneChaGetRole2_n1_n4
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: OneChaGetRole1.OneChaGetRole2.n3
-    luaName: OneChaGetRole1_OneChaGetRole2_n3
-    typeName: GComponent
-    Com: {fileID: 0}
-  - path: OneChaGetRole1.OneChaGetRole2.n3.n0
-    luaName: OneChaGetRole1_OneChaGetRole2_n3_n0
-    typeName: GLoader
-    Com: {fileID: 0}
-  - path: OneChaGetRole1.OneChaGetRole2.n3.n2
-    luaName: OneChaGetRole1_OneChaGetRole2_n3_n2
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: OneChaGetRole1.OneChaGetRole2.n4
-    luaName: OneChaGetRole1_OneChaGetRole2_n4
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: OneChaGetRole1.OneChaGetRole2.n5
-    luaName: OneChaGetRole1_OneChaGetRole2_n5
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: n41
-    luaName: n41
-    typeName: GTextField
-    Com: {fileID: 0}
-  - path: Line
-    luaName: Line
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: n60
-    luaName: n60
-    typeName: GButton
-    Com: {fileID: 0}
-  - path: n60.n0
-    luaName: n60_n0
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: n60.n1
-    luaName: n60_n1
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: n60.n2
-    luaName: n60_n2
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: n60.n3
-    luaName: n60_n3
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: n60.n4
-    luaName: n60_n4
-    typeName: GTextField
-    Com: {fileID: 0}
-  - path: n61
-    luaName: n61
-    typeName: GButton
-    Com: {fileID: 0}
-  - path: n61.n0
-    luaName: n61_n0
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: n61.n1
-    luaName: n61_n1
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: n61.n2
-    luaName: n61_n2
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: n61.n3
-    luaName: n61_n3
-    typeName: GImage
-    Com: {fileID: 0}
-  - path: n61.n4
-    luaName: n61_n4
-    typeName: GTextField
+  - Path: Bg
+    FieldName: Bg
+    TypeName: GComponent
+    Com: {fileID: 0}
+  - Path: Bg.Bg
+    FieldName: Bg_Bg
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: Bg.Head
+    FieldName: Bg_Head
+    TypeName: GLoader
+    Com: {fileID: 0}
+  - Path: Bg.HeadFrame
+    FieldName: Bg_HeadFrame
+    TypeName: GLoader
+    Com: {fileID: 0}
+  - Path: Bg.AssetsButton01
+    FieldName: Bg_AssetsButton01
+    TypeName: GComponent
+    Com: {fileID: 0}
+  - Path: Bg.AssetsButton01.AssetsAddBtn
+    FieldName: Bg_AssetsButton01_AssetsAddBtn
+    TypeName: GButton
+    Com: {fileID: 0}
+  - Path: Bg.AssetsButton01.AssetsAddBtn.n0
+    FieldName: Bg_AssetsButton01_AssetsAddBtn_n0
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: Bg.AssetsButton01.NumberTxt
+    FieldName: Bg_AssetsButton01_NumberTxt
+    TypeName: GTextField
+    Com: {fileID: 0}
+  - Path: Bg.AssetsButton01.AssetsSmallIconLoader
+    FieldName: Bg_AssetsButton01_AssetsSmallIconLoader
+    TypeName: GLoader
+    Com: {fileID: 0}
+  - Path: Bg.AssetsButton02
+    FieldName: Bg_AssetsButton02
+    TypeName: GComponent
+    Com: {fileID: 0}
+  - Path: Bg.AssetsButton02.AssetsAddBtn
+    FieldName: Bg_AssetsButton02_AssetsAddBtn
+    TypeName: GButton
+    Com: {fileID: 0}
+  - Path: Bg.AssetsButton02.AssetsAddBtn.n0
+    FieldName: Bg_AssetsButton02_AssetsAddBtn_n0
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: Bg.AssetsButton02.NumberTxt
+    FieldName: Bg_AssetsButton02_NumberTxt
+    TypeName: GTextField
+    Com: {fileID: 0}
+  - Path: Bg.AssetsButton02.AssetsSmallIconLoader
+    FieldName: Bg_AssetsButton02_AssetsSmallIconLoader
+    TypeName: GLoader
+    Com: {fileID: 0}
+  - Path: Bg.FightIcon
+    FieldName: Bg_FightIcon
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: Bg.LvBg
+    FieldName: Bg_LvBg
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: Bg.LvTxt
+    FieldName: Bg_LvTxt
+    TypeName: GTextField
+    Com: {fileID: 0}
+  - Path: Bg.NameTxt
+    FieldName: Bg_NameTxt
+    TypeName: GTextField
+    Com: {fileID: 0}
+  - Path: Bg.FightTxt
+    FieldName: Bg_FightTxt
+    TypeName: GTextField
+    Com: {fileID: 0}
+  - Path: PicList
+    FieldName: PicList
+    TypeName: GComponent
+    Com: {fileID: 0}
+  - Path: PicList.Bg
+    FieldName: PicList_Bg
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: PicList.PicList
+    FieldName: PicList_PicList
+    TypeName: GList
+    Com: {fileID: 0}
+  - Path: PicList.BannerBg
+    FieldName: PicList_BannerBg
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: PicList.Huawen
+    FieldName: PicList_Huawen
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: PicList.PageNumberList
+    FieldName: PicList_PageNumberList
+    TypeName: GList
+    Com: {fileID: 0}
+  - Path: BtnActivity
+    FieldName: BtnActivity
+    TypeName: GButton
+    Com: {fileID: 0}
+  - Path: BtnActivity.norm
+    FieldName: BtnActivity_norm
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: BtnActivity.icon
+    FieldName: BtnActivity_icon
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: BtnFriend
+    FieldName: BtnFriend
+    TypeName: GButton
+    Com: {fileID: 0}
+  - Path: BtnFriend.norm
+    FieldName: BtnFriend_norm
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: BtnFriend.icon
+    FieldName: BtnFriend_icon
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: BtnMail
+    FieldName: BtnMail
+    TypeName: GButton
+    Com: {fileID: 0}
+  - Path: BtnMail.norm
+    FieldName: BtnMail_norm
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: BtnMail.icon
+    FieldName: BtnMail_icon
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: BtnTalk
+    FieldName: BtnTalk
+    TypeName: GButton
+    Com: {fileID: 0}
+  - Path: BtnTalk.norm
+    FieldName: BtnTalk_norm
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: BtnTalk.icon
+    FieldName: BtnTalk_icon
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: n41
+    FieldName: n41
+    TypeName: GButton
+    Com: {fileID: 0}
+  - Path: n41.norm
+    FieldName: n41_norm
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: n41.icon
+    FieldName: n41_icon
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: TopBtnHide
+    FieldName: TopBtnHide
+    TypeName: GButton
+    Com: {fileID: 0}
+  - Path: TopBtnHide.Icon
+    FieldName: TopBtnHide_Icon
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: TopBtnBG
+    FieldName: TopBtnBG
+    TypeName: GButton
+    Com: {fileID: 0}
+  - Path: TopBtnBG.Icon
+    FieldName: TopBtnBG_Icon
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: TopBtnCard
+    FieldName: TopBtnCard
+    TypeName: GButton
+    Com: {fileID: 0}
+  - Path: TopBtnCard.Icon
+    FieldName: TopBtnCard_Icon
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: TopBtnNotice
+    FieldName: TopBtnNotice
+    TypeName: GButton
+    Com: {fileID: 0}
+  - Path: TopBtnNotice.Icon
+    FieldName: TopBtnNotice_Icon
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: TopBtnSetting
+    FieldName: TopBtnSetting
+    TypeName: GButton
+    Com: {fileID: 0}
+  - Path: TopBtnSetting.Icon
+    FieldName: TopBtnSetting_Icon
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: ActivityPicGrp
+    FieldName: ActivityPicGrp
+    TypeName: GList
+    Com: {fileID: 0}
+  - Path: BtnContract
+    FieldName: BtnContract
+    TypeName: GButton
+    Com: {fileID: 0}
+  - Path: BtnContract.n3
+    FieldName: BtnContract_n3
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: BtnContract.n4
+    FieldName: BtnContract_n4
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: BtnAdventure
+    FieldName: BtnAdventure
+    TypeName: GButton
+    Com: {fileID: 0}
+  - Path: BtnAdventure.Icon
+    FieldName: BtnAdventure_Icon
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: BtnBattle
+    FieldName: BtnBattle
+    TypeName: GButton
+    Com: {fileID: 0}
+  - Path: BtnBattle.Icon
+    FieldName: BtnBattle_Icon
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: BtnHome
+    FieldName: BtnHome
+    TypeName: GButton
+    Com: {fileID: 0}
+  - Path: BtnHome.Icon
+    FieldName: BtnHome_Icon
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: BtnDevelop
+    FieldName: BtnDevelop
+    TypeName: GComponent
+    Com: {fileID: 0}
+  - Path: BtnDevelop.BtnDevelop
+    FieldName: BtnDevelop_BtnDevelop
+    TypeName: GButton
+    Com: {fileID: 0}
+  - Path: BtnDevelop.BtnDevelop.Bg
+    FieldName: BtnDevelop_BtnDevelop_Bg
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: BtnDevelop.BtnDevelop.Icon
+    FieldName: BtnDevelop_BtnDevelop_Icon
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: BtnDevelop.BtnPotency
+    FieldName: BtnDevelop_BtnPotency
+    TypeName: GButton
+    Com: {fileID: 0}
+  - Path: BtnDevelop.BtnPotency.Bg
+    FieldName: BtnDevelop_BtnPotency_Bg
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: BtnDevelop.BtnPotency.Icon
+    FieldName: BtnDevelop_BtnPotency_Icon
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: BtnDevelop.BtnRecruit
+    FieldName: BtnDevelop_BtnRecruit
+    TypeName: GButton
+    Com: {fileID: 0}
+  - Path: BtnDevelop.BtnRecruit.Bg
+    FieldName: BtnDevelop_BtnRecruit_Bg
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: BtnDevelop.BtnRecruit.Icon
+    FieldName: BtnDevelop_BtnRecruit_Icon
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: BtnDevelop.BtnBag
+    FieldName: BtnDevelop_BtnBag
+    TypeName: GButton
+    Com: {fileID: 0}
+  - Path: BtnDevelop.BtnBag.Bg
+    FieldName: BtnDevelop_BtnBag_Bg
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: BtnDevelop.BtnBag.Icon
+    FieldName: BtnDevelop_BtnBag_Icon
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: BtnDevelop.BtnSociety
+    FieldName: BtnDevelop_BtnSociety
+    TypeName: GButton
+    Com: {fileID: 0}
+  - Path: BtnDevelop.BtnSociety.Bg
+    FieldName: BtnDevelop_BtnSociety_Bg
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: BtnDevelop.BtnSociety.Icon
+    FieldName: BtnDevelop_BtnSociety_Icon
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: BtnDevelop.BtnTask
+    FieldName: BtnDevelop_BtnTask
+    TypeName: GButton
+    Com: {fileID: 0}
+  - Path: BtnDevelop.BtnTask.Bg
+    FieldName: BtnDevelop_BtnTask_Bg
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: BtnDevelop.BtnTask.Icon
+    FieldName: BtnDevelop_BtnTask_Icon
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: BtnDevelop.BtnShop
+    FieldName: BtnDevelop_BtnShop
+    TypeName: GButton
+    Com: {fileID: 0}
+  - Path: BtnDevelop.BtnShop.Bg
+    FieldName: BtnDevelop_BtnShop_Bg
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: BtnDevelop.BtnShop.Icon
+    FieldName: BtnDevelop_BtnShop_Icon
+    TypeName: GImage
     Com: {fileID: 0}

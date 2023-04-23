@@ -174,12 +174,12 @@ namespace GameFrame
 
         string GetFGUIDesPath(string fileName)
         {
-            return $"Assets/UI/{fileName}_fui.bytes";
+            return $"{StaticText.UIPath}{fileName}_fui.bytes";
         }
 
         string GetFGUIResPath(string fileName, string extension)
         {
-            return $"Assets/UI/{fileName}{extension}";
+            return $"{StaticText.UIPath}{fileName}{extension}";
         }
 
         private void LoadPackageInternalAsync(string name, string extension, System.Type type, PackageItem item)
@@ -194,6 +194,7 @@ namespace GameFrame
             {
                 return;
             }
+
             LoadResPath(resPath, name + extension, item, uiPackAgeData);
         }
 

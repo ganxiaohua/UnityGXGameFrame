@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using GameFrame;
 using GameFrame.Timer;
+using GXGame;
 using UnityEngine;
 
 
@@ -30,7 +31,7 @@ public class GameMain : MonoBehaviour
     {
         GXGameFrame.Instance.Start();
         SceneEntityFactory.CreateScene<BattlegroundScene>(GXGameFrame.Instance.MainScene);
-        UIManager.Instance.OpenUI(typeof(UIHome));
+        UIManager.Instance.OpenUI(typeof(UIHomeMainPanel));
     }
 
     // Update is called once per frame

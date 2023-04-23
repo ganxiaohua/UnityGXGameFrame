@@ -8,24 +8,21 @@ using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [Serializable]
 public class FairyData
 {
-    [ReadOnly]
-    public string path;
-    public string luaName;
+    [FormerlySerializedAs("path")] [ReadOnly]
+    public string Path;
 
-    [ReadOnly]
-    [HideLabel]
-    [VerticalGroup("Type")]
-    public string typeName;
+    [FormerlySerializedAs("luaName")] public string FieldName;
 
-    [ReadOnly]
-    [HideLabel]
-    [VerticalGroup("Type")]
+    [FormerlySerializedAs("typeName")] [ReadOnly] [HideLabel] [VerticalGroup("Type")]
+    public string TypeName;
+
+    [ReadOnly] [HideLabel] [VerticalGroup("Type")]
     public GameObject Com;
-
 }
 
 public class CreateUIScriptOdin : MonoBehaviour
@@ -37,29 +34,27 @@ public class CreateUIScriptOdin : MonoBehaviour
             Path = path;
             Go = go;
         }
+
         public string Path;
         public GComponent Go;
+        public UIPanel UIPanel;
     }
 
-    [Title("默认路径")]
-    [ReadOnly]
-    [HideLabel]
-    public string dafaultPath;
+    [Title("默认路径")] [ReadOnly] [HideLabel] public string dafaultPath;
 
-    private const string codePath = "/Lua/UI";
+    private const string codePath = "/Scripts/UI";
     private static string saveCodePath;
 
     private int Index;
     private int NamingLength;
 
+    private UIPanel UIPanel;
+
     private Regex luaNamePattern = new Regex("[^a-zA-Z0-9]");
 
-    private string[] m_ExportTypes = { "GButton", "GList", "GRichTextField", "GTextField", "GComponent", "GLoader", "GTextInput", "GProgressBar" };
+    private string[] m_ExportTypes = {"GButton", "GList", "GRichTextField", "GTextField", "GComponent", "GLoader", "GTextInput", "GProgressBar"};
 
-    [Title("自定义路径选择")]
-    [HideLabel]
-    [FolderPath(ParentFolder = "Assets/Lua/UI", AbsolutePath = true)]
-    [OnValueChanged("ButtonBind")]
+    [Title("自定义路径选择")] [HideLabel] [FolderPath(ParentFolder = "Assets/Scripts/UI", AbsolutePath = true)] [OnValueChanged("ButtonBind")]
     public string custom_Path;
 
     [Button("绑定组件"), ButtonGroup]
@@ -87,39 +82,35 @@ public class CreateUIScriptOdin : MonoBehaviour
         EditorSceneManager.OpenScene("Assets/Init.unity");
     }
 
-    [LabelText("是否生成资源栏")]
-    public bool CheckResource;
-
-    [HorizontalGroup]
-    [LabelText("类名:"), LabelWidth(40)]
+    [HorizontalGroup] [LabelText("类名:"), LabelWidth(40)]
     public string className;
+
     [HorizontalGroup]
     [Button("使用包体名作为脚本名", ButtonSizes.Medium)]
     public void DefaultClassName()
     {
-        className = "UI" + this.gameObject.GetComponent<UIPanel>().componentName;  //默认类名
+        className = "UI" + this.gameObject.GetComponent<UIPanel>().componentName; //默认类名
     }
 
 
-    [ListDrawerSettings(NumberOfItemsPerPage = 20)]
-    [PropertyOrder(1)]
+    [ListDrawerSettings(NumberOfItemsPerPage = 20)] [PropertyOrder(1)]
     // [TableList, Searchable]
     public List<FairyData> bindList = new List<FairyData>();
 
     [OnInspectorInit("EditorInit")]
     private void EditorInit()
     {
-        dafaultPath = (Application.dataPath + codePath).Replace("\\", "/");  //初始化默认路径
+        dafaultPath = (Application.dataPath + codePath).Replace("\\", "/"); //初始化默认路径
 
         custom_Path = dafaultPath;
 
         if (string.IsNullOrEmpty(className))
         {
-            className = "UI" + this.gameObject.GetComponent<UIPanel>().componentName;  //默认类名
+            className = "UI" + this.gameObject.GetComponent<UIPanel>().componentName; //默认类名
         }
 
         CheckSavePath();
-        BindInit();  //默认进行绑定
+        BindInit(); //默认进行绑定
     }
 
 
@@ -147,8 +138,11 @@ public class CreateUIScriptOdin : MonoBehaviour
         NamingLength = 0;
         Index = 0;
         bindList.Clear();
-        var ui = this.gameObject.GetComponent<UIPanel>().ui;
+        var panel = this.gameObject.GetComponent<UIPanel>();
+        var ui = panel.ui;
         Parent p = new Parent(null, ui);
+        p.UIPanel = panel;
+        UIPanel = panel;
         AutoBindComponent(p);
     }
 
@@ -161,6 +155,7 @@ public class CreateUIScriptOdin : MonoBehaviour
     {
         if (parent == null || parent.Go == null)
             return;
+        // parent.Go.name
         GObject[] childs = parent.Go.GetChildren();
         List<string> removeDuplicate = new List<string>();
         foreach (GObject child in childs)
@@ -186,9 +181,9 @@ public class CreateUIScriptOdin : MonoBehaviour
                 removeDuplicate.Add(luaName);
 
                 FairyData item = new FairyData();
-                item.path = path;
-                item.luaName = luaName;
-                item.typeName = child.GetType().ToString().Replace("FairyGUI.", "");
+                item.Path = path;
+                item.FieldName = luaName;
+                item.TypeName = child.GetType().ToString().Replace("FairyGUI.", "");
                 item.Com = child.displayObject.gameObject;
                 bindList.Add(item);
 
@@ -208,10 +203,11 @@ public class CreateUIScriptOdin : MonoBehaviour
             EditorUtility.DisplayDialog("提示", "绑定控件列表为空，请绑定！！！", "OK");
             return;
         }
+
         CheckSavePath();
         try
         {
-            if (File.Exists($"{saveCodePath}/{className}.lua"))
+            if (File.Exists($"{saveCodePath}/{className}.cs"))
             {
                 if (EditorUtility.DisplayDialog("警告！", className + "已经存在是否覆盖View组件获取脚本.(逻辑脚本会保留)", "覆盖", "取消"))
                 {
@@ -232,96 +228,27 @@ public class CreateUIScriptOdin : MonoBehaviour
 
         void ViewLua(string codepath, string classname)
         {
-            int tcount = (NamingLength + 3) / 4 + 1;
-            using (StreamWriter sw = new StreamWriter($"{codepath}/View{classname}.lua"))
+            string fields = "";
+            for (int i = 0; i < bindList.Count; i++)
             {
-                sw.WriteLine("---自动生成文件,不要手动修改");
-                sw.WriteLine("");
-                sw.WriteLine("local Components = {}");
-                sw.WriteLine("function Components.GetComponents(self)");
-                sw.WriteLine("\tlocal get = self._get");
-                for (int i = 0; i < bindList.Count; i++)
-                {
-                    var v = bindList[i];
-                    string name = v.luaName;
-                    string path = v.path;
-                    string typeName = v.typeName;
-                    string annotation = "";
-                    // if (!Array.Exists(m_ExportTypes, typeName.Equals))
-                    // {
-                    //     // annotation = "--";
-                    // }
-
-                    string funcName;
-                    if (path.Contains("."))
-                    {
-                        funcName = $"self:GetChildByPath(\"{path}\")";
-                    }
-                    else
-                    {
-                        funcName = $"self:GetChild(\"{path}\")";
-                    }
-                    var innerName = $"_com{i}";
-                    sw.WriteLine($"\t{annotation}get.{name.PadRight(NamingLength)} = function() if not self.{innerName} then self.{innerName} = {funcName} end return self.{innerName} end --{typeName}");
-                }
-
-                sw.WriteLine("end\n");
-                sw.WriteLine("return Components");
+                var v = bindList[i];
+                string name = v.FieldName;
+                string path = v.Path;
+                string typeName = v.TypeName;
+                fields += CreateEnitiyAuto.CreateUIAutoComText(typeName, name, path, typeName);
             }
+            CreateEnitiyAuto.CreateUIViewAutoText(codepath, classname, fields);
         }
 
         void LogicLua(string codepath, string classname)
         {
-            using (StreamWriter sw = new StreamWriter($"{codepath}/{classname}.lua"))
-            {
-                string viewpath = codepath.Replace(Application.dataPath + "/Lua/", "").Replace("/", ".") + ".View" +
-                                  classname.Replace("/", ".");
-                sw.WriteLine($"local DependenRecPackage = require(\"UI.DependenRecPackage\")");
-                sw.WriteLine($"local Components = require(\"{viewpath}\")");
-                sw.WriteLine("local UIPackage = FairyGUI.UIPackage");
-                sw.WriteLine("local Base = require(\"UI.WindowBase\")");
-                sw.WriteLine("local M = Base:Extend()");
-                if (CheckResource)
-                {
-                    sw.WriteLine("local UITop = require(\"UI.Common.UI.UITop\")");
-                }
-                sw.WriteLine("M.DependenRec = nil--关联资源");
-                sw.WriteLine("");
-                sw.WriteLine("");
-                sw.WriteLine("function M:OnInit()");
-                sw.WriteLine("\tBase.OnInit(self)");
-                sw.WriteLine("\tComponents.GetComponents(self)");
-                sw.WriteLine("end");
-                sw.WriteLine("");
-                sw.WriteLine("function M:OnShown()");
-                sw.WriteLine("\tBase.OnShown(self)");
-                sw.WriteLine("end");
-                sw.WriteLine("");
-                sw.WriteLine("function M:DoShowAnimation()");
-                sw.WriteLine("\tBase.DoShowAnimation(self)");
-                sw.WriteLine("end");
-                sw.WriteLine("");
-                sw.WriteLine("function M:DoHideAnimation()");
-                sw.WriteLine("\tBase.DoHideAnimation(self)");
-                sw.WriteLine("end");
-                sw.WriteLine("");
-                sw.WriteLine("function M:OnHide()");
-                sw.WriteLine("\tBase.OnHide(self)");
-                sw.WriteLine("end");
-                sw.WriteLine("");
-                sw.WriteLine("function M:Dispose()");
-                sw.WriteLine("\tBase.Dispose(self)");
-                sw.WriteLine("end");
-                sw.WriteLine("");
-                sw.WriteLine("return M");
-            }
+            CreateEnitiyAuto.WriteEnitit((CreateEnitiyAuto.InheritedObject) 0b11111, classname, true, codepath,UIPanel.packageName);
+            CreateEnitiyAuto.CreateUIViewText(codepath, classname, UIPanel.packageName, UIPanel.componentName);
         }
-
+        
         AssetDatabase.Refresh();
         EditorUtility.DisplayDialog("提示", "代码生成完毕", "OK");
     }
-
 }
 
 #endif
-

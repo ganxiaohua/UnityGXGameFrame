@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System;
 using GameFrame;
+using GXGame;
+
 public partial class AutoBindSystem
 {
     public void AddSystem()
@@ -11,11 +13,10 @@ public partial class AutoBindSystem
         m_SystemBind.Add(typeof(Entity1),typeof(IClearSystem),typeof(Entity1System.Entity1ClearSystem));
         m_SystemBind.Add(typeof(CreateComponent),typeof(IStartSystem<Int32>),typeof(CreateComponentSystem.CreateComponentStartSystem));
         m_SystemBind.Add(typeof(CreateComponent),typeof(IClearSystem),typeof(CreateComponentSystem.CreateComponentClearSystem));
-        // m_SystemBind.Add(typeof(UIHome),typeof(IStartSystem),typeof(UIWindowSystem.UIHomeStartSystem));
-        // m_SystemBind.Add(typeof(UIHome),typeof(IShowSystem),typeof(UIWindowSystem.UIHomeSystem));
-        // m_SystemBind.Add(typeof(UIHome),typeof(IHideSystem),typeof(UIWindowSystem.UIHomeHideSystem));
-        // m_SystemBind.Add(typeof(UIHome),typeof(IUpdateSystem),typeof(UIWindowSystem.UIHomeUpdateSystem));
-        // m_SystemBind.Add(typeof(UIHome),typeof(IClearSystem),typeof(UIWindowSystem.UIHomeClearSystem));
+        m_SystemBind.Add(typeof(UIHomeMainPanel),typeof(IStartSystem),typeof(GXGame.UIHomeMainPanelSystem.UIHomeMainPanelStartSystem));
+        m_SystemBind.Add(typeof(UIHomeMainPanel),typeof(IShowSystem),typeof(GXGame.UIHomeMainPanelSystem.UIHomeMainPanelShowSystem));
+        m_SystemBind.Add(typeof(UIHomeMainPanel),typeof(IHideSystem),typeof(GXGame.UIHomeMainPanelSystem.UIHomeMainPanelHideSystem));
+        m_SystemBind.Add(typeof(UIHomeMainPanel),typeof(IUpdateSystem),typeof(GXGame.UIHomeMainPanelSystem.UIHomeMainPanelUpdateSystem));
         m_SystemBind.Add(typeof(SceneEntity),typeof(IStartSystem<Type>),typeof(GameFrame.SceneEntitySystem.SceneEntityStartSystem));
         m_SystemBind.Add(typeof(SceneEntity),typeof(IUpdateSystem),typeof(GameFrame.SceneEntitySystem.SceneEntityUpdateSystem));
         m_SystemBind.Add(typeof(SceneEntity),typeof(IClearSystem),typeof(GameFrame.SceneEntitySystem.SceneEntityClearSystem));

@@ -15,23 +15,6 @@ namespace GameFrame
         private Queue<Type> m_WaitOpenUIList;
         private Dictionary<Type, UINode> m_WaitCloseUIList;
 
-        // /// <summary>
-        // /// 是否需要等待上一级窗口关闭
-        // /// </summary>
-        // private bool m_DontWaitPreWinClose
-        // {
-        //     get
-        //     {
-        //         UINode node = GetCurUINode();
-        //         if (node == null || (node.Window != null && node.NextActionState == WindowState.Exist))
-        //         {
-        //             return true;
-        //         }
-        //
-        //         return false;
-        //     }
-        // }
-
         public UIManager()
         {
             m_WaitOpenUIList = new();

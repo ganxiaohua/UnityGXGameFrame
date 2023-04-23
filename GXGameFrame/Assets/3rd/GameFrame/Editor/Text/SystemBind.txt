@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System;
 using GameFrame;
+using GXGame;
 public partial class AutoBindSystem
 {{
     public void AddSystem()

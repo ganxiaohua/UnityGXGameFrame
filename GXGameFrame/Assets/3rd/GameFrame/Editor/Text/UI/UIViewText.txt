@@ -1,0 +1,53 @@
+
+using System;
+using FairyGUI;
+using GameFrame;
+using UnityEngine;
+
+namespace GXGame
+{{
+    public partial class {0}View : UIViewBase
+    {{
+        private {0} m_{0};
+        protected override void OnInit()
+        {{
+            base.OnInit();
+            contentPane = UIPackage.CreateObject("{1}", "{2}").asCom;
+            m_{0} = ({0})UIBase;
+        }}
+
+        protected override void OnShown()
+        {{
+            base.OnShown();
+        }}
+
+        protected override void OnHide()
+        {{
+            base.OnHide();
+        }}
+
+        public override void Dispose()
+        {{
+            base.Dispose();
+        }}
+
+        protected override void DoShowAnimation()
+        {{
+            base.DoShowAnimation();
+        }}
+
+        protected override void DoHideAnimation()
+        {{
+            base.DoHideAnimation();
+        }}
+
+        public void Update(float elapseSeconds, float realElapseSeconds)
+        {{
+        }}
+
+        public void Clear()
+        {{
+            Dispose();
+        }}
+    }}
+}}
