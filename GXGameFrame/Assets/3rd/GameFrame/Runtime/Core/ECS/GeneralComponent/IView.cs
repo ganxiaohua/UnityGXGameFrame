@@ -7,6 +7,11 @@ namespace GameFrame
         void Link(Entity ecsEntity,string path);
     }
     
+    public interface IUIView
+    {
+        void Link(Entity ecsEntity);
+    }
+    
     
     public interface IEceView:IReference
     {

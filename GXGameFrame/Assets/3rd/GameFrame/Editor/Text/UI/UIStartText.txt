@@ -1,6 +1,6 @@
                 
-                self.{0}View = ReferencePool.Acquire<{0}View>();
-                self.{0}View.Link(self, null);
+                self.{0}View = new {0}View();
+                self.{0}View.Link(self);
                 List<string> temp = new List<string>();
                 temp.Add("{1}");
                 self.AddComponent<DependentResources, List<string>>(temp);

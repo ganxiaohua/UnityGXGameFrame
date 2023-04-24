@@ -4,12 +4,20 @@ using FairyGUI;
 
 namespace GameFrame
 {
-    public class UIViewBase : Window, IView
+    public class UIViewBase : Window, IUIView
     {
         protected IEntity UIBase;
         private PlayCompleteCallback m_PlayCompleteCallbackIn;
         private PlayCompleteCallback m_PlayCompleteCallbackOut;
-        protected Dictionary<string, int> AnimationPlayDic;
+        /// <summary>
+        /// 正在播放动画的数量当value的数值为0时代表播放结束
+        /// </summary>
+        protected Dictionary<string, int> AnimationPlayingCount;
+        
+        /// <summary>
+        /// 当前动画的存储
+        /// </summary>
+        protected Dictionary<string, Transition[]> AnimationPlayDic;
         private const string InAnimationName = "in";
         private const string OutAnimationName = "out";
 
@@ -17,6 +25,7 @@ namespace GameFrame
         {
             m_PlayCompleteCallbackIn = AnimatoinInComplete;
             m_PlayCompleteCallbackOut = AnimatoinOutComplete;
+            AnimationPlayingCount = new();
             AnimationPlayDic = new();
             base.OnInit();
         }
@@ -35,72 +44,86 @@ namespace GameFrame
         {
             m_PlayCompleteCallbackIn = null;
             m_PlayCompleteCallbackOut = null;
-            AnimationPlayDic = null;
+            AnimationPlayingCount = null;
             base.Dispose();
+            displayObject = null;
         }
 
         protected override void DoShowAnimation()
         {
-            base.DoShowAnimation();
-            PlayAnimation(InAnimationName, m_PlayCompleteCallbackIn);
+
+            if (!PlayAnimation(InAnimationName, m_PlayCompleteCallbackIn))
+            {
+                EventManager.Instance.Send<UIOpenEvent,Type>(UIBase.GetType());
+                base.DoShowAnimation();
+            }
         }
 
         protected override void DoHideAnimation()
         {
-            base.DoHideAnimation();
-            PlayAnimation(OutAnimationName, m_PlayCompleteCallbackOut);
+            if (!PlayAnimation(OutAnimationName, m_PlayCompleteCallbackOut))
+            {
+                EventManager.Instance.Send<UICloseEvent,Type>(UIBase.GetType());
+                base.DoHideAnimation();
+            }
         }
-
-
-        public void Update(float elapseSeconds, float realElapseSeconds)
+        
+        public virtual void Update(float elapseSeconds, float realElapseSeconds)
         {
         }
 
-        public void Clear()
+        public virtual void Clear()
         {
+            AnimationPlayDic.Clear();
+            AnimationPlayingCount.Clear();
             Dispose();
         }
 
-        public void Link(Entity uiBase, string path)
+        public void Link(Entity uiBase)
         {
             UIBase = uiBase;
         }
 
-        protected void PlayAnimation(string animationName,PlayCompleteCallback compeleFunc)
+        protected bool PlayAnimation(string animationName,PlayCompleteCallback compeleFunc)
         {
-            var animatoins = contentPane.GetTransitionsInChildren(animationName);
-            if (animatoins.Length > 0)
-            {
-                AnimationPlayDic.Add(animationName,animatoins.Length);
-            }
 
-            foreach (var animatoin in animatoins)
+            if (!AnimationPlayDic.TryGetValue(animationName,out Transition[] Transitions))
+            {
+                Transitions = contentPane.GetTransitionsInChildren(animationName);
+                AnimationPlayDic.Add(animationName,Transitions);
+            }
+            AnimationPlayingCount[animationName] = Transitions.Length;
+
+            foreach (var animatoin in Transitions)
             {
                 animatoin.Play(compeleFunc);
             }
+
+            return Transitions.Length > 0 ? true : false;
         }
         protected void AnimatoinInComplete()
         {
-            if (!AnimationPlayDic.ContainsKey(InAnimationName))
+            if (!AnimationPlayingCount.ContainsKey(InAnimationName))
             {
                 return;
             }
 
-            if (--AnimationPlayDic[InAnimationName] == 0)
+            if (--AnimationPlayingCount[InAnimationName] == 0)
             {
-                
+                OnShown();
+                EventManager.Instance.Send<UIOpenEvent,Type>(UIBase.GetType());
             }
         }
         
         protected void AnimatoinOutComplete()
         {
-            if (!AnimationPlayDic.ContainsKey(OutAnimationName))
+            if (!AnimationPlayingCount.ContainsKey(OutAnimationName))
             {
                 return;
             }
-            
-            if (--AnimationPlayDic[OutAnimationName] == 0)
+            if (--AnimationPlayingCount[OutAnimationName] == 0)
             {
+                HideImmediately();
                 EventManager.Instance.Send<UICloseEvent,Type>(UIBase.GetType());
             }
         }

@@ -20,11 +20,11 @@ public class CreateEnitiyAuto
     [System.Flags]
     public enum InheritedObject
     {
-        IStart = 1 << 1,
-        IShow = 1 << 2,
-        IHide = 1 << 3,
-        IUpdate = 1 << 4,
-        IClear = 1 << 5,
+        IStart = 1 ,
+        IShow = 1 << 1,
+        IHide = 1 << 2,
+        IUpdate = 1 << 3,
+        IClear = 1 << 4,
     }
 
     public static void WriteEnitit(InheritedObject inheritedobject, string componentName, bool isUI, string createPath, string uipackName = "")
@@ -134,7 +134,7 @@ public class CreateEnitiyAuto
     {
         if (isUI)
         {
-            return $"ReferencePool.Release(self.{componentName}View);";
+            return $"self.{componentName}View.Clear();";
         }
 
         return "";

@@ -26,7 +26,6 @@ class BattlegroundScene : IScene
 
 public class GameMain : MonoBehaviour
 {
-    // Start is called before the first frame updat
     void Start()
     {
         GXGameFrame.Instance.Start();

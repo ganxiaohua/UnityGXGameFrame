@@ -35,7 +35,7 @@ namespace GameFrame
         public void Update()
         {
             float datetime = Time.deltaTime;
-            float realtimeSinceStartup = Time.realtimeSinceStartup;
+            float realtimeSinceStartup = Time.unscaledDeltaTime;
             EnitityHouse.Instance.Update(datetime, realtimeSinceStartup);
             ObjectPoolManager.Instance.Update(datetime, realtimeSinceStartup);
             UIManager.Instance.Update(datetime, realtimeSinceStartup);

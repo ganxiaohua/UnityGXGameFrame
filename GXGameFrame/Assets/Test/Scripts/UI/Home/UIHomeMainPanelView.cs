@@ -14,6 +14,7 @@ namespace GXGame
             base.OnInit();
             contentPane = UIPackage.CreateObject("Home", "HomeMainPanel").asCom;
             m_UIHomeMainPanel = (UIHomeMainPanel)UIBase;
+            BtnAdventure.onClick.Add(m_UIHomeMainPanel.OpenCard);
         }
 
         protected override void OnShown()
@@ -48,6 +49,11 @@ namespace GXGame
         public void Clear()
         {
             Dispose();
+        }
+
+        public void OpenCardUI()
+        {
+            
         }
     }
 }

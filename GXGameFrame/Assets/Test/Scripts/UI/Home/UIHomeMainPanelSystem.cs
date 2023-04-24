@@ -12,9 +12,9 @@ namespace GXGame
         {
             protected override void Start(UIHomeMainPanel self)
             {
-                                
-                self.UIHomeMainPanelView = ReferencePool.Acquire<UIHomeMainPanelView>();
-                self.UIHomeMainPanelView.Link(self, null);
+
+                self.UIHomeMainPanelView = new UIHomeMainPanelView();
+                self.UIHomeMainPanelView.Link(self);
                 List<string> temp = new List<string>();
                 temp.Add("Home/Home");
                 self.AddComponent<DependentResources, List<string>>(temp);
@@ -46,6 +46,11 @@ namespace GXGame
             {
                 
             }
+        }
+
+        public static void OpenCard(this UIHomeMainPanel self)
+        {
+            UIManager.Instance.OpenUI(typeof(UICardListWindow));
         }
 
     }

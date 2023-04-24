@@ -124,7 +124,6 @@ namespace GameFrame
         {
             ReferencePool.Release(entity);
             EnitityHouse.Instance.RemoveEntity(entity);
-            EnitityHouse.Instance.RemoveAllSystem(entity);
         }
 
 
@@ -247,10 +246,7 @@ namespace GameFrame
 
         public void RemoveComponent(Type type)
         {
-            if (type is IEntity)
-            {
-                Remove(type);
-            }
+            Remove(type);
         }
 
         /// <summary>

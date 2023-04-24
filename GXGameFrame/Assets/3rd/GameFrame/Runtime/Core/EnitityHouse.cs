@@ -83,7 +83,7 @@ namespace GameFrame
             {
                 allSystemDic.SystemClear(entity);
             }
-
+            RemoveAllSystem(entity);
             entityList.Remove(entity);
         }
 
@@ -264,7 +264,7 @@ namespace GameFrame
         public void RunHideSystem(IEntity entity)
         {
             SystemObject sysObject = m_EntitySystems.GetVValue(entity.GetType(), typeof(IHideSystem));
-            if (sysObject != null)
+            if (sysObject == null)
             {
                 Debugger.LogWarning("not have entity hideSystem");
                 return;
@@ -306,8 +306,6 @@ namespace GameFrame
                 //这个实体上不存在系统
                 return;
             }
-
-            allSystemDic.SystemClear(entity);
             RemoveUpdateSystem(entity);
             if (GetEntityCount(entityType) == 0)
             {

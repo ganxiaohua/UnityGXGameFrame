@@ -33,10 +33,6 @@ namespace GameFrame
         /// </summary>
         public Entity Window;
 
-        public static List<Type> RecycleWindow = new();
-
-        public static int MaxRecycleCount = 4;
-
         public static UINode CreateEmptyNode(Type windowType)
         {
             UINode uiNode = ReferencePool.Acquire<UINode>();
@@ -47,20 +43,15 @@ namespace GameFrame
 
         public static UINode CreateNode(Type windowType)
         {
+            UIComponent UIComponent = GXGameFrame.Instance.MainScene.GetComponent<UIComponent>();
             UINode uiNode = ReferencePool.Acquire<UINode>();
             uiNode.Name = windowType.Name;
             uiNode.WindowType = windowType;
             uiNode.NextActionState = WindowState.Hide;
             uiNode.IsLoading = true;
-            if (RecycleWindow.Contains(windowType))
-            {
-                uiNode.Window = (Entity) GXGameFrame.Instance.MainScene.GetComponent<UIComponent>().GetComponent(windowType);
-            }
-            else
-            {
-                uiNode.Window = (Entity) GXGameFrame.Instance.MainScene.GetComponent<UIComponent>().AddComponent(windowType);
-            }
-
+            uiNode.Window = (Entity) UIComponent.GetComponent(windowType);
+            if (uiNode.Window == null)
+                uiNode.Window = (Entity) UIComponent.AddComponent(windowType);
             return uiNode;
         }
 
@@ -97,17 +88,6 @@ namespace GameFrame
 
         public void Clear()
         {
-            int recycleCount = RecycleWindow.Count;
-            if (recycleCount >= 4)
-            {
-                for (int i = MaxRecycleCount / 2 - 1; i >= 0; i--)
-                {
-                    GXGameFrame.Instance.MainScene.GetComponent<UIComponent>().RemoveComponent(RecycleWindow[i]);
-                    RecycleWindow.RemoveAt(i);
-                }
-            }
-
-            RecycleWindow.Add(WindowType);
         }
     }
 }
