@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 926a9aa4ea190b5468e282d0aad06d9b, type: 3}
+  m_Name: RoslynCSharpSettings
+  m_EditorClassIdentifier: 
+  securityCheckCode: 1
+  allowPInvoke: 0
+  securityRestrictions:
+    assemblyReferences:
+      defaultBehaviour: 0
+      allowEntries: []
+      denyEntries:
+      - UnityEditor.dll
+      - Mono.Cecil.dll
+      useRegexMatch: 0
+    namespaceReferences:
+      defaultBehaviour: 0
+      allowEntries: []
+      denyEntries:
+      - System.IO.*
+      - System.Reflection.*
+      useRegexMatch: 0
+    typeReferences:
+      defaultBehaviour: 0
+      allowEntries: []
+      denyEntries:
+      - System.AppDomain
+      useRegexMatch: 0
+    memberReferences:
+      defaultBehaviour: 0
+      allowEntries: []
+      denyEntries:
+      - UnityEngine.Application.Quit
+      useRegexMatch: 0
+    ignoreCase: 0
+    allowPInvoke: 0
+  logDetail: 3
+  allowUnsafeCode: 0
+  allowOptimizeCode: 0
+  allowConcurrentCompile: 1
+  deterministic: 0
+  generateInMemory: 1
+  generateSymbols: 1
+  warningLevel: 4
+  languageVersion: 0
+  targetPlatform: 0
+  refeferences:
+  - UnityEngine.dll
+  - UnityEngine.AIModule.dll
+  - UnityEngine.AnimationModule.dll
+  - UnityEngine.AssetBundleModule.dll
+  - UnityEngine.AudioModule.dll
+  - UnityEngine.CoreModule.dll
+  - UnityEngine.ParticleSystemModule.dll
+  - UnityEngine.Physics2DModule.dll
+  - UnityEngine.PhysicsModule.dll
+  - UnityEngine.UIModule.dll
+  - mscorlib
+  - RoslynCSharp.Examples.dll
+  referenceAssets: []
+  defineSymbols: []
+  allowHotReloading: 1
+  hotReloadCopySerializedFields: 1
+  hotReloadCopyNonSerializedFields: 1
+  hotReloadDestroyOriginalScript: 1
+  hotReloadDisableOriginalScript: 1
+  hotReloadSecurityCheckCode: 0
+  hotReloadUseCSharpProjectReferences: 1

@@ -1,0 +1,13 @@
+using UnityEngine;
+using RoslynCSharp.Example;
+
+public class MazeCrawlerMouse : MazeCrawler
+{
+	// Called before every grid move to decide which direction to take
+	public override MazeDirection DecideDirection(Vector2Int position, bool canMoveLeft, bool canMoveRight, bool canMoveUp, bool canMoveDown)
+	{
+		// Return a MazeDirection enum value indication the maze direction to take.
+		// Returning a MazeDirection value that would lead into a wall will cause the maze crawl to restart
+		return MazeDirection.Up;
+	}
+}

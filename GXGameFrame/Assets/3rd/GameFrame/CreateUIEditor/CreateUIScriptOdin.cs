@@ -79,7 +79,7 @@ public class CreateUIScriptOdin : MonoBehaviour
     public void ButtonBackMain()
     {
         EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
-        EditorSceneManager.OpenScene("Assets/Init.unity");
+        EditorSceneManager.OpenScene("Assets/Scenes/Init.unity");
     }
 
     [HorizontalGroup] [LabelText("类名:"), LabelWidth(40)]

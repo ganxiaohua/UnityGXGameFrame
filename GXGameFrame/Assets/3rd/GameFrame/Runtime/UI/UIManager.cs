@@ -153,7 +153,6 @@ namespace GameFrame
             {
                 return;
             }
-
             //如果需要打开的UI在列表中则将其拉扯到最上面进行打开
             UINode findUINode = FindUINode(type);
             if (findUINode != null)
@@ -164,7 +163,6 @@ namespace GameFrame
                 UIHideOrDisposeWithNextUIType(curUINode);
                 return;
             }
-
             //打开新窗口
             Open(type);
         }
@@ -175,6 +173,7 @@ namespace GameFrame
         /// <param name="type"></param>
         private async UniTask Open(Type type)
         {
+            RemoveRecycleWindowDic(type);
             UINode curUINode = GetCurUINode();
             UINode uinode = UINode.CreateNode(type);
             m_UILinkedLinkedList.AddLast(uinode);
@@ -271,7 +270,7 @@ namespace GameFrame
             RecycleWindow recycleWindow = ReferencePool.Acquire<RecycleWindow>();
             recycleWindow.RecycleWindowType = uiNode.WindowType;
             recycleWindow.ExpireTime = DateTime.UtcNow;
-            recycleWindow.DelayTime = 5;
+            recycleWindow.DelayTime = 10;
             RecycleWindowDic.Add(uiNode.WindowType, recycleWindow);
             RemoveNode(uiNode);
             AddWaitCloseWindowList(uiNode);
@@ -478,11 +477,19 @@ namespace GameFrame
         {
             foreach (Type recycleWindow in TempRecycleWindow)
             {
-                RecycleWindowDic.Remove(recycleWindow);
+                RemoveRecycleWindowDic(recycleWindow);
                 GXGameFrame.Instance.MainScene.GetComponent<UIComponent>().RemoveComponent(recycleWindow);
             }
-
             TempRecycleWindow.Clear();
+        }
+
+        private void RemoveRecycleWindowDic(Type type)
+        {
+            if (RecycleWindowDic.TryGetValue(type,out RecycleWindow recyclewindow))
+            {
+                ReferencePool.Release(recyclewindow);
+                RecycleWindowDic.Remove(type);
+            }
         }
     }
 }

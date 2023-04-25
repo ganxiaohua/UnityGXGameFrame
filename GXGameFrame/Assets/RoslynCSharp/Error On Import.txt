@@ -1,0 +1,11 @@
+If you receive compiler errors on import in newer Unity versions then do not worry, this is a comon issue and is easily fixed.
+
+You may see an error message in the console such as:
+
+Assembly <some assembly name> is defined multiple times.
+
+This is not a problem and is easily resolved. Open the included user guide to the section named 'Plugin Conflicts' and follow the steps to resolve the issue.
+If you receive a different error message, or following the user guide did not fix the issue, then please contact us for support:
+
+Support website: trivialinteractive.co.uk/support.html
+Support email: info@trivialinteractive.co.uk

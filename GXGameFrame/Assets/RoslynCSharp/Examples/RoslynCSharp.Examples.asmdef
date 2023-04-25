@@ -1,0 +1,17 @@
+{
+    "name": "RoslynCSharp.Examples",
+    "references": [
+        "RoslynCSharp",
+        "RoslynCSharp.Compiler"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}

@@ -1,0 +1,18 @@
+{
+    "name": "RoslynCSharp.Editor",
+    "references": [
+        "GUID:82ccc7faf9a0ce8478430010c631dc89",
+        "GUID:842c85e8e7f0d24438e45dd7e05434da"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}

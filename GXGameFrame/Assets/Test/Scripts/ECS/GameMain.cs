@@ -41,8 +41,18 @@ public class GameMain : MonoBehaviour
         GXGameFrame.Instance.Update();
         if (Input.GetKeyDown(KeyCode.A))
         {
-            Entity1id = EnitityHouse.Instance.GetScene<BattlegroundScene>().AddChild<Entity1,int>(5).ID;
-            EnitityHouse.Instance.GetScene<BattlegroundScene>().AddComponent<CreateComponent, int>(1);
+            Entity1 entity1 = EnitityHouse.Instance.GetScene<BattlegroundScene>().AddChild<Entity1,int>(5);
+            Entity1id = entity1.ID;
+            CreateComponent createComponent =  EnitityHouse.Instance.GetScene<BattlegroundScene>().AddComponent<CreateComponent, int>(1);
+            for (int i = 0; i < 10; i++)
+            {
+                createComponent.AddChild<Entity1,int>(5);
+            }
+            
+            for (int i = 0; i < 5; i++)
+            {
+                entity1.AddChild<Entity1,int>(5);
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.S))
