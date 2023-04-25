@@ -8,7 +8,7 @@ using GXGame;
 using UnityEngine;
 
 
-class BattlegroundScene : IScene
+public class BattlegroundScene : IScene
 {
     public void Start(SceneEntity sceneEntity)
     {

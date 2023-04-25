@@ -23,6 +23,7 @@ namespace RoslynCSharp.Example
         /// </summary>
         public void Start()
         {
+            
             // Create domain
             domain = ScriptDomain.CreateDomain("Example Domain");
 

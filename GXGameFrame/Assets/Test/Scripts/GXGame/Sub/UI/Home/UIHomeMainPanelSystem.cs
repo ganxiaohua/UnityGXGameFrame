@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using GameFrame;
+using UnityEngine;
+
 namespace GXGame
 {
     public static class UIHomeMainPanelSystem
