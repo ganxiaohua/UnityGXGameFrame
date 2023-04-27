@@ -23,7 +23,7 @@ MonoBehaviour:
     compression: 1
   - groupName: Model2
     searchPaths:
-    - Assets/Rec
+    - Assets/Test/Rec
     filter: t:Prefab
     simplifyAddressName: 1
     packByDir: 0
