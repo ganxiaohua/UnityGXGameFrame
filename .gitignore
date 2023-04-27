@@ -69,5 +69,5 @@ crashlytics-build.properties
 
 
 *.bundle
-GXGameFrame/Assets/GXGame/GXGame/
+GXGameFrame/Assets/GXGame
 GXGameFrame/Assets/GXGame.meta
