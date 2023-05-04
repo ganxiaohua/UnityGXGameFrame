@@ -18,7 +18,7 @@ namespace Eden.Editor
     public static class BuildScript
     {
         public static bool isFullRes = false;
-
+        public static bool isBuild = false;
         static readonly string DefaultProfileId = "7d72f42cde32f304595d34a6eab45502";
         static readonly string RemoteProfileId = "c0313e369c48c164b9b196ec6f7a7bc4";
 
@@ -73,7 +73,13 @@ namespace Eden.Editor
 
         public static void CreateDirectory(string path)
         {
-            var dir = Path.GetDirectoryName(path);
+            string file = Path.GetFileName(path);
+            var dir = path;
+            if (file.Contains('.'))
+            {
+                dir = Path.GetDirectoryName(path);
+            }
+
             if (string.IsNullOrEmpty(dir) || Directory.Exists(dir))
             {
                 return;
@@ -82,40 +88,37 @@ namespace Eden.Editor
             Directory.CreateDirectory(dir);
         }
 
-        // public static void ProcessLuaGroup(AssetGroup assetGroup)
-        // {
-        //     var targetPath = $"{Application.dataPath}/LuaScript/";
-        //     CreateDirectory(targetPath);
-        //
-        //     foreach (var item in assetGroup.searchPaths)
-        //     {
-        //         var path = item.Replace("\\", "/");
-        //         foreach (var filePath in Directory.GetFiles(path, "*.lua", SearchOption.AllDirectories))
-        //         {
-        //             var p = $"{Path.GetDirectoryName(filePath)}/{Path.GetFileNameWithoutExtension(filePath)}.bytes".Replace("\\", "/");
-        //             var toPath = targetPath + p.Replace(path, "");
-        //             CreateDirectory(toPath);
-        //             var bytes = File.ReadAllBytes(filePath);
-        //             TeaEncrypt.Encrypt(bytes, TeaEncrypt.EncrypKey);
-        //             File.WriteAllBytes(toPath, bytes);
-        //         }
-        //     }
-        //
-        //     var group = FindGroup(assetGroup.groupName);
-        //     var guid = AssetDatabase.AssetPathToGUID("Assets/LuaScript");
-        //     var entry = AssetSettings.CreateOrMoveEntry(guid, group, false, false);
-        //     entry.SetLabel(assetGroup.groupName, true, true);
-        //     entry.SetLabel(AddressablesHelper.PreloadLabel, true, true);
-        // }
+        public static void ProcessConfigGroup(AssetGroup assetGroup)
+        {
+            var targetPath = $"{Application.dataPath}/GXGame/Config/ConfigData";
+            CreateDirectory(targetPath);
+            // FileSystem.CopyDirectory
+            // Directory. ("GenerateDatas/bytes",targetPath);
+
+            string[] files = Directory.GetFileSystemEntries("GenerateDatas/bytes");
+
+            foreach (string file in files)
+            {
+                string dstPath = targetPath + "/" + Path.GetFileName(file);
+                if (!File.Exists(dstPath))
+                {
+                    File.Copy(file, dstPath);
+                }
+            }
+
+            AssetDatabase.Refresh();
+            var group = FindGroup(assetGroup.groupName);
+            var guid = AssetDatabase.AssetPathToGUID("Assets/GXGame/Config/ConfigData");
+            var entry = AssetSettings.CreateOrMoveEntry(guid, group, false, false);
+            entry.SetLabel(assetGroup.groupName, true, true);
+            entry.SetLabel(AddressablesHelper.PreloadLabel, true, true);
+        }
 
         public static void BuildBundles(bool withUpdate = false)
         {
             var log = new StringBuilder();
             var stopWatch = Stopwatch.StartNew();
-            if (withUpdate)
-            {
-                // GitTool.SyncProject();
-            }
+            isBuild = true;
 
             ProcessAllAssetGroup();
             log.AppendLine($"process duration:{stopWatch.Elapsed}");
@@ -139,6 +142,10 @@ namespace Eden.Editor
             log.AppendLine(patchLog);
             var logPath = $"ServerData/{BuildTarget}/{DateTime.Now:yyyyMMddHHmmss}.log";
             File.WriteAllText(logPath, log.ToString());
+            string path = $"{Application.dataPath}/GXGame/Config/ConfigData";
+            FileUtil.DeleteFileOrDirectory(path);
+            FileUtil.DeleteFileOrDirectory(path + ".meta");
+            AssetDatabase.Refresh();
         }
 
         public static bool IsExcludePath(string assetPath)
@@ -160,11 +167,13 @@ namespace Eden.Editor
             var bags = group.GetSchema<BundledAssetGroupSchema>();
             bags.BundleMode = assetGroup.bundleMode;
             bags.Compression = assetGroup.compression;
-            // if (assetGroup.groupName == "Lua")
-            // {
-            //     // ProcessLuaGroup(assetGroup);
-            //     return;
-            // }
+            if (assetGroup.groupName == "Config" && isBuild)
+            {
+                ProcessConfigGroup(assetGroup);
+                isBuild = false;
+                return;
+            }
+
             if (assetGroup.packByDir)
             {
                 foreach (var path in assetGroup.searchPaths)
@@ -339,7 +348,7 @@ namespace Eden.Editor
                 log.AppendLine($"{file.Name.PadRight(nameLengthMax)}\t{FormatBytes(file.Length)}");
             }
 
-            ModifyCDNConfig(toPath);
+            // ModifyCDNConfig(toPath);
             return log.ToString();
         }
 

@@ -37,3 +37,11 @@ MonoBehaviour:
     packByDir: 1
     bundleMode: 1
     compression: 1
+  - groupName: Config
+    searchPaths:
+    - Assets/GXGame/Config/ConfigData
+    filter: 
+    simplifyAddressName: 1
+    packByDir: 0
+    bundleMode: 0
+    compression: 1

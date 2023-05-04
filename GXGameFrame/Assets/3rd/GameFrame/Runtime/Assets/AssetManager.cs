@@ -91,7 +91,7 @@ public class AssetManager : Singleton<AssetManager>
     public T Load<T>(string path)
     {
         var handle = Addressables.LoadAssetAsync<T>(path);
-
+        handle.WaitForCompletion();
         if (handle.Status != AsyncOperationStatus.Succeeded)
         {
             Debug.LogError($"Load Error:{handle.Status}");
@@ -106,7 +106,6 @@ public class AssetManager : Singleton<AssetManager>
         {
             asset.Add(path, typeof(T), null);
         }
-
         return handle.Result;
     }
 

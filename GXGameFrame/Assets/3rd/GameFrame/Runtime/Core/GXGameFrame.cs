@@ -1,4 +1,5 @@
 ﻿using System;
+using cfg;
 using UnityEngine;
 
 namespace GameFrame
@@ -27,6 +28,7 @@ namespace GameFrame
         {
             AutoBindSystem.Instance.AddSystem();
             EnitityHouse.Instance.Init();
+            Config.Instance.LoadTable();
             MainScene = ReferencePool.Acquire<SceneEntity>();
             EnitityHouse.Instance.AddSceneEntity<MainScene>(MainScene);
             MainScene.AddComponent<UIComponent>();
