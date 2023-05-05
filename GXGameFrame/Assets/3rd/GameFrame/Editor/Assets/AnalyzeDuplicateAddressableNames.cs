@@ -4,7 +4,7 @@ using UnityEditor.AddressableAssets.Build.AnalyzeRules;
 using UnityEditor;
 using UnityEditor.AddressableAssets.Build;
 
-namespace Eden.Editor
+namespace GameFrame.Editor
 {
     [InitializeOnLoad]
     class RegisterAnalyzeDuplicateAddressableNames

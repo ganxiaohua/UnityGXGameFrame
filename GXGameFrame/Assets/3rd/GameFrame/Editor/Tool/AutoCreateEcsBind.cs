@@ -23,8 +23,6 @@ namespace GameFrame.Editor
 
     public class AutoCreate
     {
-        private static string sGameFramePath = "Assets/3rd/GameFrame/";
-        private static string OutPutPath = "Assets/Test/Scripts/ECS/Auto/";
         private static Dictionary<CreateAuto, string> s_TextDictionary;
         private static Dictionary<Type, string> s_EventDictionary;
         private static StringBuilder s_EventSb = new StringBuilder(1024);
@@ -45,13 +43,13 @@ namespace GameFrame.Editor
 
         public static void LoadText()
         {
-            string add = sGameFramePath + "Editor/Text/Add.txt";
-            string cls = sGameFramePath + "Editor/Text/Class.txt";
-            string addparameter = sGameFramePath + "Editor/Text/AddParameter.txt";
-            string get = sGameFramePath + "Editor/Text/Get.txt";
-            string set = sGameFramePath + "Editor/Text/Set.txt";
-            string eventClass = sGameFramePath + "Editor/Text/EventClass.txt";
-            string Event = sGameFramePath + "Editor/Text/Event.txt";
+            string add =EditorString.GameFramePath + "Editor/Text/Add.txt";
+            string cls = EditorString.GameFramePath + "Editor/Text/Class.txt";
+            string addparameter = EditorString.GameFramePath + "Editor/Text/AddParameter.txt";
+            string get = EditorString.GameFramePath + "Editor/Text/Get.txt";
+            string set = EditorString.GameFramePath + "Editor/Text/Set.txt";
+            string eventClass = EditorString.GameFramePath + "Editor/Text/EventClass.txt";
+            string Event = EditorString.GameFramePath + "Editor/Text/Event.txt";
             string stradd = File.ReadAllText(add);
             string strcls = File.ReadAllText(cls);
             string straddparameter = File.ReadAllText(addparameter);
@@ -132,8 +130,8 @@ namespace GameFrame.Editor
             sb.Append(abGet);
             sb.Append(abSet);
             string lastText = string.Format(abcls, typeName, sb.ToString());
-            CreateDirectory(OutPutPath);
-            File.WriteAllText($"{OutPutPath}{typeName}Auto.cs", lastText);
+            CreateDirectory(EditorString.ECSOutPutPath);
+            File.WriteAllText($"{EditorString.ECSOutPutPath}{typeName}Auto.cs", lastText);
             AssetDatabase.Refresh();
         }
 
@@ -150,7 +148,7 @@ namespace GameFrame.Editor
             if (s_EventSb.Length == 0)
                 return;
             string last = string.Format(s_TextDictionary[CreateAuto.EventClass], s_EventSb);
-            File.WriteAllText($"{OutPutPath}ViewBindEventAuto.cs", last);
+            File.WriteAllText($"{EditorString.ECSOutPutPath}ViewBindEventAuto.cs", last);
         }
 
         public static void CreateDirectory(string path)

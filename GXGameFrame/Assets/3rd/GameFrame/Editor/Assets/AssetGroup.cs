@@ -2,7 +2,7 @@
 using BundleCompressionMode = UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema.BundleCompressionMode;
 using Sirenix.OdinInspector;
 
-namespace Eden.Editor
+namespace GameFrame.Editor
 {
     [System.Serializable]
     public class AssetGroup

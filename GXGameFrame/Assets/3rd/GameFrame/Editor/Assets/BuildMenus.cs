@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-namespace Eden.Editor
+namespace GameFrame.Editor
 {
     public static class BuildMenus
     {

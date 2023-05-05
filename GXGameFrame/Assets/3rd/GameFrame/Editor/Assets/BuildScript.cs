@@ -8,12 +8,13 @@ using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.AddressableAssets.Build;
 using System.Diagnostics;
+using GameFrame.Editor;
 using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 using Debug = UnityEngine.Debug;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.ResourceProviders;
 
-namespace Eden.Editor
+namespace GameFrame.Editor
 {
     public static class BuildScript
     {
@@ -24,8 +25,7 @@ namespace Eden.Editor
 
         static readonly Dictionary<string, string> UpdateURL = new Dictionary<string, string>()
         {
-            [DefaultProfileId] = "http://192.168.100.230/eden/aa",
-            [RemoteProfileId] = "https://res-qzsj.2144gy.com/eden/aa",
+            [DefaultProfileId] = "http://192.168.62.31/GxGame/aa",
         };
 
         static readonly string[] patchFilterFiles = new string[] {"catalog.bundle", "settings.json", "addressables_content_state.bin"};
@@ -90,11 +90,8 @@ namespace Eden.Editor
 
         public static void ProcessConfigGroup(AssetGroup assetGroup)
         {
-            var targetPath = $"{Application.dataPath}/GXGame/Config/ConfigData";
+            var targetPath =EditorString.ConfigFullPath;
             CreateDirectory(targetPath);
-            // FileSystem.CopyDirectory
-            // Directory. ("GenerateDatas/bytes",targetPath);
-
             string[] files = Directory.GetFileSystemEntries("GenerateDatas/bytes");
 
             foreach (string file in files)
@@ -108,7 +105,7 @@ namespace Eden.Editor
 
             AssetDatabase.Refresh();
             var group = FindGroup(assetGroup.groupName);
-            var guid = AssetDatabase.AssetPathToGUID("Assets/GXGame/Config/ConfigData");
+            var guid = AssetDatabase.AssetPathToGUID(EditorString.ConfigAssetPath);
             var entry = AssetSettings.CreateOrMoveEntry(guid, group, false, false);
             entry.SetLabel(assetGroup.groupName, true, true);
             entry.SetLabel(AddressablesHelper.PreloadLabel, true, true);
@@ -131,6 +128,7 @@ namespace Eden.Editor
             }
             else
             {
+                Debug.Log(contentStateDataPath);
                 buildResult = ContentUpdateScript.BuildContentUpdate(AssetSettings, contentStateDataPath);
             }
 
@@ -142,7 +140,7 @@ namespace Eden.Editor
             log.AppendLine(patchLog);
             var logPath = $"ServerData/{BuildTarget}/{DateTime.Now:yyyyMMddHHmmss}.log";
             File.WriteAllText(logPath, log.ToString());
-            string path = $"{Application.dataPath}/GXGame/Config/ConfigData";
+            string path = EditorString.ConfigFullPath;
             FileUtil.DeleteFileOrDirectory(path);
             FileUtil.DeleteFileOrDirectory(path + ".meta");
             AssetDatabase.Refresh();

@@ -58,7 +58,7 @@ MonoBehaviour:
       m_ProfileName: Default
       m_Values:
       - m_Id: 1f1c8299daafc29408464bd8eb7bca9c
-        m_Value: '[Eden.Editor.BuildScript.BuildTarget]'
+        m_Value: '[GameFrame.Editor.BuildScript.BuildTarget]'
       - m_Id: 97d364ac98ee3024789b92f551323089
         m_Value: '[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]'
       - m_Id: 1b4de07eb587e474c8775f8e8b174690
@@ -66,21 +66,7 @@ MonoBehaviour:
       - m_Id: 7ab829e58b1639a45b9ae5003edc3e15
         m_Value: ServerData/[BuildTarget]
       - m_Id: 780dc118169b44f4980c8ef19f0d1dc3
-        m_Value: http://192.168.62.31/[BuildTarget]
-    - m_InheritedParent: 
-      m_Id: c0313e369c48c164b9b196ec6f7a7bc4
-      m_ProfileName: res-qzsj.2144gy.com
-      m_Values:
-      - m_Id: 1f1c8299daafc29408464bd8eb7bca9c
-        m_Value: '[Eden.Editor.BuildScript.BuildTarget]'
-      - m_Id: 97d364ac98ee3024789b92f551323089
-        m_Value: '[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]'
-      - m_Id: 1b4de07eb587e474c8775f8e8b174690
-        m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
-      - m_Id: 7ab829e58b1639a45b9ae5003edc3e15
-        m_Value: ServerData/[BuildTarget]
-      - m_Id: 780dc118169b44f4980c8ef19f0d1dc3
-        m_Value: https://res-qzsj.2144gy.com/eden/aa/[BuildTarget]
+        m_Value: http://192.168.62.31/GxGame/aa/[BuildTarget]
     m_ProfileEntryNames:
     - m_Id: 1f1c8299daafc29408464bd8eb7bca9c
       m_Name: BuildTarget

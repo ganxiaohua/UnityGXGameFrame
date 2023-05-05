@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEditor.Build;
 using UnityEngine;
 
-namespace Eden.Editor
+namespace GameFrame.Editor
 {
     public class JenkinsBuild
     {

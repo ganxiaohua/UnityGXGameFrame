@@ -9,8 +9,6 @@ namespace GameFrame.Editor
 {
     public class AutoCreateSystem
     {
-        private static string sGameFramePath = "Assets/3rd/GameFrame/";
-        private static string OutPutPath = "Assets/3rd/GameFrame/Runtime/Core/Auto/SystemBindAuto.cs";
         private static string MainText;
         private static string AddText;
         private static List<string> AllAddText = new();
@@ -33,7 +31,7 @@ namespace GameFrame.Editor
 
         public static void LoadText()
         {
-            string systemPath = sGameFramePath + "Editor/Text/SystemBind.txt";
+            string systemPath = EditorString.GameFramePath + "Editor/Text/SystemBind.txt";
             string system = File.ReadAllText(systemPath);
             string[] text = system.Split('#', StringSplitOptions.None);
             MainText = text[0];
@@ -148,7 +146,7 @@ namespace GameFrame.Editor
                 bigtext += item;
             }
 
-            File.WriteAllText(OutPutPath, string.Format(MainText, bigtext));
+            File.WriteAllText(EditorString.SystemBindOutPutPath, string.Format(MainText, bigtext));
             AssetDatabase.Refresh();
             Debug.Log("生成系统绑定结束");
         }

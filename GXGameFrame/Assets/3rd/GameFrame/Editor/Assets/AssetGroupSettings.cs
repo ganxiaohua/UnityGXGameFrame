@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEditor;
 using Sirenix.OdinInspector;
 
-namespace Eden.Editor
+namespace GameFrame.Editor
 {
     [CreateAssetMenu(fileName = "AssetGroupSettings", menuName = "Build/AssetGroupSettings", order = 1)]
 

@@ -18,7 +18,7 @@ MonoBehaviour:
   m_GUID: a15edfea08fced2409ea32dcd36f3e0e
   m_SerializeEntries:
   - m_GUID: df208e53b44566541bb15fe7add026d4
-    m_Address: Assets/GXGame/ConfigData
+    m_Address: Assets/GXGame/Config/ConfigData
     m_ReadOnly: 0
     m_SerializedLabels:
     - Config

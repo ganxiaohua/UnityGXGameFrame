@@ -2,7 +2,7 @@
 using System.IO;
 using System;
 
-namespace Eden.Editor
+namespace GameFrame.Editor
 {
     public class CustomAssetPostprocessor : AssetPostprocessor
     {

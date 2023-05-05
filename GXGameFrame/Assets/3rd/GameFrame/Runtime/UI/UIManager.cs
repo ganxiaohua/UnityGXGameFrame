@@ -8,12 +8,24 @@ namespace GameFrame
 {
     public class UIManager : Singleton<UIManager>
     {
+        /// <summary>
+        /// 回收UI主题
+        /// </summary>
         public class RecycleWindow : IReference
         {
+            /// <summary>
+            /// 回收UI类型
+            /// </summary>
             public Type RecycleWindowType;
 
+            /// <summary>
+            /// 回收UI当前时间
+            /// </summary>
             public DateTime ExpireTime;
 
+            /// <summary>
+            /// 回收UI最大缓存时间
+            /// </summary>
             public int DelayTime;
 
             public void Clear()
@@ -51,9 +63,20 @@ namespace GameFrame
         /// </summary>
         private List<Type> TempRecycleWindow;
 
+        /// <summary>
+        /// 当前回收UI检查时间
+        /// </summary>
         private float m_CurAutoReleaseTime;
 
+        /// <summary>
+        /// 回收UI检查间隔
+        /// </summary>
         private float m_AutoReleaseInterval;
+
+        /// <summary>
+        /// 回收UI保存时间,超过时间就销毁
+        /// </summary>
+        private int m_ReleaseTime;
 
         /// <summary>
         /// 最大暂存数
@@ -69,6 +92,7 @@ namespace GameFrame
             RecycleWindowDic = new(8);
             TempRecycleWindow = new(4);
             m_AutoReleaseInterval = 10;
+            m_ReleaseTime = 10;
         }
 
         public void Update(float elapseSeconds, float realElapseSeconds)
@@ -123,11 +147,9 @@ namespace GameFrame
                     AddLastNode(findNode);
                     continue;
                 }
-
                 UINode uinode = UINode.CreateEmptyNode(type);
                 m_UILinkedLinkedList.AddLast(uinode);
             }
-
             OpenUI(types[count - 1]);
         }
 
@@ -176,7 +198,6 @@ namespace GameFrame
             UINode uinode = UINode.CreateNode(type);
             m_UILinkedLinkedList.AddLast(uinode);
             await uinode.LoadDependentOver();
-            Debug.Log("资源加载结束");
             //加入等待打开的UI列表
             m_OpenUIList.Push(uinode);
             if (curUINode != null)
@@ -268,7 +289,7 @@ namespace GameFrame
             RecycleWindow recycleWindow = ReferencePool.Acquire<RecycleWindow>();
             recycleWindow.RecycleWindowType = uiNode.WindowType;
             recycleWindow.ExpireTime = DateTime.UtcNow;
-            recycleWindow.DelayTime = 10;
+            recycleWindow.DelayTime = m_ReleaseTime;
             RecycleWindowDic.Add(uiNode.WindowType, recycleWindow);
             RemoveNode(uiNode);
             AddWaitCloseWindowList(uiNode);
@@ -316,23 +337,34 @@ namespace GameFrame
             {
                 return null;
             }
-
             return m_UILinkedLinkedList.First.Value;
         }
 
         /// <summary>
-        /// 获得到当前节点(最后一个节点)
+        /// 获得到当前节点(最后一个节点) 如果最后一个节点是占位的则往上搜寻
         /// </summary>
         /// <returns></returns>
         private UINode GetCurUINode()
         {
-            if (m_UILinkedLinkedList.Last == null)
+            return GetWindowNotNullNode(m_UILinkedLinkedList.Last);
+        }
+
+        //找到上一个非空节点
+        private UINode GetWindowNotNullNode(LinkedListNode<UINode> uinode)
+        {
+            if (uinode == null)
             {
                 return null;
+            } else if (uinode.Value.Window == null)
+            {
+                return GetWindowNotNullNode(uinode.Previous);
             }
-
-            return m_UILinkedLinkedList.Last.Value;
+            else
+            {
+                return uinode.Value;
+            }
         }
+
 
         /// <summary>
         /// 获得最后一个节点的上一个节点
@@ -426,7 +458,7 @@ namespace GameFrame
 
 
         /// <summary>
-        /// 当存储器里面的东西大于MaxRecycleCount的时候删除一半的UI
+        /// 当存储器里面的UI大于MaxRecycleCount的时候删除一半的UI
         /// </summary>
         private void RecycleWindowMaxClear()
         {
