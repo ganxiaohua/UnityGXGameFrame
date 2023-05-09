@@ -131,7 +131,7 @@ public class EventTest : IMessenger<int, int>
     public void Send(int p1, int p2)
     {
         List<CreateComponent> list = EnitityHouse.Instance.GetEntity<CreateComponent>();
-        CreateComponent createComponent = EnitityHouse.Instance.GetScene<BattlegroundScene>().GetComponent<CreateComponent>();
+        CreateComponent createComponent = EnitityHouse.Instance.GetScene<GXGame.BattleGroudScene>().GetComponent<CreateComponent>();
         if (createComponent == null)
         {
             return;

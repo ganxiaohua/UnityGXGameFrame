@@ -51,7 +51,7 @@ namespace GameFrame
             IEntity entity = ReferencePool.Acquire(type) as IEntity;
             entity.m_EntityStatus = IEntity.EntityStatus.IsCreated;
             entity.Parent = this;
-            if (this is SceneEntity)
+            if (this is MainScene)
             {
                 entity.SceneParent = this;
             }

@@ -12,7 +12,7 @@ namespace GameFrame.Editor
         public int Floor;
         public int Grid;
         public IEntity entity;
-        public DialogueNode GraphNode;
+        public GeneralGrophNode GraphNode;
     }
     public class EnitiyInfos
     {
@@ -46,25 +46,14 @@ namespace GameFrame.Editor
 
             if (entityNode.entity is Entity entity)
             {
-                // int grid = entityNode.Grid - (entity.Children.Values.Count+entity.Components.Values.Count) / 2;
                 foreach (IEntity childEntity in entity.Children.Values)
                 {
                     CreateNode(entityNode, childEntity, floor+1, FloorGrid[floor]++);
-                    // grid++;
-                    // if (++grid == entityNode.Grid)
-                    // {
-                    //     ++grid;
-                    // }
                 }
 
                 foreach (IEntity EntityComponent in entity.Components.Values)
                 {
                     CreateNode(entityNode, EntityComponent, floor+1, FloorGrid[floor]++);
-                    // grid++;
-                    // if (++grid == entityNode.Grid)
-                    // {
-                    //     ++grid;
-                    // }
                 }
             }
         }

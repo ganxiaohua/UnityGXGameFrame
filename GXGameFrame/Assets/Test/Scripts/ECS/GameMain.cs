@@ -8,28 +8,13 @@ using GXGame;
 using UnityEngine;
 
 
-public class BattlegroundScene : IScene
-{
-    public void Start(SceneEntity sceneEntity)
-    {
-    }
-
-    public void Update(float elapseSeconds, float realElapseSeconds)
-    {
-    }
-
-    public void Clear()
-    {
-        Debug.Log("BattlegroundScene clear");
-    }
-}
 
 public class GameMain : MonoBehaviour
 {
     void Start()
     {
         GXGameFrame.Instance.Start();
-        SceneEntityFactory.CreateScene<BattlegroundScene>(GXGameFrame.Instance.MainScene);
+        SceneEntityFactory.CreateScene<BattleGroudScene>(GXGameFrame.Instance.MainScene);
         UIManager.Instance.OpenUI(typeof(UIHomeMainPanel));
     }
 
@@ -41,9 +26,9 @@ public class GameMain : MonoBehaviour
         GXGameFrame.Instance.Update();
         if (Input.GetKeyDown(KeyCode.A))
         {
-            Entity1 entity1 = EnitityHouse.Instance.GetScene<BattlegroundScene>().AddChild<Entity1,int>(5);
+            Entity1 entity1 = EnitityHouse.Instance.GetScene<BattleGroudScene>().AddChild<Entity1,int>(5);
             Entity1id = entity1.ID;
-            CreateComponent createComponent =  EnitityHouse.Instance.GetScene<BattlegroundScene>().AddComponent<CreateComponent, int>(1);
+            CreateComponent createComponent =  EnitityHouse.Instance.GetScene<BattleGroudScene>().AddComponent<CreateComponent, int>(1);
             for (int i = 0; i < 2; i++)
             {
                 createComponent.AddChild<Entity1,int>(5);
@@ -54,22 +39,22 @@ public class GameMain : MonoBehaviour
         {
             AsynTest();
             EventManager.Instance.Send<EventTest, int, int>(1, 2);
-            SceneEntityFactory.RemoveScene<BattlegroundScene>();
+            SceneEntityFactory.RemoveScene<BattleGroudScene>();
         }
 
         if (Input.GetKeyDown(KeyCode.D))
         {
-            EnitityHouse.Instance.GetScene<BattlegroundScene>().RemoveChild(Entity1id);
+            EnitityHouse.Instance.GetScene<BattleGroudScene>().RemoveChild(Entity1id);
         }
 
         if (Input.GetKeyDown(KeyCode.Z))
         {
-            EnitityHouse.Instance.GetScene<BattlegroundScene>().AddComponent<Bttleground>();
+            EnitityHouse.Instance.GetScene<BattleGroudScene>().AddComponent<Bttleground>();
         }
 
         if (Input.GetKeyDown(KeyCode.X))
         {
-            EnitityHouse.Instance.GetScene<BattlegroundScene>().RemoveComponent<Bttleground>();
+            EnitityHouse.Instance.GetScene<BattleGroudScene>().RemoveComponent<Bttleground>();
         }
     }
 

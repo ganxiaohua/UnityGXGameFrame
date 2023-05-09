@@ -22,7 +22,7 @@ namespace GameFrame
         /// </summary>
         private Dictionary<Type, List<IEntity>> m_TypeWithEntitys = new();
 
-        private DoubleMap<Type, SceneEntity> m_EverySceneEntity = new();
+        private DoubleMap<Type, IScene> m_EverySceneEntity = new();
 
         private DDictionaryETC m_EntitySystems = new();
 
@@ -83,6 +83,7 @@ namespace GameFrame
             {
                 allSystemDic.SystemClear(entity);
             }
+
             RemoveAllSystem(entity);
             entityList.Remove(entity);
         }
@@ -101,26 +102,26 @@ namespace GameFrame
         }
 
 
-        public void AddSceneEntity<T>(SceneEntity entity) where T : IScene
+        public void AddSceneEntity(IScene entity)
         {
-            Type type = typeof(T);
+            Type type = entity.GetType();
             if (m_EverySceneEntity.ContainsKey(type))
             {
-                throw new Exception($"EverySceneEntity have enitiy:{entity.ID}");
+                throw new Exception($"EverySceneEntity have enitiy:{entity.GetType().Name}");
             }
 
             m_EverySceneEntity.Add(type, entity);
         }
 
-        public SceneEntity GetScene<T>() where T : IScene
+        public T GetScene<T>() where T : IScene
         {
             Type type = typeof(T);
-            if (!m_EverySceneEntity.TryGetValueKv(type, out SceneEntity sceneEntity))
+            if (!m_EverySceneEntity.TryGetValueKv(type, out IScene IScene))
             {
                 throw new Exception($"EverySceneEntity not have enitiy:{type}");
             }
 
-            return sceneEntity;
+            return (T)IScene;
         }
 
         /// <summary>
@@ -131,27 +132,25 @@ namespace GameFrame
         public void RemoveSceneEntity<T>() where T : IScene
         {
             Type type = typeof(T);
-            if (!m_EverySceneEntity.TryGetValueKv(type, out SceneEntity sceneEntity))
+            if (!m_EverySceneEntity.TryGetValueKv(type, out IScene scene))
             {
                 throw new Exception($"EverySceneEntity not have enitiy:{type}");
             }
-
             m_EverySceneEntity.RemoveByKey(type);
         }
 
         /// <summary>
-        /// 更具本身删除scene
+        /// 根据本身删除scene
         /// </summary>
         /// <param name="sceneEntity"></param>
         /// <exception cref="Exception"></exception>
-        public void RemoveSceneEntity(SceneEntity sceneEntity)
+        public void RemoveSceneEntity(IScene scene)
         {
-            if (!m_EverySceneEntity.TryGetValueVk(sceneEntity, out Type type))
+            if (!m_EverySceneEntity.TryGetValueVk(scene, out Type type))
             {
                 throw new Exception($"EverySceneEntity not have enitiy:{type}");
             }
-
-            m_EverySceneEntity.RemoveByValue(sceneEntity);
+            m_EverySceneEntity.RemoveByValue(scene);
         }
 
         public void AddSystem<T>(IEntity entity) where T : ISystem
@@ -176,6 +175,7 @@ namespace GameFrame
                 sysObject.AddSystem(entitySystem);
                 m_EntitySystems.Add(entityType, system, sysObject);
             }
+
             return sysObject;
         }
 
@@ -306,6 +306,7 @@ namespace GameFrame
                 //这个实体上不存在系统
                 return;
             }
+
             RemoveUpdateSystem(entity);
             if (GetEntityCount(entityType) == 0)
             {

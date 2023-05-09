@@ -1,32 +1,34 @@
 ﻿using System;
+using System.Runtime.InteropServices.ComTypes;
 using UnityEngine;
 
 namespace GameFrame
 {
     public static class SceneEntityFactory
     {
-        public static SceneEntity CreateScene<T>(SceneEntity parent) where T : class, IScene, new()
+        public static T CreateScene<T>(Entity parent) where T : class, IEntity, IScene, new()
         {
             if (parent == null)
             {
                 throw new Exception("SceneEntityFactory parent is null");
             }
-            
-            SceneEntity sceneEntity = parent.AddChild<SceneEntity,Type>(typeof(T));
-            EnitityHouse.Instance.AddSceneEntity<T>(sceneEntity);
-            return sceneEntity;
+
+            T scene = parent.AddComponent<T>();
+            EnitityHouse.Instance.AddSceneEntity(scene);
+            return scene;
         }
 
         public static void RemoveScene<T>() where T : IScene
         {
-            SceneEntity sceneEntity = EnitityHouse.Instance.GetScene<T>();
-            RemoveScene(sceneEntity);
+            var scene = EnitityHouse.Instance.GetScene<T>();
+            RemoveScene(scene);
         }
 
-        public static void RemoveScene(SceneEntity sceneEntity)
+        public static void RemoveScene(IScene scene)
         {
-            EnitityHouse.Instance.RemoveSceneEntity(sceneEntity);
-            ((SceneEntity) sceneEntity.Parent).RemoveChild(sceneEntity.ID);
+            Entity entity = (Entity) scene;
+            EnitityHouse.Instance.RemoveSceneEntity(scene);
+            ((Entity) (entity.Parent)).RemoveComponent(scene.GetType());
         }
     }
 }

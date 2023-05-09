@@ -13,7 +13,7 @@ public class RoslynMan
         roslynSub0.Start();
         // Compile and load code
         GXGameFrame.Instance.Start();
-        SceneEntityFactory.CreateScene<BattlegroundScene>(GXGameFrame.Instance.MainScene);
+        // SceneEntityFactory.CreateScene<BattlegroundScene>(GXGameFrame.Instance.MainScene);
         UIManager.Instance.OpenUI(typeof(UIHomeMainPanel));
     }
 
