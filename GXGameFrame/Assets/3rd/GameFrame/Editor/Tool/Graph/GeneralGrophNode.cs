@@ -1,19 +1,16 @@
 ﻿using System;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 namespace GameFrame.Editor
 {
-    public class GeneralGrophNode : Node, IEditorEnitiy
+    public class GeneralGrophNode : Node
     {
-        public int ID { get; set; }
-        public IEditorEnitiy Parent { get; set; }
         public string GUID;
         public bool Entry = false;
         public Port InPort;
         public Port OutPort;
-
         public void Init(string text, Rect rect)
         {
             GUID = Guid.NewGuid().ToString();
@@ -32,6 +29,25 @@ namespace GameFrame.Editor
         public new void Clear()
         {
             base.Clear();
+            if (OutPort != null)
+            {
+                OutPort.Clear();
+            }
+
+            if (InPort != null)
+            {
+                InPort.Clear();
+            }
+        }
+
+        public void AddButton(string name,Action<Node> action)
+        {
+            Button btn = new Button(() =>
+            {
+                action(this);
+            });
+            btn.text = name;
+            titleContainer.Add(btn);
         }
 
         public Port AddProt(string name, Type type, Direction portDir, Port.Capacity capacity = Port.Capacity.Multi)
@@ -47,6 +63,7 @@ namespace GameFrame.Editor
             {
                 OutPort = port;
             }
+
             return port;
         }
     }

@@ -56,12 +56,19 @@ namespace GameFrame
 
         public List<T> GetEntity<T>() where T : class, IEntity, new()
         {
-            if (!m_TypeWithEntitys.TryGetValue(typeof(T), out var entityList))
+            Type type = typeof(T);
+            var entityList = GetEntity(type);
+            return entityList as List<T>;
+        }
+
+        public List<IEntity> GetEntity(Type type)
+        {
+            if (!m_TypeWithEntitys.TryGetValue(type, out var entityList))
             {
-                throw new Exception($"TypeWithEntitys not have {typeof(T)}");
+                throw new Exception($"TypeWithEntitys not have {type}");
             }
 
-            return entityList as List<T>;
+            return entityList;
         }
 
 
@@ -121,7 +128,7 @@ namespace GameFrame
                 throw new Exception($"EverySceneEntity not have enitiy:{type}");
             }
 
-            return (T)IScene;
+            return (T) IScene;
         }
 
         /// <summary>
@@ -136,6 +143,7 @@ namespace GameFrame
             {
                 throw new Exception($"EverySceneEntity not have enitiy:{type}");
             }
+
             m_EverySceneEntity.RemoveByKey(type);
         }
 
@@ -150,6 +158,7 @@ namespace GameFrame
             {
                 throw new Exception($"EverySceneEntity not have enitiy:{type}");
             }
+
             m_EverySceneEntity.RemoveByValue(scene);
         }
 

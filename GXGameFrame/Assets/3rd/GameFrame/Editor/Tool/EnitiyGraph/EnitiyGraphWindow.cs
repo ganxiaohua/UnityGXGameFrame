@@ -35,11 +35,11 @@ namespace GameFrame.Editor
 
         private void CreateTools()
         {
-            // Toolbar toolbar = new Toolbar();
-            // Button a = new Button(() => {GraphView.RemoveAllNode(); });
-            // a.text = "刷新";
-            // toolbar.Add(a);
-            // rootVisualElement.Add(toolbar);
+            Toolbar toolbar = new Toolbar();
+            Button a = new Button(() => {GraphView.FollowNode(null); });
+            a.text = "刷新";
+            toolbar.Add(a);
+            rootVisualElement.Add(toolbar);
         }
     }
     

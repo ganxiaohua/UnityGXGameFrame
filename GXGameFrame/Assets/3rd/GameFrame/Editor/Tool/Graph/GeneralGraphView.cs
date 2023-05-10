@@ -11,9 +11,12 @@ namespace GameFrame.Editor
 
         public List<Edge> m_EdgeList;
 
+        public List<Node> m_NodeList;
+
         public void Init()
         {
             m_EdgeList = new List<Edge>();
+            m_NodeList = new();
             this.StretchToParentSize();
             SetupZoom(ContentZoomer.DefaultMinScale, ContentZoomer.DefaultMaxScale);
             // 允许拖拽Content
@@ -35,6 +38,32 @@ namespace GameFrame.Editor
         public new void Clear()
         {
             base.Clear();
+            DeleteAllNode();
+        }
+
+        public void DeleteAllNode()
+        {
+            foreach (var item in m_NodeList)
+            {
+                item.Clear();
+                RemoveElement(item);
+            }
+
+            foreach (var item in m_EdgeList)
+            {
+                RemoveElement(item);
+            }
+
+            m_NodeList.Clear();
+            m_EdgeList.Clear();
+        }
+
+        public T AddNode<T>() where T : Node, new()
+        {
+            T node = new T();
+            AddElement(node);
+            m_NodeList.Add(node);
+            return node;
         }
 
         /// <summary>
@@ -52,27 +81,27 @@ namespace GameFrame.Editor
             tempEdge.input.Connect(tempEdge);
             tempEdge.output.Connect(tempEdge);
             m_EdgeList.Add(tempEdge);
-            Add(tempEdge);
+            AddElement(tempEdge);
         }
-        
-        /// <summary>
-        /// 将点位连线的回调
-        /// </summary>
-        /// <param name="startPort"></param>
-        /// <param name="adapter"></param>
-        /// <returns></returns>
-        public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter adapter)
-        {
-            List<Port> compatiblePorts = new List<Port>();
 
-            ports.ForEach((port) =>
-            {
-                if (port != startPort && port.node != startPort.node)
-                {
-                    compatiblePorts.Add(port);
-                }
-            });
-            return compatiblePorts;
-        }
+        // /// <summary>
+        // /// 将点位连线的回调
+        // /// </summary>
+        // /// <param name="startPort"></param>
+        // /// <param name="adapter"></param>
+        // /// <returns></returns>
+        // public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter adapter)
+        // {
+        //     List<Port> compatiblePorts = new List<Port>();
+        //
+        //     ports.ForEach((port) =>
+        //     {
+        //         if (port != startPort && port.node != startPort.node)
+        //         {
+        //             compatiblePorts.Add(port);
+        //         }
+        //     });
+        //     return compatiblePorts;
+        // }
     }
 }

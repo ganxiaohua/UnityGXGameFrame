@@ -14,10 +14,13 @@ namespace GameFrame.Editor
         public IEntity entity;
         public GeneralGrophNode GraphNode;
     }
+
     public class EnitiyInfos
     {
         public EnitiyNode RootNode;
         public Dictionary<int, int> FloorGrid;
+        public bool Find = false;
+
         enum EnitiyType
         {
             All,
@@ -25,17 +28,40 @@ namespace GameFrame.Editor
             Ecs,
         }
 
-        public void GetAllEnitiy()
+        public EnitiyInfos()
         {
             FloorGrid = new();
-            var root = GXGameFrame.Instance.MainScene;
+        }
+
+        public void GetRootEnitiy(IEntity ientity = null)
+        {
+            FloorGrid.Clear();
             RootNode = new EnitiyNode();
+            IEntity root = null;
+            if (ientity == null)
+            {
+                root = GXGameFrame.Instance.MainScene;
+            }
+            else
+            {
+                root = ientity;
+                // List<IEntity> entityList = EnitityHouse.Instance.GetEntity(ientity.GetType());
+                // foreach (var item in entityList)
+                // {
+                //     if (item == ientity)
+                //     {
+                //         root = ientity
+                //     }
+                // }
+            }
+
             RootNode.entity = root;
             RootNode.Floor = 0;
             RootNode.Grid = 0;
-            FloorGrid.Add(0,0);
+            FloorGrid.Add(0, 0);
             StructureNode(RootNode, RootNode.Floor);
         }
+
 
         public void StructureNode(EnitiyNode entityNode, int floor)
         {
@@ -48,12 +74,12 @@ namespace GameFrame.Editor
             {
                 foreach (IEntity childEntity in entity.Children.Values)
                 {
-                    CreateNode(entityNode, childEntity, floor+1, FloorGrid[floor]++);
+                    CreateNode(entityNode, childEntity, floor + 1, FloorGrid[floor]++);
                 }
 
                 foreach (IEntity EntityComponent in entity.Components.Values)
                 {
-                    CreateNode(entityNode, EntityComponent, floor+1, FloorGrid[floor]++);
+                    CreateNode(entityNode, EntityComponent, floor + 1, FloorGrid[floor]++);
                 }
             }
         }
