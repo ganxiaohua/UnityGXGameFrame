@@ -3,4 +3,5 @@
                 self.{0}View.Link(self);
                 List<string> temp = new List<string>();
                 temp.Add("{1}");
+                self.AddComponent<{0}Data>();
                 self.AddComponent<DependentResources, List<string>>(temp);

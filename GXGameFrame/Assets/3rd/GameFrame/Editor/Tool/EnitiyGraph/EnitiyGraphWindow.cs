@@ -12,7 +12,6 @@ namespace GameFrame.Editor
         private EnitiyGraphView GraphView;
 
         // 通过Menu即可打开对应window, 注意这种函数必须是static函数
-        [MenuItem("Tool/打开实体审查")]
         public static void OpenDialogueGraphWindow()
         {
             var window = GetWindow<DialogueGraphWindow>();

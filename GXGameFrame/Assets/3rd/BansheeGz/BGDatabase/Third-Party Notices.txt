@@ -1,0 +1,15 @@
+Asset is governed by the Asset Store EULA; 
+however, the following components are governed by the licenses indicated below:
+
+--------------------------------------------------------
+1) SimpleJson 
+License: MIT License  
+License details: Free for commercial use, modification allowed
+Home page: http://wiki.unity3d.com/index.php/SimpleJSON
+Asset's Folder: BansheeGz\BGDatabase\Scripts\ThirdParty\SimpleJson\
+
+2) LiteCsvParser
+License: MIT License  
+License details: Free for commercial use, modification allowed
+Home page: https://github.com/floatinghotpot/LiteCsvParser
+Asset's Folder: BansheeGz\BGDatabase\Scripts\ThirdParty\LiteCsvParser\

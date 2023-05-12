@@ -16,7 +16,6 @@ namespace GameFrame.Editor
 {
     public class CreateEnitiyWind : OdinEditorWindow
     {
-        [MenuItem("Tool/创建一组实体脚本",false,0)]
         public static void OpenCreateEnitiyWind()
         {
             CreateEnitiyWind.OpenWindow();
@@ -48,7 +47,6 @@ namespace GameFrame.Editor
             {
                 return;
             }
-
             string path = $"{CreatePath}/{ComponentName}.cs";
             if (File.Exists(path))
             {
@@ -61,13 +59,16 @@ namespace GameFrame.Editor
             {
                 CreateEnitiyAuto.WriteEnitit(InheritedObjectEnum, ComponentName, false, CreatePath);
             }
+
+            AssetDatabase.Refresh();
+            Debug.Log("创建成功");
         }
-        
-        //TODO:可以放置一个Editor数据库,然后根据editor数据的内容进行编译回调
-        // [UnityEditor.Callbacks.DidReloadScripts]
-        // public static void SystemBind()
-        // {
-        //     AutoCreateSystem.AutoCreateScript();
-        // }
+
+        [UnityEditor.Callbacks.DidReloadScripts]
+        public static void SystemBind()
+        {
+            // AutoCreateSystem.AutoCreateScript();
+            // EditorBuildDatabase.SetBuildbaseData(false);
+        }
     }
 }

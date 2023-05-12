@@ -4,6 +4,7 @@ using Sirenix.OdinInspector;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -79,7 +80,7 @@ public class CreateUIScriptOdin : MonoBehaviour
     public void ButtonBackMain()
     {
         EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
-        EditorSceneManager.OpenScene("Assets/Scenes/Init.unity");
+        EditorSceneManager.OpenScene("Assets/GXGame/Scenes/Init.unity");
     }
 
     [HorizontalGroup] [LabelText("类名:"), LabelWidth(40)]
@@ -211,13 +212,13 @@ public class CreateUIScriptOdin : MonoBehaviour
             {
                 if (EditorUtility.DisplayDialog("警告！", className + "已经存在是否覆盖View组件获取脚本.(逻辑脚本会保留)", "覆盖", "取消"))
                 {
-                    ViewLua(saveCodePath, className);
+                    ViewFunc(saveCodePath, className);
                 }
             }
             else
             {
-                LogicLua(saveCodePath, className);
-                ViewLua(saveCodePath, className);
+                LogicFunc(saveCodePath, className);
+                ViewFunc(saveCodePath, className);
             }
         }
         catch (Exception e)
@@ -226,7 +227,7 @@ public class CreateUIScriptOdin : MonoBehaviour
         }
 
 
-        void ViewLua(string codepath, string classname)
+        void ViewFunc(string codepath, string classname)
         {
             string fields = "";
             for (int i = 0; i < bindList.Count; i++)
@@ -240,12 +241,24 @@ public class CreateUIScriptOdin : MonoBehaviour
             CreateEnitiyAuto.CreateUIViewAutoText(codepath, classname, fields);
         }
 
-        void LogicLua(string codepath, string classname)
+        void LogicFunc(string codepath, string classname)
         {
-            CreateEnitiyAuto.WriteEnitit((CreateEnitiyAuto.InheritedObject) 0b11111, classname, true, codepath,UIPanel.packageName);
+            CreateEnitiyAuto.WriteEnitit((CreateEnitiyAuto.InheritedObject) 0b11111, classname, true, codepath, UIPanel.packageName);
             CreateEnitiyAuto.CreateUIViewText(codepath, classname, UIPanel.packageName, UIPanel.componentName);
+            CreateEnitiyAuto.CreateUIDataText(codepath, classname);
+
         }
         
+        // var domain = AppDomain.CurrentDomain.GetAssemblies();
+        // foreach (Assembly assembly in domain)
+        // {
+        //     if (assembly.GetName().Name == "Assembly-CSharp-Editor")
+        //     {
+        //         var mode = assembly.GetType("GameFrame.Editor.EditorBuildDatabase").GetMethod("SetBuildbaseData");
+        //         mode.Invoke(null, new object[] {true});
+        //     }
+        //     
+        // }
         AssetDatabase.Refresh();
         EditorUtility.DisplayDialog("提示", "代码生成完毕", "OK");
     }

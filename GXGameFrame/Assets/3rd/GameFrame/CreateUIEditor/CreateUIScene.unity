@@ -348,7 +348,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   packageName: Card
-  componentName: CardWindow
+  componentName: CardChoiceWindow
   fitScreen: 0
   sortingOrder: 0
   packagePath: Assets/UI/Card/Card
@@ -391,7 +391,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dafaultPath: E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Assets/Scripts/UI
   custom_Path: E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Assets/Scripts/UI
-  className: UICardWindow
+  className: UICardChoiceWindow
   bindList:
   - Path: Bg
     FieldName: Bg
@@ -401,8 +401,8 @@ MonoBehaviour:
     FieldName: EffectRoot01
     TypeName: GComponent
     Com: {fileID: 0}
-  - Path: n343
-    FieldName: n343
+  - Path: n356
+    FieldName: n356
     TypeName: GImage
     Com: {fileID: 0}
   - Path: ModelLoader
@@ -413,12 +413,8 @@ MonoBehaviour:
     FieldName: Mask
     TypeName: GImage
     Com: {fileID: 0}
-  - Path: n337
-    FieldName: n337
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: n75
-    FieldName: n75
+  - Path: n369
+    FieldName: n369
     TypeName: GImage
     Com: {fileID: 0}
   - Path: n9
@@ -429,1331 +425,195 @@ MonoBehaviour:
     FieldName: FilterBtn
     TypeName: GComponent
     Com: {fileID: 0}
-  - Path: ChangeCardBtn
-    FieldName: ChangeCardBtn
+  - Path: FullBtn
+    FieldName: FullBtn
     TypeName: GButton
     Com: {fileID: 0}
-  - Path: ChangeCardBtn.ModelLoader
-    FieldName: ChangeCardBtn_ModelLoader
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: ChangeCardBtn.n4
-    FieldName: ChangeCardBtn_n4
+  - Path: FullBtn.n1
+    FieldName: FullBtn_n1
     TypeName: GImage
     Com: {fileID: 0}
-  - Path: PowerItemBg
-    FieldName: PowerItemBg
+  - Path: FullBtn.n0
+    FieldName: FullBtn_n0
     TypeName: GImage
     Com: {fileID: 0}
-  - Path: NumberText
-    FieldName: NumberText
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: Zhanli
-    FieldName: Zhanli
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: Icon
-    FieldName: Icon
-    TypeName: GLoader
-    Com: {fileID: 0}
-  - Path: ArrowsUp
-    FieldName: ArrowsUp
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: ArrowsDown
-    FieldName: ArrowsDown
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: DetailsPanel
-    FieldName: DetailsPanel
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: DetailsPanel.Line
-    FieldName: DetailsPanel_Line
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: DetailsPanel.n46
-    FieldName: DetailsPanel_n46
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: DetailsPanel.n47
-    FieldName: DetailsPanel_n47
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: DetailsPanel.TitleText
-    FieldName: DetailsPanel_TitleText
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: DetailsPanel.Line
-    FieldName: DetailsPanel_Line1
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: DetailsPanel.n71
-    FieldName: DetailsPanel_n71
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: DetailsPanel.n72
-    FieldName: DetailsPanel_n72
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: DetailsPanel.TitleText
-    FieldName: DetailsPanel_TitleText2
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: DetailsPanel.PropertyGroup
-    FieldName: DetailsPanel_PropertyGroup
-    TypeName: GList
-    Com: {fileID: 0}
-  - Path: DetailsPanel.Skill01
-    FieldName: DetailsPanel_Skill01
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: DetailsPanel.Skill02
-    FieldName: DetailsPanel_Skill02
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: DetailsPanel.Skill03
-    FieldName: DetailsPanel_Skill03
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: DetailsPanel.BtnMore
-    FieldName: DetailsPanel_BtnMore
+  - Path: ShowBtn
+    FieldName: ShowBtn
     TypeName: GButton
     Com: {fileID: 0}
-  - Path: DetailsPanel.BtnMore.n0
-    FieldName: DetailsPanel_BtnMore_n0
+  - Path: ShowBtn.n1
+    FieldName: ShowBtn_n1
     TypeName: GImage
     Com: {fileID: 0}
-  - Path: DetailsPanel.BtnMore.n3
-    FieldName: DetailsPanel_BtnMore_n3
+  - Path: ShowBtn.n0
+    FieldName: ShowBtn_n0
     TypeName: GImage
     Com: {fileID: 0}
-  - Path: DetailsPanel.BtnMore.title
-    FieldName: DetailsPanel_BtnMore_title
-    TypeName: GTextField
+  - Path: TitleLine01
+    FieldName: TitleLine01
+    TypeName: GComponent
     Com: {fileID: 0}
-  - Path: DetailsPanel.Text
-    FieldName: DetailsPanel_Text
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: DetailsPanel.Bg
-    FieldName: DetailsPanel_Bg
+  - Path: Line02
+    FieldName: Line02
     TypeName: GImage
     Com: {fileID: 0}
-  - Path: DetailsPanel.BtnUpdate
-    FieldName: DetailsPanel_BtnUpdate
+  - Path: CardChoiceComp03
+    FieldName: CardChoiceComp03
     TypeName: GComponent
     Com: {fileID: 0}
-  - Path: DetailsPanel.BtnAdvance
-    FieldName: DetailsPanel_BtnAdvance
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: DetailsPanel.CostItem01
-    FieldName: DetailsPanel_CostItem01
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: DetailsPanel.CostItem02
-    FieldName: DetailsPanel_CostItem02
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: StarPanel
-    FieldName: StarPanel
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: StarPanel.Line
-    FieldName: StarPanel_Line
+  - Path: CardChoiceComp03.CardBg
+    FieldName: CardChoiceComp03_CardBg
     TypeName: GImage
     Com: {fileID: 0}
-  - Path: StarPanel.Line
-    FieldName: StarPanel_Line3
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: StarPanel.n161
-    FieldName: StarPanel_n161
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: StarPanel.n162
-    FieldName: StarPanel_n162
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: StarPanel.TitleText
-    FieldName: StarPanel_TitleText
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: StarPanel.Skill01
-    FieldName: StarPanel_Skill01
+  - Path: CardChoiceComp03.CardChoicePic
+    FieldName: CardChoiceComp03_CardChoicePic
     TypeName: GComponent
     Com: {fileID: 0}
-  - Path: StarPanel.Skill02
-    FieldName: StarPanel_Skill02
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: StarPanel.Skill03
-    FieldName: StarPanel_Skill03
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: StarPanel.Skill04
-    FieldName: StarPanel_Skill04
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: StarPanel.Skill05
-    FieldName: StarPanel_Skill05
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: StarPanel.Skill06
-    FieldName: StarPanel_Skill06
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: StarPanel.Skill07
-    FieldName: StarPanel_Skill07
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: StarPanel.CostItem
-    FieldName: StarPanel_CostItem
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: StarPanel.BtnUpdate
-    FieldName: StarPanel_BtnUpdate
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EvolutionPanel
-    FieldName: EvolutionPanel
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EvolutionPanel.Line
-    FieldName: EvolutionPanel_Line
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EvolutionPanel.n163
-    FieldName: EvolutionPanel_n163
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EvolutionPanel.n164
-    FieldName: EvolutionPanel_n164
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EvolutionPanel.TitleText
-    FieldName: EvolutionPanel_TitleText
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: EvolutionPanel.Bg01
-    FieldName: EvolutionPanel_Bg01
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EvolutionPanel.Bg02
-    FieldName: EvolutionPanel_Bg02
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EvolutionPanel.Jiantou
-    FieldName: EvolutionPanel_Jiantou
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EvolutionPanel.AptitudeIconNow
-    FieldName: EvolutionPanel_AptitudeIconNow
+  - Path: CardChoiceComp03.CardChoicePic.n347
+    FieldName: CardChoiceComp03_CardChoicePic_n347
     TypeName: GLoader
     Com: {fileID: 0}
-  - Path: EvolutionPanel.AptitudeIconNext
-    FieldName: EvolutionPanel_AptitudeIconNext
+  - Path: CardChoiceComp03.CardChoicePic.n348
+    FieldName: CardChoiceComp03_CardChoicePic_n348
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: CardChoiceComp03.Choice
+    FieldName: CardChoiceComp03_Choice
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: CardChoiceComp03.Line
+    FieldName: CardChoiceComp03_Line
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: CardChoiceComp03.TxtBg
+    FieldName: CardChoiceComp03_TxtBg
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: CardChoiceComp03.UseTxt
+    FieldName: CardChoiceComp03_UseTxt
+    TypeName: GTextField
+    Com: {fileID: 0}
+  - Path: CardChoiceComp03.Locked
+    FieldName: CardChoiceComp03_Locked
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: CardChoiceComp03.LockTxt
+    FieldName: CardChoiceComp03_LockTxt
+    TypeName: GTextField
+    Com: {fileID: 0}
+  - Path: CardChoiceComp03.Line
+    FieldName: CardChoiceComp03_Line1
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: CardChoiceComp02
+    FieldName: CardChoiceComp02
+    TypeName: GComponent
+    Com: {fileID: 0}
+  - Path: CardChoiceComp02.CardBg
+    FieldName: CardChoiceComp02_CardBg
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: CardChoiceComp02.CardChoicePic
+    FieldName: CardChoiceComp02_CardChoicePic
+    TypeName: GComponent
+    Com: {fileID: 0}
+  - Path: CardChoiceComp02.CardChoicePic.n347
+    FieldName: CardChoiceComp02_CardChoicePic_n347
     TypeName: GLoader
     Com: {fileID: 0}
-  - Path: EvolutionPanel.StarDark
-    FieldName: EvolutionPanel_StarDark
+  - Path: CardChoiceComp02.CardChoicePic.n348
+    FieldName: CardChoiceComp02_CardChoicePic_n348
     TypeName: GImage
     Com: {fileID: 0}
-  - Path: EvolutionPanel.StarLight
-    FieldName: EvolutionPanel_StarLight
+  - Path: CardChoiceComp02.Choice
+    FieldName: CardChoiceComp02_Choice
     TypeName: GImage
     Com: {fileID: 0}
-  - Path: EvolutionPanel.Text
-    FieldName: EvolutionPanel_Text
+  - Path: CardChoiceComp02.Line
+    FieldName: CardChoiceComp02_Line
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: CardChoiceComp02.TxtBg
+    FieldName: CardChoiceComp02_TxtBg
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: CardChoiceComp02.UseTxt
+    FieldName: CardChoiceComp02_UseTxt
     TypeName: GTextField
     Com: {fileID: 0}
-  - Path: EvolutionPanel.Number
-    FieldName: EvolutionPanel_Number
+  - Path: CardChoiceComp02.Locked
+    FieldName: CardChoiceComp02_Locked
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: CardChoiceComp02.LockTxt
+    FieldName: CardChoiceComp02_LockTxt
     TypeName: GTextField
     Com: {fileID: 0}
-  - Path: EvolutionPanel.Gou
-    FieldName: EvolutionPanel_Gou
+  - Path: CardChoiceComp02.Line
+    FieldName: CardChoiceComp02_Line2
     TypeName: GImage
     Com: {fileID: 0}
-  - Path: EvolutionPanel.StarDark
-    FieldName: EvolutionPanel_StarDark4
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EvolutionPanel.StarLight
-    FieldName: EvolutionPanel_StarLight5
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EvolutionPanel.Text
-    FieldName: EvolutionPanel_Text6
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: EvolutionPanel.Number
-    FieldName: EvolutionPanel_Number7
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: EvolutionPanel.Gou
-    FieldName: EvolutionPanel_Gou8
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EvolutionPanel.StarDark
-    FieldName: EvolutionPanel_StarDark9
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EvolutionPanel.StarLight
-    FieldName: EvolutionPanel_StarLight10
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EvolutionPanel.Text
-    FieldName: EvolutionPanel_Text11
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: EvolutionPanel.Number
-    FieldName: EvolutionPanel_Number12
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: EvolutionPanel.Gou
-    FieldName: EvolutionPanel_Gou13
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EvolutionPanel.CostsItem01
-    FieldName: EvolutionPanel_CostsItem01
+  - Path: CardChoiceComp01
+    FieldName: CardChoiceComp01
     TypeName: GComponent
     Com: {fileID: 0}
-  - Path: EvolutionPanel.BtnUpdate
-    FieldName: EvolutionPanel_BtnUpdate
+  - Path: CardChoiceComp01.CardBg
+    FieldName: CardChoiceComp01_CardBg
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: CardChoiceComp01.CardChoicePic
+    FieldName: CardChoiceComp01_CardChoicePic
     TypeName: GComponent
     Com: {fileID: 0}
-  - Path: AwakenPanel
-    FieldName: AwakenPanel
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Line
-    FieldName: AwakenPanel_Line
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: AwakenPanel.n235
-    FieldName: AwakenPanel_n235
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: AwakenPanel.n236
-    FieldName: AwakenPanel_n236
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: AwakenPanel.TitleText
-    FieldName: AwakenPanel_TitleText
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Type1
-    FieldName: AwakenPanel_Type1
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Type1.Bg
-    FieldName: AwakenPanel_Type1_Bg
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Type1.Bg02
-    FieldName: AwakenPanel_Type1_Bg02
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Type1.n292
-    FieldName: AwakenPanel_Type1_n292
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Type1.StarLight
-    FieldName: AwakenPanel_Type1_StarLight
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Type1.Text
-    FieldName: AwakenPanel_Type1_Text
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Type1.DetailsText
-    FieldName: AwakenPanel_Type1_DetailsText
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Type2
-    FieldName: AwakenPanel_Type2
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Type2.Bg
-    FieldName: AwakenPanel_Type2_Bg
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Type2.Bg02
-    FieldName: AwakenPanel_Type2_Bg02
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Type2.n292
-    FieldName: AwakenPanel_Type2_n292
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Type2.StarLight
-    FieldName: AwakenPanel_Type2_StarLight
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Type2.Text
-    FieldName: AwakenPanel_Type2_Text
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Type2.DetailsText
-    FieldName: AwakenPanel_Type2_DetailsText
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Type3
-    FieldName: AwakenPanel_Type3
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Type3.Bg
-    FieldName: AwakenPanel_Type3_Bg
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Type3.Bg02
-    FieldName: AwakenPanel_Type3_Bg02
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Type3.n292
-    FieldName: AwakenPanel_Type3_n292
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Type3.StarLight
-    FieldName: AwakenPanel_Type3_StarLight
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Type3.Text
-    FieldName: AwakenPanel_Type3_Text
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Type3.DetailsText
-    FieldName: AwakenPanel_Type3_DetailsText
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Type4
-    FieldName: AwakenPanel_Type4
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Type4.Bg
-    FieldName: AwakenPanel_Type4_Bg
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Type4.Bg02
-    FieldName: AwakenPanel_Type4_Bg02
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Type4.n292
-    FieldName: AwakenPanel_Type4_n292
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Type4.StarLight
-    FieldName: AwakenPanel_Type4_StarLight
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Type4.Text
-    FieldName: AwakenPanel_Type4_Text
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Type4.DetailsText
-    FieldName: AwakenPanel_Type4_DetailsText
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Type5
-    FieldName: AwakenPanel_Type5
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Type5.Bg
-    FieldName: AwakenPanel_Type5_Bg
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Type5.Bg02
-    FieldName: AwakenPanel_Type5_Bg02
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Type5.n292
-    FieldName: AwakenPanel_Type5_n292
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Type5.StarLight
-    FieldName: AwakenPanel_Type5_StarLight
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Type5.Text
-    FieldName: AwakenPanel_Type5_Text
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Type5.DetailsText
-    FieldName: AwakenPanel_Type5_DetailsText
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: AwakenPanel.BtnUpdate
-    FieldName: AwakenPanel_BtnUpdate
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Text
-    FieldName: AwakenPanel_Text
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: AwakenPanel.Bg
-    FieldName: AwakenPanel_Bg
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: AwakenPanel.RemainTxt
-    FieldName: AwakenPanel_RemainTxt
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: AwakenPanel.CostItem
-    FieldName: AwakenPanel_CostItem
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: AwakenPanel.CostsItem01
-    FieldName: AwakenPanel_CostsItem01
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: LevelBtn
-    FieldName: LevelBtn
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: StarBtn
-    FieldName: StarBtn
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipBtn
-    FieldName: EquipBtn
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: CommonBtn
-    FieldName: CommonBtn
-    TypeName: GButton
-    Com: {fileID: 0}
-  - Path: CommonBtn.n1
-    FieldName: CommonBtn_n1
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: CommonBtn.n0
-    FieldName: CommonBtn_n0
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel
-    FieldName: EquipPanel
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.BtnProperty
-    FieldName: EquipPanel_BtnProperty
-    TypeName: GButton
-    Com: {fileID: 0}
-  - Path: EquipPanel.BtnProperty.n0
-    FieldName: EquipPanel_BtnProperty_n0
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.BtnProperty.n2
-    FieldName: EquipPanel_BtnProperty_n2
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: EquipPanel.BtnResolve
-    FieldName: EquipPanel_BtnResolve
-    TypeName: GButton
-    Com: {fileID: 0}
-  - Path: EquipPanel.BtnResolve.n0
-    FieldName: EquipPanel_BtnResolve_n0
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.BtnResolve.n2
-    FieldName: EquipPanel_BtnResolve_n2
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame01
-    FieldName: EquipPanel_EquiptFrame01
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame01.n39
-    FieldName: EquipPanel_EquiptFrame01_n39
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame01.n47
-    FieldName: EquipPanel_EquiptFrame01_n47
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame01.n34
-    FieldName: EquipPanel_EquiptFrame01_n34
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame01.n33
-    FieldName: EquipPanel_EquiptFrame01_n33
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame01.n35
-    FieldName: EquipPanel_EquiptFrame01_n35
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame01.n32
-    FieldName: EquipPanel_EquiptFrame01_n32
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame01.n46
-    FieldName: EquipPanel_EquiptFrame01_n46
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame01.EquiptIcon
-    FieldName: EquipPanel_EquiptFrame01_EquiptIcon
+  - Path: CardChoiceComp01.CardChoicePic.n347
+    FieldName: CardChoiceComp01_CardChoicePic_n347
     TypeName: GLoader
     Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame01.Bg
-    FieldName: EquipPanel_EquiptFrame01_Bg
+  - Path: CardChoiceComp01.CardChoicePic.n348
+    FieldName: CardChoiceComp01_CardChoicePic_n348
     TypeName: GImage
     Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame01.NumberText
-    FieldName: EquipPanel_EquiptFrame01_NumberText
+  - Path: CardChoiceComp01.Choice
+    FieldName: CardChoiceComp01_Choice
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: CardChoiceComp01.Line
+    FieldName: CardChoiceComp01_Line
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: CardChoiceComp01.TxtBg
+    FieldName: CardChoiceComp01_TxtBg
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: CardChoiceComp01.UseTxt
+    FieldName: CardChoiceComp01_UseTxt
     TypeName: GTextField
     Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame01.Jiezi
-    FieldName: EquipPanel_EquiptFrame01_Jiezi
+  - Path: CardChoiceComp01.Locked
+    FieldName: CardChoiceComp01_Locked
     TypeName: GImage
     Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame01.Wuqi
-    FieldName: EquipPanel_EquiptFrame01_Wuqi
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame01.Xianglian
-    FieldName: EquipPanel_EquiptFrame01_Xianglian
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame01.Yifu
-    FieldName: EquipPanel_EquiptFrame01_Yifu
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame01.select
-    FieldName: EquipPanel_EquiptFrame01_select
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame01.eft_ui_equippanel_001
-    FieldName: EquipPanel_EquiptFrame01_eftuiequippanel001
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame02
-    FieldName: EquipPanel_EquiptFrame02
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame02.n39
-    FieldName: EquipPanel_EquiptFrame02_n39
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame02.n47
-    FieldName: EquipPanel_EquiptFrame02_n47
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame02.n34
-    FieldName: EquipPanel_EquiptFrame02_n34
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame02.n33
-    FieldName: EquipPanel_EquiptFrame02_n33
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame02.n35
-    FieldName: EquipPanel_EquiptFrame02_n35
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame02.n32
-    FieldName: EquipPanel_EquiptFrame02_n32
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame02.n46
-    FieldName: EquipPanel_EquiptFrame02_n46
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame02.EquiptIcon
-    FieldName: EquipPanel_EquiptFrame02_EquiptIcon
-    TypeName: GLoader
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame02.Bg
-    FieldName: EquipPanel_EquiptFrame02_Bg
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame02.NumberText
-    FieldName: EquipPanel_EquiptFrame02_NumberText
+  - Path: CardChoiceComp01.LockTxt
+    FieldName: CardChoiceComp01_LockTxt
     TypeName: GTextField
     Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame02.Jiezi
-    FieldName: EquipPanel_EquiptFrame02_Jiezi
+  - Path: CardChoiceComp01.Line
+    FieldName: CardChoiceComp01_Line3
     TypeName: GImage
     Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame02.Wuqi
-    FieldName: EquipPanel_EquiptFrame02_Wuqi
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame02.Xianglian
-    FieldName: EquipPanel_EquiptFrame02_Xianglian
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame02.Yifu
-    FieldName: EquipPanel_EquiptFrame02_Yifu
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame02.select
-    FieldName: EquipPanel_EquiptFrame02_select
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame02.eft_ui_equippanel_001
-    FieldName: EquipPanel_EquiptFrame02_eftuiequippanel001
+  - Path: ComLimitTishi
+    FieldName: ComLimitTishi
     TypeName: GComponent
     Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame03
-    FieldName: EquipPanel_EquiptFrame03
+  - Path: UseHomeBtn
+    FieldName: UseHomeBtn
     TypeName: GComponent
     Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame03.n39
-    FieldName: EquipPanel_EquiptFrame03_n39
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame03.n47
-    FieldName: EquipPanel_EquiptFrame03_n47
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame03.n34
-    FieldName: EquipPanel_EquiptFrame03_n34
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame03.n33
-    FieldName: EquipPanel_EquiptFrame03_n33
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame03.n35
-    FieldName: EquipPanel_EquiptFrame03_n35
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame03.n32
-    FieldName: EquipPanel_EquiptFrame03_n32
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame03.n46
-    FieldName: EquipPanel_EquiptFrame03_n46
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame03.EquiptIcon
-    FieldName: EquipPanel_EquiptFrame03_EquiptIcon
-    TypeName: GLoader
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame03.Bg
-    FieldName: EquipPanel_EquiptFrame03_Bg
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame03.NumberText
-    FieldName: EquipPanel_EquiptFrame03_NumberText
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame03.Jiezi
-    FieldName: EquipPanel_EquiptFrame03_Jiezi
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame03.Wuqi
-    FieldName: EquipPanel_EquiptFrame03_Wuqi
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame03.Xianglian
-    FieldName: EquipPanel_EquiptFrame03_Xianglian
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame03.Yifu
-    FieldName: EquipPanel_EquiptFrame03_Yifu
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame03.select
-    FieldName: EquipPanel_EquiptFrame03_select
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame03.eft_ui_equippanel_001
-    FieldName: EquipPanel_EquiptFrame03_eftuiequippanel001
+  - Path: UseBtn
+    FieldName: UseBtn
     TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame04
-    FieldName: EquipPanel_EquiptFrame04
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame04.n39
-    FieldName: EquipPanel_EquiptFrame04_n39
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame04.n47
-    FieldName: EquipPanel_EquiptFrame04_n47
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame04.n34
-    FieldName: EquipPanel_EquiptFrame04_n34
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame04.n33
-    FieldName: EquipPanel_EquiptFrame04_n33
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame04.n35
-    FieldName: EquipPanel_EquiptFrame04_n35
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame04.n32
-    FieldName: EquipPanel_EquiptFrame04_n32
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame04.n46
-    FieldName: EquipPanel_EquiptFrame04_n46
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame04.EquiptIcon
-    FieldName: EquipPanel_EquiptFrame04_EquiptIcon
-    TypeName: GLoader
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame04.Bg
-    FieldName: EquipPanel_EquiptFrame04_Bg
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame04.NumberText
-    FieldName: EquipPanel_EquiptFrame04_NumberText
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame04.Jiezi
-    FieldName: EquipPanel_EquiptFrame04_Jiezi
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame04.Wuqi
-    FieldName: EquipPanel_EquiptFrame04_Wuqi
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame04.Xianglian
-    FieldName: EquipPanel_EquiptFrame04_Xianglian
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame04.Yifu
-    FieldName: EquipPanel_EquiptFrame04_Yifu
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame04.select
-    FieldName: EquipPanel_EquiptFrame04_select
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFrame04.eft_ui_equippanel_001
-    FieldName: EquipPanel_EquiptFrame04_eftuiequippanel001
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.Mask
-    FieldName: EquipPanel_Mask
-    TypeName: GLoader
-    Com: {fileID: 0}
-  - Path: EquipPanel.Line
-    FieldName: EquipPanel_Line
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.Bg
-    FieldName: EquipPanel_Bg
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFilterBtn01
-    FieldName: EquipPanel_EquiptFilterBtn01
-    TypeName: GButton
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFilterBtn01.Bg
-    FieldName: EquipPanel_EquiptFilterBtn01_Bg
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFilterBtn01.icon
-    FieldName: EquipPanel_EquiptFilterBtn01_icon
-    TypeName: GLoader
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFilterBtn02
-    FieldName: EquipPanel_EquiptFilterBtn02
-    TypeName: GButton
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFilterBtn02.Bg
-    FieldName: EquipPanel_EquiptFilterBtn02_Bg
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFilterBtn02.icon
-    FieldName: EquipPanel_EquiptFilterBtn02_icon
-    TypeName: GLoader
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFilterBtn03
-    FieldName: EquipPanel_EquiptFilterBtn03
-    TypeName: GButton
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFilterBtn03.Bg
-    FieldName: EquipPanel_EquiptFilterBtn03_Bg
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFilterBtn03.icon
-    FieldName: EquipPanel_EquiptFilterBtn03_icon
-    TypeName: GLoader
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFilterBtn04
-    FieldName: EquipPanel_EquiptFilterBtn04
-    TypeName: GButton
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFilterBtn04.Bg
-    FieldName: EquipPanel_EquiptFilterBtn04_Bg
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFilterBtn04.icon
-    FieldName: EquipPanel_EquiptFilterBtn04_icon
-    TypeName: GLoader
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFilterBtn05
-    FieldName: EquipPanel_EquiptFilterBtn05
-    TypeName: GButton
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFilterBtn05.Bg
-    FieldName: EquipPanel_EquiptFilterBtn05_Bg
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptFilterBtn05.icon
-    FieldName: EquipPanel_EquiptFilterBtn05_icon
-    TypeName: GLoader
-    Com: {fileID: 0}
-  - Path: EquipPanel.BtnEquiptFilter
-    FieldName: EquipPanel_BtnEquiptFilter
-    TypeName: GButton
-    Com: {fileID: 0}
-  - Path: EquipPanel.BtnEquiptFilter.Bg
-    FieldName: EquipPanel_BtnEquiptFilter_Bg
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.BtnEquiptFilter.Text
-    FieldName: EquipPanel_BtnEquiptFilter_Text
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: EquipPanel.BtnEquiptFilter.FilterIcon
-    FieldName: EquipPanel_BtnEquiptFilter_FilterIcon
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.ItemFrameGroup
-    FieldName: EquipPanel_ItemFrameGroup
-    TypeName: GList
-    Com: {fileID: 0}
-  - Path: EquipPanel.DressBtn
-    FieldName: EquipPanel_DressBtn
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.UndressBtn
-    FieldName: EquipPanel_UndressBtn
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.DontStrengthenBtn
-    FieldName: EquipPanel_DontStrengthenBtn
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptStrengthenTips
-    FieldName: EquipPanel_EquiptStrengthenTips
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptStrengthenTips.TipsBg
-    FieldName: EquipPanel_EquiptStrengthenTips_TipsBg
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptStrengthenTips.Line
-    FieldName: EquipPanel_EquiptStrengthenTips_Line
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptStrengthenTips.n67
-    FieldName: EquipPanel_EquiptStrengthenTips_n67
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptStrengthenTips.n68
-    FieldName: EquipPanel_EquiptStrengthenTips_n68
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptStrengthenTips.TitleText
-    FieldName: EquipPanel_EquiptStrengthenTips_TitleText
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptStrengthenTips.Line
-    FieldName: EquipPanel_EquiptStrengthenTips_Line14
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptStrengthenTips.n72
-    FieldName: EquipPanel_EquiptStrengthenTips_n72
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptStrengthenTips.n73
-    FieldName: EquipPanel_EquiptStrengthenTips_n73
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptStrengthenTips.TitleText
-    FieldName: EquipPanel_EquiptStrengthenTips_TitleText15
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptStrengthenTips.Line01
-    FieldName: EquipPanel_EquiptStrengthenTips_Line01
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptStrengthenTips.EquiptFrame
-    FieldName: EquipPanel_EquiptStrengthenTips_EquiptFrame
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptStrengthenTips.EquiptName
-    FieldName: EquipPanel_EquiptStrengthenTips_EquiptName
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptStrengthenTips.CardDressText
-    FieldName: EquipPanel_EquiptStrengthenTips_CardDressText
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptStrengthenTips.Icon
-    FieldName: EquipPanel_EquiptStrengthenTips_Icon
-    TypeName: GLoader
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptStrengthenTips.PropertyText
-    FieldName: EquipPanel_EquiptStrengthenTips_PropertyText
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptStrengthenTips.NumberText
-    FieldName: EquipPanel_EquiptStrengthenTips_NumberText
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptStrengthenTips.NextNumberText
-    FieldName: EquipPanel_EquiptStrengthenTips_NextNumberText
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptStrengthenTips.BlueArrows
-    FieldName: EquipPanel_EquiptStrengthenTips_BlueArrows
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptStrengthenTips.UpArrows
-    FieldName: EquipPanel_EquiptStrengthenTips_UpArrows
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptStrengthenTips.StrengthenBtn
-    FieldName: EquipPanel_EquiptStrengthenTips_StrengthenBtn
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptStrengthenTips.RandomPropertyItem01
-    FieldName: EquipPanel_EquiptStrengthenTips_RandomPropertyItem01
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptStrengthenTips.RandomPropertyItem02
-    FieldName: EquipPanel_EquiptStrengthenTips_RandomPropertyItem02
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptStrengthenTips.RandomPropertyItem03
-    FieldName: EquipPanel_EquiptStrengthenTips_RandomPropertyItem03
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptStrengthenTips.RandomPropertyItem04
-    FieldName: EquipPanel_EquiptStrengthenTips_RandomPropertyItem04
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptStrengthenTips.Cost
-    FieldName: EquipPanel_EquiptStrengthenTips_Cost
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptStrengthenTips.Img
-    FieldName: EquipPanel_EquiptStrengthenTips_Img
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptStrengthenTips.NotShow
-    FieldName: EquipPanel_EquiptStrengthenTips_NotShow
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptStrengthenTips.Limit
-    FieldName: EquipPanel_EquiptStrengthenTips_Limit
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptStrengthenTips.Bg
-    FieldName: EquipPanel_EquiptStrengthenTips_Bg
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptResolveTips
-    FieldName: EquipPanel_EquiptResolveTips
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptResolveTips.TipsBg
-    FieldName: EquipPanel_EquiptResolveTips_TipsBg
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptResolveTips.n68
-    FieldName: EquipPanel_EquiptResolveTips_n68
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptResolveTips.n69
-    FieldName: EquipPanel_EquiptResolveTips_n69
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptResolveTips.TitleText
-    FieldName: EquipPanel_EquiptResolveTips_TitleText
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptResolveTips.Line02
-    FieldName: EquipPanel_EquiptResolveTips_Line02
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptResolveTips.ItemFrameGroup
-    FieldName: EquipPanel_EquiptResolveTips_ItemFrameGroup
-    TypeName: GList
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptResolveTips.Text
-    FieldName: EquipPanel_EquiptResolveTips_Text
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptResolveTips.EmptyBtn
-    FieldName: EquipPanel_EquiptResolveTips_EmptyBtn
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptResolveTips.ResolveBtn
-    FieldName: EquipPanel_EquiptResolveTips_ResolveBtn
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptResolveTips.Cost
-    FieldName: EquipPanel_EquiptResolveTips_Cost
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptResolveTips.Img
-    FieldName: EquipPanel_EquiptResolveTips_Img
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptResolveTips.NotShow
-    FieldName: EquipPanel_EquiptResolveTips_NotShow
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptDetailsTips
-    FieldName: EquipPanel_EquiptDetailsTips
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptDetailsTips.TipsBg
-    FieldName: EquipPanel_EquiptDetailsTips_TipsBg
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptDetailsTips.DetailedList
-    FieldName: EquipPanel_EquiptDetailsTips_DetailedList
-    TypeName: GList
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptDetailsTips.CommonEmptyState
-    FieldName: EquipPanel_EquiptDetailsTips_CommonEmptyState
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.FilterEquiptPanel
-    FieldName: EquipPanel_FilterEquiptPanel
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.FilterEquiptPanel.Bg
-    FieldName: EquipPanel_FilterEquiptPanel_Bg
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.FilterEquiptPanel.TitleTxt
-    FieldName: EquipPanel_FilterEquiptPanel_TitleTxt
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: EquipPanel.FilterEquiptPanel.StarImg
-    FieldName: EquipPanel_FilterEquiptPanel_StarImg
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.FilterEquiptPanel.StarImg
-    FieldName: EquipPanel_FilterEquiptPanel_StarImg16
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.FilterEquiptPanel.TitleTxt
-    FieldName: EquipPanel_FilterEquiptPanel_TitleTxt17
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: EquipPanel.FilterEquiptPanel.StarImg
-    FieldName: EquipPanel_FilterEquiptPanel_StarImg18
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.FilterEquiptPanel.StarImg
-    FieldName: EquipPanel_FilterEquiptPanel_StarImg19
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.FilterEquiptPanel.ConfirmBtn
-    FieldName: EquipPanel_FilterEquiptPanel_ConfirmBtn
-    TypeName: GButton
-    Com: {fileID: 0}
-  - Path: EquipPanel.FilterEquiptPanel.ConfirmBtn.n0
-    FieldName: EquipPanel_FilterEquiptPanel_ConfirmBtn_n0
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.FilterEquiptPanel.ConfirmBtn.n2
-    FieldName: EquipPanel_FilterEquiptPanel_ConfirmBtn_n2
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: EquipPanel.FilterEquiptPanel.PropertyBtn
-    FieldName: EquipPanel_FilterEquiptPanel_PropertyBtn
-    TypeName: GButton
-    Com: {fileID: 0}
-  - Path: EquipPanel.FilterEquiptPanel.PropertyBtn.n0
-    FieldName: EquipPanel_FilterEquiptPanel_PropertyBtn_n0
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.FilterEquiptPanel.PropertyBtn.n2
-    FieldName: EquipPanel_FilterEquiptPanel_PropertyBtn_n2
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: EquipPanel.FilterEquiptPanel.FiltrateStageBtn01
-    FieldName: EquipPanel_FilterEquiptPanel_FiltrateStageBtn01
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.FilterEquiptPanel.FiltrateStageBtn02
-    FieldName: EquipPanel_FilterEquiptPanel_FiltrateStageBtn02
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.FilterEquiptPanel.FiltrateStageBtn03
-    FieldName: EquipPanel_FilterEquiptPanel_FiltrateStageBtn03
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.FilterEquiptPanel.FiltrateStageBtn04
-    FieldName: EquipPanel_FilterEquiptPanel_FiltrateStageBtn04
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.FilterEquiptPanel.FiltrateStageBtn05
-    FieldName: EquipPanel_FilterEquiptPanel_FiltrateStageBtn05
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.FilterEquiptPanel.FiltrateStageBtn06
-    FieldName: EquipPanel_FilterEquiptPanel_FiltrateStageBtn06
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.FilterEquiptPanel.FiltrateStageBtn07
-    FieldName: EquipPanel_FilterEquiptPanel_FiltrateStageBtn07
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.FilterEquiptPanel.FiltrateStageBtn08
-    FieldName: EquipPanel_FilterEquiptPanel_FiltrateStageBtn08
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.FilterEquiptPanel.FiltrateStageBtn09
-    FieldName: EquipPanel_FilterEquiptPanel_FiltrateStageBtn09
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.FilterEquiptPanel.FiltrateSuitGrp
-    FieldName: EquipPanel_FilterEquiptPanel_FiltrateSuitGrp
-    TypeName: GList
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptTipsGroup
-    FieldName: EquipPanel_EquiptTipsGroup
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptTipsGroup.Tips02
-    FieldName: EquipPanel_EquiptTipsGroup_Tips02
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptTipsGroup.Tips02.Bg
-    FieldName: EquipPanel_EquiptTipsGroup_Tips02_Bg
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptTipsGroup.Tips02.Bg
-    FieldName: EquipPanel_EquiptTipsGroup_Tips02_Bg20
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptTipsGroup.Tips02.StageText
-    FieldName: EquipPanel_EquiptTipsGroup_Tips02_StageText
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptTipsGroup.Tips02.ButtonLock
-    FieldName: EquipPanel_EquiptTipsGroup_Tips02_ButtonLock
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptTipsGroup.Tips02.EquiptName
-    FieldName: EquipPanel_EquiptTipsGroup_Tips02_EquiptName
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptTipsGroup.Tips02.ItemFrame
-    FieldName: EquipPanel_EquiptTipsGroup_Tips02_ItemFrame
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptTipsGroup.Tips02.Content
-    FieldName: EquipPanel_EquiptTipsGroup_Tips02_Content
-    TypeName: GList
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptTipsGroup.Tips02.DressBtn
-    FieldName: EquipPanel_EquiptTipsGroup_Tips02_DressBtn
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptTipsGroup.Tips02.StrengthenBtn
-    FieldName: EquipPanel_EquiptTipsGroup_Tips02_StrengthenBtn
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptTipsGroup.Tips01
-    FieldName: EquipPanel_EquiptTipsGroup_Tips01
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptTipsGroup.Tips01.Bg
-    FieldName: EquipPanel_EquiptTipsGroup_Tips01_Bg
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptTipsGroup.Tips01.Bg
-    FieldName: EquipPanel_EquiptTipsGroup_Tips01_Bg21
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptTipsGroup.Tips01.StageText
-    FieldName: EquipPanel_EquiptTipsGroup_Tips01_StageText
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptTipsGroup.Tips01.ButtonLock
-    FieldName: EquipPanel_EquiptTipsGroup_Tips01_ButtonLock
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptTipsGroup.Tips01.EquiptName
-    FieldName: EquipPanel_EquiptTipsGroup_Tips01_EquiptName
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptTipsGroup.Tips01.ItemFrame
-    FieldName: EquipPanel_EquiptTipsGroup_Tips01_ItemFrame
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptTipsGroup.Tips01.Content
-    FieldName: EquipPanel_EquiptTipsGroup_Tips01_Content
-    TypeName: GList
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptTipsGroup.Tips01.DressBtn
-    FieldName: EquipPanel_EquiptTipsGroup_Tips01_DressBtn
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: EquipPanel.EquiptTipsGroup.Tips01.StrengthenBtn
-    FieldName: EquipPanel_EquiptTipsGroup_Tips01_StrengthenBtn
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: CardFilterTips
-    FieldName: CardFilterTips
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: TopInfo
-    FieldName: TopInfo
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: TopInfo.NameText
-    FieldName: TopInfo_NameText
-    TypeName: GRichTextField
-    Com: {fileID: 0}
-  - Path: TopInfo.StageIcon
-    FieldName: TopInfo_StageIcon
-    TypeName: GLoader
-    Com: {fileID: 0}
-  - Path: TopInfo.StageNumberTxt
-    FieldName: TopInfo_StageNumberTxt
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: TopInfo.LevelText
-    FieldName: TopInfo_LevelText
-    TypeName: GTextField
-    Com: {fileID: 0}
-  - Path: TopInfo.StarGroup01
-    FieldName: TopInfo_StarGroup01
-    TypeName: GList
-    Com: {fileID: 0}
-  - Path: TopInfo.BtnNature
-    FieldName: TopInfo_BtnNature
-    TypeName: GButton
-    Com: {fileID: 0}
-  - Path: TopInfo.BtnNature.NatureIcon
-    FieldName: TopInfo_BtnNature_NatureIcon
-    TypeName: GLoader
-    Com: {fileID: 0}
-  - Path: TopInfo.BtnNature.ProfessionBg
-    FieldName: TopInfo_BtnNature_ProfessionBg
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: TopInfo.BtnNature.ProfessionIcon
-    FieldName: TopInfo_BtnNature_ProfessionIcon
-    TypeName: GLoader
     Com: {fileID: 0}
   - Path: AssetsTop
     FieldName: AssetsTop
-    TypeName: GComponent
-    Com: {fileID: 0}
-  - Path: PropertyDetailsTips
-    FieldName: PropertyDetailsTips
     TypeName: GComponent
     Com: {fileID: 0}

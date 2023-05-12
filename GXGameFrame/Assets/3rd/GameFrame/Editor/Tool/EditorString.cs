@@ -13,5 +13,9 @@ namespace GameFrame.Editor
         public static string ECSOutPutPath = "Assets/Test/Scripts/ECS/Auto/";
         
         public static string SystemBindOutPutPath = "Assets/3rd/GameFrame/Runtime/Core/Auto/SystemBindAuto.cs";
+
+        public static string EditorDatabasePath = "Assets/3rd/GameFrame/Editor/Rec/bansheegz_database.bytes";
+        
+        public static string UIScenePath = "Assets/3rd/GameFrame/CreateUIEditor/CreateUIScene.unity";
     }
 }

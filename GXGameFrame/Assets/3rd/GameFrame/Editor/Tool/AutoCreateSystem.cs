@@ -12,8 +12,7 @@ namespace GameFrame.Editor
         private static string MainText;
         private static string AddText;
         private static List<string> AllAddText = new();
-
-        [MenuItem("Tool/生成System绑定脚本",false,1)]
+        
         public static void AutoCreateScript()
         {
             LoadText();

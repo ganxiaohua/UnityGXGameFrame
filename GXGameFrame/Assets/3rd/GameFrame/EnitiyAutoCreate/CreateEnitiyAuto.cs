@@ -80,7 +80,6 @@ public class CreateEnitiyAuto
         File.WriteAllText($"{createPath}/{componentName}.cs", scriptComponent);
         File.WriteAllText($"{createPath}/{componentName}System.cs", scriptComponentSystem);
         AssetDatabase.Refresh();
-        Debug.Log("创建成功");
     }
 
 
@@ -140,6 +139,11 @@ public class CreateEnitiyAuto
         return "";
     }
 
+    public static void CreateUIDataText(string createPath, string componentName)
+    {
+        componentName = componentName + "Data";
+        WriteEnitit((CreateEnitiyAuto.InheritedObject) 0b10001,componentName , false, createPath);
+    }
 
     public static void CreateUIViewText(string createPath, string componentName, string FGUIPakeName, string FGUIClassName)
     {

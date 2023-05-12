@@ -1,0 +1,13 @@
+﻿<linker>
+    <assembly fullname="BGDatabase" preserve="all" ignoreIfMissing="1"/>
+
+    <!--	staring from v.1.5.12 we removed references to Unity UI dll, so we need to add these settings to prevent code stripping and to not break existing code -->
+    <assembly fullname="UnityEngine.UI" ignoreIfMissing="1">
+        <type fullname="UnityEngine.UI.Text">
+            <property name="text"/>
+        </type>
+        <type fullname="UnityEngine.UI.Image">
+            <property name="sprite"/>
+        </type>
+    </assembly>
+</linker>

@@ -26,8 +26,7 @@ namespace GameFrame.Editor
         private static Dictionary<CreateAuto, string> s_TextDictionary;
         private static Dictionary<Type, string> s_EventDictionary;
         private static StringBuilder s_EventSb = new StringBuilder(1024);
-
-        [MenuItem("Tool/生成ECS绑定脚本",false,2)]
+        
         public static void AutoCreateScript()
         {
             LoadText();

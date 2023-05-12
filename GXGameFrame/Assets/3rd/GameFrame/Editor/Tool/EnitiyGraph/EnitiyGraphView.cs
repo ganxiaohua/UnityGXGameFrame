@@ -69,6 +69,10 @@ namespace GameFrame.Editor
 
         public void CreateNodeWithInfo(EnitiyNode rootNode)
         {
+            if (rootNode == null || rootNode.entity == null)
+            {
+                return;
+            }
             CreateRoot(rootNode);
             CreateEnitiyNode(rootNode);
         }
