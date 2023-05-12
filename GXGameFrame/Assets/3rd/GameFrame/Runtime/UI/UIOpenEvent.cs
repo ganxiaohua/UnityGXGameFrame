@@ -4,9 +4,9 @@ namespace GameFrame
 {
     public class UIOpenEvent : IMessenger<Type>
     {
-        public void Send(Type Type)
+        public void Send(Type type)
         {
-            // UIManager.Instance.GetUIClose(Type);
+            UIManager.Instance.UIOpen(type);
         }
 
         public void Clear()

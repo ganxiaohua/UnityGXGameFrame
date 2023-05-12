@@ -147,9 +147,11 @@ namespace GameFrame
                     AddLastNode(findNode);
                     continue;
                 }
+
                 UINode uinode = UINode.CreateEmptyNode(type);
                 m_UILinkedLinkedList.AddLast(uinode);
             }
+
             OpenUI(types[count - 1]);
         }
 
@@ -159,12 +161,6 @@ namespace GameFrame
         /// <param name="type"></param>
         public void OpenUI(Type type)
         {
-            if (IsAction())
-            {
-                m_WaitOpenUIList.Enqueue(type);
-                return;
-            }
-
             //如果打开的UI就是最上层的UI
             UINode curUINode = GetCurUINode();
 
@@ -173,6 +169,14 @@ namespace GameFrame
             {
                 return;
             }
+
+            if (IsAction())
+            {
+                m_WaitOpenUIList.Enqueue(type);
+                return;
+            }
+
+            SetTouchable(false);
             //如果需要打开的UI在列表中则将其拉扯到最上面进行打开
             UINode findUINode = FindUINode(type);
             if (findUINode != null)
@@ -183,6 +187,7 @@ namespace GameFrame
                 UIHideOrDisposeWithNextUIType(curUINode);
                 return;
             }
+
             //打开新窗口
             Open(type);
         }
@@ -281,6 +286,16 @@ namespace GameFrame
         }
 
         /// <summary>
+        /// 设置是否可以触摸状态
+        /// </summary>
+        /// <param name="able"></param>
+        /// <returns></returns>
+        private void SetTouchable(bool able)
+        {
+            FairyGUI.GRoot.inst.touchable = able;
+        }
+
+        /// <summary>
         /// 删除一个节点,加入等待关闭列表
         /// </summary>
         /// <param name="uiNode"></param>
@@ -316,15 +331,28 @@ namespace GameFrame
 
 
         /// <summary>
-        /// 获得到UI关闭的信息
+        /// 界面彻底关闭
         /// </summary>
-        public void GetUIClose(Type type)
+        public void UIClose(Type type)
         {
+            SetTouchable(true);
             if (m_WaitCloseUIDic.ContainsKey(type))
             {
                 m_WaitCloseUIDic.Remove(type);
                 RecycleWindowMaxClear();
             }
+            else
+            {
+                Debug.LogError($"{type.Name} not in m_WaitCloseUIDic");
+            }
+        }
+
+        /// <summary>
+        /// 界面彻底打开
+        /// </summary>
+        public void UIOpen(Type type)
+        {
+            SetTouchable(true);
         }
 
         /// <summary>
@@ -337,6 +365,7 @@ namespace GameFrame
             {
                 return null;
             }
+
             return m_UILinkedLinkedList.First.Value;
         }
 
@@ -355,7 +384,8 @@ namespace GameFrame
             if (uinode == null)
             {
                 return null;
-            } else if (uinode.Value.Window == null)
+            }
+            else if (uinode.Value.Window == null)
             {
                 return GetWindowNotNullNode(uinode.Previous);
             }
@@ -510,12 +540,13 @@ namespace GameFrame
                 RemoveRecycleWindowDic(recycleWindow);
                 GXGameFrame.Instance.MainScene.GetComponent<UIComponent>().RemoveComponent(recycleWindow);
             }
+
             TempRecycleWindow.Clear();
         }
 
         private void RemoveRecycleWindowDic(Type type)
         {
-            if (RecycleWindowDic.TryGetValue(type,out RecycleWindow recyclewindow))
+            if (RecycleWindowDic.TryGetValue(type, out RecycleWindow recyclewindow))
             {
                 ReferencePool.Release(recyclewindow);
                 RecycleWindowDic.Remove(type);
