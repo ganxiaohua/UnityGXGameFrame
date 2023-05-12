@@ -34,7 +34,7 @@ public static class CSharpProjectHelper
         return false;
     }
     
-    [MenuItem("CSharpProject/ManualRedirectOutput")]
+    [MenuItem("RiderIL查看/ManualRedirectOutput")]
     private static void ManualRedirectOutput()
     {
         if (RedirectOutput())
@@ -47,14 +47,14 @@ public static class CSharpProjectHelper
         }
     }
     
-    [MenuItem("CSharpProject/AutoRedirectOutput", true)]
+    [MenuItem("RiderIL查看/AutoRedirectOutput", true)]
     private static bool AutoRedirectOutputValidate()
     {
         Menu.SetChecked("CSharpProject/AutoRedirectOutput", EditorPrefs.HasKey("CSharpProject/AutoRedirectOutput"));
         return true;
     }
 
-    [MenuItem("CSharpProject/AutoRedirectOutput")]
+    [MenuItem("RiderIL查看/AutoRedirectOutput")]
     private static void AutoRedirectOutput()
     {
         if (EditorPrefs.HasKey("CSharpProject/AutoRedirectOutput"))

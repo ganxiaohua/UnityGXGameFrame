@@ -29,11 +29,18 @@ public partial class AutoBindSystem
         m_SystemBind.Add(typeof(UIHomeMainPanel),typeof(IShowSystem),typeof(GXGame.UIHomeMainPanelSystem.UIHomeMainPanelShowSystem));
         m_SystemBind.Add(typeof(UIHomeMainPanel),typeof(IHideSystem),typeof(GXGame.UIHomeMainPanelSystem.UIHomeMainPanelHideSystem));
         m_SystemBind.Add(typeof(UIHomeMainPanel),typeof(IUpdateSystem),typeof(GXGame.UIHomeMainPanelSystem.UIHomeMainPanelUpdateSystem));
+        m_SystemBind.Add(typeof(UICardChoiceWindowData),typeof(IStartSystem),typeof(GXGame.UICardChoiceWindowDataSystem.UICardChoiceWindowDataStartSystem));
+        m_SystemBind.Add(typeof(UICardChoiceWindowData),typeof(IClearSystem),typeof(GXGame.UICardChoiceWindowDataSystem.UICardChoiceWindowDataClearSystem));
+        m_SystemBind.Add(typeof(UICardChoiceWindow),typeof(IStartSystem),typeof(GXGame.UICardChoiceWindowSystem.UICardChoiceWindowStartSystem));
+        m_SystemBind.Add(typeof(UICardChoiceWindow),typeof(IShowSystem),typeof(GXGame.UICardChoiceWindowSystem.UICardChoiceWindowShowSystem));
+        m_SystemBind.Add(typeof(UICardChoiceWindow),typeof(IHideSystem),typeof(GXGame.UICardChoiceWindowSystem.UICardChoiceWindowHideSystem));
+        m_SystemBind.Add(typeof(UICardChoiceWindow),typeof(IUpdateSystem),typeof(GXGame.UICardChoiceWindowSystem.UICardChoiceWindowUpdateSystem));
+        m_SystemBind.Add(typeof(UICardChoiceWindow),typeof(IClearSystem),typeof(GXGame.UICardChoiceWindowSystem.UICardChoiceWindowClearSystem));
         m_SystemBind.Add(typeof(MainScene),typeof(IStartSystem<Type>),typeof(GameFrame.SceneEntitySystem.SceneEntityStartSystem));
         m_SystemBind.Add(typeof(MainScene),typeof(IUpdateSystem),typeof(GameFrame.SceneEntitySystem.SceneEntityUpdateSystem));
         m_SystemBind.Add(typeof(MainScene),typeof(IClearSystem),typeof(GameFrame.SceneEntitySystem.SceneEntityClearSystem));
-        m_SystemBind.Add(typeof(DependentResources),typeof(IStartSystem<List<String>>),typeof(GameFrame.DependentResourcesSystem.DependentResourcesStartSystem));
-        m_SystemBind.Add(typeof(DependentResources),typeof(IClearSystem),typeof(GameFrame.DependentResourcesSystem.DependentResourcesClearSystem));
+        m_SystemBind.Add(typeof(DependentUIResources),typeof(IStartSystem<List<String>>),typeof(GameFrame.DependentUIResourcesSystem.DependentUIResourcesStartSystem));
+        m_SystemBind.Add(typeof(DependentUIResources),typeof(IClearSystem),typeof(GameFrame.DependentUIResourcesSystem.DependentUIResourcesClearSystem));
     }
 }
 

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace GameFrame
 {
-    public class DependentResources : Entity, IStart, IClear
+    public class DependentUIResources : Entity, IStart, IClear
     {
         public List<string> Path;
         public int CurLoadAmount;

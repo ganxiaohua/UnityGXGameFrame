@@ -5,25 +5,25 @@ namespace GameFrame.Editor
 {
     public static class BuildMenus
     {
-        [MenuItem("Build/Open PersistentDataPath")]
+        [MenuItem("GX框架Build辅助器/Open PersistentDataPath")]
         public static void OpenPersistentDataPath()
         {
             Application.OpenURL(Application.persistentDataPath);
         }
 
-        [MenuItem("Build/Open Cache Path")]
+        [MenuItem("GX框架Build辅助器/Open Cache Path")]
         public static void OpenCachePath()
         {
             Application.OpenURL(Caching.currentCacheForWriting.path);
         }
 
-        [MenuItem("Build/Build Bundles")]
+        [MenuItem("GX框架Build辅助器/Build Bundles")]
         public static void BuildBundles()
         {
             BuildScript.BuildBundles();
         }
 
-        [MenuItem("Build/ProcessAllAssetGroup")]
+        [MenuItem("GX框架Build辅助器/ProcessAllAssetGroup")]
         public static void ProcessAllAssetGroup()
         {
             BuildScript.ProcessAllAssetGroup();
@@ -46,13 +46,13 @@ namespace GameFrame.Editor
             }
         }
 
-        [MenuItem("Build/Build Player/整包")]
+        [MenuItem("GX框架Build辅助器/Build Player/含资源包")]
         public static void BuildPlayerFullRes()
         {
             BuildScript.BuildPlayer(true);
         }
 
-        [MenuItem("Build/Build Player/微端")]
+        [MenuItem("GX框架Build辅助器/Build Player/不含资源包")]
         public static void BuildPlayer()
         {
             BuildScript.BuildPlayer(false);

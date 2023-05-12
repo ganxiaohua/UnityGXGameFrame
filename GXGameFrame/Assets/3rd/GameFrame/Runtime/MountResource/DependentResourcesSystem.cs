@@ -4,12 +4,12 @@ using Cysharp.Threading.Tasks;
 
 namespace GameFrame
 {
-    public static class DependentResourcesSystem
+    public static class DependentUIResourcesSystem
     {
         [SystemBind]
-        public class DependentResourcesStartSystem : StartSystem<DependentResources, List<string>>
+        public class DependentUIResourcesStartSystem : StartSystem<DependentUIResources, List<string>>
         {
-            protected override void Start(DependentResources self, List<string> p1)
+            protected override void Start(DependentUIResources self, List<string> p1)
             {
                 self.Path = p1;
                 foreach (var path in p1)
@@ -23,9 +23,9 @@ namespace GameFrame
 
 
         [SystemBind]
-        public class DependentResourcesClearSystem : ClearSystem<DependentResources>
+        public class DependentUIResourcesClearSystem : ClearSystem<DependentUIResources>
         {
-            protected override void Clear(DependentResources self)
+            protected override void Clear(DependentUIResources self)
             {
                 foreach (var path in self.Path)
                 {
@@ -39,7 +39,7 @@ namespace GameFrame
             }
         }
 
-        public static void LoadUIAssetOver(this DependentResources self)
+        public static void LoadUIAssetOver(this DependentUIResources self)
         {
             if (++self.CurLoadAmount == self.Path.Count)
             {
@@ -48,7 +48,7 @@ namespace GameFrame
             }
         }
 
-        public static async UniTask WaitLoad(this DependentResources self)
+        public static async UniTask WaitLoad(this DependentUIResources self)
         {
             if (!self.LoadOver)
             {

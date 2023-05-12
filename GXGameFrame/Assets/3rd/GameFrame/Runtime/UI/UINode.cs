@@ -74,7 +74,7 @@ namespace GameFrame
 
         public async UniTask LoadDependentOver()
         {
-            DependentResources dependentResources = Window.GetComponent<DependentResources>();
+            DependentUIResources dependentResources = Window.GetComponent<DependentUIResources>();
             if (dependentResources != null)
             {
                 await dependentResources.WaitLoad();
