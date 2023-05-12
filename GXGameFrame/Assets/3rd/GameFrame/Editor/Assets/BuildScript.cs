@@ -28,14 +28,14 @@ namespace GameFrame.Editor
             [DefaultProfileId] = "http://192.168.62.31/GxGame/aa",
         };
 
-        static readonly string[] patchFilterFiles = new string[] {"catalog.bundle", "settings.json", "addressables_content_state.bin"};
+        static readonly string[] PatchFilterFiles = new string[] {"catalog.bundle", "settings.json", "addressables_content_state.bin"};
 
-        private static readonly double[] byteUnits =
+        private static readonly double[] ByteUnits =
         {
             1073741824.0, 1048576.0, 1024.0, 1
         };
 
-        private static readonly string[] byteUnitsNames =
+        private static readonly string[] ByteUnitsNames =
         {
             "GB", "MB", "KB", "B"
         };
@@ -90,7 +90,7 @@ namespace GameFrame.Editor
 
         public static void ProcessConfigGroup(AssetGroup assetGroup)
         {
-            var targetPath =EditorString.ConfigFullPath;
+            var targetPath = EditorString.ConfigFullPath;
             CreateDirectory(targetPath);
             string[] files = Directory.GetFileSystemEntries("GenerateDatas/bytes");
 
@@ -208,6 +208,10 @@ namespace GameFrame.Editor
                         {
                             entry.SetAddress(Path.GetFileNameWithoutExtension(assetPath));
                         }
+                        else
+                        {
+                            entry.SetAddress(null);
+                        }
 
                         entry.SetLabel(AddressablesHelper.PreloadLabel, true, true);
                         entry.SetLabel(assetGroup.groupName, true, true);
@@ -228,10 +232,24 @@ namespace GameFrame.Editor
         public static void ProcessAllAssetGroup()
         {
             Debug.Log("===Start ProcessAllAssetGroup");
+
+            Dictionary<string, AddressableAssetGroup> tempdic = new();
+            foreach (var group in AssetSettings.groups)
+            {
+                tempdic[group.name] = group;
+            }
+
             foreach (var item in AssetGroupSettings.settings.data)
             {
+                tempdic.Remove(item.groupName);
                 ProcessAssetGroup(item);
             }
+
+            foreach (var group in tempdic.Values)
+            {
+                AssetSettings.RemoveGroup(group);
+            }
+
 
             var duplicateGroup = FindGroup("Duplicate Asset Isolation", false);
             if (duplicateGroup != null)
@@ -254,15 +272,15 @@ namespace GameFrame.Editor
                 return size;
             }
 
-            for (var index = 0; index < byteUnits.Length; index++)
+            for (var index = 0; index < ByteUnits.Length; index++)
             {
-                var unit = byteUnits[index];
+                var unit = ByteUnits[index];
                 if (!(bytes >= unit))
                 {
                     continue;
                 }
 
-                size = $"{bytes / unit:##.##} {byteUnitsNames[index]}";
+                size = $"{bytes / unit:##.##} {ByteUnitsNames[index]}";
                 break;
             }
 
@@ -291,7 +309,7 @@ namespace GameFrame.Editor
             CreateDirectory(toPath);
             foreach (var item in buildResult.FileRegistry.GetFilePaths())
             {
-                if (Array.Exists(patchFilterFiles, item.Contains) || item.EndsWith(".log"))
+                if (Array.Exists(PatchFilterFiles, item.Contains) || item.EndsWith(".log"))
                     continue;
                 var filePath = item.Replace("\\", "/").Replace($"ServerData/{BuildTarget}/", string.Empty);
                 if (filePath.EndsWith(".bundle"))
@@ -414,7 +432,7 @@ namespace GameFrame.Editor
         {
             var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
             var scriptBackend = PlayerSettings.GetScriptingBackend(buildTargetGroup);
-            var fullRes = isFullRes ? "整包" : "微端";
+            var fullRes = isFullRes ? "包含资源" : "不包含资源";
             var targetName =
                 $"{PlayerSettings.productName}-{fullRes}-v{PlayerSettings.bundleVersion}b{PlayerVersion.version.bundleVersionCode}-{PlayerSettings.applicationIdentifier}-{scriptBackend}-{GetTimeForNow()}";
             switch (target)
@@ -493,12 +511,12 @@ namespace GameFrame.Editor
                 ModifyVersionCode(-1);
                 throw new Exception("build player failed!");
             }
-
-            var serverUrl = UpdateURL[DefaultProfileId];
-            serverUrl = serverUrl.Substring(0, serverUrl.LastIndexOf("/"));
-            var to = $"{serverUrl}/Bin/{BuildTarget}/{DateTime.Now:yyyyMMdd}/{targetName}".Replace("http://", "\\\\").Replace("/", "\\");
-            CreateDirectory(to);
-            File.Copy(path, to, true);
+            //将包复制到网络路径
+            // var serverUrl = UpdateURL[DefaultProfileId];
+            // serverUrl = serverUrl.Substring(0, serverUrl.LastIndexOf("/"));
+            // var to = $"{serverUrl}/Bin/{BuildTarget}/{DateTime.Now:yyyyMMdd}/{targetName}".Replace("http://", "\\\\").Replace("/", "\\");
+            // CreateDirectory(to);
+            // File.Copy(path, to, true);
         }
 
         public static void BuildSettings(string productName, string packageName, string version, bool IL2CPP)

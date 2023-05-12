@@ -19,7 +19,7 @@ namespace GameFrame.Editor
             {
                 if (s_Settings == null)
                 {
-                    s_Settings = AssetDatabase.LoadAssetAtPath<AssetGroupSettings>("Assets/AddressableAssetsData/AssetGroupSettings.asset");
+                    s_Settings = AssetDatabase.LoadAssetAtPath<AssetGroupSettings>("Assets/GXGame/AssetGroupSettings.asset");
                 }
                 return s_Settings;
             }

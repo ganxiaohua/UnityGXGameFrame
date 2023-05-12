@@ -41,20 +41,23 @@ namespace GameFrame.Editor
                     importer.assetBundleName = "";
                     importer.SaveAndReimport();
                 }
+
                 var result = AssetDatabase.RemoveAssetBundleName(item, true);
                 Debug.Log($"RemoveAssetBundleName:{item}, {result}");
             }
         }
 
-        [MenuItem("GX框架Build辅助器/Build Player/含资源包")]
+        [MenuItem("GX框架Build辅助器/Build Player/含资源包(生成在Bin目录下)")]
         public static void BuildPlayerFullRes()
         {
+            BuildScript.BuildBundles(true);
             BuildScript.BuildPlayer(true);
         }
 
-        [MenuItem("GX框架Build辅助器/Build Player/不含资源包")]
+        [MenuItem("GX框架Build辅助器/Build Player/不含资源包(生成在Bin目录下)")]
         public static void BuildPlayer()
         {
+            BuildScript.BuildBundles(true);
             BuildScript.BuildPlayer(false);
         }
     }

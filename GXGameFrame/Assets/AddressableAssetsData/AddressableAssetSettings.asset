@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 468a46d0ae32c3544b7d98094e6448a9, type: 3}
   m_Name: AddressableAssetSettings
   m_EditorClassIdentifier: 
-  m_DefaultGroup: cb1fdb3cb5249214eb09b6e29db568d7
+  m_DefaultGroup: 9ed6efc68aab4624b963015efcef93f6
   m_CachedHash:
     serializedVersion: 2
     Hash: 00000000000000000000000000000000
@@ -41,11 +41,9 @@ MonoBehaviour:
   m_BuildAddressablesWithPlayerBuild: 0
   m_overridePlayerVersion: eden.zip
   m_GroupAssets:
-  - {fileID: 11400000, guid: 43fe9f7b588e0a74690ce3efcedabf8e, type: 2}
-  - {fileID: 11400000, guid: 6c62f4060e87aa14388d2e29e56a62b5, type: 2}
-  - {fileID: 11400000, guid: 53443bc7150061949b2088137aeb5e0b, type: 2}
   - {fileID: 11400000, guid: 9644a303da769324aacb66884c0ca349, type: 2}
   - {fileID: 11400000, guid: 9efe8eaf378f84c4f927191e391ea664, type: 2}
+  - {fileID: 11400000, guid: 0371bffaba03ebf489e78c35e9201cda, type: 2}
   m_BuildSettings:
     m_CompileScriptsInVirtualMode: 0
     m_CleanupStreamingAssetsAfterBuilds: 1
@@ -107,6 +105,8 @@ MonoBehaviour:
     - Mode1
     - Model2
     - Config
+    - TextPrefabs
+    - PrefabTest
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: a95052cee2284dd49ab7974223b3cb80, type: 2}

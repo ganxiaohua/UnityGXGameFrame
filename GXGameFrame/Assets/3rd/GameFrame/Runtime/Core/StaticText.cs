@@ -2,6 +2,6 @@
 {
     public static class StaticText
     {
-        public static string UIPath = "Assets/UI/";
+        public static string UIPath = "Assets/GXGame/UI/";
     }
 }
