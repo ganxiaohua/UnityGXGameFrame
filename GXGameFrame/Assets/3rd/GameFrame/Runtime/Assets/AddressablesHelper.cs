@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.IO;
 using System.IO.Compression;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
@@ -13,11 +14,7 @@ public static class AddressablesHelper
 {
     public const string Bundles = "Bundles";
 
-    public const string CatalogName = "catalog_eden.zip.json";
-
-    public const string CatalogHashEnd = ".hash";
-
-    public const string LuaLabel = "Lua";
+    public const string CatalogName = "catalog_GXGame.zip.json";
 
     public const string PreloadLabel = "Preload";
 
@@ -29,48 +26,52 @@ public static class AddressablesHelper
 
     public static UpdateInfo UpdateInfo { get; private set; } = ScriptableObject.CreateInstance<UpdateInfo>();
 
-    public static string UpdateURL { get; private set; } = "http://192.168.100.230/eden/aa";//资源更新地址,初始化时由PlayerVersion获得
+    public static string UpdateURL { get; private set; } //资源更新地址,初始化时由PlayerVersion获得
 
-    public static int AssetVersion { get; private set; }//资源版本号
+    public static int AssetVersion { get; private set; } //资源版本号
 
-    public static IEnumerator InitializeAsync()
+    public static async UniTask InitializeAsync()
     {
-        if (!string.IsNullOrEmpty(PlayerVersion.version.updateURL))
+#if !UNITY_EDITOR
+        if (!string.IsNullOrEmpty(PlayerVersion.Version.UpdateURL))
         {
-            UpdateURL = PlayerVersion.version.updateURL;
+            UpdateURL = PlayerVersion.Version.UpdateURL;
         }
         Debug.Log($"UpdateURL={UpdateURL}");
         Addressables.InternalIdTransformFunc = InternalIdTransformFunc;
         var fileUrl = GetPlayerDataUrl(PlayerAssets.Filename);
         var playerAssetRequest = UnityWebRequest.Get(fileUrl);
-        yield return playerAssetRequest.SendWebRequest();
+        await playerAssetRequest.SendWebRequest();
         if (playerAssetRequest.result == UnityWebRequest.Result.Success)
         {
             PlayerAssets = LoadFromJson<PlayerAssets>(playerAssetRequest.downloadHandler.text);
             AssetVersion = PlayerAssets.version;
         }
+
         playerAssetRequest.Dispose();
 
-        fileUrl = GetDownloadUrl(UpdateInfo.Filename);
-        var updateInfoRequest = UnityWebRequest.Get(fileUrl);
-        yield return updateInfoRequest.SendWebRequest();
-        if (updateInfoRequest.result == UnityWebRequest.Result.Success)
-        {
-            UpdateInfo = LoadFromJson<UpdateInfo>(updateInfoRequest.downloadHandler.text);
-            AssetVersion = UpdateInfo.version;
-            Debug.Log($"Bundle version:{UpdateInfo.version}, Build time:{GetDateTime(UpdateInfo.timestamp)}");
-        }
-        else
-        {
-            Debug.LogWarning($"UpdateInfo Failure:url={fileUrl},responseCode={updateInfoRequest.responseCode},error={updateInfoRequest.error}");
-        }
-        updateInfoRequest.Dispose();
+            fileUrl = GetDownloadUrl(UpdateInfo.Filename);
+            var updateInfoRequest = UnityWebRequest.Get(fileUrl);
+            await updateInfoRequest.SendWebRequest();
+            if (updateInfoRequest.result == UnityWebRequest.Result.Success)
+            {
+                UpdateInfo = LoadFromJson<UpdateInfo>(updateInfoRequest.downloadHandler.text);
+                AssetVersion = UpdateInfo.version;
+                Debug.Log($"Bundle version:{UpdateInfo.version}, Build time:{GetDateTime(UpdateInfo.timestamp)}");
+            }
+            else
+            {
+                Debug.LogWarning($"UpdateInfo Failure:url={fileUrl},responseCode={updateInfoRequest.responseCode},error={updateInfoRequest.error}");
+            }
+            updateInfoRequest.Dispose();
 
-#if UNITY_EDITOR
-        //编辑器模式,加载资源远程资源清单
-        var catalogPath = $"http://192.168.100.230/eden/aa/{GetPlatformName()}/{CatalogName}";
+#endif
+
+#if UNITY_EDITOR && ResourceSeparation
+        //编辑器模式,加载资源远程资源清单 用于
+        var catalogPath = $"http://192.168.100.230/GXGame/aa/{GetPlatformName()}/{CatalogName}";
         var loadCatalogHandle = Addressables.LoadContentCatalogAsync(catalogPath, false);
-        yield return loadCatalogHandle;
+        await loadCatalogHandle;
         if (loadCatalogHandle.Status != AsyncOperationStatus.Succeeded)
         {
             Debug.LogError($"加载远程资源清单失败:{loadCatalogHandle.OperationException.Message}");
@@ -85,10 +86,10 @@ public static class AddressablesHelper
             if (PlayerAssets.Contains(location.PrimaryKey))
             {
                 var path = GetPlayerDataPath(location.PrimaryKey);
-                //Debug.Log("===streamingAssetsPath:" + path);
                 return path;
             }
         }
+
         return location.InternalId;
     }
 

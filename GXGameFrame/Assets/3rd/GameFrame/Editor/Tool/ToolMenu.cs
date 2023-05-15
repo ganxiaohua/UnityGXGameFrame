@@ -28,12 +28,20 @@ namespace GameFrame.Editor
         {
             CreateEnitiyWind.OpenCreateEnitiyWind();
         }
-        
+
         [MenuItem("GX框架工具/UI创建", false, 3)]
         public static void CreateUI()
         {
             EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
             EditorSceneManager.OpenScene(EditorString.UIScenePath);
+        }
+
+
+        [MenuItem("GX框架工具/测试", false, 4)]
+        public static void Test()
+        {
+            var loca = BuildScript.AssetSettings.profileSettings.GetValueByName(BuildScript.AssetSettings.activeProfileId, "Remote.LoadPath");
+            Debugger.Log(loca);
         }
     }
 }

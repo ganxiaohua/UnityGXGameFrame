@@ -14,26 +14,25 @@ using UnityEngine.ResourceManagement.ResourceLocations;
 
 public class CheckUpdate
 {
-    private float HasDownLoadSize;
-    private float TotalDownLoadSize;
-    private AsyncOperationHandle DownloadHandle;
-    private DownloadStatus DownloadStatus;
-    private StringBuilder CachedStringBuilder = null;
-    private List<object> UpdateResKeysList = new List<object>();
-    private Action LoadOverCallBack;
+    private float m_HasDownLoadSize;
+    private float m_TotalDownLoadSize;
+    private AsyncOperationHandle m_DownloadHandle;
+    private DownloadStatus m_DownloadStatus;
+    private StringBuilder m_CachedStringBuilder = null;
+    private List<object> m_UpdateResKeysList = new List<object>();
 
-    private string AddressablesTempPath;
-    private string Comunityaddressables;
+    private string m_AddressablesTempPath;
+    private string m_Comunityaddressables;
 
     /// <summary>
     /// 切换平台
     /// </summary>
-    public async UniTask CheckVersions(Action loadoverCallBack)
+    public async UniTask CheckVersions()
     {
-        CachedStringBuilder = new StringBuilder(1024);
-        AddressablesTempPath = Path.Combine(Application.persistentDataPath, "AddressablesTemp");
-        Comunityaddressables = Path.Combine(Application.persistentDataPath, "com.unity.addressables");
-        LoadOverCallBack = loadoverCallBack;
+        //代表是单机
+        m_CachedStringBuilder = new StringBuilder(1024);
+        m_AddressablesTempPath = Path.Combine(Application.persistentDataPath, "AddressablesTemp");
+        m_Comunityaddressables = Path.Combine(Application.persistentDataPath, "com.unity.addressables");
         var InitializeAsync = Addressables.InitializeAsync();
         await InitializeAsync.Task;
         AsyncOperationHandle<List<string>> checkHandle = Addressables.CheckForCatalogUpdates(false);
@@ -54,7 +53,7 @@ public class CheckUpdate
                     {
                         foreach (var location in locationsHandle.Result)
                         {
-                            if (UpdateResKeysList.Contains(location.PrimaryKey) ||
+                            if (m_UpdateResKeysList.Contains(location.PrimaryKey) ||
                                 AddressablesHelper.PlayerAssets.Contains(location.PrimaryKey))
                                 continue;
                             var sizeData = location.Data as ILocationSizeData;
@@ -63,8 +62,8 @@ public class CheckUpdate
                                 var size = sizeData.ComputeSize(location, Addressables.ResourceManager);
                                 if (size > 0)
                                 {
-                                    TotalDownLoadSize += size;
-                                    UpdateResKeysList.Add(location.PrimaryKey);
+                                    m_TotalDownLoadSize += size;
+                                    m_UpdateResKeysList.Add(location.PrimaryKey);
                                 }
                             }
                         }
@@ -73,8 +72,8 @@ public class CheckUpdate
                     Addressables.Release(locationsHandle);
                 }
 
-                Debugger.Log($"更新大小 Size: {(TotalDownLoadSize / 1024f / 1024f).ToString("0.00")}M");
-                HasDownLoadSize = 0;
+                Debugger.Log($"更新大小 Size: {(m_TotalDownLoadSize / 1024f / 1024f).ToString("0.00")}M");
+                m_HasDownLoadSize = 0;
                 //下载更新
                 await DownloadRes();
                 MovePath(true);
@@ -82,7 +81,6 @@ public class CheckUpdate
             else
             {
                 Debugger.Log("不需要更新!");
-                LoadOverCallBack?.Invoke();
             }
         }
         else
@@ -102,19 +100,19 @@ public class CheckUpdate
     {
         if (p2t)
         {
-            if (!Directory.Exists(Comunityaddressables))
+            if (!Directory.Exists(m_Comunityaddressables))
                 return;
-            if (Directory.Exists(AddressablesTempPath))
-                Directory.Delete(AddressablesTempPath, true);
-            Directory.Move(Comunityaddressables, AddressablesTempPath);
+            if (Directory.Exists(m_AddressablesTempPath))
+                Directory.Delete(m_AddressablesTempPath, true);
+            Directory.Move(m_Comunityaddressables, m_AddressablesTempPath);
         }
         else
         {
-            if (!Directory.Exists(AddressablesTempPath))
+            if (!Directory.Exists(m_AddressablesTempPath))
                 return;
-            if (Directory.Exists(Comunityaddressables))
-                Directory.Delete(Comunityaddressables, true);
-            Directory.Move(AddressablesTempPath, Comunityaddressables);
+            if (Directory.Exists(m_Comunityaddressables))
+                Directory.Delete(m_Comunityaddressables, true);
+            Directory.Move(m_AddressablesTempPath, m_Comunityaddressables);
         }
     }
 
@@ -124,46 +122,45 @@ public class CheckUpdate
     private async UniTask DownloadRes()
     {
         var startTime = Time.realtimeSinceStartup;
-        if (TotalDownLoadSize > 0)
+        if (m_TotalDownLoadSize > 0)
             
-            for (int i = UpdateResKeysList.Count - 1; i >= 0; i--)
+            for (int i = m_UpdateResKeysList.Count - 1; i >= 0; i--)
             {
-                DownloadHandle = Addressables.DownloadDependenciesAsync(UpdateResKeysList[i]);
-                DownloadStatus = DownloadHandle.GetDownloadStatus();
-                if (DownloadStatus.TotalBytes == 0)
+                m_DownloadHandle = Addressables.DownloadDependenciesAsync(m_UpdateResKeysList[i]);
+                m_DownloadStatus = m_DownloadHandle.GetDownloadStatus();
+                if (m_DownloadStatus.TotalBytes == 0)
                 {
-                    Addressables.Release(DownloadHandle);
-                    UpdateResKeysList.RemoveAt(i);
+                    Addressables.Release(m_DownloadHandle);
+                    m_UpdateResKeysList.RemoveAt(i);
                     continue;
                 }
 
-                await DownloadHandle.Task;
-                if (DownloadHandle.Status == AsyncOperationStatus.Failed)
+                await m_DownloadHandle.Task;
+                if (m_DownloadHandle.Status == AsyncOperationStatus.Failed)
                 {
                     //下载失败相关处理
                     Debugger.LogError("下载失败");
                 }
 
-                HasDownLoadSize += DownloadStatus.TotalBytes;
-                UpdateResKeysList.RemoveAt(i);
-                Addressables.Release(DownloadHandle);
+                m_HasDownLoadSize += m_DownloadStatus.TotalBytes;
+                m_UpdateResKeysList.RemoveAt(i);
+                Addressables.Release(m_DownloadHandle);
             }
         MovePath(false);
         Debugger.Log($"下载完毕!下载时间:{Time.realtimeSinceStartup - startTime}s");
-        LoadOverCallBack?.Invoke();
     }
 
     public void Update()
     {
-        if (TotalDownLoadSize != 0)
+        if (m_TotalDownLoadSize != 0)
         {
-            if (!DownloadHandle.IsDone && DownloadHandle.Status != AsyncOperationStatus.Failed)
+            if (!m_DownloadHandle.IsDone && m_DownloadHandle.Status != AsyncOperationStatus.Failed)
             {
-                DownloadStatus = DownloadHandle.GetDownloadStatus();
-                CachedStringBuilder.Length = 0;
-                CachedStringBuilder.AppendFormat("{0},{1}", ((DownloadStatus.DownloadedBytes + HasDownLoadSize) / 1024f / 1024f).ToString("0.00"),
-                    (TotalDownLoadSize / 1024f / 1024f).ToString("0.00"));
-                Debugger.Log(CachedStringBuilder.ToString());
+                m_DownloadStatus = m_DownloadHandle.GetDownloadStatus();
+                m_CachedStringBuilder.Length = 0;
+                m_CachedStringBuilder.AppendFormat("{0},{1}", ((m_DownloadStatus.DownloadedBytes + m_HasDownLoadSize) / 1024f / 1024f).ToString("0.00"),
+                    (m_TotalDownLoadSize / 1024f / 1024f).ToString("0.00"));
+                Debugger.Log(m_CachedStringBuilder.ToString());
             }
         }
     }
@@ -173,11 +170,11 @@ public class CheckUpdate
     /// </summary>
     public void Disable()
     {
-        if (UpdateResKeysList.Count != 0 && !DownloadHandle.IsDone)
+        if (m_UpdateResKeysList.Count != 0 && !m_DownloadHandle.IsDone)
         {
-            Addressables.Release(DownloadHandle);
+            Addressables.Release(m_DownloadHandle);
         }
 
-        UpdateResKeysList.Clear();
+        m_UpdateResKeysList.Clear();
     }
 }

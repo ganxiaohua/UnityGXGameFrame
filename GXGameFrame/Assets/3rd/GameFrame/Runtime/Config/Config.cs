@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Bright.Serialization;
 using cfg;
 using SimpleJSON;
@@ -12,13 +13,13 @@ namespace GameFrame
 
         public void LoadTable()
         {
-            var tablesCtor = typeof(cfg.Tables).GetConstructors()[0];
-            var loaderReturnType = tablesCtor.GetParameters()[0].ParameterType.GetGenericArguments()[1];
-            // 根据cfg.Tables的构造函数的Loader的返回值类型决定使用json还是ByteBuf Loader
-            System.Delegate loader = loaderReturnType == typeof(ByteBuf)
-                ? new System.Func<string, ByteBuf>(LoadByteBuf)
-                : (System.Delegate) new System.Func<string, JSONNode>(LoadJson);
-            Tables = (cfg.Tables) tablesCtor.Invoke(new object[] {loader});
+            // var tablesCtor = typeof(cfg.Tables).GetConstructors()[0];
+            // var loaderReturnType = tablesCtor.GetParameters()[0].ParameterType.GetGenericArguments()[1];
+            // // 根据cfg.Tables的构造函数的Loader的返回值类型决定使用json还是ByteBuf Loader
+            // System.Delegate loader = loaderReturnType == typeof(ByteBuf)
+            //     ? new System.Func<string, ByteBuf>(LoadByteBuf)
+            //     : (System.Delegate) new System.Func<string, JSONNode>(LoadJson);
+            // Tables = (cfg.Tables) tablesCtor.Invoke(new object[] {loader});
         }
 
         private static JSONNode LoadJson(string file)
@@ -26,7 +27,7 @@ namespace GameFrame
 #if UNITY_EDITOR
             return JSON.Parse(File.ReadAllText($"{Application.dataPath}/../GenerateDatas/json/{file}.json", System.Text.Encoding.UTF8));
 #else
-            //这里是为了防止报错 真正打包是不需要json的
+            throw new Exception("正式模式不要使用json");
             return  "";
 #endif
         }
@@ -36,7 +37,7 @@ namespace GameFrame
 #if UNITY_EDITOR
             return new ByteBuf(File.ReadAllBytes($"{Application.dataPath}/../GenerateDatas/bytes/{file}.bytes"));
 #else
-            byte[] bytes = AssetManager.Instance.Load<byte[]>($"Assets/GXGame/Config/ConfigData/{file}.bytes");
+            byte[] bytes = AssetManager.Instance.Load<TextAsset>($"Assets/GXGame/Config/ConfigData/{file}.bytes").bytes;
             return new ByteBuf(bytes);
 #endif
         }

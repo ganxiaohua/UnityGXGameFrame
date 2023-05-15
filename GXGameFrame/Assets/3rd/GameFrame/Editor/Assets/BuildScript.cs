@@ -23,10 +23,11 @@ namespace GameFrame.Editor
         static readonly string DefaultProfileId = "7d72f42cde32f304595d34a6eab45502";
         static readonly string RemoteProfileId = "c0313e369c48c164b9b196ec6f7a7bc4";
 
-        static readonly Dictionary<string, string> UpdateURL = new Dictionary<string, string>()
-        {
-            [DefaultProfileId] = "http://192.168.62.31/GxGame/aa",
-        };
+        // static readonly Dictionary<string, string> UpdateURL = new Dictionary<string, string>()
+        // {
+        //     //不填写则为单机。
+        //     [DefaultProfileId] = ""//"http://192.168.62.31/GXGame/aa",
+        // };
 
         static readonly string[] PatchFilterFiles = new string[] {"catalog.bundle", "settings.json", "addressables_content_state.bin"};
 
@@ -432,9 +433,8 @@ namespace GameFrame.Editor
         {
             var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
             var scriptBackend = PlayerSettings.GetScriptingBackend(buildTargetGroup);
-            var fullRes = isFullRes ? "包含资源" : "不包含资源";
-            var targetName =
-                $"{PlayerSettings.productName}-{fullRes}-v{PlayerSettings.bundleVersion}b{PlayerVersion.version.bundleVersionCode}-{PlayerSettings.applicationIdentifier}-{scriptBackend}-{GetTimeForNow()}";
+            var fullRes = isFullRes ? "InClude" : "NotInClude";
+            var targetName =  $"{PlayerSettings.productName}-{fullRes}-v{PlayerSettings.bundleVersion}b{PlayerVersion.Version.BundleVersionCode}-{PlayerSettings.applicationIdentifier}-{scriptBackend}-{GetTimeForNow()}";
             switch (target)
             {
                 case UnityEditor.BuildTarget.Android:
@@ -455,19 +455,20 @@ namespace GameFrame.Editor
         /// <param name="delta">默认加1,构建失败时减1</param>
         private static void ModifyVersionCode(int delta = 1)
         {
-            var playerVersion = PlayerVersion.version;
-            playerVersion.updateURL = UpdateURL[AssetSettings.activeProfileId];
-            playerVersion.bundleVersionCode += delta;
+            var playerVersion = PlayerVersion.Version;
+            playerVersion.UpdateURL = AssetSettings.profileSettings.GetValueByName(AssetSettings.activeProfileId, "Remote.LoadPath").Replace("/[BuildTarget]","");
+            
+            playerVersion.BundleVersionCode += delta;
             playerVersion.Save();
             var buildTarget = EditorUserBuildSettings.activeBuildTarget;
-            PlayerSettings.bundleVersion = playerVersion.bundleVersion;
+            PlayerSettings.bundleVersion = playerVersion.BundleVersion;
             if (buildTarget == UnityEditor.BuildTarget.Android)
             {
-                PlayerSettings.Android.bundleVersionCode = playerVersion.bundleVersionCode;
+                PlayerSettings.Android.bundleVersionCode = playerVersion.BundleVersionCode;
             }
             else if (buildTarget == UnityEditor.BuildTarget.iOS)
             {
-                PlayerSettings.iOS.buildNumber = playerVersion.bundleVersionCode.ToString();
+                PlayerSettings.iOS.buildNumber = playerVersion.BundleVersionCode.ToString();
             }
         }
 
@@ -539,7 +540,7 @@ namespace GameFrame.Editor
             PlayerSettings.productName = productName;
             PlayerSettings.bundleVersion = version;
             PlayerSettings.applicationIdentifier = packageName;
-            PlayerVersion.version.bundleVersion = version;
+            PlayerVersion.Version.BundleVersion = version;
             var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
             PlayerSettings.SetScriptingBackend(buildTargetGroup, IL2CPP ? ScriptingImplementation.IL2CPP : ScriptingImplementation.Mono2x);
         }
@@ -561,9 +562,9 @@ namespace GameFrame.Editor
             File.WriteAllLines(filePath, lines);
         }
 
-        public static void ActiveProfile(bool isLocal)
-        {
-            AssetSettings.activeProfileId = isLocal ? DefaultProfileId : RemoteProfileId;
-        }
+        // public static void ActiveProfile(bool isLocal)
+        // {
+        //     AssetSettings.activeProfileId = isLocal ? DefaultProfileId : RemoteProfileId;
+        // }
     }
 }

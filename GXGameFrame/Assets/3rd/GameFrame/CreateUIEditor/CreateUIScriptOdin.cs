@@ -43,7 +43,7 @@ public class CreateUIScriptOdin : MonoBehaviour
 
     [Title("默认路径")] [ReadOnly] [HideLabel] public string dafaultPath;
 
-    private const string codePath = "/GxGame/Scripts/UI";
+    private const string codePath = "/GXGame/Scripts/UI";
     private static string saveCodePath;
 
     private int Index;
@@ -55,7 +55,7 @@ public class CreateUIScriptOdin : MonoBehaviour
 
     private string[] m_ExportTypes = {"GButton", "GList", "GRichTextField", "GTextField", "GComponent", "GLoader", "GTextInput", "GProgressBar"};
 
-    [Title("自定义路径选择")] [HideLabel] [FolderPath(ParentFolder = "Assets/GxGame/Scripts/UI", AbsolutePath = true)] [OnValueChanged("ButtonBind")]
+    [Title("自定义路径选择")] [HideLabel] [FolderPath(ParentFolder = "Assets/GXGame/Scripts/UI", AbsolutePath = true)] [OnValueChanged("ButtonBind")]
     public string custom_Path;
 
     [Button("绑定组件"), ButtonGroup]

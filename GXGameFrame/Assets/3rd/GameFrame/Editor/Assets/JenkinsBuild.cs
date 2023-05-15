@@ -11,7 +11,7 @@ namespace GameFrame.Editor
         {
             var args = Environment.GetCommandLineArgs();
             bool.TryParse(GetParam(args, "isLocal=", "true"), out var isLocal);
-            BuildScript.ActiveProfile(isLocal);
+            // BuildScript.ActiveProfile(isLocal);
             BuildScript.BuildBundles(true);
         }
 
@@ -25,7 +25,7 @@ namespace GameFrame.Editor
             bool.TryParse(GetParam(args, "IL2CPP=", "false"), out var IL2CPP);
             bool.TryParse(GetParam(args, "isLocal=", "true"), out var isLocal);
 
-            BuildScript.ActiveProfile(isLocal);
+            // BuildScript.ActiveProfile(isLocal);
             BuildScript.BuildSettings(buildParams[0], buildParams[1], version, IL2CPP);
             BuildScript.BuildPlayer(isFullRes);
         }

@@ -205,8 +205,8 @@ E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Assets/GXGame/Config/Gen
 E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Assets/GXGame/Config/Gen/error/ErrorStyleTip.cs,F375B3A4DC9BE9B6F388E3E97549BC,1244,1683881935324
 E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Assets/GXGame/Config/Gen/error/TbCodeInfo.cs,849DC0629AECCCA1887DF0D02043F1,1869,1683881935325
 E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Assets/GXGame/Config/Gen/error/TbErrorInfo.cs,F556FCAA66168F5F0478ED3BB2AB6A0,1823,1683881935324
-E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Assets/GXGame/Config/Gen/GxGame/GXConfig.cs,2DBB1294C769E153DEF3DDF88AE404C,1549,1683881935285
-E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Assets/GXGame/Config/Gen/GxGame/TbConfig.cs,A5735534A16B1838E0922746445F078,1797,1683881935285
+E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Assets/GXGame/Config/Gen/GXTable/GXConfig.cs,F99BE2D1EB0C56269A4DB198FE9B929,1549,1684120218431
+E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Assets/GXGame/Config/Gen/GXTable/TbConfig.cs,DE92F38CFE299C0175430F31C2DC5B2,1809,1684120218431
 E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Assets/GXGame/Config/Gen/item/ChooseOneBonus.cs,DE8D67596694C33D6202F52DF7E1F0,1534,1683881935299
 E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Assets/GXGame/Config/Gen/item/Clothes.cs,5E452B4CFEA161AD34EBB27203DDB9,1715,1683881935327
 E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Assets/GXGame/Config/Gen/item/DesignDrawing.cs,8C7D36AA4EB2BD61E8D1758CC0FE94,1677,1683881935356
@@ -247,14 +247,14 @@ E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Assets/GXGame/Config/Gen
 E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Assets/GXGame/Config/Gen/role/LevelExpAttr.cs,DCEAF952F1E3B34277094FEBB4C6A52,1758,1683881935362
 E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Assets/GXGame/Config/Gen/role/TbRoleLevelBonusCoefficient.cs,9C70611D6D7CBDF6F4A0CCBC394C8,1835,1683881935271
 E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Assets/GXGame/Config/Gen/role/TbRoleLevelExpAttr.cs,8326392E7F5DCA2D61C1C3E8F47215C3,1844,1683881935329
-E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Assets/GXGame/Config/Gen/Tables.cs,5AA43E45CCEE9D16329EE5FF28B0F8D8,5640,1683884183498
+E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Assets/GXGame/Config/Gen/Tables.cs,44771337BBD33E9BF6B06F34746C7F,5644,1684120218430
 E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Assets/GXGame/Config/Gen/tag/TbTestTag.cs,B1AB7315553377441FFB34258B50E58C,1751,1683881935271
 E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Assets/GXGame/Config/Gen/tag/TestTag.cs,A2D21B9B7295D13024816019EA44862,1325,1683881935301
 E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Assets/GXGame/Config/Gen/test/AccessFlag.cs,77A3897F194F9ADB0C59E59545A76,549,1683884183502
 E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Assets/GXGame/Config/Gen/test/ETestQuality.cs,6AC0B2DF3C6BFE77512FDDD4CCAF6,757,1683884183500
 E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Config/Excel/Datas/__beans__.xlsx,34B8EFB7EBCA611CE3FE709CEB92C519,9672,1682558315098
 E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Config/Excel/Datas/__enums__.xlsx,A2D3486EBC70C8EBDA1E346AEC49AFA,9571,1682558315099
-E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Config/Excel/Datas/__tables__.xlsx,753DA1AAD85169387BFB9B9377FB2B3,9675,1683882439899
+E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Config/Excel/Datas/__tables__.xlsx,1F3AB15426CD9F7A8D1B085EDF098CF,9681,1684120205921
 E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Config/Excel/Datas/ai/behaviortrees/random_move.lua,547844A2A8213573BEB6A01564D193,844,1682558315100
 E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Config/Excel/Datas/ai/blackboards/attack_or_patrol.lua,BB8EED2B8DCB0239526DD9F538610DF,471,1682558315101
 E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Config/Excel/Datas/ai/blackboards/demo_child.lua,97D22A26806BF377966E6942CEA5647,931,1682558315101
@@ -263,7 +263,7 @@ E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Config/Excel/Datas/bluep
 E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Config/Excel/Datas/bonus/掉落表.xlsx,E48B6AD1D424B51FBB55CDB4707865D6,13512,1682558315103
 E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Config/Excel/Datas/common/全局常量配置表.xlsx,D411EE8A91654A381D739D13A315F23A,10863,1682558315105
 E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Config/Excel/Datas/error/错误码.xlsx,AF554F54A12EF63D3241FAC9F1B5B524,13419,1682558315106
-E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Config/Excel/Datas/GXGame/GXConfig.xlsx,5D51568D2B10223F3A4D41438582225,10296,1682642376811
+E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Config/Excel/Datas/GXGame/GXConfig.xlsx,291CDD66E01CEF75D1D3ABC3ABAB9B2,9116,1684120093078
 E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Config/Excel/Datas/item/道具分类子表.xlsx,404FB6EA3C21A779078B782F2121398,20639,1682558315107
 E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Config/Excel/Datas/item/道具系统表.xlsx,D7FB9480708799AF7B7471B62ACEA280,17281,1682558315107
 E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Config/Excel/Datas/l10n/Demo.xlsx,1E2F297BA5EDA57555A0DBC9D01E29C7,10704,1682558315108
@@ -302,6 +302,7 @@ E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/GenerateDatas/bytes/comm
 E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/GenerateDatas/bytes/error_tbcodeinfo.bytes,59696553D110634F5ABE194D8C524DAE,860,1683883250856
 E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/GenerateDatas/bytes/error_tberrorinfo.bytes,237ECA982F6DAC12E98AEF3A8775E,2268,1683883250860
 E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/GenerateDatas/bytes/gxgame_tbconfig.bytes,CBCDBBD732C79AF604D3368DC7F2D0,27,1683883250873
+E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/GenerateDatas/bytes/gxtable_tbconfig.bytes,CBCDBBD732C79AF604D3368DC7F2D0,27,1684120218430
 E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/GenerateDatas/bytes/item_tbitem.bytes,BCD83E685F3D98A3F9538648EC13215,1790,1683883250855
 E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/GenerateDatas/bytes/item_tbitemextra.bytes,F6433AA1C929E78E465A4667E5307A,1232,1683883250859
 E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/GenerateDatas/bytes/item_tbitemfunc.bytes,8EE3DA0BABC178928E8D92E6E1A36C1,23,1683883250867

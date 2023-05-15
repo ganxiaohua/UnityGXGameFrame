@@ -4,28 +4,28 @@ using UnityEngine;
 public class PlayerVersion
 {
     public static readonly string Filename = $"{AddressablesHelper.GetPlatformName()}_{nameof(PlayerVersion)}";
-    public string bundleVersion = "1.0.0";
-    public int bundleVersionCode;
-    public string updateURL;
+    public string BundleVersion = "1.0.0";
+    public int BundleVersionCode;
+    public string UpdateURL;
 
-    static PlayerVersion s_version;
-    public static PlayerVersion version
+    static PlayerVersion sVersion;
+    public static PlayerVersion Version
     {
         get
         {
-            if (s_version == null)
+            if (sVersion == null)
             {
                 var textAsset = Resources.Load<TextAsset>(Filename);
                 if (textAsset != null)
                 {
-                    s_version = JsonUtility.FromJson<PlayerVersion>(textAsset.text);
+                    sVersion = JsonUtility.FromJson<PlayerVersion>(textAsset.text);
                 }
                 else
                 {
-                    s_version = new PlayerVersion();
+                    sVersion = new PlayerVersion();
                 }
             }
-            return s_version;
+            return sVersion;
         }
     }
 

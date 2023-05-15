@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 468a46d0ae32c3544b7d98094e6448a9, type: 3}
   m_Name: AddressableAssetSettings
   m_EditorClassIdentifier: 
-  m_DefaultGroup: 9ed6efc68aab4624b963015efcef93f6
+  m_DefaultGroup: 3d3d575ef5b28dc42a8fd0213a1ecd8d
   m_CachedHash:
     serializedVersion: 2
     Hash: 00000000000000000000000000000000
@@ -39,7 +39,7 @@ MonoBehaviour:
     m_Id: 780dc118169b44f4980c8ef19f0d1dc3
   m_ContentStateBuildPath: 
   m_BuildAddressablesWithPlayerBuild: 0
-  m_overridePlayerVersion: eden.zip
+  m_overridePlayerVersion: GXGame.zip
   m_GroupAssets:
   - {fileID: 11400000, guid: 9644a303da769324aacb66884c0ca349, type: 2}
   - {fileID: 11400000, guid: 9efe8eaf378f84c4f927191e391ea664, type: 2}
@@ -65,6 +65,20 @@ MonoBehaviour:
         m_Value: ServerData/[BuildTarget]
       - m_Id: 780dc118169b44f4980c8ef19f0d1dc3
         m_Value: http://192.168.62.31/GxGame/aa/[BuildTarget]
+    - m_InheritedParent: 
+      m_Id: 43a97e9c895d7e9468365c72f45ed769
+      m_ProfileName: New Profile
+      m_Values:
+      - m_Id: 1f1c8299daafc29408464bd8eb7bca9c
+        m_Value: '[GameFrame.Editor.BuildScript.BuildTarget]'
+      - m_Id: 97d364ac98ee3024789b92f551323089
+        m_Value: '[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]'
+      - m_Id: 1b4de07eb587e474c8775f8e8b174690
+        m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
+      - m_Id: 7ab829e58b1639a45b9ae5003edc3e15
+        m_Value: ServerData/[BuildTarget]
+      - m_Id: 780dc118169b44f4980c8ef19f0d1dc3
+        m_Value: 
     m_ProfileEntryNames:
     - m_Id: 1f1c8299daafc29408464bd8eb7bca9c
       m_Name: BuildTarget
