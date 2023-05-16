@@ -8,114 +8,81 @@ namespace GameFrame
     {
         public static bool useLog = true;
         public static string threadStack = string.Empty;
-        public static ILogger logger = null;
-
+        public static ILogger logger = (ILogger) null;
         private static CString sb = new CString(256);
 
         static Debugger()
         {
-            for (int i = 24; i < 70; i++)
-            {
-                StringPool.PreAlloc(i, 2);
-            }
+            for (int size = 24; size < 70; ++size)
+                StringPool.PreAlloc(size, 2);
         }
 
-        //减少gc alloc
-        static string GetLogFormat(string str)
+        private static string GetLogFormat(string str)
         {
-            DateTime time = DateTime.Now;
-            //StringBuilder sb = StringBuilderCache.Acquire();
-
-            //sb.Append(ConstStringTable.GetTimeIntern(time.Hour))
-            //    .Append(":")
-            //    .Append(ConstStringTable.GetTimeIntern(time.Minute))
-            //    .Append(":")
-            //    .Append(ConstStringTable.GetTimeIntern(time.Second))
-            //    .Append(".")
-            //    .Append(time.Millisecond)
-            //    .Append("-")
-            //    .Append(Time.frameCount % 999)
-            //    .Append(": ")
-            //    .Append(str);
-
-            //return StringBuilderCache.GetStringAndRelease(sb);
-
-            sb.Clear();
-            sb.Append(ConstStringTable.GetTimeIntern(time.Hour))
-                .Append(":")
-                .Append(ConstStringTable.GetTimeIntern(time.Minute))
-                .Append(":")
-                .Append(ConstStringTable.GetTimeIntern(time.Second))
-                .Append(".")
-                .Append(time.Millisecond)
-                .Append("-")
-                .Append(Time.frameCount % 999)
-                .Append(": ")
+            DateTime now = DateTime.Now;
+            Debugger.sb.Clear();
+            Debugger.sb.Append(ConstStringTable.GetTimeIntern(now.Hour)).Append(":").Append(ConstStringTable.GetTimeIntern(now.Minute)).Append(":")
+                .Append(ConstStringTable.GetTimeIntern(now.Second)).Append(".").Append(now.Millisecond).Append("-").Append(Time.frameCount % 999).Append(": ")
                 .Append(str);
-
-            String dest = StringPool.Alloc(sb.Length);                        
-            sb.CopyToString(dest);
-            return dest;
+            string str1 = StringPool.Alloc(Debugger.sb.Length);
+            Debugger.sb.CopyToString(str1);
+            return str1;
         }
-        
+
         public static void Log(string str)
         {
-            str = GetLogFormat(str);            
-
-            if (useLog)
-            {
-                Debug.Log(str);
-            }
-            else if (logger != null)
-            {
-                //普通log节省一点记录堆栈性能和避免调用手机系统log函数
-                logger.Log(str, string.Empty, LogType.Log);
-            }
-
+            str = Debugger.GetLogFormat(str);
+            if (Debugger.useLog)
+                Debug.Log((object) str);
+            else if (Debugger.logger != null)
+                Debugger.logger.Log(str, string.Empty, LogType.Log);
             StringPool.Collect(str);
         }
 
         public static void Log(object message)
         {
-            Log(message.ToString());
+            if (!Debugger.useLog)
+                return;
+            Debugger.Log(message.ToString());
         }
 
         public static void Log(string str, object arg0)
         {
-            string s = string.Format(str, arg0);
-            Log(s);
+            if (!Debugger.useLog)
+                return;
+            Debugger.Log(string.Format(str, arg0));
         }
 
         public static void Log(string str, object arg0, object arg1)
         {
-            string s = string.Format(str, arg0, arg1);
-            Log(s);
+            if (!Debugger.useLog)
+                return;
+            Debugger.Log(string.Format(str, arg0, arg1));
         }
 
         public static void Log(string str, object arg0, object arg1, object arg2)
         {
-            string s = string.Format(str, arg0, arg1, arg2);
-            Log(s);
+            if (!Debugger.useLog)
+                return;
+            Debugger.Log(string.Format(str, arg0, arg1, arg2));
         }
 
         public static void Log(string str, params object[] param)
         {
-            string s = string.Format(str, param);
-            Log(s);
+            if (!Debugger.useLog)
+                return;
+            Debugger.Log(string.Format(str, param));
         }
 
         public static void LogWarning(string str)
         {
-            str = GetLogFormat(str);            
-
-            if (useLog)
+            str = Debugger.GetLogFormat(str);
+            if (Debugger.useLog)
+                Debug.LogWarning((object) str);
+            else if (Debugger.logger != null)
             {
-                Debug.LogWarning(str);
-            }
-            else if (logger != null)
-            {
-                string stack = StackTraceUtility.ExtractStackTrace();
-                logger.Log(str, stack, LogType.Warning);
+                string stackTrace = StackTraceUtility.ExtractStackTrace();
+                Debugger.logger.Log(str, stackTrace, LogType.Warning);
             }
 
             StringPool.Collect(str);
@@ -123,111 +90,82 @@ namespace GameFrame
 
         public static void LogWarning(object message)
         {
-            LogWarning(message.ToString());
+            if (!Debugger.useLog)
+                return;
+            Debugger.LogWarning(message.ToString());
         }
 
         public static void LogWarning(string str, object arg0)
         {
-            string s = string.Format(str, arg0);
-            LogWarning(s);
+            if (!Debugger.useLog)
+                return;
+            Debugger.LogWarning(string.Format(str, arg0));
         }
 
         public static void LogWarning(string str, object arg0, object arg1)
         {
-            string s = string.Format(str, arg0, arg1);
-            LogWarning(s);
+            if (!Debugger.useLog)
+                return;
+            Debugger.LogWarning(string.Format(str, arg0, arg1));
         }
 
         public static void LogWarning(string str, object arg0, object arg1, object arg2)
         {
-            string s = string.Format(str, arg0, arg1, arg2);
-            LogWarning(s);
+            if (!Debugger.useLog)
+                return;
+            Debugger.LogWarning(string.Format(str, arg0, arg1, arg2));
         }
 
         public static void LogWarning(string str, params object[] param)
         {
-            string s = string.Format(str, param);
-            LogWarning(s);
+            if (!Debugger.useLog)
+                return;
+            Debugger.LogWarning(string.Format(str, param));
         }
 
         public static void LogError(string str)
         {
-            str = GetLogFormat(str);            
-
-            if (useLog)
+            str = Debugger.GetLogFormat(str);
+            if (Debugger.useLog)
+                Debug.LogError((object) str);
+            else if (Debugger.logger != null)
             {
-                Debug.LogError(str);
-            }
-            else if (logger != null)
-            {
-                string stack = StackTraceUtility.ExtractStackTrace();
-                logger.Log(str, stack, LogType.Error);
+                string stackTrace = StackTraceUtility.ExtractStackTrace();
+                Debugger.logger.Log(str, stackTrace, LogType.Error);
             }
 
             StringPool.Collect(str);
         }
 
-        public static void LogError(object message)
-        {
-            LogError(message.ToString());
-        }
+        public static void LogError(object message) => Debugger.LogError(message.ToString());
 
-        public static void LogError(string str, object arg0)
-        {
-            string s = string.Format(str, arg0);
-            LogError(s);
-        }
+        public static void LogError(string str, object arg0) => Debugger.LogError(string.Format(str, arg0));
 
-        public static void LogError(string str, object arg0, object arg1)
-        {
-            string s = string.Format(str, arg0, arg1);
-            LogError(s);
-        }
+        public static void LogError(string str, object arg0, object arg1) => Debugger.LogError(string.Format(str, arg0, arg1));
 
-        public static void LogError(string str, object arg0, object arg1, object arg2)
-        {
-            string s = string.Format(str, arg0, arg1, arg2);
-            LogError(s);
-        }
+        public static void LogError(string str, object arg0, object arg1, object arg2) => Debugger.LogError(string.Format(str, arg0, arg1, arg2));
 
-        public static void LogError(string str, params object[] param)
-        {
-            string s = string.Format(str, param);
-            LogError(s);
-        }
-
+        public static void LogError(string str, params object[] param) => Debugger.LogError(string.Format(str, param));
 
         public static void LogException(Exception e)
         {
-            threadStack = e.StackTrace;            
-            string str = GetLogFormat(e.Message);            
-
-            if (useLog)
-            {
-                Debug.LogError(str);
-            }
-            else if (logger != null)
-            {
-                logger.Log(str, threadStack, LogType.Exception);
-            }
-
-            StringPool.Collect(str);
+            Debugger.threadStack = e.StackTrace;
+            string logFormat = Debugger.GetLogFormat(e.Message);
+            if (Debugger.useLog)
+                Debug.LogError((object) logFormat);
+            else if (Debugger.logger != null)
+                Debugger.logger.Log(logFormat, Debugger.threadStack, LogType.Exception);
+            StringPool.Collect(logFormat);
         }
 
         public static void LogException(string str, Exception e)
         {
-            threadStack = e.StackTrace;            
-            str = GetLogFormat(str + e.Message);            
-
-            if (useLog)
-            {
-                Debug.LogError(str);
-            }
-            else if (logger != null)
-            {
-                logger.Log(str, threadStack, LogType.Exception);
-            }
-
+            Debugger.threadStack = e.StackTrace;
+            str = Debugger.GetLogFormat(str + e.Message);
+            if (Debugger.useLog)
+                Debug.LogError((object) str);
+            else if (Debugger.logger != null)
+                Debugger.logger.Log(str, Debugger.threadStack, LogType.Exception);
             StringPool.Collect(str);
         }
     }

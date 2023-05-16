@@ -15,7 +15,7 @@ namespace GameFrame.Editor
         public static void OpenDialogueGraphWindow()
         {
             var window = GetWindow<DialogueGraphWindow>();
-            window.titleContent = new GUIContent("打开实体审查");
+            window.titleContent = new GUIContent("实体审查");
         }
 
         private void OnEnable()

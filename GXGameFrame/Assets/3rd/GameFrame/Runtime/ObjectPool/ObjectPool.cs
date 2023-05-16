@@ -49,7 +49,7 @@ namespace GameFrame
         // private List<ObjectBase> m_ActionObjects;
         private Type m_ObjectType;
 
-        public static ObjectPool<T> Create(TypeNamePair typeName, Type objectType, int maxNum, object initData)
+        public static ObjectPool<T> Create(TypeNamePair typeName, Type objectType, int maxNum,int expireTime, object initData)
         {
             Type objectPoolType = typeof(ObjectPool<>).MakeGenericType(objectType);
             ObjectPool<T> objectPool = ReferencePool.Acquire(objectPoolType) as ObjectPool<T>;
@@ -57,7 +57,7 @@ namespace GameFrame
             objectPool.Initialize(typeName);
             objectPool.m_MaxCacheNum = maxNum;
             objectPool.m_InitData = initData;
-            objectPool.m_ExpireTime = 120;
+            objectPool.m_ExpireTime = expireTime;
             objectPool.m_AutoReleaseInterval = 5;
             objectPool.m_CurAutoReleaseTime = 0;
             return objectPool;

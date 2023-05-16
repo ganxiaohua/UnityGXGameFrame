@@ -16,13 +16,7 @@ MonoBehaviour:
   m_Data:
     m_SerializedData: []
   m_GUID: 6dafb71f59c47bf438d57d99fff154bd
-  m_SerializeEntries:
-  - m_GUID: a646ddeea2cba7b4a864b61ed02538b1
-    m_Address: Assets/GXGame/Config/ConfigData
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Config
-    - Preload
+  m_SerializeEntries: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 1765143bf1e4ef948a398b5a8cb3ff52, type: 2}
   m_SchemaSet:

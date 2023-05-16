@@ -1,61 +1,45 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
+using Object = UnityEngine.Object;
 
 namespace GameFrame
 {
-    public static class DependentUIResourcesSystem
+    public static class DependentResourcesSystem
     {
         [SystemBind]
-        public class DependentUIResourcesStartSystem : StartSystem<DependentUIResources, List<string>>
+        public class DependentResourcesStartSystem : StartSystem<DependentResources, string>
         {
-            protected override void Start(DependentUIResources self, List<string> p1)
+            protected override async void Start(DependentResources self, string p1)
             {
-                self.Path = p1;
-                foreach (var path in p1)
-                {
-                    self.CurLoadAmount = 0;
-                    self.LoadOver = false;
-                    AssetManager.Instance.UILoader.AddPackage(path, self.LoadUIAssetOver);
-                }
+                self.Task = new UniTaskCompletionSource<bool>();
+                self.AssetPath = p1;
+                Object obj =  await AssetManager.Instance.LoadAsyncTask<Object>(self.AssetPath);
+                self.Asset = obj;
+                self.Task.TrySetResult(true);
             }
         }
 
 
         [SystemBind]
-        public class DependentUIResourcesClearSystem : ClearSystem<DependentUIResources>
+        public class DependentResourcesClearSystem : ClearSystem<DependentResources>
         {
-            protected override void Clear(DependentUIResources self)
+            protected override void Clear(DependentResources self)
             {
-                foreach (var path in self.Path)
-                {
-                    AssetManager.Instance.UILoader.RemovePackages(path);
-                }
-
+                AssetManager.Instance.UnLoad(self.AssetPath);
                 if (self.Task != null)
                 {
-                    self.Task.SetResult(false);
+                    self.Task.TrySetCanceled();
                 }
             }
         }
 
-        public static void LoadUIAssetOver(this DependentUIResources self)
-        {
-            if (++self.CurLoadAmount == self.Path.Count)
-            {
-                self.LoadOver = true;
-                self.Task.SetResult(true);
-            }
-        }
 
-        public static async UniTask WaitLoad(this DependentUIResources self)
+        public static async UniTask WaitLoad(this DependentResources self)
         {
-            if (!self.LoadOver)
-            {
-                self.Task = new TaskCompletionSource<bool>();
-                await self.Task.Task;
-                self.Task = null;
-            }
+            await self.Task.Task;
+            self.Task = null;
         }
     }
 }

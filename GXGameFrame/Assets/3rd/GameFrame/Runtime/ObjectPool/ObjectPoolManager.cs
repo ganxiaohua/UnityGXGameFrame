@@ -24,7 +24,7 @@ namespace GameFrame
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public ObjectPool<T> CreateObjectPool<T>(string name, int maxNum,object initObject) where T : ObjectBase, new()
+        public ObjectPool<T> CreateObjectPool<T>(string name, int maxNum,int expireTime,object initObject) where T : ObjectBase, new()
         {
             Type type = typeof(T);
             TypeNamePair typeNamePair = new TypeNamePair(type, name);
@@ -33,7 +33,7 @@ namespace GameFrame
                 throw new Exception($"has {name} {type}");
             }
 
-            ObjectPool<T> objectPoolBase = ObjectPool<T>.Create(typeNamePair, type, maxNum,initObject);
+            ObjectPool<T> objectPoolBase = ObjectPool<T>.Create(typeNamePair, type, maxNum,expireTime,initObject);
             s_ObjectPoolBase.Add(typeNamePair, objectPoolBase);
             return objectPoolBase;
         }

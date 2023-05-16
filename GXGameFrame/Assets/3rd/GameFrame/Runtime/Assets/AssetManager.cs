@@ -144,6 +144,7 @@ public class AssetManager : Singleton<AssetManager>
         var obj = await handle.Task;
         return obj;
     }
+    
 
     /// <summary>
     /// 异步加载 确保和Unload成对出现

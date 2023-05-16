@@ -1,6 +1,7 @@
 ﻿using System;
 using cfg;
 using Cysharp.Threading.Tasks;
+using GXGame;
 using UnityEngine;
 
 namespace GameFrame
@@ -14,12 +15,11 @@ namespace GameFrame
         {
             AutoBindSystem.Instance.AddSystem();
             EnitityHouse.Instance.Init();
-            Config.Instance.LoadTable();
             MainScene = ReferencePool.Acquire<MainScene>();
             MainScene.AddComponent<UIComponent>();
-            await AddressablesHelper.InitializeAsync();
-            CheckUpdate = new CheckUpdate();
-            await CheckUpdate.CheckVersions();
+            MainScene.AddComponent<GameObjectPoolComponent>();
+            await MainScene.AddComponent<AssetInitComponent>().WaitLoad();
+            Config.Instance.LoadTable();
         }
 
         public void Update()
@@ -42,7 +42,6 @@ namespace GameFrame
 
         public void OnDisable()
         {
-            CheckUpdate.Disable();
             ReferencePool.Release(MainScene);
             ObjectPoolManager.Instance.DeleteAll();
             EnitityHouse.Instance.Disable();

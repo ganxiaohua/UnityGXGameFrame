@@ -14,14 +14,14 @@ namespace GameFrame
             m_RemoveGroup = new();
         }
         
-        public T AddChild<T>() where T : ECSEntity
+        public new T AddChild<T>() where T : ECSEntity
         {
             T ecsEntity = base.AddChild<T>();
             ChangeAddRomoveChildOrCompone(ecsEntity);
             return ecsEntity;
         }
 
-        public void RemoveChild(int id)
+        public new void RemoveChild(int id)
         {
             ECSEntity ecsentity = Children[id] as ECSEntity;
             base.RemoveChild(id);

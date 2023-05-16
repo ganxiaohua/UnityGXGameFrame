@@ -9,17 +9,22 @@ namespace GameFrame.Editor
     public class EnitiyGraphView : EditorEnitiy
     {
         private GeneralGraphView m_GeneralGraphView;
-
-
+        
         private EnitiyInfos m_EnitiyInfos;
 
         private EditorWindow m_EditorWindow;
 
         private Dictionary<Node, EnitiyNode> m_NodeDic;
 
+        private int m_FlootHeght;
+        
+        private int m_FlootWidth;
+
         public void Init(EditorWindow editorWindow)
         {
             base.Init();
+            m_FlootHeght = 200;
+            m_FlootWidth = 200;
             m_GeneralGraphView = AddComponent<GeneralGraphView>();
             m_GeneralGraphView.Init();
             m_NodeDic = new();
@@ -83,7 +88,7 @@ namespace GameFrame.Editor
             graphNode.AddButton("关注", FollowNode);
             var graphNodeName = root.entity.GetType().Name;
             m_NodeDic.Add(graphNode, root);
-            graphNode.Init(graphNodeName, new Rect(root.Floor * 200, 150 + root.Grid * 100, 100, 150));
+            graphNode.Init(graphNodeName, new Rect(root.Floor * (m_FlootHeght+50), m_FlootHeght + root.Grid * 100, m_FlootWidth-50, 100));
             var outPort = graphNode.AddProt("", typeof(bool), Direction.Output);
             root.GraphNode = graphNode;
             graphNode.RefreshExpandedState();
@@ -99,7 +104,7 @@ namespace GameFrame.Editor
                 var graphNodeName = enititnode.entity.GetType().Name;
                 graphNode.AddButton("关注", FollowNode);
                 m_NodeDic.Add(graphNode, enititnode);
-                graphNode.Init(graphNodeName, new Rect(enititnode.Floor * 250, 150 + enititnode.Grid * 100, 100, 150));
+                graphNode.Init(graphNodeName, new Rect(enititnode.Floor * (m_FlootHeght+50), m_FlootHeght + enititnode.Grid * 100, m_FlootWidth-50, 100));
                 var inPort = graphNode.AddProt("", typeof(bool), Direction.Input);
                 var outPort = graphNode.AddProt("", typeof(bool), Direction.Output);
                 enititnode.GraphNode = graphNode;

@@ -5,17 +5,17 @@ namespace GameFrame.Editor
 {
     public static class BuildMenus
     {
-        [MenuItem("GX框架Build辅助器/Open PersistentDataPath")]
-        public static void OpenPersistentDataPath()
-        {
-            Application.OpenURL(Application.persistentDataPath);
-        }
+        // [MenuItem("GX框架Build辅助器/Open PersistentDataPath")]
+        // public static void OpenPersistentDataPath()
+        // {
+        //     Application.OpenURL(Application.persistentDataPath);
+        // }
 
-        [MenuItem("GX框架Build辅助器/Open Cache Path")]
-        public static void OpenCachePath()
-        {
-            Application.OpenURL(Caching.currentCacheForWriting.path);
-        }
+        // [MenuItem("GX框架Build辅助器/Open Cache Path")]
+        // public static void OpenCachePath()
+        // {
+        //     Application.OpenURL(Caching.currentCacheForWriting.path);
+        // }
 
         [MenuItem("GX框架Build辅助器/Build Bundles")]
         public static void BuildBundles()

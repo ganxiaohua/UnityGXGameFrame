@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 
 namespace GameFrame
 {
-    public class DependentUIResources : Entity, IStart, IClear
+    public class DependentResources : Entity, IStart, IClear
     {
-        public List<string> Path;
-        public int CurLoadAmount;
-        public bool LoadOver;
-        public TaskCompletionSource<bool> Task;
+        public string AssetPath;
+        public Object Asset;
+        public UniTaskCompletionSource<bool> Task;
     }
 }

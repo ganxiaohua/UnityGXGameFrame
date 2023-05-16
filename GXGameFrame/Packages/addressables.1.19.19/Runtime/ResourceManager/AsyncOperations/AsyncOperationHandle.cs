@@ -219,7 +219,7 @@ namespace UnityEngine.ResourceManagement.AsyncOperations
         /// </summary>
         public bool IsDone
         {
-            get { return !IsValid() || InternalOp.IsDone; }
+            get { return !IsValid() || InternalOp.IsDone;}
         }
 
         /// <summary>

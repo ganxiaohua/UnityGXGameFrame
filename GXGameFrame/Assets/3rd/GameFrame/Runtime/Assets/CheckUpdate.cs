@@ -29,7 +29,6 @@ public class CheckUpdate
     /// </summary>
     public async UniTask CheckVersions()
     {
-        //代表是单机
         m_CachedStringBuilder = new StringBuilder(1024);
         m_AddressablesTempPath = Path.Combine(Application.persistentDataPath, "AddressablesTemp");
         m_Comunityaddressables = Path.Combine(Application.persistentDataPath, "com.unity.addressables");

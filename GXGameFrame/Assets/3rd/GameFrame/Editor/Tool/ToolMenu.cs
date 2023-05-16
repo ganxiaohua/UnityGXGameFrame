@@ -1,5 +1,8 @@
 ﻿using UnityEditor;
+using UnityEditor.AddressableAssets;
+using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.SceneManagement;
+using UnityEngine;
 
 namespace GameFrame.Editor
 {
@@ -37,11 +40,43 @@ namespace GameFrame.Editor
         }
 
 
-        [MenuItem("GX框架工具/测试", false, 4)]
-        public static void Test()
+        [MenuItem("GX框架工具/远程资源", false, 4)]
+        public static void RemoteResource()
         {
-            var loca = BuildScript.AssetSettings.profileSettings.GetValueByName(BuildScript.AssetSettings.activeProfileId, "Remote.LoadPath");
-            Debugger.Log(loca);
+            // PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone,"RESSEQ");
+        }
+
+
+        [MenuItem("GX框架工具/路径/Open PersistentDataPath")]
+        public static void OpenPersistentDataPath()
+        {
+            Application.OpenURL(Application.persistentDataPath);
+        }
+
+        [MenuItem("GX框架工具/路径/Open Cache Path")]
+        public static void OpenCachePath()
+        {
+            Application.OpenURL(Caching.currentCacheForWriting.path);
+        }
+
+        [MenuItem("GX框架工具/路径/打开包体路径")]
+        public static void OpenPackagePath()
+        {
+            Application.OpenURL(Application.dataPath + "/../Bin/" + BuildScript.BuildTarget);
+        }
+        
+        [MenuItem("GX框架工具/路径/打开AB包路径")]
+        public static void OpenABPackagePath()
+        {
+            Application.OpenURL($"{Application.dataPath+"/../"}ServerData/{BuildScript.BuildTarget}");
+        }
+
+        [MenuItem("GX框架工具/测试")]
+        public static void Text()
+        {
+            // BuildScript.AssetSettings.ContentStateBuildPath
+            // var x = ProjectConfigData.ActivePlayModeIndex;
+            // Debugger.Log(BuildScript.AssetSettings.RemoteCatalogLoadPath.GetValue(BuildScript.AssetSettings));
         }
     }
 }

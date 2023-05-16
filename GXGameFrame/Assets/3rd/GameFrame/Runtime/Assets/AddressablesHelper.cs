@@ -1,8 +1,10 @@
 using System;
-using System.Collections;
-using System.IO;
-using System.IO.Compression;
 using Cysharp.Threading.Tasks;
+using GameFrame;
+#if UNITY_EDITOR
+using UnityEditor.AddressableAssets.Settings;
+using UnityEditor.AddressableAssets;
+#endif
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
@@ -32,44 +34,20 @@ public static class AddressablesHelper
 
     public static async UniTask InitializeAsync()
     {
-#if !UNITY_EDITOR
         if (!string.IsNullOrEmpty(PlayerVersion.Version.UpdateURL))
         {
             UpdateURL = PlayerVersion.Version.UpdateURL;
         }
+
         Debug.Log($"UpdateURL={UpdateURL}");
-        Addressables.InternalIdTransformFunc = InternalIdTransformFunc;
-        var fileUrl = GetPlayerDataUrl(PlayerAssets.Filename);
-        var playerAssetRequest = UnityWebRequest.Get(fileUrl);
-        await playerAssetRequest.SendWebRequest();
-        if (playerAssetRequest.result == UnityWebRequest.Result.Success)
-        {
-            PlayerAssets = LoadFromJson<PlayerAssets>(playerAssetRequest.downloadHandler.text);
-            AssetVersion = PlayerAssets.version;
-        }
-
-        playerAssetRequest.Dispose();
-
-            fileUrl = GetDownloadUrl(UpdateInfo.Filename);
-            var updateInfoRequest = UnityWebRequest.Get(fileUrl);
-            await updateInfoRequest.SendWebRequest();
-            if (updateInfoRequest.result == UnityWebRequest.Result.Success)
-            {
-                UpdateInfo = LoadFromJson<UpdateInfo>(updateInfoRequest.downloadHandler.text);
-                AssetVersion = UpdateInfo.version;
-                Debug.Log($"Bundle version:{UpdateInfo.version}, Build time:{GetDateTime(UpdateInfo.timestamp)}");
-            }
-            else
-            {
-                Debug.LogWarning($"UpdateInfo Failure:url={fileUrl},responseCode={updateInfoRequest.responseCode},error={updateInfoRequest.error}");
-            }
-            updateInfoRequest.Dispose();
-
+#if !UNITY_EDITOR
+        await PlayerAssetLoad();
 #endif
-
-#if UNITY_EDITOR && ResourceSeparation
-        //编辑器模式,加载资源远程资源清单 用于
-        var catalogPath = $"http://192.168.100.230/GXGame/aa/{GetPlatformName()}/{CatalogName}";
+        await UpdateInfoLoad();
+#if UNITY_EDITOR && RESSEQ
+        //编辑器模式,加载资源远程资源清单 启动这个优先本地资源,其次远程资源
+        string url = AddressableAssetSettingsDefaultObject.Settings.RemoteCatalogLoadPath.GetValue(AddressableAssetSettingsDefaultObject.Settings);
+        var catalogPath = $"{url}/{CatalogName}";
         var loadCatalogHandle = Addressables.LoadContentCatalogAsync(catalogPath, false);
         await loadCatalogHandle;
         if (loadCatalogHandle.Status != AsyncOperationStatus.Succeeded)
@@ -77,6 +55,64 @@ public static class AddressablesHelper
             Debug.LogError($"加载远程资源清单失败:{loadCatalogHandle.OperationException.Message}");
         }
 #endif
+    }
+
+    private static async UniTask PlayerAssetLoad()
+    {
+        var fileUrl = GetPlayerDataUrl(PlayerAssets.Filename);
+        var playerAssetRequest = UnityWebRequest.Get(fileUrl);
+        try
+        {
+            await playerAssetRequest.SendWebRequest();
+            if (playerAssetRequest.result == UnityWebRequest.Result.Success)
+            {
+                Addressables.InternalIdTransformFunc = InternalIdTransformFunc;
+                PlayerAssets = LoadFromJson<PlayerAssets>(playerAssetRequest.downloadHandler.text);
+                AssetVersion = PlayerAssets.version;
+            }
+        }
+        catch (Exception e)
+        {
+            Debugger.LogError(e.Message);
+        }
+        finally
+        {
+            playerAssetRequest.Dispose();
+        }
+    }
+
+    private static async UniTask UpdateInfoLoad()
+    {
+        bool needUpdateInfo = true;
+#if UNITY_EDITOR
+        needUpdateInfo = ProjectConfigData.ActivePlayModeIndex == 2;
+#endif
+        if (!needUpdateInfo)
+            return;
+        var fileUrl = GetDownloadUrl(UpdateInfo.Filename);
+        var updateInfoRequest = UnityWebRequest.Get(fileUrl);
+        try
+        {
+            await updateInfoRequest.SendWebRequest();
+            if (updateInfoRequest.result == UnityWebRequest.Result.Success)
+            {
+                UpdateInfo = LoadFromJson<UpdateInfo>(updateInfoRequest.downloadHandler.text);
+                AssetVersion = UpdateInfo.version;
+                Debugger.Log($"Bundle version:{UpdateInfo.version}, Build time:{GetDateTime(UpdateInfo.timestamp)}");
+            }
+            else
+            {
+                Debugger.LogWarning($"UpdateInfo Failure:url={fileUrl},responseCode={updateInfoRequest.responseCode},error={updateInfoRequest.error}");
+            }
+        }
+        catch (Exception e)
+        {
+            Debugger.LogError(e.Message);
+        }
+        finally
+        {
+            updateInfoRequest.Dispose();
+        }
     }
 
     private static string InternalIdTransformFunc(IResourceLocation location)

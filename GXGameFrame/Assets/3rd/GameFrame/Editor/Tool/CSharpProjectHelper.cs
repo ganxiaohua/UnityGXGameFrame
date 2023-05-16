@@ -50,23 +50,23 @@ public static class CSharpProjectHelper
     [MenuItem("RiderIL查看/AutoRedirectOutput", true)]
     private static bool AutoRedirectOutputValidate()
     {
-        Menu.SetChecked("CSharpProject/AutoRedirectOutput", EditorPrefs.HasKey("CSharpProject/AutoRedirectOutput"));
+        Menu.SetChecked("RiderIL查看/AutoRedirectOutput", EditorPrefs.HasKey("RiderIL查看/AutoRedirectOutput"));
         return true;
     }
 
     [MenuItem("RiderIL查看/AutoRedirectOutput")]
     private static void AutoRedirectOutput()
     {
-        if (EditorPrefs.HasKey("CSharpProject/AutoRedirectOutput"))
-            EditorPrefs.DeleteKey("CSharpProject/AutoRedirectOutput");
+        if (EditorPrefs.HasKey("RiderIL查看/AutoRedirectOutput"))
+            EditorPrefs.DeleteKey("RiderIL查看/AutoRedirectOutput");
         else
-            EditorPrefs.SetBool("CSharpProject/AutoRedirectOutput", true);
+            EditorPrefs.SetBool("RiderIL查看/AutoRedirectOutput", true);
     }
 
     [InitializeOnLoadMethod]
     private static void AutoRedirectOutputOnLoad()
     {
-        if (EditorPrefs.HasKey("CSharpProject/AutoRedirectOutput"))
+        if (EditorPrefs.HasKey("RiderIL查看/AutoRedirectOutput"))
         {
             RedirectOutput();
         }

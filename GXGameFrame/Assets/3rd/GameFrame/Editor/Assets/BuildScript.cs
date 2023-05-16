@@ -20,14 +20,7 @@ namespace GameFrame.Editor
     {
         public static bool isFullRes = false;
         public static bool isBuild = false;
-        static readonly string DefaultProfileId = "7d72f42cde32f304595d34a6eab45502";
-        static readonly string RemoteProfileId = "c0313e369c48c164b9b196ec6f7a7bc4";
-
-        // static readonly Dictionary<string, string> UpdateURL = new Dictionary<string, string>()
-        // {
-        //     //不填写则为单机。
-        //     [DefaultProfileId] = ""//"http://192.168.62.31/GXGame/aa",
-        // };
+        
 
         static readonly string[] PatchFilterFiles = new string[] {"catalog.bundle", "settings.json", "addressables_content_state.bin"};
 
@@ -237,7 +230,11 @@ namespace GameFrame.Editor
             Dictionary<string, AddressableAssetGroup> tempdic = new();
             foreach (var group in AssetSettings.groups)
             {
-                tempdic[group.name] = group;
+                //这是重复的资源,排除他不需要删除
+                if (!group.name.Contains("Duplicate"))
+                {
+                    tempdic[group.name] = group;
+                }
             }
 
             foreach (var item in AssetGroupSettings.settings.data)
@@ -412,8 +409,6 @@ namespace GameFrame.Editor
 
         public static void CopyToLocalServer(string filePath, string relativePath)
         {
-            if (AssetSettings.activeProfileId != DefaultProfileId)
-                return;
             var to = AddressablesHelper.GetDownloadUrl(relativePath).Replace("http://", "\\\\").Replace("/", "\\");
             CreateDirectory(to);
             File.Copy(filePath, to, true);
@@ -434,7 +429,8 @@ namespace GameFrame.Editor
             var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
             var scriptBackend = PlayerSettings.GetScriptingBackend(buildTargetGroup);
             var fullRes = isFullRes ? "InClude" : "NotInClude";
-            var targetName =  $"{PlayerSettings.productName}-{fullRes}-v{PlayerSettings.bundleVersion}b{PlayerVersion.Version.BundleVersionCode}-{PlayerSettings.applicationIdentifier}-{scriptBackend}-{GetTimeForNow()}";
+            var targetName =
+                $"{PlayerSettings.productName}-{fullRes}-v{PlayerSettings.bundleVersion}b{PlayerVersion.Version.BundleVersionCode}-{PlayerSettings.applicationIdentifier}-{scriptBackend}-{GetTimeForNow()}";
             switch (target)
             {
                 case UnityEditor.BuildTarget.Android:
@@ -456,8 +452,9 @@ namespace GameFrame.Editor
         private static void ModifyVersionCode(int delta = 1)
         {
             var playerVersion = PlayerVersion.Version;
-            playerVersion.UpdateURL = AssetSettings.profileSettings.GetValueByName(AssetSettings.activeProfileId, "Remote.LoadPath").Replace("/[BuildTarget]","");
-            
+            playerVersion.UpdateURL = AssetSettings.profileSettings.GetValueByName(AssetSettings.activeProfileId, "Remote.LoadPath")
+                .Replace("/[BuildTarget]", "");
+
             playerVersion.BundleVersionCode += delta;
             playerVersion.Save();
             var buildTarget = EditorUserBuildSettings.activeBuildTarget;
