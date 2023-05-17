@@ -17,5 +17,7 @@ namespace GameFrame.Editor
         public static string EditorDatabasePath = "Assets/3rd/GameFrame/Editor/Rec/bansheegz_database.bytes";
         
         public static string UIScenePath = "Assets/3rd/GameFrame/CreateUIEditor/CreateUIScene.unity";
+        
+        public static string RESSEQ = "RESSEQ";
     }
 }
