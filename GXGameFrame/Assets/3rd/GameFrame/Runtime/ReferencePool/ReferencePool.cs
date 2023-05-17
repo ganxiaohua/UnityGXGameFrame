@@ -68,16 +68,17 @@ namespace GameFrame
             {
                 m_WaitDesroyList.Clear();
                 m_CurAutoReleaseTime = 0;
-                foreach (ReferenceCollection objectpool in s_ReferenceCollections.Values)
+                foreach (ReferenceCollection referencepool in s_ReferenceCollections.Values)
                 {
-                    if (objectpool.UnusedCheck())
+                    if (referencepool.UnusedCheck())
                     {
-                        m_WaitDesroyList.Add(objectpool.ReferenceType);
+                        m_WaitDesroyList.Add(referencepool.ReferenceType);
                     }
                 }
 
                 foreach (Type type  in m_WaitDesroyList)
                 {
+                    Debugger.Log($"clear {type.Name} ReleasePool");
                     RemoveAll(type);
                 }
             }

@@ -187,6 +187,7 @@ namespace GameFrame
                     curClearNum++;
                     if (curClearNum == clearNum)
                     {
+                        m_CurCacheNum -= curClearNum;
                         ClearPasdue(NeedClearList);
                         return;
                     }
@@ -207,10 +208,10 @@ namespace GameFrame
                     {
                         NeedClearList.Add(list[i]);
                         list.RemoveAt(i);
+                        m_CurCacheNum--;
                     }
                 }
             }
-
             ClearPasdue(NeedClearList);
         }
 
@@ -239,6 +240,8 @@ namespace GameFrame
                     ClearPasdue(objectList);
                 }
             }
+
+            m_CurCacheNum = 0;
             m_CurAutoReleaseTime = 0;
             ClearDic(m_ActionObject);
             ClearDic(m_HitObject);

@@ -102,7 +102,6 @@ namespace GameFrame
                         return (T) m_References.Dequeue();
                     }
                 }
-
                 m_AddReferenceCount++;
                 return new T();
             }
@@ -118,8 +117,7 @@ namespace GameFrame
                         return m_References.Dequeue();
                     }
                 }
-
-                m_LastUseTime = DateTime.UtcNow;
+                
                 m_AddReferenceCount++;
                 return (IReference) Activator.CreateInstance(m_ReferenceType);
             }
@@ -144,7 +142,6 @@ namespace GameFrame
                 {
                     Remove(m_ReleaseReferenceCount / 2);
                 }
-
                 m_LastUseTime = DateTime.UtcNow;
             }
 
@@ -163,8 +160,6 @@ namespace GameFrame
                         m_References.Enqueue(new T());
                     }
                 }
-
-                m_LastUseTime = DateTime.UtcNow;
             }
 
             public void Add(int count)
@@ -177,8 +172,7 @@ namespace GameFrame
                         m_References.Enqueue((IReference) Activator.CreateInstance(m_ReferenceType));
                     }
                 }
-
-                m_LastUseTime = DateTime.UtcNow;
+                
             }
 
             public void Remove(int count)
@@ -196,8 +190,6 @@ namespace GameFrame
                         m_References.Dequeue();
                     }
                 }
-
-                m_LastUseTime = DateTime.UtcNow;
             }
 
             public void RemoveAll()
@@ -211,10 +203,13 @@ namespace GameFrame
 
             public bool UnusedCheck()
             {
-                DateTime expireTime = DateTime.UtcNow.AddSeconds(-m_ExpireTime);
-                if (expireTime >= m_LastUseTime)
+                if (m_UsingReferenceCount == 0)
                 {
-                    return true;
+                    DateTime expireTime = DateTime.UtcNow.AddSeconds(-m_ExpireTime);
+                    if (expireTime >= m_LastUseTime)
+                    {
+                        return true;
+                    }
                 }
                 return false;
             }
