@@ -203,6 +203,7 @@ namespace GameFrame
             UINode uinode = UINode.CreateNode(type);
             m_UILinkedLinkedList.AddLast(uinode);
             await uinode.LoadDependentOver();
+            await uinode.UIWait();
             //加入等待打开的UI列表
             m_OpenUIList.Push(uinode);
             if (curUINode != null)
@@ -253,10 +254,11 @@ namespace GameFrame
         /// 如果window则打开window. 如果不存在代表这只是一个占用节点,删除此节点,重新走OpenUI逻辑.
         /// </summary>
         /// <param name="uiNode"></param>
-        private void NodeShowTypeChick(UINode uiNode)
+        private async void NodeShowTypeChick(UINode uiNode)
         {
             if (uiNode.Window != null)
             {
+                await uiNode.UIWait();
                 AddWaitDestroyWindowList(GetCurUINode());
                 m_OpenUIList.Push(uiNode);
             }

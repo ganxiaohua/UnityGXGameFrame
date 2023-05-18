@@ -39,7 +39,7 @@ public static class AddressablesHelper
             UpdateURL = PlayerVersion.Version.UpdateURL;
         }
 
-        Debug.Log($"UpdateURL={UpdateURL}");
+        Debugger.Log($"UpdateURL={UpdateURL}");
 #if !UNITY_EDITOR
         await PlayerAssetLoad();
 #endif

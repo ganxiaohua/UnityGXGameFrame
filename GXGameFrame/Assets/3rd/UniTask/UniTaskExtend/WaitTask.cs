@@ -12,7 +12,7 @@ namespace Cysharp.Threading.Tasks
     {
         int Error { get; set; }
     }
-    
+
 
     public static class WaitTask
     {
@@ -21,11 +21,17 @@ namespace Cysharp.Threading.Tasks
         public static async UniTask Wait<T>() where T : IWaitType
         {
             Type type = typeof(T);
+            await Wait(type);
+        }
+
+        public static async UniTask Wait(Type type)
+        {
             if (WaitSource.ContainsKey(type))
             {
                 Debug.LogError($"have type = {type}");
                 return;
             }
+
             CancellationTokenSource cts = new CancellationTokenSource();
             WaitSource.Add(type, cts);
             await UniTask.WaitUntilCanceled(cts.Token);
@@ -34,11 +40,17 @@ namespace Cysharp.Threading.Tasks
         public static void Notify<T>() where T : IWaitType
         {
             Type type = typeof(T);
-            if (!WaitSource.TryGetValue(type,out var cts))
+            Notify(type);
+        }
+
+        public static void Notify(Type type)
+        {
+            if (!WaitSource.TryGetValue(type, out var cts))
             {
                 Debug.LogError($"not have type = {type}");
                 return;
             }
+
             WaitSource.Remove(type);
             cts.Cancel();
             cts.Dispose();

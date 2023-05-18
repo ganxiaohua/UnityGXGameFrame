@@ -6,6 +6,6 @@ namespace GameFrame
     public class AssetInitComponent : Entity, IStart,IClear
     {
         public CheckUpdate CheckUpdate;
-        public UniTaskCompletionSource<bool> Task;
+        public UniTaskCompletionSource Task;
     }
 }

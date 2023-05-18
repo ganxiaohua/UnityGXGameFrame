@@ -9,7 +9,7 @@ namespace GameFrame
     {
         private GameObject m_Obj;
         private Transform m_Trans;
-        private UniTaskCompletionSource<bool> m_Task;
+        private UniTaskCompletionSource m_Task;
         private string m_LoadPath;
         private bool m_SetLocalPos;
         private bool m_SetLocalRot;
@@ -164,10 +164,10 @@ namespace GameFrame
         {
             m_SetLocalPos = false;
             m_SetLocalRot = false;
-            m_Task = new UniTaskCompletionSource<bool>();
+            m_Task = new UniTaskCompletionSource();
             base.Initialize(initObject);
             await Load(m_InitData as string);
-            m_Task.TrySetResult(true);
+            m_Task.TrySetResult();
         }
 
         private async UniTask Load(string path)

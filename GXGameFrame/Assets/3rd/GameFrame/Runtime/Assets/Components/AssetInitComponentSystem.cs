@@ -12,9 +12,9 @@ namespace GameFrame
         {
             protected override async void Start(AssetInitComponent self)
             {
-                self.Task = new UniTaskCompletionSource<bool>();
+                self.Task = new UniTaskCompletionSource();
                 await self.CheckUpdate();
-                self.Task.TrySetResult(true);
+                self.Task.TrySetResult();
             }
         }
 
@@ -26,13 +26,13 @@ namespace GameFrame
             }
         }
 
-        public static async UniTask CheckUpdate(this AssetInitComponent asset)
+        public static async UniTask CheckUpdate(this AssetInitComponent self)
         {
             await AddressablesHelper.InitializeAsync();
             //如果是在editor模式之下,且开启了资源分离(将资源拆到其他的工程里面去)  或者是 非Editor模式
 #if (UNITY_EDITOR && RESSEQ) || !UNITY_EDITOR
-            asset.CheckUpdate = new CheckUpdate();
-            await asset.CheckUpdate.CheckVersions();
+            self.CheckUpdate = new CheckUpdate();
+            await self.CheckUpdate.CheckVersions();
 #endif
         }
 

@@ -13,11 +13,11 @@ namespace GameFrame
         {
             protected override async void Start(DependentResources self, string p1)
             {
-                self.Task = new UniTaskCompletionSource<bool>();
+                self.Task = new UniTaskCompletionSource();
                 self.AssetPath = p1;
                 Object obj =  await AssetManager.Instance.LoadAsyncTask<Object>(self.AssetPath);
                 self.Asset = obj;
-                self.Task.TrySetResult(true);
+                self.Task.TrySetResult();
             }
         }
 

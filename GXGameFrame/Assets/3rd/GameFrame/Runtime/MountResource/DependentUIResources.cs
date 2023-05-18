@@ -7,6 +7,6 @@ namespace GameFrame
     {
         public List<string> AssetPaths;
         public int CurLoadAmount;
-        public UniTaskCompletionSource<bool> Task;
+        public UniTaskCompletionSource Task;
     }
 }

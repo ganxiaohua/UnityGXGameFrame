@@ -8,6 +8,6 @@ namespace GameFrame
     {
         public string AssetPath;
         public Object Asset;
-        public UniTaskCompletionSource<bool> Task;
+        public UniTaskCompletionSource Task;
     }
 }

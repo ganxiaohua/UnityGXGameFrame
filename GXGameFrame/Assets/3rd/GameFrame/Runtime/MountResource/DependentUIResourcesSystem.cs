@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
+using Unity.VisualScripting;
 
 namespace GameFrame
 {
@@ -11,7 +12,8 @@ namespace GameFrame
         {
             protected override void Start(DependentUIResources self, List<string> p1)
             {
-                self.Task = new UniTaskCompletionSource<bool>();
+                
+                self.Task = new UniTaskCompletionSource();
                 self.AssetPaths = p1;
                 foreach (var path in p1)
                 {
@@ -43,8 +45,7 @@ namespace GameFrame
         {
             if (++self.CurLoadAmount == self.AssetPaths.Count)
             {
-
-                self.Task.TrySetResult(true);
+                self.Task.TrySetResult();
             }
         }
 

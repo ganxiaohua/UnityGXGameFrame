@@ -83,6 +83,15 @@ namespace GameFrame
             IsLoading = false;
         }
 
+        public async UniTask UIWait()
+        {
+            WaitComponent waitComponent = Window.GetComponent<WaitComponent>();
+            if (waitComponent != null)
+            {
+                await waitComponent.Wait();
+            }
+        }
+
         public void Clear()
         {
         }
