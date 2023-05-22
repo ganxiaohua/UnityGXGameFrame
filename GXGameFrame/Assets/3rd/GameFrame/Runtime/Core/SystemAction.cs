@@ -51,6 +51,16 @@ namespace GameFrame
 
             return false;
         }
+        
+        public static bool SystemPreShow(this ISystem system, IEntity entity, bool p1)
+        {
+            if (system is IPreShowSystem showsystem)
+            {
+                showsystem.Run(entity,p1);
+                return true;
+            }
+            return false;
+        }
 
 
         public static bool SystemShow(this ISystem system, IEntity entity)

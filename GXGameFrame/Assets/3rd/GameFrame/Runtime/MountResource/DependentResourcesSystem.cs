@@ -38,6 +38,10 @@ namespace GameFrame
 
         public static async UniTask WaitLoad(this DependentResources self)
         {
+            if (self.Task == null)
+            {
+                return;
+            }
             await self.Task.Task;
             self.Task = null;
         }

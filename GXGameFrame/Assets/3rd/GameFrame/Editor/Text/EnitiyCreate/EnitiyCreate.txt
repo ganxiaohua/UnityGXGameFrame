@@ -64,5 +64,12 @@ namespace GXGame
                 {1}
             }}
         }}
-        
-
+#
+        [SystemBind]
+        public class {0}PreShowSystem : PreShowSystem<{0}>
+        {{
+            protected override void PreShow({0} self,bool isFirstShow)
+            {{
+                {1}
+            }}
+        }}

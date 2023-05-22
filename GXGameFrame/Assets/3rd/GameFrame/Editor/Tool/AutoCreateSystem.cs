@@ -85,6 +85,10 @@ namespace GameFrame.Editor
                     {
                         systemType = $"IClearSystem";
                     }
+                    else if (itemType.Name.Contains("IPreShowSystem"))
+                    {
+                        systemType = $"IPreShowSystem";
+                    }
                     else if (itemType.Name.Contains("IShowSystem"))
                     {
                         types = itemType.GenericTypeArguments;

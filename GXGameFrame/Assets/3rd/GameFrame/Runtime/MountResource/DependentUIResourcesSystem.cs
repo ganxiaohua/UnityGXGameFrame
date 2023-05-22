@@ -51,6 +51,10 @@ namespace GameFrame
 
         public static async UniTask WaitLoad(this DependentUIResources self)
         {
+            if (self.Task == null)
+            {
+                return;
+            }
             await self.Task.Task;
             self.Task = null;
         }

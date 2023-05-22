@@ -20,7 +20,10 @@ public partial class AutoBindSystem
         m_SystemBind.Add(typeof(UICardListWindow),typeof(IHideSystem),typeof(GXGame.UICardListWindowSystem.UICardListWindowHideSystem));
         m_SystemBind.Add(typeof(UICardListWindow),typeof(IUpdateSystem),typeof(GXGame.UICardListWindowSystem.UICardListWindowUpdateSystem));
         m_SystemBind.Add(typeof(UICardListWindow),typeof(IClearSystem),typeof(GXGame.UICardListWindowSystem.UICardListWindowClearSystem));
+        m_SystemBind.Add(typeof(UICardWindowData),typeof(IStartSystem),typeof(GXGame.UICardWindowDataSystem.UICardWindowDataStartSystem));
+        m_SystemBind.Add(typeof(UICardWindowData),typeof(IUpdateSystem),typeof(GXGame.UICardWindowDataSystem.UICardWindowDataUpdateSystem));
         m_SystemBind.Add(typeof(UICardWindow),typeof(IStartSystem),typeof(GXGame.UICardWindowSystem.UICardWindowStartSystem));
+        m_SystemBind.Add(typeof(UICardWindow),typeof(IPreShowSystem),typeof(GXGame.UICardWindowSystem.UICardWindowPreShowSystem));
         m_SystemBind.Add(typeof(UICardWindow),typeof(IShowSystem),typeof(GXGame.UICardWindowSystem.UICardWindowShowSystem));
         m_SystemBind.Add(typeof(UICardWindow),typeof(IHideSystem),typeof(GXGame.UICardWindowSystem.UICardWindowHideSystem));
         m_SystemBind.Add(typeof(UICardWindow),typeof(IUpdateSystem),typeof(GXGame.UICardWindowSystem.UICardWindowUpdateSystem));
@@ -29,13 +32,6 @@ public partial class AutoBindSystem
         m_SystemBind.Add(typeof(UIHomeMainPanel),typeof(IShowSystem),typeof(GXGame.UIHomeMainPanelSystem.UIHomeMainPanelShowSystem));
         m_SystemBind.Add(typeof(UIHomeMainPanel),typeof(IHideSystem),typeof(GXGame.UIHomeMainPanelSystem.UIHomeMainPanelHideSystem));
         m_SystemBind.Add(typeof(UIHomeMainPanel),typeof(IUpdateSystem),typeof(GXGame.UIHomeMainPanelSystem.UIHomeMainPanelUpdateSystem));
-        m_SystemBind.Add(typeof(UICardChoiceWindowData),typeof(IStartSystem),typeof(GXGame.UICardChoiceWindowDataSystem.UICardChoiceWindowDataStartSystem));
-        m_SystemBind.Add(typeof(UICardChoiceWindowData),typeof(IClearSystem),typeof(GXGame.UICardChoiceWindowDataSystem.UICardChoiceWindowDataClearSystem));
-        m_SystemBind.Add(typeof(UICardChoiceWindow),typeof(IStartSystem),typeof(GXGame.UICardChoiceWindowSystem.UICardChoiceWindowStartSystem));
-        m_SystemBind.Add(typeof(UICardChoiceWindow),typeof(IShowSystem),typeof(GXGame.UICardChoiceWindowSystem.UICardChoiceWindowShowSystem));
-        m_SystemBind.Add(typeof(UICardChoiceWindow),typeof(IHideSystem),typeof(GXGame.UICardChoiceWindowSystem.UICardChoiceWindowHideSystem));
-        m_SystemBind.Add(typeof(UICardChoiceWindow),typeof(IUpdateSystem),typeof(GXGame.UICardChoiceWindowSystem.UICardChoiceWindowUpdateSystem));
-        m_SystemBind.Add(typeof(UICardChoiceWindow),typeof(IClearSystem),typeof(GXGame.UICardChoiceWindowSystem.UICardChoiceWindowClearSystem));
         m_SystemBind.Add(typeof(AssetInitComponent),typeof(IStartSystem),typeof(GameFrame.AssetInitComponentSystem.AssetInitComponentStartSystem));
         m_SystemBind.Add(typeof(AssetInitComponent),typeof(IClearSystem),typeof(GameFrame.AssetInitComponentSystem.AssetInitComponentClearSystem));
         m_SystemBind.Add(typeof(MainScene),typeof(IStartSystem<Type>),typeof(GameFrame.SceneEntitySystem.SceneEntityStartSystem));

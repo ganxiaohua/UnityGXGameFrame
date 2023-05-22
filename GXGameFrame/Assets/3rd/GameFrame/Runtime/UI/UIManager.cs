@@ -104,7 +104,7 @@ namespace GameFrame
                 m_WaitOpenUIList.Clear();
                 m_OpenUIList.Clear();
             }
-            else if (m_OpenUIList.Count > 0 && IsAction() == false)
+            else if (m_OpenUIList.Count > 0 && m_WaitCloseUIDic.Count == 0)
             {
                 foreach (UINode uiNode in m_OpenUIList)
                 {
@@ -202,7 +202,8 @@ namespace GameFrame
             UINode curUINode = GetCurUINode();
             UINode uinode = UINode.CreateNode(type);
             m_UILinkedLinkedList.AddLast(uinode);
-            await uinode.LoadDependentOver();
+            await uinode.LoadMustDependentOver();
+            uinode.PreShow(true);
             await uinode.UIWait();
             //加入等待打开的UI列表
             m_OpenUIList.Push(uinode);
@@ -251,13 +252,14 @@ namespace GameFrame
         }
 
         /// <summary>
-        /// 如果window则打开window. 如果不存在代表这只是一个占用节点,删除此节点,重新走OpenUI逻辑.
+        /// 如果window不为空就打开. 如果不存在代表这只是一个占用节点,删除此节点,重新走OpenUI逻辑.
         /// </summary>
         /// <param name="uiNode"></param>
         private async void NodeShowTypeChick(UINode uiNode)
         {
             if (uiNode.Window != null)
             {
+                uiNode.PreShow(false);
                 await uiNode.UIWait();
                 AddWaitDestroyWindowList(GetCurUINode());
                 m_OpenUIList.Push(uiNode);
@@ -279,7 +281,7 @@ namespace GameFrame
         private bool IsAction()
         {
             UINode curUINode = GetCurUINode();
-            if (m_WaitCloseUIDic.Count > 0 || (curUINode != null && curUINode.IsLoading))
+            if (curUINode != null && curUINode.NodeState != UINode.StateType.Open)
             {
                 return true;
             }
@@ -319,6 +321,7 @@ namespace GameFrame
         /// <param name="uiNode"></param>
         private void AddWaitCloseWindowList(UINode uiNode)
         {
+            uiNode.NodeState = UINode.StateType.WaitDestroy;
             m_WaitCloseUIDic.Add(uiNode.WindowType, uiNode);
         }
 
@@ -340,6 +343,7 @@ namespace GameFrame
             SetTouchable(true);
             if (m_WaitCloseUIDic.ContainsKey(type))
             {
+                m_WaitCloseUIDic[type].NodeState = UINode.StateType.Destroy;
                 m_WaitCloseUIDic.Remove(type);
                 RecycleWindowMaxClear();
             }
@@ -354,6 +358,7 @@ namespace GameFrame
         /// </summary>
         public void UIOpen(Type type)
         {
+            GetCurUINode().NodeState = UINode.StateType.Open;
             SetTouchable(true);
         }
 

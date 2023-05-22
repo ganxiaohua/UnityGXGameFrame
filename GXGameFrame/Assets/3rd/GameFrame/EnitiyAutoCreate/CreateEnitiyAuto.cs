@@ -20,11 +20,12 @@ public class CreateEnitiyAuto
     [System.Flags]
     public enum InheritedObject
     {
-        IStart = 1 ,
-        IShow = 1 << 1,
-        IHide = 1 << 2,
-        IUpdate = 1 << 3,
-        IClear = 1 << 4,
+        IStart = 1,
+        IProShow = 1 << 1,
+        IShow = 1 << 2,
+        IHide = 1 << 3,
+        IUpdate = 1 << 4,
+        IClear = 1 << 5,
     }
 
     public static void WriteEnitit(InheritedObject inheritedobject, string componentName, bool isUI, string createPath, string uipackName = "")
@@ -44,11 +45,20 @@ public class CreateEnitiyAuto
         string clearSystem = "";
         string clearSystemContent = ClearIsUI(isUI, componentName);
 
+        string preShowSystem = "";
+        string preShowSystemContent = PreShowIsUI(isUI, componentName);
+
 
         if ((inheritedobject & InheritedObject.IStart) == InheritedObject.IStart)
         {
             startSystem = string.Format(text[2], componentName, startSystemContent);
             scriptComponentInherit += "IStart,";
+        }
+
+        if ((inheritedobject & InheritedObject.IProShow) == InheritedObject.IProShow)
+        {
+            preShowSystem = string.Format(text[7], componentName, preShowSystemContent);
+            scriptComponentInherit += "IPreShow,";
         }
 
         if ((inheritedobject & InheritedObject.IShow) == InheritedObject.IShow)
@@ -76,7 +86,7 @@ public class CreateEnitiyAuto
         }
 
         string scriptComponent = string.Format(text[0], componentName, scriptComponentInherit.Substring(0, scriptComponentInherit.Length - 1), componentObject);
-        var scriptComponentSystem = string.Format(text[1], componentName, startSystem + showSystem + hideSystem + updateSystem + clearSystem);
+        var scriptComponentSystem = string.Format(text[1], componentName, startSystem + preShowSystem + showSystem + hideSystem + updateSystem + clearSystem);
         File.WriteAllText($"{createPath}/{componentName}.cs", scriptComponent);
         File.WriteAllText($"{createPath}/{componentName}System.cs", scriptComponentSystem);
         AssetDatabase.Refresh();
@@ -106,6 +116,19 @@ public class CreateEnitiyAuto
         {
             return string.Format(txt, componentName, path.Replace(StaticText.UIPath, "").Replace("_fui.bytes", ""));
         }
+
+        return "";
+    }
+
+    public static string PreShowIsUI(bool isUI, string componentName)
+    {
+        if (isUI)
+        {
+            return $"//这里可以处理通讯和其他资源加载,在完成之后在show这样可以保证不会出现闪烁出现" +
+                   $"//例子UI等待:加入self.AddComponent<WaitComponent,Type>(typeof(IUIWait));" +
+                   $"//当需求完成的时候RemoveComponent<WaitComponent>";
+        }
+
         return "";
     }
 
@@ -142,7 +165,7 @@ public class CreateEnitiyAuto
     public static void CreateUIDataText(string createPath, string componentName)
     {
         componentName = componentName + "Data";
-        WriteEnitit((CreateEnitiyAuto.InheritedObject) 0b10001,componentName , false, createPath);
+        WriteEnitit((CreateEnitiyAuto.InheritedObject) 0b10001, componentName, false, createPath);
     }
 
     public static void CreateUIViewText(string createPath, string componentName, string FGUIPakeName, string FGUIClassName)

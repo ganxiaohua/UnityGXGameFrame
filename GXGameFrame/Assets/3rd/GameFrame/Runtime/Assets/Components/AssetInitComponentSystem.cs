@@ -38,6 +38,11 @@ namespace GameFrame
 
         public static async UniTask WaitLoad(this AssetInitComponent self)
         {
+            if (self.Task == null)
+            {
+                return;
+            }
+
             await self.Task.Task;
             self.Task = null;
         }

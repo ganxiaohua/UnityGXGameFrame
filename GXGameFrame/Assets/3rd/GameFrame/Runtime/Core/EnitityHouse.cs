@@ -267,6 +267,22 @@ namespace GameFrame
         }
 
         /// <summary>
+        /// 运行PreShowsystem
+        /// </summary>
+        /// <param name="entity"></param>
+        public void RunPreShowSystem(IEntity entity,bool IsFirstShow)
+        {
+            SystemObject sysObject = m_EntitySystems.GetVValue(entity.GetType(), typeof(IPreShowSystem));
+            if (sysObject == null)
+            {
+                Debugger.LogWarning("not have entity showSystem");
+                return;
+            }
+
+            sysObject.System.SystemPreShow(entity,IsFirstShow);
+        }
+
+        /// <summary>
         /// 运行隐藏system
         /// </summary>
         /// <param name="entity"></param>

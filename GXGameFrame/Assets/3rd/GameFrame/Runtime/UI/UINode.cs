@@ -5,6 +5,18 @@ namespace GameFrame
 {
     public class UINode : IReference
     {
+        public enum StateType
+        {
+            WaitOpen,
+            Loading,
+            LoadEnd,
+            Open,
+            WaitDestroy,
+            Destroy,
+            Wait,
+            WaitEnd,
+        }
+
         /// <summary>
         /// 窗体的名字
         /// </summary>
@@ -21,9 +33,10 @@ namespace GameFrame
         public WindowState NextActionState;
 
         /// <summary>
-        /// 是否正在加载资源
+        /// 当前窗口状态
         /// </summary>
-        public bool IsLoading;
+        public StateType NodeState;
+
 
         /// <summary>
         /// 加载的窗体
@@ -45,7 +58,7 @@ namespace GameFrame
             uiNode.Name = windowType.Name;
             uiNode.WindowType = windowType;
             uiNode.NextActionState = WindowState.Hide;
-            uiNode.IsLoading = true;
+            uiNode.NodeState = StateType.WaitOpen;
             uiNode.Window = (Entity) UIComponent.GetComponent(windowType);
             if (uiNode.Window == null)
                 uiNode.Window = (Entity) UIComponent.AddComponent(windowType);
@@ -56,6 +69,13 @@ namespace GameFrame
         {
             uinode.Hide();
             ReferencePool.Release(uinode);
+        }
+
+        public void PreShow(bool isFirstOpen)
+        {
+            if (Window == null)
+                return;
+            EnitityHouse.Instance.RunPreShowSystem(Window,isFirstOpen);
         }
 
         public void Show()
@@ -72,24 +92,28 @@ namespace GameFrame
             EnitityHouse.Instance.RunHideSystem(Window);
         }
 
-        public async UniTask LoadDependentOver()
+        public async UniTask LoadMustDependentOver()
         {
+            NodeState = StateType.Loading;
             DependentUIResources dependentResources = Window.GetComponent<DependentUIResources>();
             if (dependentResources != null)
             {
                 await dependentResources.WaitLoad();
             }
 
-            IsLoading = false;
+            NodeState = StateType.LoadEnd;
         }
 
         public async UniTask UIWait()
         {
+            NodeState = StateType.Wait;
             WaitComponent waitComponent = Window.GetComponent<WaitComponent>();
             if (waitComponent != null)
             {
                 await waitComponent.Wait();
             }
+
+            NodeState = StateType.WaitEnd;
         }
 
         public void Clear()
