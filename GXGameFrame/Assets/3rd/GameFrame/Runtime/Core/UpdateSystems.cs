@@ -24,6 +24,15 @@ namespace GameFrame
             m_Index.Add(entity,systenitiy);
         }
 
+        public bool HasUpdateSystem(IEntity entity)
+        {
+            if (m_Index.ContainsKey(entity))
+            {
+                return true;
+            }
+            return false;
+        }
+
         public void RemoveUpdateSystem(IEntity enitity)
         {
             if (m_Index.TryGetValue(enitity, out SystemEnitiy systemenitiy))

@@ -18,15 +18,18 @@ namespace GameFrame
         }
 
         /// <summary>
-        /// 不会包含EcsEntity
+        /// 不会包含EcsEntity的实体集合
         /// </summary>
         private Dictionary<Type, List<IEntity>> m_TypeWithEntitys = new();
 
-        private DoubleMap<Type, IScene> m_EverySceneEntity = new();
+
+        private Dictionary<SceneType, IScene> m_EverySceneEntity = new(4);
 
         private DDictionaryETC m_EntitySystems = new();
 
         private UpdateSystems m_UpdateSystems = new UpdateSystems();
+
+        private List<IEntity> m_HideEnitiys = new(16);
 
         public void Init()
         {
@@ -109,57 +112,60 @@ namespace GameFrame
         }
 
 
-        public void AddSceneEntity(IScene entity)
-        {
-            Type type = entity.GetType();
-            if (m_EverySceneEntity.ContainsKey(type))
-            {
-                throw new Exception($"EverySceneEntity have enitiy:{entity.GetType().Name}");
-            }
-
-            m_EverySceneEntity.Add(type, entity);
-        }
-
-        public T GetScene<T>() where T : IScene
-        {
-            Type type = typeof(T);
-            if (!m_EverySceneEntity.TryGetValueKv(type, out IScene IScene))
-            {
-                throw new Exception($"EverySceneEntity not have enitiy:{type}");
-            }
-
-            return (T) IScene;
-        }
-
         /// <summary>
-        /// 更具scene的类型删除scene
+        /// 加入scene
         /// </summary>
+        /// <param name="sceneType"></param>
         /// <typeparam name="T"></typeparam>
-        /// <exception cref="Exception"></exception>
-        public void RemoveSceneEntity<T>() where T : IScene
+        public IScene AddSceneEntity<T>(SceneType sceneType) where T : class, IEntity, IScene, new()
         {
-            Type type = typeof(T);
-            if (!m_EverySceneEntity.TryGetValueKv(type, out IScene scene))
+            if (m_EverySceneEntity.TryGetValue(sceneType, out IScene IScene))
             {
-                throw new Exception($"EverySceneEntity not have enitiy:{type}");
+                Type type = typeof(T);
+                if (IScene.GetType() == type)
+                {
+                    throw new Exception($"EverySceneEntity  have enitiy:{type.Name}");
+                }
+
+                RemoveSceneEntity(sceneType);
             }
 
-            m_EverySceneEntity.RemoveByKey(type);
+            T scene = GXGameFrame.Instance.MainScene.AddComponent<T>();
+            m_EverySceneEntity.Add(sceneType, scene);
+            return scene;
         }
 
         /// <summary>
-        /// 根据本身删除scene
+        /// 获得scene
+        /// </summary>
+        /// <param name="sceneType"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public IScene GetScene(SceneType sceneType)
+        {
+            if (!m_EverySceneEntity.TryGetValue(sceneType, out IScene IScene))
+            {
+                throw new Exception($"EverySceneEntity not have enitiy:{sceneType}");
+            }
+
+            return IScene;
+        }
+
+
+        /// <summary>
+        /// 清除scene
         /// </summary>
         /// <param name="sceneEntity"></param>
         /// <exception cref="Exception"></exception>
-        public void RemoveSceneEntity(IScene scene)
+        public void RemoveSceneEntity(SceneType sceneType)
         {
-            if (!m_EverySceneEntity.TryGetValueVk(scene, out Type type))
+            if (!m_EverySceneEntity.TryGetValue(sceneType, out IScene scene))
             {
-                throw new Exception($"EverySceneEntity not have enitiy:{type}");
+                throw new Exception($"EverySceneEntity not have enitiy:{sceneType}");
             }
 
-            m_EverySceneEntity.RemoveByValue(scene);
+            GXGameFrame.Instance.MainScene.RemoveComponent(scene.GetType());
+            m_EverySceneEntity.Remove(sceneType);
         }
 
         public void AddSystem<T>(IEntity entity) where T : ISystem
@@ -194,7 +200,7 @@ namespace GameFrame
             Type systemType = AutoBindSystem.Instance.GetIsystem(entityType, type);
             SystemObject sysObject = CreateSystem(entity, systemType);
             sysObject.System.SystemStart(entity);
-            if (sysObject.System.IsUpdateSystem())
+            if (sysObject.System.IsUpdateSystem() && !m_UpdateSystems.HasUpdateSystem(entity))
             {
                 m_UpdateSystems.AddUpdateSystem(entity, sysObject);
             }
@@ -249,54 +255,94 @@ namespace GameFrame
             m_UpdateSystems.RemoveUpdateSystem(entity);
         }
 
+        /// <summary>
+        /// 运行PreShowsystem
+        /// </summary>
+        /// <param name="entity"></param>
+        public void RunPreShowSystem(IEntity entity, bool IsFirstShow)
+        {
+            SystemObject sysObject = m_EntitySystems.GetVValue(entity.GetType(), typeof(IPreShowSystem));
+            sysObject?.System.SystemPreShow(entity, IsFirstShow);
+        }
 
         /// <summary>
         /// 运行showsystem
         /// </summary>
         /// <param name="entity"></param>
-        public void RunShowSystem(IEntity entity)
+        public void RunShowSystem(Entity entity)
         {
-            SystemObject sysObject = m_EntitySystems.GetVValue(entity.GetType(), typeof(IShowSystem));
-            if (sysObject == null)
+            if (m_HideEnitiys.Contains(entity))
             {
-                Debugger.LogWarning("not have entity showSystem");
-                return;
+                m_HideEnitiys.Remove(entity);
             }
-
-            sysObject.System.SystemShow(entity);
+            RunShow(entity);
         }
 
-        /// <summary>
-        /// 运行PreShowsystem
-        /// </summary>
-        /// <param name="entity"></param>
-        public void RunPreShowSystem(IEntity entity,bool IsFirstShow)
+        public void RunShow(Entity entity)
         {
-            SystemObject sysObject = m_EntitySystems.GetVValue(entity.GetType(), typeof(IPreShowSystem));
-            if (sysObject == null)
+            SystemObject sysObject = m_EntitySystems.GetVValue(entity.GetType(), typeof(IShowSystem));
+            sysObject?.System.SystemShow(entity);
+
+            if (!m_UpdateSystems.HasUpdateSystem(entity))
             {
-                Debugger.LogWarning("not have entity showSystem");
-                return;
+                SystemObject updateSystem = m_EntitySystems.GetVValue(entity.GetType(), typeof(IUpdateSystem));
+                if (updateSystem != null)
+                {
+                    m_UpdateSystems.AddUpdateSystem(entity, updateSystem);
+                }
             }
 
-            sysObject.System.SystemPreShow(entity,IsFirstShow);
+            foreach (KeyValuePair<int, IEntity> enitiy in entity.Children)
+            {
+                RunShow((Entity) enitiy.Value);
+            }
+
+            foreach (KeyValuePair<Type, IEntity> enitiy in entity.Components)
+            {
+                RunShow((Entity) enitiy.Value);
+            }
         }
 
         /// <summary>
         /// 运行隐藏system
         /// </summary>
         /// <param name="entity"></param>
-        public void RunHideSystem(IEntity entity)
+        public void RunHideSystem(Entity entity)
         {
             SystemObject sysObject = m_EntitySystems.GetVValue(entity.GetType(), typeof(IHideSystem));
             if (sysObject == null)
             {
-                Debugger.LogWarning("not have entity hideSystem");
+                Debugger.LogWarning($"{entity.GetType()} not have hidesystem");
                 return;
             }
 
-            RemoveUpdateSystem(entity);
-            sysObject.System.SystemHide(entity);
+            if (m_HideEnitiys.Contains(entity))
+            {
+                Debugger.LogWarning($"{entity.GetType()}  already hide");
+                return;
+            }
+            m_HideEnitiys.Add(entity);
+            RunHide(entity);
+        }
+
+        public void RunHide(Entity entity)
+        {
+            SystemObject sysObject = m_EntitySystems.GetVValue(entity.GetType(), typeof(IHideSystem));
+            if (sysObject != null)
+            {
+                RemoveUpdateSystem(entity);
+                sysObject.System.SystemHide(entity);
+            }
+
+            foreach (KeyValuePair<int, IEntity> enitiy in entity.Children)
+            {
+                RunHide((Entity) enitiy.Value);
+            }
+
+            foreach (KeyValuePair<Type, IEntity> enitiy in entity.Components)
+            {
+                RunHide((Entity) enitiy.Value);
+            }
         }
 
         /// <summary>
