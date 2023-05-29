@@ -9,7 +9,7 @@ namespace GameFrame.Editor
 
     public class AssetGroupSettings : ScriptableObject
     {
-        [ListDrawerSettings(NumberOfItemsPerPage = 3)]
+        [ListDrawerSettings(NumberOfItemsPerPage = 4)]
         public List<AssetGroup> data = new List<AssetGroup>();
 
         static AssetGroupSettings s_Settings;

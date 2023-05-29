@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: 3d3d575ef5b28dc42a8fd0213a1ecd8d
   m_CachedHash:
     serializedVersion: 2
-    Hash: 2fcb8953ac3ba527f9ef8833a7f9ace7
+    Hash: 00000000000000000000000000000000
   m_OptimizeCatalogSize: 1
   m_BuildRemoteCatalog: 1
   m_BundleLocalCatalog: 1
@@ -43,7 +43,8 @@ MonoBehaviour:
   m_GroupAssets:
   - {fileID: 11400000, guid: 9644a303da769324aacb66884c0ca349, type: 2}
   - {fileID: 11400000, guid: 9efe8eaf378f84c4f927191e391ea664, type: 2}
-  - {fileID: 11400000, guid: 0371bffaba03ebf489e78c35e9201cda, type: 2}
+  - {fileID: 11400000, guid: cda78822a7077ae48b9c37d48a475a7a, type: 2}
+  - {fileID: 11400000, guid: 84a0e990b854e774f9a1b676625d8d6f, type: 2}
   m_BuildSettings:
     m_CompileScriptsInVirtualMode: 0
     m_CleanupStreamingAssetsAfterBuilds: 1
@@ -107,6 +108,8 @@ MonoBehaviour:
     - Config
     - TextPrefabs
     - PrefabTest
+    - Role
+    - Scene
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: a95052cee2284dd49ab7974223b3cb80, type: 2}

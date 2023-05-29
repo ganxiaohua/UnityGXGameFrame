@@ -13,6 +13,7 @@ namespace GameFrame.Editor
         public Port OutPort;
         public void Init(string text, Rect rect)
         {
+            UseDefaultStyling();
             GUID = Guid.NewGuid().ToString();
             title = text;
             SetPosition(rect);
@@ -24,6 +25,7 @@ namespace GameFrame.Editor
 
         public void Hide()
         {
+            
         }
 
         public new void Clear()
@@ -65,6 +67,11 @@ namespace GameFrame.Editor
             }
 
             return port;
+        }
+
+        public void SetColor(Color color)
+        {
+            titleContainer.style.backgroundColor = color;
         }
     }
 }

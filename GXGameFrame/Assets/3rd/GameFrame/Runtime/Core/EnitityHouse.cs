@@ -31,6 +31,8 @@ namespace GameFrame
 
         private List<IEntity> m_HideEnitiys = new(16);
 
+        public List<IEntity> HideEnitiys => m_HideEnitiys;
+
         public void Init()
         {
         }
@@ -275,6 +277,7 @@ namespace GameFrame
             {
                 m_HideEnitiys.Remove(entity);
             }
+
             RunShow(entity);
         }
 
@@ -321,6 +324,7 @@ namespace GameFrame
                 Debugger.LogWarning($"{entity.GetType()}  already hide");
                 return;
             }
+
             m_HideEnitiys.Add(entity);
             RunHide(entity);
         }

@@ -10,8 +10,7 @@ namespace GameFrame.Editor
     public class DialogueGraphWindow : EditorWindow
     {
         private EnitiyGraphView GraphView;
-
-        // 通过Menu即可打开对应window, 注意这种函数必须是static函数
+        
         public static void OpenDialogueGraphWindow()
         {
             var window = GetWindow<DialogueGraphWindow>();
@@ -25,8 +24,7 @@ namespace GameFrame.Editor
             GraphView.Show();
             CreateTools();
         }
-
-        // 关闭窗口时销毁graphView
+        
         private void OnDisable()
         {
             GraphView.Clear();

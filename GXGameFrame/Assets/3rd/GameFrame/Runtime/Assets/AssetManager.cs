@@ -7,6 +7,7 @@ using GameFrame;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.ResourceManagement.ResourceProviders;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
@@ -262,32 +263,26 @@ public class AssetManager : Singleton<AssetManager>
     /// <param name="path"></param>
     /// <param name="update"></param>
     /// <param name="completed"></param>
-    public void LoadSceneAsync(string path, Action<float> update = null, Action completed = null)
+    public async UniTask<Scene> LoadSceneAsync(string path)
     {
         if (CacheAssetDic.ContainsKey(path))
         {
             Debugger.LogError($"场景{path}已经存在");
-            return;
+            
         }
 
         var handle = Addressables.LoadSceneAsync(path);
 
         if (!CacheAssetDic.TryGetValue(path, out Assets asset))
         {
-            CacheAssetDic.Add(path, new Assets(handle, path, typeof(SceneManager), completed));
+            CacheAssetDic.Add(path, new Assets(handle, path, typeof(SceneManager),null));
         }
         else
         {
-            asset.Add(path, typeof(SceneManager), completed);
+            asset.Add(path, typeof(SceneManager), null);
         }
-
-        handle.Completed += (obj) =>
-        {
-            if (CacheAssetDic.TryGetValue(path, out Assets assets) && assets.CheckCallBack(completed))
-            {
-                completed?.Invoke();
-            }
-        };
+        SceneInstance sceneinstance = await handle.Task;
+        return sceneinstance.Scene;
     }
 
     /// <summary>

@@ -151,7 +151,6 @@ namespace GameFrame
                 UINode uinode = UINode.CreateEmptyNode(type);
                 m_UILinkedLinkedList.AddLast(uinode);
             }
-
             OpenUI(types[count - 1]);
         }
 
@@ -540,6 +539,9 @@ namespace GameFrame
         }
 
 
+        /// <summary>
+        /// 回收中的窗口清理
+        /// </summary>
         private void RecycleWindowClear()
         {
             foreach (Type recycleWindow in TempRecycleWindow)
@@ -551,6 +553,10 @@ namespace GameFrame
             TempRecycleWindow.Clear();
         }
 
+        /// <summary>
+        /// 清理指定的在回收字典中的窗口
+        /// </summary>
+        /// <param name="type"></param>
         private void RemoveRecycleWindowDic(Type type)
         {
             if (RecycleWindowDic.TryGetValue(type, out RecycleWindow recyclewindow))

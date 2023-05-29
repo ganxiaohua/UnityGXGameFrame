@@ -10,22 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: PrefabTest
+  m_Name: Role
   m_EditorClassIdentifier: 
-  m_GroupName: PrefabTest
+  m_GroupName: Role
   m_Data:
     m_SerializedData: []
-  m_GUID: 1fc98ba77397b444dbc57fe0a5a0f8b8
+  m_GUID: 815be3d41d86e5c40af0733d03c7ebfd
   m_SerializeEntries:
-  - m_GUID: 86b497186b760c84bb063142009509ff
+  - m_GUID: 947db585f33ffbf47ab7619266c7fb26
     m_Address: Cube
     m_ReadOnly: 0
     m_SerializedLabels:
     - Preload
-    - PrefabTest
+    - Role
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 1765143bf1e4ef948a398b5a8cb3ff52, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 3ce4818ea6a82e34eaed4c9cc4635dcf, type: 2}
-    - {fileID: 11400000, guid: de2168c596e5be145b3c6148764cf40b, type: 2}
+    - {fileID: 11400000, guid: 6125906912acc8e449bec53ee99c026e, type: 2}
+    - {fileID: 11400000, guid: 6805d144e10435045a72b986093150da, type: 2}

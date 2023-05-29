@@ -93,6 +93,7 @@ namespace GameFrame.Editor
             root.GraphNode = graphNode;
             graphNode.RefreshExpandedState();
             graphNode.RefreshPorts();
+            EnitiyHide(root);
         }
 
         private void CreateEnitiyNode(EnitiyNode node)
@@ -113,6 +114,19 @@ namespace GameFrame.Editor
                 m_GeneralGraphView.AddElement(graphNode);
                 m_GeneralGraphView.AddEdgeByPorts(node.GraphNode.OutPort, inPort);
                 CreateEnitiyNode(enititnode);
+                EnitiyHide(enititnode);
+            }
+        }
+
+        private void EnitiyHide(EnitiyNode node)
+        {
+            if (EnitityHouse.Instance.HideEnitiys.Contains(node.entity))
+            {
+                node.GraphNode.SetColor(Color.gray);
+            }
+            else
+            {
+                node.GraphNode.SetColor(Color.white); 
             }
         }
     }
