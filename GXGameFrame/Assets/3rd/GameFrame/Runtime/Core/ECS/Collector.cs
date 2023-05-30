@@ -33,7 +33,7 @@ namespace GameFrame
             return collector;
         }
 
-        public void InitCollector(Group[] group)
+        private void InitCollector(Group[] group)
         {
             m_CollectedEntities = new HashSet<ECSEntity>();
             m_EntityDictonary = new();
@@ -49,7 +49,7 @@ namespace GameFrame
             }
         }
 
-        public void Add(Group grop)
+        private void Add(Group grop)
         {
             foreach (var item in grop.EntitiesMap)
             {
@@ -58,12 +58,11 @@ namespace GameFrame
                 {
                     m_EntityDictonary[item] = 0;
                 }
-
                 m_EntityDictonary[item]++;
             }
         }
 
-        public void EventAdd(Group group, ECSEntity ecsEntity)
+        private void EventAdd(Group group, ECSEntity ecsEntity)
         {
             m_CollectedEntities.Add(ecsEntity);
             if (!m_EntityDictonary.ContainsKey(ecsEntity))
@@ -74,7 +73,7 @@ namespace GameFrame
             m_EntityDictonary[ecsEntity]++;
         }
 
-        public void EventRemove(Group group, ECSEntity ecsEntity)
+        private void EventRemove(Group group, ECSEntity ecsEntity)
         {
             if (m_EntityDictonary.ContainsKey(ecsEntity))
             {

@@ -271,7 +271,7 @@ public class AssetManager : Singleton<AssetManager>
             
         }
 
-        var handle = Addressables.LoadSceneAsync(path);
+        var handle = Addressables.LoadSceneAsync(path,LoadSceneMode.Additive);
 
         if (!CacheAssetDic.TryGetValue(path, out Assets asset))
         {

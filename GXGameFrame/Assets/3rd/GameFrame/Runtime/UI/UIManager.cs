@@ -151,6 +151,7 @@ namespace GameFrame
                 UINode uinode = UINode.CreateEmptyNode(type);
                 m_UILinkedLinkedList.AddLast(uinode);
             }
+
             OpenUI(types[count - 1]);
         }
 
@@ -166,6 +167,9 @@ namespace GameFrame
             //如果最上层节点就是想要打开的节点则什么都不做
             if (curUINode != null && curUINode.WindowType == type)
             {
+                //如果back的时候是个空节点,在back的时候会设置不可点击,所以如果打开的本身 需要重新打开可以点击.
+                //一般而言不会有这样的操作,但是架不住别人胡乱使用.
+                SetTouchable(true);
                 return;
             }
 

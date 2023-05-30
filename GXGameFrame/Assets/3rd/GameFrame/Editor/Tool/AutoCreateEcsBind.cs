@@ -26,7 +26,7 @@ namespace GameFrame.Editor
         private static Dictionary<CreateAuto, string> s_TextDictionary;
         private static Dictionary<Type, string> s_EventDictionary;
         private static StringBuilder s_EventSb = new StringBuilder(1024);
-        
+
         public static void AutoCreateScript()
         {
             LoadText();
@@ -42,7 +42,7 @@ namespace GameFrame.Editor
 
         public static void LoadText()
         {
-            string add =EditorString.GameFramePath + "Editor/Text/Add.txt";
+            string add = EditorString.GameFramePath + "Editor/Text/Add.txt";
             string cls = EditorString.GameFramePath + "Editor/Text/Class.txt";
             string addparameter = EditorString.GameFramePath + "Editor/Text/AddParameter.txt";
             string get = EditorString.GameFramePath + "Editor/Text/Get.txt";
@@ -60,11 +60,13 @@ namespace GameFrame.Editor
             {
                 s_EventDictionary = new Dictionary<Type, string>();
             }
+
             s_EventDictionary.Clear();
             if (s_TextDictionary == null)
             {
                 s_TextDictionary = new Dictionary<CreateAuto, string>();
             }
+
             s_TextDictionary.Clear();
             s_TextDictionary.Add(CreateAuto.Class, strcls);
             s_TextDictionary.Add(CreateAuto.Add, stradd);
@@ -88,7 +90,8 @@ namespace GameFrame.Editor
                     {
                         AddEvent(tp);
                     }
-                    CreateCSHAP(tp);
+
+                    CreateCshap(tp);
                 }
             }
 
@@ -96,14 +99,15 @@ namespace GameFrame.Editor
         }
 
         //创建c#脚本
-        public static void CreateCSHAP(Type type)
+        public static void CreateCshap(Type type)
         {
             FieldInfo[] variable = type.GetFields();
             string typeName = type.Name;
+            string typeFullName = type.FullName;
             StringBuilder sb = new StringBuilder(1024);
             string abcls = s_TextDictionary[CreateAuto.Class];
-            string abAdd = string.Format(s_TextDictionary[CreateAuto.Add], typeName);
-            string abGet = string.Format(s_TextDictionary[CreateAuto.Get], typeName);
+            string abAdd = string.Format(s_TextDictionary[CreateAuto.Add], typeName, typeFullName);
+            string abGet = string.Format(s_TextDictionary[CreateAuto.Get], typeName, typeFullName);
             string abSet = "";
             string addParameter = "";
             if (variable.Length > 0)
@@ -115,13 +119,13 @@ namespace GameFrame.Editor
                     fieldTypeName = "string";
                 }
 
-                addParameter = string.Format(s_TextDictionary[CreateAuto.AddParameter], typeName, fieldTypeName, fieldName);
+                addParameter = string.Format(s_TextDictionary[CreateAuto.AddParameter], typeName, fieldTypeName, typeFullName, fieldName);
                 string evetString = "";
-                if (s_EventDictionary.TryGetValue(type, out  evetString))
+                if (s_EventDictionary.TryGetValue(type, out evetString))
                 {
-                    
                 }
-                abSet = string.Format(s_TextDictionary[CreateAuto.Set], typeName, fieldTypeName, fieldName,evetString);
+
+                abSet = string.Format(s_TextDictionary[CreateAuto.Set], typeName, fieldTypeName, typeFullName, fieldName, evetString);
             }
 
             sb.Append(abAdd);
@@ -137,9 +141,10 @@ namespace GameFrame.Editor
         public static void AddEvent(Type type)
         {
             string typeName = type.Name;
-            string str = string.Format(s_TextDictionary[CreateAuto.Event], typeName);
+            string typeFullName = type.FullName;
+            string str = string.Format(s_TextDictionary[CreateAuto.Event], typeFullName, typeName);
             s_EventSb.Append(str);
-            s_EventDictionary.Add(type,$"ViewBindEventClass.{typeName}EntityComponentNumericalChange?.Invoke(p,ecsEntity);");
+            s_EventDictionary.Add(type, $"ViewBindEventClass.{typeName}EntityComponentNumericalChange?.Invoke(p,ecsEntity);");
         }
 
         public static void CreateEvent()

@@ -26,15 +26,6 @@ namespace GameFrame
         }
 
 
-        public void SetObject(GameObject go)
-        {
-            if (go == null)
-            {
-                Debugger.LogError("GameoBject go is null");
-                return;
-            }
-        }
-
         private Transform m_Parent;
 
         public Transform Parent
@@ -178,6 +169,7 @@ namespace GameFrame
             {
                 return;
             }
+
             m_Obj = Object.Instantiate(go);
             Parent = m_Parent;
             m_Trans = m_Obj.transform;
@@ -239,10 +231,43 @@ namespace GameFrame
             AssetManager.Instance.UnLoad(m_LoadPath);
         }
 
-        public async void LoadOver()
+        public async UniTask LoadOver()
         {
-            await m_Task.Task;
-            m_Task = null;
+            if (m_Task != null)
+            {
+                await m_Task.Task;
+                m_Task = null;
+            }
+        }
+
+
+        public MeshRenderer GetMeshRenderer()
+        {
+            if (m_Obj == null)
+            {
+                return null;
+            }
+
+            return m_Obj.GetComponent<MeshRenderer>();
+        }
+
+        public SkinnedMeshRenderer GetSkinnedMeshRenderer()
+        {
+            if (m_Obj == null)
+            {
+                return null;
+            }
+
+            return m_Obj.GetComponent<SkinnedMeshRenderer>();
+        }
+
+        public Animator GetAnimator()
+        {
+            if (m_Obj == null)
+            {
+                return null;
+            }
+            return m_Obj.GetComponent<Animator>();
         }
     }
 }

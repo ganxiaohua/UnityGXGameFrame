@@ -49,6 +49,8 @@ namespace GameFrame
         // private List<ObjectBase> m_ActionObjects;
         private Type m_ObjectType;
 
+        private static string sDefaultKey = "";
+
         public static ObjectPool<T> Create(TypeNamePair typeName, Type objectType, int maxNum,int expireTime, object initData)
         {
             Type objectPoolType = typeof(ObjectPool<>).MakeGenericType(objectType);
@@ -60,6 +62,7 @@ namespace GameFrame
             objectPool.m_ExpireTime = expireTime;
             objectPool.m_AutoReleaseInterval = 5;
             objectPool.m_CurAutoReleaseTime = 0;
+            
             return objectPool;
         }
 
@@ -101,7 +104,7 @@ namespace GameFrame
         /// <exception cref="Exception"></exception>
         public T Spawn()
         {
-            return SpawnKey("");
+            return SpawnKey(sDefaultKey);
         }
 
         /// <summary>

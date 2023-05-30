@@ -179,7 +179,7 @@ namespace GameFrame
         /// 创建获得得到一个SystemObject
         /// </summary>
         /// <param name="entity"></param>
-        /// <param name="system"> 这个type不是具体的type而是父节点 类似 IStartSystem</param>
+        /// <param name="system"> 系统类</param>
         /// <returns></returns>
         private SystemObject CreateSystem(IEntity entity, Type system)
         {
@@ -189,6 +189,10 @@ namespace GameFrame
             {
                 sysObject = ReferencePool.Acquire<SystemObject>();
                 Type entitySystem = AutoBindSystem.Instance.GetEnitiySystem(entityType, system);
+                if (entitySystem == null)
+                {
+                    entitySystem = system;
+                }
                 sysObject.AddSystem(entitySystem);
                 m_EntitySystems.Add(entityType, system, sysObject);
             }
@@ -200,6 +204,10 @@ namespace GameFrame
         {
             Type entityType = entity.GetType();
             Type systemType = AutoBindSystem.Instance.GetIsystem(entityType, type);
+            if (systemType == null)
+            {
+                systemType = type;
+            }
             SystemObject sysObject = CreateSystem(entity, systemType);
             sysObject.System.SystemStart(entity);
             if (sysObject.System.IsUpdateSystem() && !m_UpdateSystems.HasUpdateSystem(entity))

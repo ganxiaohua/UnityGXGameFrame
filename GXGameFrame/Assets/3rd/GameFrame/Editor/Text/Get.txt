@@ -1,6 +1,6 @@
 
-         public static {0} Get{0}(this ECSEntity ecsEntity)
+         public static {1} Get{0}(this ECSEntity ecsEntity)
          {{
-              return ecsEntity.GetComponent<{0}>();
+              return ecsEntity.GetComponent<{1}>();
          }}
          

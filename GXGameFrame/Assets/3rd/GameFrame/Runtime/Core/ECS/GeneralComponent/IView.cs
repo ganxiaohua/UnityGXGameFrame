@@ -15,6 +15,6 @@ namespace GameFrame
     
     public interface IEceView:IReference
     {
-        void Link(ECSEntity ecsEntity,string path);
+        void Link(ECSEntity ecsEntity);
     }
 }
