@@ -241,33 +241,14 @@ namespace GameFrame
         }
 
 
-        public MeshRenderer GetMeshRenderer()
+        public T GetComponent<T>() where T : Object
         {
             if (m_Obj == null)
             {
                 return null;
             }
 
-            return m_Obj.GetComponent<MeshRenderer>();
-        }
-
-        public SkinnedMeshRenderer GetSkinnedMeshRenderer()
-        {
-            if (m_Obj == null)
-            {
-                return null;
-            }
-
-            return m_Obj.GetComponent<SkinnedMeshRenderer>();
-        }
-
-        public Animator GetAnimator()
-        {
-            if (m_Obj == null)
-            {
-                return null;
-            }
-            return m_Obj.GetComponent<Animator>();
+            return m_Obj.GetComponent<T>();
         }
     }
 }

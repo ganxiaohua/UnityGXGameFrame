@@ -16,6 +16,7 @@ namespace GameFrame
 
     public class Matcher : IAllOfMatcher, INoneOfIndices, IAnyOfMatcher, IReference
     {
+        //以下三个只会选择其中一个
         //全部包含
         private int[] m_AllOfIndices;
 
@@ -25,48 +26,61 @@ namespace GameFrame
         //除了这个之外
         private int[] m_NoneOfIndices;
 
-        //除了这个之外
+        //用于查看
         private string[] m_IndicesName;
-        public static Matcher SetAllOfIndices(params Type[] snitiyHasCodes)
+
+        public static Matcher SetAllOfIndices(params int[] snitiyHasCodes)
         {
             int count = snitiyHasCodes.Length;
             Matcher matcher = CreateMatcher();
             matcher.m_AllOfIndices = new int[count];
+#if UNITY_EDITOR
             matcher.m_IndicesName = new string[count];
+#endif
             for (int i = 0; i < count; i++)
             {
-                matcher.m_AllOfIndices[i] = snitiyHasCodes[i].GetHashCode();
-                matcher.m_IndicesName[i] = snitiyHasCodes[i].Name;
+                matcher.m_AllOfIndices[i] = snitiyHasCodes[i];
+#if UNITY_EDITOR
+                matcher.m_IndicesName[i] = Components.ComponentTypes[snitiyHasCodes[i]].Name;
+#endif
             }
 
             return matcher;
         }
 
-        public static Matcher SetAnyOfIndices(params Type[] snitiyHasCodes)
+        public static Matcher SetAnyOfIndices(params int[] snitiyHasCodes)
         {
             int count = snitiyHasCodes.Length;
             Matcher matcher = CreateMatcher();
             matcher.m_AnyOfIndices = new int[count];
+#if UNITY_EDITOR
             matcher.m_IndicesName = new string[count];
+#endif
             for (int i = 0; i < count; i++)
             {
-                matcher.m_AnyOfIndices[i] = snitiyHasCodes[i].GetHashCode();
-                matcher.m_IndicesName[i] = snitiyHasCodes[i].Name;
+                matcher.m_AnyOfIndices[i] = snitiyHasCodes[i];
+#if UNITY_EDITOR
+                matcher.m_IndicesName[i] = Components.ComponentTypes[snitiyHasCodes[i]].Name;
+#endif
             }
 
             return matcher;
         }
 
-        public static Matcher SetNonefIndices(params Type[] snitiyHasCodes)
+        public static Matcher SetNonefIndices(params int[] snitiyHasCodes)
         {
             int count = snitiyHasCodes.Length;
             Matcher matcher = CreateMatcher();
             matcher.m_NoneOfIndices = new int[count];
+#if UNITY_EDITOR
             matcher.m_IndicesName = new string[count];
+#endif
             for (int i = 0; i < count; i++)
             {
-                matcher.m_NoneOfIndices[i] = snitiyHasCodes[i].GetHashCode();
-                matcher.m_IndicesName[i] = snitiyHasCodes[i].Name;
+                matcher.m_NoneOfIndices[i] = snitiyHasCodes[i];
+#if UNITY_EDITOR
+                matcher.m_IndicesName[i] = Components.ComponentTypes[snitiyHasCodes[i]].Name;
+#endif
             }
 
             return matcher;

@@ -1,7 +1,7 @@
 
          public static ECSEntity Set{0}(this ECSEntity ecsEntity,{1} param)
          {{
-              var p = ecsEntity.GetComponent<{2}>();
+              var p = ({2})ecsEntity.GetComponent(Components.{0});
               p.{3} = param;
               {4}
               return ecsEntity;

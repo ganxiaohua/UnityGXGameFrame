@@ -22,7 +22,6 @@ namespace GameFrame
         /// </summary>
         private Dictionary<Type, List<IEntity>> m_TypeWithEntitys = new();
 
-
         private Dictionary<SceneType, IScene> m_EverySceneEntity = new(4);
 
         private DDictionaryETC m_EntitySystems = new();
@@ -208,9 +207,10 @@ namespace GameFrame
             {
                 systemType = type;
             }
+
             SystemObject sysObject = CreateSystem(entity, systemType);
             sysObject.System.SystemStart(entity);
-            if (sysObject.System.IsUpdateSystem() && !m_UpdateSystems.HasUpdateSystem(entity))
+            if (sysObject.System.IsUpdateSystem() && !m_UpdateSystems.HasUpdateSystem(entity,sysObject.System))
             {
                 m_UpdateSystems.AddUpdateSystem(entity, sysObject);
             }
@@ -260,9 +260,9 @@ namespace GameFrame
         /// 删除一个updatesystem
         /// </summary>
         /// <param name="entity"></param>
-        private void RemoveUpdateSystem(IEntity entity)
+        private void RemoveUpdateSystem(IEntity entity, ISystem system = null)
         {
-            m_UpdateSystems.RemoveUpdateSystem(entity);
+            m_UpdateSystems.RemoveUpdateSystem(entity, system);
         }
 
         /// <summary>
@@ -371,7 +371,7 @@ namespace GameFrame
             {
                 if (systemObject.System.IsUpdateSystem())
                 {
-                    RemoveUpdateSystem(entity);
+                    RemoveUpdateSystem(entity, systemObject.System);
                 }
             }
         }

@@ -1,6 +1,6 @@
 
          public static void Add{0}(this ECSEntity ecsEntity)
          {{
-              ecsEntity.AddComponent<{1}>();
+              ecsEntity.AddComponent(Components.{0});
          }}
          

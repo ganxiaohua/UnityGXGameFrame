@@ -130,7 +130,7 @@ namespace GameFrame
                 }
                 else if (es.SystemObject.System is IECSUpdateSystem ecsupdatesystem)
                 {
-                    ecsupdatesystem.Update();
+                    ecsupdatesystem.Update(elapseSeconds,realElapseSeconds);
                 }
             }
         }

@@ -27,6 +27,6 @@
     // -------------------------------------------
     public interface IECSUpdateSystem : ISystem
     {
-        void Update();
+        void Update(float elapseSeconds, float realElapseSeconds);
     }
 }

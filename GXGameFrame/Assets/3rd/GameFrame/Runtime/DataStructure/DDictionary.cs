@@ -76,6 +76,15 @@ namespace GameFrame
 
             return true;
         }
+        
+        public bool ContainsT(T t)
+        {
+            if (!DDTKV.ContainsKey(t))
+            {
+                return false;
+            }
+            return true;
+        }
 
 
         IEnumerator<KeyValuePair<T, Dictionary<K, V>>> IEnumerable<KeyValuePair<T, Dictionary<K, V>>>.GetEnumerator()

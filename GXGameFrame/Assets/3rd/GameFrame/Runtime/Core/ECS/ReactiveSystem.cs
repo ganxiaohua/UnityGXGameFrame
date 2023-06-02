@@ -29,7 +29,7 @@ namespace GameFrame
 
         protected abstract void Update(List<ECSEntity> entities);
 
-        public void Update()
+        public void Update(float elapseSeconds, float realElapseSeconds)
         {
             foreach (ECSEntity collectedEntity in m_Collector.CollectedEntities)
             {

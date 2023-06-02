@@ -8,10 +8,6 @@ namespace GameFrame
 {
     public class Collector : IReference
     {
-        // private Group[] m_Groups;
-        /// <summary>
-        /// 存放group里的东西
-        /// </summary>
         private HashSet<ECSEntity> m_CollectedEntities;
 
         public Dictionary<ECSEntity, int> m_EntityDictonary;
@@ -19,12 +15,12 @@ namespace GameFrame
         public HashSet<ECSEntity> CollectedEntities => m_CollectedEntities;
 
 
-        public static Collector CreateCollector(Context context, params Type[] types)
+        public static Collector CreateCollector(Context context, params int[] indexs)
         {
-            Group[] groups = new Group[types.Length];
-            for (int i = 0; i < types.Length; i++)
+            Group[] groups = new Group[indexs.Length];
+            for (int i = 0; i < indexs.Length; i++)
             {
-                Matcher matcher = Matcher.SetAllOfIndices(types[i]);
+                Matcher matcher = Matcher.SetAllOfIndices(indexs[i]);
                 groups[i] = context.GetGroup(matcher);
             }
 

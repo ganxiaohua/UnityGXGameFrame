@@ -1,0 +1,14 @@
+public static class Components {{
+    {0}
+    
+    public const int TotalComponents = {1};
+    
+    {2}
+}}
+#
+    public const int {0}= {1};#
+    public static readonly System.Type[] ComponentTypes = {{
+        {0}
+    }};
+#
+        typeof({0}),
