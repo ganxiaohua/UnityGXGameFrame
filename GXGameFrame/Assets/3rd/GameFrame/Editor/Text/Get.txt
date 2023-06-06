@@ -1,5 +1,5 @@
 
-         public static {1} Get{0}(this ECSEntity ecsEntity)
+         public static {1} Get{0}(this {2} ecsEntity)
          {{
               return ({1})ecsEntity.GetComponent(Components.{0});
          }}

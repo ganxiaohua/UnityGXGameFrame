@@ -122,13 +122,20 @@ namespace GameFrame.Editor
         //创建c#脚本
         public static void CreateCshap(Type type)
         {
+            string ECSComponentName = "ECSEntity";
+            var vb = type.GetCustomAttribute<AssignBindAttribute>();
+            if (vb != null)
+            {
+                ECSComponentName = vb.BindType.FullName;
+            }
+            
             FieldInfo[] variable = type.GetFields();
             string typeName = type.Name;
             string typeFullName = type.FullName;
             StringBuilder sb = new StringBuilder(1024);
             string abcls = s_TextDictionary[CreateAuto.Class];
-            string abAdd = string.Format(s_TextDictionary[CreateAuto.Add], typeName, typeFullName);
-            string abGet = string.Format(s_TextDictionary[CreateAuto.Get], typeName, typeFullName);
+            string abAdd = string.Format(s_TextDictionary[CreateAuto.Add], typeName,ECSComponentName);
+            string abGet = string.Format(s_TextDictionary[CreateAuto.Get], typeName, typeFullName,ECSComponentName);
             string abSet = "";
             string addParameter = "";
             if (variable.Length > 0)
@@ -140,13 +147,13 @@ namespace GameFrame.Editor
                     fieldTypeName = "string";
                 }
 
-                addParameter = string.Format(s_TextDictionary[CreateAuto.AddParameter], typeName, fieldTypeName, typeFullName, fieldName);
+                addParameter = string.Format(s_TextDictionary[CreateAuto.AddParameter], typeName, fieldTypeName, typeFullName, fieldName,ECSComponentName);
                 string evetString = "";
                 if (s_EventDictionary.TryGetValue(type, out evetString))
                 {
                 }
 
-                abSet = string.Format(s_TextDictionary[CreateAuto.Set], typeName, fieldTypeName, typeFullName, fieldName, evetString);
+                abSet = string.Format(s_TextDictionary[CreateAuto.Set], typeName, fieldTypeName, typeFullName, fieldName, evetString,ECSComponentName);
             }
 
             sb.Append(abAdd);
