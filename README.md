@@ -1,4 +1,4 @@
-# UnityGameFame
+# UnityGXGameFame
 高性能组件式框架,参考ET,GF,Entitas框架
 
 集成UI框架(基于fgui),资源加载框架(基于AA的的拓展,可以做到一键出包,一键构建,只需要少量配置)
