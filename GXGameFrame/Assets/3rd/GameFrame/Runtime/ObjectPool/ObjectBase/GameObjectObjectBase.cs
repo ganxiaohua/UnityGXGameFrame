@@ -1,6 +1,4 @@
-﻿using BansheeGz.BGDatabase;
-using Cysharp.Threading.Tasks;
-using Unity.VisualScripting;
+﻿using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace GameFrame
