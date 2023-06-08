@@ -8,47 +8,32 @@ namespace GameFrame.Editor
     {
         private static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
         {
-            PackAssets(importedAssets);
-            PackAssets(movedAssets);
-            if (Array.Exists(importedAssets, IsUIFolder) || Array.Exists(movedAssets, IsUIFolder) || Array.Exists(deletedAssets,IsUIFolder))
-            {
-                BuildScript.ProcessAssetGroupByName("UI");
-            }
+            ABAssest(importedAssets);
+            ABAssest(deletedAssets);
+            ABAssest(movedAssets);
+            ABAssest(movedFromAssetPaths);
         }
         
-        public static bool IsUIFolder(string assetPath)
+        /// <summary>
+        /// 在配置中资源发生了变化就执行
+        /// </summary>
+        /// <param name="assetPaths"></param>
+        public static void ABAssest(string[] assetPaths)
         {
-            return assetPath.StartsWith(EditorString.UIAssetPath);
-        }
-        
-        private static void PackAssets(string[] assets)
-        {
-            foreach (var assetPath in assets)
+            foreach (var assetPath in assetPaths)
             {
-                // texture setting
-                if (IsUIFolder(assetPath) && IsTexture(assetPath))
+                foreach (var item in AssetGroupSettings.settings.data)
                 {
-                    TextureSetting(assetPath);
-                }
+                    foreach (var searchPath in item.searchPaths)
+                    {
+                        if (assetPath.StartsWith(searchPath))
+                        {
+                            BuildScript.ProcessAssetGroupByName(item.groupName);
+                            break;
+                        }
+                    }
+                }   
             }
-        }
-
-        public static void TextureSetting(string assetPath)
-        {
-            var textureImporter = AssetImporter.GetAtPath(assetPath) as TextureImporter;
-            textureImporter.mipmapEnabled = false;
-            AssetDatabase.WriteImportSettingsIfDirty(assetPath);
-        }
-        
-        public static string[] TextrueExts = new string[] { ".png", ".jpg", ".tga", ".psd", ".bmp" };
-        public static bool IsTexture(string assetPath)
-        {
-            for (int i = 0; i < TextrueExts.Length; i++)
-            {
-                if (assetPath.EndsWith(TextrueExts[i]))
-                    return true;
-            }
-            return false;
         }
         
         //
@@ -57,6 +42,5 @@ namespace GameFrame.Editor
         // {
         //     
         // }
-
     }
 }
