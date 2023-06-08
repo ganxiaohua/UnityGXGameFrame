@@ -347,11 +347,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 024553ecf96a65649b929ee08c9214fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  packageName: Home
-  componentName: HomeWindow
+  packageName: Card
+  componentName: CardListWindow2
   fitScreen: 0
   sortingOrder: 0
-  packagePath: Assets/GXGame/UI/Home
+  packagePath: Assets/GXGame/UI/Card
   renderMode: 0
   renderCamera: {fileID: 0}
   position: {x: 0, y: 0, z: 0}
@@ -389,7 +389,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4cb45a8302c5713449dcf0bec31e3329, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dafaultPath: E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Assets/GXGame/Scripts/UI
-  custom_Path: E:/unityObject3/UnityGameFame/UnityGameFame/GXGameFrame/Assets/GXGame/Scripts/UI
-  className: UICardWindow
-  bindList: []
+  dafaultPath: Assets/GXGame/Scripts/UI
+  custom_Path: Assets/GXGame/Scripts/UI
+  className: 
+  bindList:
+  - Path: n43
+    FieldName: n43
+    TypeName: GButton
+    Com: {fileID: 0}
+  - Path: n43.n0
+    FieldName: n43_n0
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: n44
+    FieldName: n44
+    TypeName: GButton
+    Com: {fileID: 0}
+  - Path: n44.n0
+    FieldName: n44_n0
+    TypeName: GImage
+    Com: {fileID: 0}
+  - Path: n45
+    FieldName: n45
+    TypeName: GButton
+    Com: {fileID: 0}
+  - Path: n45.n0
+    FieldName: n45_n0
+    TypeName: GImage
+    Com: {fileID: 0}

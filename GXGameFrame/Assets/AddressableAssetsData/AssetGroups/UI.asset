@@ -16,7 +16,13 @@ MonoBehaviour:
   m_Data:
     m_SerializedData: []
   m_GUID: 3d3d575ef5b28dc42a8fd0213a1ecd8d
-  m_SerializeEntries: []
+  m_SerializeEntries:
+  - m_GUID: 7866e3a79e34a4e4e9993b07ceafd927
+    m_Address: Assets/GXGame/UI/TestUI
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - UI
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 1765143bf1e4ef948a398b5a8cb3ff52, type: 2}
   m_SchemaSet:

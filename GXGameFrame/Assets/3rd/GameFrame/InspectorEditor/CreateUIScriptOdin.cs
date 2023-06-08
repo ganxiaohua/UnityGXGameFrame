@@ -43,8 +43,8 @@ public class CreateUIScriptOdin : MonoBehaviour
 
     [Title("默认路径")] [ReadOnly] [HideLabel] public string dafaultPath;
 
-    private const string codePath = "/GXGame/Scripts/UI";
-    private static string saveCodePath;
+    private static string CodePath;
+    private static string SaveCodePath;
 
     private int Index;
     private int NamingLength;
@@ -55,7 +55,7 @@ public class CreateUIScriptOdin : MonoBehaviour
 
     private string[] m_ExportTypes = {"GButton", "GList", "GRichTextField", "GTextField", "GComponent", "GLoader", "GTextInput", "GProgressBar"};
 
-    [Title("自定义路径选择")] [HideLabel] [FolderPath(ParentFolder = "Assets/GXGame/Scripts/UI", AbsolutePath = true)] [OnValueChanged("ButtonBind")]
+    [Title("自定义路径选择")] [HideLabel] [OnValueChanged("ButtonBind")]
     public string custom_Path;
 
     [Button("绑定组件"), ButtonGroup]
@@ -80,7 +80,7 @@ public class CreateUIScriptOdin : MonoBehaviour
     public void ButtonBackMain()
     {
         EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
-        EditorSceneManager.OpenScene("Assets/GXGame/Scenes/Init.unity");
+        EditorSceneManager.OpenScene(EditorCSharp.GetEditorString_FirstScenePath());
     }
 
     [HorizontalGroup] [LabelText("类名:"), LabelWidth(40)]
@@ -101,7 +101,7 @@ public class CreateUIScriptOdin : MonoBehaviour
     [OnInspectorInit("EditorInit")]
     private void EditorInit()
     {
-        dafaultPath = (Application.dataPath + codePath).Replace("\\", "/"); //初始化默认路径
+        dafaultPath = EditorCSharp.GetEditorString_UIScriptsPath();
 
         custom_Path = dafaultPath;
 
@@ -122,11 +122,11 @@ public class CreateUIScriptOdin : MonoBehaviour
     {
         if (string.IsNullOrEmpty(custom_Path))
         {
-            saveCodePath = dafaultPath;
+            SaveCodePath = dafaultPath;
         }
         else
         {
-            saveCodePath = custom_Path;
+            SaveCodePath = custom_Path;
         }
     }
 
@@ -208,17 +208,17 @@ public class CreateUIScriptOdin : MonoBehaviour
         CheckSavePath();
         try
         {
-            if (File.Exists($"{saveCodePath}/{className}.cs"))
+            if (File.Exists($"{SaveCodePath}/{className}.cs"))
             {
                 if (EditorUtility.DisplayDialog("警告！", className + "已经存在是否覆盖View组件获取脚本.(逻辑脚本会保留)", "覆盖", "取消"))
                 {
-                    ViewFunc(saveCodePath, className);
+                    ViewFunc(SaveCodePath, className);
                 }
             }
             else
             {
-                LogicFunc(saveCodePath, className);
-                ViewFunc(saveCodePath, className);
+                LogicFunc(SaveCodePath, className);
+                ViewFunc(SaveCodePath, className);
             }
         }
         catch (Exception e)
@@ -238,6 +238,7 @@ public class CreateUIScriptOdin : MonoBehaviour
                 string typeName = v.TypeName;
                 fields += CreateEnitiyAuto.CreateUIAutoComText(typeName, name, path, typeName);
             }
+
             CreateEnitiyAuto.CreateUIViewAutoText(codepath, classname, fields);
         }
 
@@ -246,8 +247,8 @@ public class CreateUIScriptOdin : MonoBehaviour
             CreateEnitiyAuto.WriteEnitit((CreateEnitiyAuto.InheritedObject) 0b111111, classname, true, codepath, UIPanel.packageName);
             CreateEnitiyAuto.CreateUIViewText(codepath, classname, UIPanel.packageName, UIPanel.componentName);
             CreateEnitiyAuto.CreateUIDataText(codepath, classname);
-
         }
+
         AssetDatabase.Refresh();
         EditorUtility.DisplayDialog("提示", "代码生成完毕", "OK");
     }

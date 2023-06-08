@@ -165,7 +165,7 @@ public class CreateEnitiyAuto
     public static void CreateUIDataText(string createPath, string componentName)
     {
         componentName = componentName + "Data";
-        WriteEnitit((CreateEnitiyAuto.InheritedObject) 0b10001, componentName, false, createPath);
+        WriteEnitit((CreateEnitiyAuto.InheritedObject) 0b100011, componentName, false, createPath);
     }
 
     public static void CreateUIViewText(string createPath, string componentName, string FGUIPakeName, string FGUIClassName)

@@ -359,7 +359,7 @@ namespace GameFrame
         /// <summary>
         /// 界面彻底打开
         /// </summary>
-        public void UIOpen(Type type)
+        public void UIOpened(Type type)
         {
             GetCurUINode().NodeState = UINode.StateType.Open;
             SetTouchable(true);

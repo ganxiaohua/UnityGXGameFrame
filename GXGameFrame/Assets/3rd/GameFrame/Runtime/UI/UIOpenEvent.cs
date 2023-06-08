@@ -6,7 +6,7 @@ namespace GameFrame
     {
         public void Send(Type type)
         {
-            UIManager.Instance.UIOpen(type);
+            UIManager.Instance.UIOpened(type);
         }
 
         public void Clear()
