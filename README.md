@@ -1,5 +1,7 @@
 # UnityGXGameFame
 高性能组件式框架,参考ET,GF,Entitas框架
+测试案例(将之放入到Assets目录下即可):
+https://github.com/ganxiaohua/GXGame
 
 集成UI框架(基于fgui),资源加载框架(基于AA的的拓展,可以做到一键出包,一键构建,只需要少量配置)
 
