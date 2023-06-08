@@ -8,7 +8,6 @@ using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.AddressableAssets.Build;
 using System.Diagnostics;
-using GameFrame.Editor;
 using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 using Debug = UnityEngine.Debug;
 using UnityEngine.AddressableAssets;

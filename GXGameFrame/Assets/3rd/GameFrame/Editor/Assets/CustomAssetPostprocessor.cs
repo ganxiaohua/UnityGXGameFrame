@@ -10,17 +10,17 @@ namespace GameFrame.Editor
         {
             PackAssets(importedAssets);
             PackAssets(movedAssets);
-            if (Array.Exists(importedAssets, IsUIFolder) || Array.Exists(movedAssets, IsUIFolder))
+            if (Array.Exists(importedAssets, IsUIFolder) || Array.Exists(movedAssets, IsUIFolder) || Array.Exists(deletedAssets,IsUIFolder))
             {
                 BuildScript.ProcessAssetGroupByName("UI");
             }
         }
-
+        
         public static bool IsUIFolder(string assetPath)
         {
-            return assetPath.StartsWith("Assets/UI");
+            return assetPath.StartsWith(EditorString.UIAssetPath);
         }
-
+        
         private static void PackAssets(string[] assets)
         {
             foreach (var assetPath in assets)
@@ -50,5 +50,13 @@ namespace GameFrame.Editor
             }
             return false;
         }
+        
+        //
+        // [UnityEditor.Callbacks.DidReloadScripts]
+        // public static void SystemBind()
+        // {
+        //     
+        // }
+
     }
 }

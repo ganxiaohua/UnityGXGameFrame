@@ -63,12 +63,5 @@ namespace GameFrame.Editor
             AssetDatabase.Refresh();
             Debug.Log("创建成功");
         }
-
-        [UnityEditor.Callbacks.DidReloadScripts]
-        public static void SystemBind()
-        {
-            // AutoCreateSystem.AutoCreateScript();
-            // EditorBuildDatabase.SetBuildbaseData(false);
-        }
     }
 }

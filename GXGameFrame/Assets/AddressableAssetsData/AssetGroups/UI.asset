@@ -23,6 +23,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Preload
     - UI
+  - m_GUID: b398f8d7aced54747848561c843fc6df
+    m_Address: Assets/GXGame/UI/TestUI 1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - UI
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 1765143bf1e4ef948a398b5a8cb3ff52, type: 2}
   m_SchemaSet:
