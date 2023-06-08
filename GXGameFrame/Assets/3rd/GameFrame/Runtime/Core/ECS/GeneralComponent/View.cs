@@ -3,7 +3,7 @@
     public class View : ECSComponent
     {
         public IEceView Value;
-        public void Clear()
+        public override void Clear()
         {
             ReferencePool.Release(Value);
         }
