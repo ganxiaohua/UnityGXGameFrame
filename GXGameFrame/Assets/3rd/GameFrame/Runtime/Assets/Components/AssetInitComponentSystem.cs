@@ -17,12 +17,28 @@ namespace GameFrame
                 self.Task.TrySetResult();
             }
         }
+        
+        [SystemBind]
+        public class AssetInitComponentUpdateSystem : UpdateSystem<AssetInitComponent>
+        {
+            protected override  void Update(AssetInitComponent self,float elapseSeconds, float realElapseSeconds)
+            {
+                if (self.CheckUpdate != null)
+                {
+                    self.CheckUpdate.Update();
+                }
+            }
+        }
 
         [SystemBind]
         public class AssetInitComponentClearSystem : ClearSystem<AssetInitComponent>
         {
             protected override void Clear(AssetInitComponent self)
             {
+                if (self.CheckUpdate != null)
+                {
+                    self.CheckUpdate.Disable();
+                }
             }
         }
 

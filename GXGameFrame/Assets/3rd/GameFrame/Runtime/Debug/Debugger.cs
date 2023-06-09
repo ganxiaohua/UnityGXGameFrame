@@ -45,6 +45,13 @@ namespace GameFrame
                 return;
             Debugger.Log(message.ToString());
         }
+        
+        // public static void Log(string message)
+        // {
+        //     if (!Debugger.useLog)
+        //         return;
+        //     Debugger.Log(message);
+        // }
 
         public static void Log(string str, object arg0)
         {
@@ -71,7 +78,14 @@ namespace GameFrame
         {
             if (!Debugger.useLog)
                 return;
-            Debugger.Log(string.Format(str, param));
+            if (param != null)
+            {
+                Debug.Log(string.Format(str, param));
+            }
+            else
+            {
+                Debug.Log(str);
+            }
         }
 
         public static void LogWarning(string str)
@@ -125,13 +139,7 @@ namespace GameFrame
             // str = Debugger.GetLogFormat(str);
             if (Debugger.useLog)
                 Debug.LogError((object) str);
-            else if (Debugger.logger != null)
-            {
-                string stackTrace = StackTraceUtility.ExtractStackTrace();
-                Debugger.logger.Log(str, stackTrace, LogType.Error);
-            }
 
-            // StringPool.Collect(str);
         }
 
         public static void LogError(object message) => Debugger.LogError(message.ToString());

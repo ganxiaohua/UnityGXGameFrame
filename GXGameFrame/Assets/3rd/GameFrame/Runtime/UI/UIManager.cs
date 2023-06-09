@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace GameFrame
@@ -46,7 +47,7 @@ namespace GameFrame
         /// <summary>
         /// 等待打开的窗口
         /// </summary>
-        private Queue<Type> m_WaitOpenUIList;
+        private HashSet<Type> m_WaitOpenUIList;
 
         /// <summary>
         /// 等待关闭的窗口
@@ -102,7 +103,6 @@ namespace GameFrame
             {
                 OpenUIS(m_WaitOpenUIList.ToArray());
                 m_WaitOpenUIList.Clear();
-                m_OpenUIList.Clear();
             }
             else if (m_OpenUIList.Count > 0 && m_WaitCloseUIDic.Count == 0)
             {
@@ -125,14 +125,7 @@ namespace GameFrame
         {
             if (IsAction())
             {
-                for (int i = 0; i < types.Length; i++)
-                {
-                    if (!m_WaitOpenUIList.Contains(types[i]))
-                    {
-                        m_WaitOpenUIList.Enqueue(types[i]);
-                    }
-                }
-
+                m_WaitOpenUIList.AddRange(types);
                 return;
             }
 
@@ -175,10 +168,9 @@ namespace GameFrame
 
             if (IsAction())
             {
-                m_WaitOpenUIList.Enqueue(type);
+                m_WaitOpenUIList.Add(type);
                 return;
             }
-
             SetTouchable(false);
             //如果需要打开的UI在列表中则将其拉扯到最上面进行打开
             UINode findUINode = FindUINode(type);
@@ -190,7 +182,6 @@ namespace GameFrame
                 UIHideOrDisposeWithNextUIType(curUINode);
                 return;
             }
-
             //打开新窗口
             Open(type);
         }
@@ -260,6 +251,7 @@ namespace GameFrame
         /// <param name="uiNode"></param>
         private async void NodeShowTypeChick(UINode uiNode)
         {
+            SetTouchable(false);
             if (uiNode.Window != null)
             {
                 uiNode.PreShow(false);
@@ -343,7 +335,6 @@ namespace GameFrame
         /// </summary>
         public void UIClose(Type type)
         {
-            SetTouchable(true);
             if (m_WaitCloseUIDic.ContainsKey(type))
             {
                 m_WaitCloseUIDic[type].NodeState = UINode.StateType.Destroy;
@@ -352,7 +343,12 @@ namespace GameFrame
             }
             else
             {
-                Debug.LogError($"{type.Name} not in m_WaitCloseUIDic");
+                Debugger.LogError($"{type.Name} not in m_WaitCloseUIDic");
+            }
+
+            if (!IsAction())
+            {
+                SetTouchable(true);
             }
         }
 

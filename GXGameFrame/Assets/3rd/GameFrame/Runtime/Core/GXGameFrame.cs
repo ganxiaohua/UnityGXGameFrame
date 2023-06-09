@@ -9,7 +9,6 @@ namespace GameFrame
     public class GXGameFrame : Singleton<GXGameFrame>
     {
         public MainScene MainScene { get; private set; }
-        public CheckUpdate CheckUpdate;
 
         public async UniTask Start()
         {
@@ -30,10 +29,6 @@ namespace GameFrame
             ObjectPoolManager.Instance.Update(datetime, realtimeSinceStartup);
             UIManager.Instance.Update(datetime, realtimeSinceStartup);
             ReferencePool.Update(datetime, realtimeSinceStartup);
-            if (CheckUpdate != null)
-            {
-                CheckUpdate.Update();
-            }
         }
 
         public void LateUpdate()

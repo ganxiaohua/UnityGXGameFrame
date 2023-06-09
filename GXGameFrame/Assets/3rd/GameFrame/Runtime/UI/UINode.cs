@@ -15,6 +15,7 @@ namespace GameFrame
             Destroy,
             Wait,
             WaitEnd,
+            Hide,
         }
 
         /// <summary>
@@ -90,6 +91,7 @@ namespace GameFrame
             if (Window == null)
                 return;
             EnitityHouse.Instance.RunHideSystem(Window);
+            NodeState = StateType.Hide;
         }
 
         public async UniTask LoadMustDependentOver()

@@ -37,6 +37,7 @@ public partial class AutoBindSystem
         m_SystemBind.Add(typeof(UICardListWindow2),typeof(IUpdateSystem),typeof(GXGame.UICardListWindow2System.UICardListWindow2UpdateSystem));
         m_SystemBind.Add(typeof(UICardListWindow2),typeof(IClearSystem),typeof(GXGame.UICardListWindow2System.UICardListWindow2ClearSystem));
         m_SystemBind.Add(typeof(AssetInitComponent),typeof(IStartSystem),typeof(GameFrame.AssetInitComponentSystem.AssetInitComponentStartSystem));
+        m_SystemBind.Add(typeof(AssetInitComponent),typeof(IUpdateSystem),typeof(GameFrame.AssetInitComponentSystem.AssetInitComponentUpdateSystem));
         m_SystemBind.Add(typeof(AssetInitComponent),typeof(IClearSystem),typeof(GameFrame.AssetInitComponentSystem.AssetInitComponentClearSystem));
         m_SystemBind.Add(typeof(MainScene),typeof(IStartSystem<Type>),typeof(GameFrame.SceneEntitySystem.SceneEntityStartSystem));
         m_SystemBind.Add(typeof(MainScene),typeof(IUpdateSystem),typeof(GameFrame.SceneEntitySystem.SceneEntityUpdateSystem));
