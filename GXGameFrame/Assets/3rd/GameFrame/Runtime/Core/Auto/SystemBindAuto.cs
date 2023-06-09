@@ -7,19 +7,12 @@ public partial class AutoBindSystem
     public void AddSystem()
     {
         
-        m_SystemBind.Add(typeof(Entity1),typeof(IStartSystem<Int32>),typeof(Entity1System.Entity1StartSystem));
-        m_SystemBind.Add(typeof(Entity1),typeof(IUpdateSystem),typeof(Entity1System.Entity1UpdateSystem));
-        m_SystemBind.Add(typeof(Entity1),typeof(IClearSystem),typeof(Entity1System.Entity1ClearSystem));
-        m_SystemBind.Add(typeof(CreateComponent),typeof(IStartSystem<Int32>),typeof(CreateComponentSystem.CreateComponentStartSystem));
-        m_SystemBind.Add(typeof(CreateComponent),typeof(IClearSystem),typeof(CreateComponentSystem.CreateComponentClearSystem));
+
         m_SystemBind.Add(typeof(CubeScene),typeof(IStartSystem),typeof(GXGame.CubeSceneSystem.CubeSceneStartSystem));
         m_SystemBind.Add(typeof(CubeScene),typeof(IShowSystem),typeof(GXGame.CubeSceneSystem.CubeSceneShowSystem));
         m_SystemBind.Add(typeof(CubeScene),typeof(IHideSystem),typeof(GXGame.CubeSceneSystem.CubeSceneHideSystem));
         m_SystemBind.Add(typeof(CubeScene),typeof(IUpdateSystem),typeof(GXGame.CubeSceneSystem.CubeSceneUpdateSystem));
         m_SystemBind.Add(typeof(CubeScene),typeof(IClearSystem),typeof(GXGame.CubeSceneSystem.CubeSceneClearSystem));
-        m_SystemBind.Add(typeof(BattleGroudScene),typeof(IStartSystem),typeof(GXGame.BattleGroudSceneSystem.BattleGroudSceneStartSystem));
-        m_SystemBind.Add(typeof(BattleGroudScene),typeof(IShowSystem),typeof(GXGame.BattleGroudSceneSystem.BattleGroudSceneShowSystem));
-        m_SystemBind.Add(typeof(BattleGroudScene),typeof(IUpdateSystem),typeof(GXGame.BattleGroudSceneSystem.BattleGroudSceneUpdateSystem));
         m_SystemBind.Add(typeof(UICardListWindowData),typeof(IStartSystem),typeof(GXGame.UICardListWindowDataSystem.UICardListWindowDataStartSystem));
         m_SystemBind.Add(typeof(UICardListWindowData),typeof(IUpdateSystem),typeof(GXGame.UICardListWindowDataSystem.UICardListWindowDataUpdateSystem));
         m_SystemBind.Add(typeof(UICardListWindow),typeof(IStartSystem),typeof(GXGame.UICardListWindowSystem.UICardListWindowStartSystem));
