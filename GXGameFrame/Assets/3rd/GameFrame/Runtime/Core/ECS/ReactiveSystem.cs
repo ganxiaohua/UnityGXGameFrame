@@ -45,7 +45,6 @@ namespace GameFrame
             Update(this.m_Buffer);
             this.m_Buffer.Clear();
         }
-
         public abstract void Clear();
     }
 }

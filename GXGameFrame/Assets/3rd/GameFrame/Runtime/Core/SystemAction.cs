@@ -51,14 +51,15 @@ namespace GameFrame
 
             return false;
         }
-        
+
         public static bool SystemPreShow(this ISystem system, IEntity entity, bool p1)
         {
             if (system is IPreShowSystem showsystem)
             {
-                showsystem.Run(entity,p1);
+                showsystem.Run(entity, p1);
                 return true;
             }
+
             return false;
         }
 
@@ -108,15 +109,24 @@ namespace GameFrame
         }
 
 
-        public static bool IsUpdateSystem(this ISystem system)
+        public static UpdateType IsUpdateSystem(this ISystem system)
         {
             if (system is IUpdateSystem or IECSUpdateSystem)
             {
-                return true;
+                return UpdateType.Update;
+            }
+            else if (system is ILateUpdateSystem or IECSLateUpdateSystem)
+            {
+                return UpdateType.LateUpdate;
+            }
+            else if (system is IFixedUpdateSystem or IECSFixedUpdateSystem)
+            {
+                return UpdateType.FixedUpdate;
             }
 
-            return false;
+            return UpdateType.Node;
         }
+
 
         public static void SystemUpdate(this List<SystemEnitiy> ets, float elapseSeconds, float realElapseSeconds)
         {
@@ -130,7 +140,41 @@ namespace GameFrame
                 }
                 else if (es.SystemObject.System is IECSUpdateSystem ecsupdatesystem)
                 {
-                    ecsupdatesystem.Update(elapseSeconds,realElapseSeconds);
+                    ecsupdatesystem.Update(elapseSeconds, realElapseSeconds);
+                }
+            }
+        }
+
+        public static void SystemLateUpdate(this List<SystemEnitiy> ets, float elapseSeconds, float realElapseSeconds)
+        {
+            int count = ets.Count;
+            for (int i = 0; i < count; i++)
+            {
+                SystemEnitiy es = ets[i];
+                if (es.SystemObject.System is ILateUpdateSystem updatesystem)
+                {
+                    updatesystem.Run(es.Entity, elapseSeconds, realElapseSeconds);
+                }
+                else if (es.SystemObject.System is IECSLateUpdateSystem ecsupdatesystem)
+                {
+                    ecsupdatesystem.LateUpdate(elapseSeconds, realElapseSeconds);
+                }
+            }
+        }
+
+        public static void SystemFixedUpdate(this List<SystemEnitiy> ets, float elapseSeconds, float realElapseSeconds)
+        {
+            int count = ets.Count;
+            for (int i = 0; i < count; i++)
+            {
+                SystemEnitiy es = ets[i];
+                if (es.SystemObject.System is IFixedUpdateSystem updatesystem)
+                {
+                    updatesystem.Run(es.Entity, elapseSeconds, realElapseSeconds);
+                }
+                else if (es.SystemObject.System is IECSFixedUpdateSystem ecsupdatesystem)
+                {
+                    ecsupdatesystem.FixedUpdate(elapseSeconds, realElapseSeconds);
                 }
             }
         }

@@ -12,7 +12,7 @@ namespace GameFrame.Editor
         private static string MainText;
         private static string AddText;
         private static List<string> AllAddText = new();
-        
+
         public static void AutoCreateScript()
         {
             LoadText();
@@ -88,6 +88,14 @@ namespace GameFrame.Editor
                     else if (itemType.Name.Contains("IPreShowSystem"))
                     {
                         systemType = $"IPreShowSystem";
+                    }
+                    else if (itemType.Name.Contains("ILateUpdateSystem"))
+                    {
+                        systemType = $"ILateUpdateSystem";
+                    }
+                    else if (itemType.Name.Contains("IFixedUpdateSystem"))
+                    {
+                        systemType = $"IFixedUpdateSystem";
                     }
                     else if (itemType.Name.Contains("IShowSystem"))
                     {

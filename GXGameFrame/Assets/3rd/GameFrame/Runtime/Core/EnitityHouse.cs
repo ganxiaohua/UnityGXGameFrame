@@ -10,13 +10,6 @@ namespace GameFrame
 
     public class EnitityHouse : Singleton<EnitityHouse>
     {
-        enum UpdateType : byte
-        {
-            Update = 0,
-            LateUpdate,
-            FixUpdate,
-        }
-
         /// <summary>
         /// 不会包含EcsEntity的实体集合
         /// </summary>
@@ -192,6 +185,7 @@ namespace GameFrame
                 {
                     entitySystem = system;
                 }
+
                 sysObject.AddSystem(entitySystem);
                 m_EntitySystems.Add(entityType, system, sysObject);
             }
@@ -210,10 +204,7 @@ namespace GameFrame
 
             SystemObject sysObject = CreateSystem(entity, systemType);
             sysObject.System.SystemStart(entity);
-            if (sysObject.System.IsUpdateSystem() && !m_UpdateSystems.HasUpdateSystem(entity,sysObject.System))
-            {
-                m_UpdateSystems.AddUpdateSystem(entity, sysObject);
-            }
+            m_UpdateSystems.AddUpdateSystem(entity, sysObject);
         }
 
         public void AddStartSystem<P1>(IEntity entity, P1 p1)
@@ -369,10 +360,7 @@ namespace GameFrame
             SystemObject systemObject = m_EntitySystems.GetVValue(entityType, type);
             if (systemObject != null)
             {
-                if (systemObject.System.IsUpdateSystem())
-                {
-                    RemoveUpdateSystem(entity, systemObject.System);
-                }
+                RemoveUpdateSystem(entity, systemObject.System);
             }
         }
 
@@ -389,7 +377,6 @@ namespace GameFrame
                 //这个实体上不存在系统
                 return;
             }
-
             RemoveUpdateSystem(entity);
             if (GetEntityCount(entityType) == 0)
             {
@@ -403,8 +390,19 @@ namespace GameFrame
 
         public void Update(float elapseSeconds, float realElapseSeconds)
         {
-            m_UpdateSystems.UpdateSystemEnitiys.SystemUpdate(elapseSeconds, realElapseSeconds);
+            m_UpdateSystems.UpdateSystemEnitiys[(int)UpdateType.Update].SystemUpdate(elapseSeconds, realElapseSeconds);
         }
+
+        public void LateUpdate(float elapseSeconds, float realElapseSeconds)
+        {
+            m_UpdateSystems.UpdateSystemEnitiys[(int)UpdateType.LateUpdate].SystemLateUpdate(elapseSeconds, realElapseSeconds);
+        }
+        
+        public void FixedUpdate(float elapseSeconds, float realElapseSeconds)
+        {
+            m_UpdateSystems.UpdateSystemEnitiys[(int)UpdateType.FixedUpdate].SystemFixedUpdate(elapseSeconds, realElapseSeconds);
+        }
+        
 
         public void Disable()
         {

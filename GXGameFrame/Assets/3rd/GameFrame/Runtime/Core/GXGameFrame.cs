@@ -30,9 +30,18 @@ namespace GameFrame
             UIManager.Instance.Update(datetime, realtimeSinceStartup);
             ReferencePool.Update(datetime, realtimeSinceStartup);
         }
-
         public void LateUpdate()
         {
+            float datetime = Time.deltaTime;
+            float realtimeSinceStartup = Time.unscaledDeltaTime;
+            EnitityHouse.Instance.LateUpdate(datetime, realtimeSinceStartup);
+        }
+
+        public void FixedUpdate()
+        {
+            float datetime = Time.deltaTime;
+            float realtimeSinceStartup = Time.unscaledDeltaTime;
+            EnitityHouse.Instance.FixedUpdate(datetime, realtimeSinceStartup);
         }
 
         public void OnDisable()

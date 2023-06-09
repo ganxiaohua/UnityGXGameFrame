@@ -73,3 +73,22 @@ namespace GXGame
                 {1}
             }}
         }}
+#
+        [SystemBind]
+        public class {0}LateUpdateSystem : LateUpdateSystem<{0}>
+        {{
+            protected override void LateUpdate({0} self,float elapseSeconds, float realElapseSeconds)
+            {{
+                {1}
+            }}
+        }}
+#
+        [SystemBind]
+        public class {0}FixedUpdateSystem : FixedUpdateSystem<{0}>
+        {{
+            protected override void FixedUpdate({0} self,float elapseSeconds, float realElapseSeconds)
+            {{
+                {1}
+            }}
+        }}
+#

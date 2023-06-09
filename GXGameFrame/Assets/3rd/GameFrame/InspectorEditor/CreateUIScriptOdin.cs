@@ -244,7 +244,7 @@ public class CreateUIScriptOdin : MonoBehaviour
 
         void LogicFunc(string codepath, string classname)
         {
-            CreateEnitiyAuto.WriteEnitit((CreateEnitiyAuto.InheritedObject) 0b111111, classname, true, codepath, UIPanel.packageName);
+            CreateEnitiyAuto.WriteEnitit((CreateEnitiyAuto.InheritedObject) 0b11111001, classname, true, codepath, UIPanel.packageName);
             CreateEnitiyAuto.CreateUIViewText(codepath, classname, UIPanel.packageName, UIPanel.componentName);
             CreateEnitiyAuto.CreateUIDataText(codepath, classname);
         }

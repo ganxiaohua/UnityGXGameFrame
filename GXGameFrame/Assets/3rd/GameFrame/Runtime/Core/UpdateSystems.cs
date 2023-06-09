@@ -5,11 +5,17 @@ namespace GameFrame
 {
     public class UpdateSystems
     {
-        private List<SystemEnitiy> m_UpdateSystemEnitiys = new();
+        private List<SystemEnitiy>[] m_UpdateSystemEnitiys;
 
-        public List<SystemEnitiy> UpdateSystemEnitiys => m_UpdateSystemEnitiys;
+        
+        public List<SystemEnitiy>[] UpdateSystemEnitiys => m_UpdateSystemEnitiys;
 
         private DDictionary<IEntity, ISystem, SystemEnitiy> m_Index = new();
+
+        public UpdateSystems()
+        {
+            m_UpdateSystemEnitiys = new[] {new List<SystemEnitiy>(), new List<SystemEnitiy>(), new List<SystemEnitiy>()};
+        }
 
         /// <summary>
         /// 加入update系统
@@ -18,20 +24,26 @@ namespace GameFrame
         /// <param name="systemObject"></param>
         public void AddUpdateSystem(IEntity entity, SystemObject systemObject)
         {
-            if (m_Index.ContainsTk(entity, systemObject.System))
+            UpdateType updateType = systemObject.System.IsUpdateSystem();
+            if (updateType != UpdateType.Node && !HasUpdateSystem(entity, systemObject.System))
             {
-                Debugger.LogWarning("entity has add in the Index");
-                return;
-            }
+                if (m_Index.ContainsTk(entity, systemObject.System))
+                {
+                    Debugger.LogWarning("entity has add in the Index");
+                    return;
+                }
 
-            SystemEnitiy systenitiy = ReferencePool.Acquire<SystemEnitiy>();
-            systenitiy.Create(systemObject, entity);
-            m_UpdateSystemEnitiys.Add(systenitiy);
-            m_Index.Add(entity, systemObject.System, systenitiy);
+                SystemEnitiy systenitiy = ReferencePool.Acquire<SystemEnitiy>();
+                systenitiy.Create(systemObject, entity);
+
+                m_UpdateSystemEnitiys[(int)updateType].Add(systenitiy);
+
+                m_Index.Add(entity, systemObject.System, systenitiy);
+            }
         }
 
         /// <summary>
-        /// 是有拥有update系统,如果system为空那就是这个实体上有没有存在至少一个update系统如果不为空则为是否存在指定update
+        /// 是否拥有update系统,如果system为空那就是这个实体上有没有存在至少一个update系统如果不为空则为是否存在指定update
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="system"></param>
@@ -70,7 +82,8 @@ namespace GameFrame
                 {
                     foreach (var systemObject in systemdic)
                     {
-                        m_UpdateSystemEnitiys.Remove(systemObject.Value);
+                        UpdateType updateType = systemObject.Key.IsUpdateSystem();
+                        m_UpdateSystemEnitiys[(int)updateType].Remove(systemObject.Value);
                     }
 
                     m_Index.RemoveTkey(enitity);
@@ -81,11 +94,14 @@ namespace GameFrame
                 SystemEnitiy systemobejct = m_Index.GetVValue(enitity, system);
                 if (systemobejct != null)
                 {
-                    m_UpdateSystemEnitiys.Remove(systemobejct);
-                    m_Index.RemoveKkey(enitity,system);
+                    UpdateType updateType = system.IsUpdateSystem();
+                    if (updateType != UpdateType.Node)
+                    {
+                        m_UpdateSystemEnitiys[(int) updateType].Remove(systemobejct);
+                        m_Index.RemoveKkey(enitity, system);
+                    }
                 }
             }
-            
         }
     }
 }
