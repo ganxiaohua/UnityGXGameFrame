@@ -108,7 +108,7 @@ namespace GameFrame
         /// </summary>
         /// <param name="descFileName">包名</param>
         /// <param name="onCompleted">回调函数</param>
-        public void AddPackage(string descFileName, System.Action onCompleted = null)
+        public async UniTaskVoid AddPackage(string descFileName, System.Action onCompleted = null)
         {
             if (packages.TryGetValue(descFileName, out UIPackageData uiPackAgeData))
             {
@@ -132,24 +132,27 @@ namespace GameFrame
 
             packages.Add(descFileName, uiPackAgeData);
             uiPackAgeData.Completed = onCompleted;
-            AssetManager.Instance.LoadAsync<TextAsset>(desPath, (asset) =>
-            {
-                if (uiPackAgeData.CancelOver)
-                {
-                    AssetManager.Instance.UnLoad(desPath);
-                    return;
-                }
 
-                var desText = asset as TextAsset;
-                var uipackage = UIPackage.AddPackage(desText.bytes, descFileName, LoadPackageInternalAsync);
-                uiPackAgeData.SetUIPackage(uipackage);
-                uipackage.LoadAllAssets();
+            var desText = await AssetManager.Instance.LoadAsyncTask<TextAsset>(desPath);
+            if (desText == null)
+            {
+                return;
+            }
+
+            if (uiPackAgeData.CancelOver)
+            {
                 AssetManager.Instance.UnLoad(desPath);
-                if (uipackage.LoadOver())
-                {
-                    uiPackAgeData.Completed?.Invoke();
-                }
-            });
+                return;
+            }
+
+            var uipackage = UIPackage.AddPackage(desText.bytes, descFileName, LoadPackageInternalAsync);
+            uiPackAgeData.SetUIPackage(uipackage);
+            uipackage.LoadAllAssets();
+            AssetManager.Instance.UnLoad(desPath);
+            if (uipackage.LoadOver())
+            {
+                uiPackAgeData.Completed?.Invoke();
+            }
         }
 
         /// <summary>
