@@ -126,7 +126,7 @@ namespace GameFrame.Editor
             }
             else
             {
-                node.GraphNode.SetColor(Color.white); 
+                node.GraphNode.SetColor(Color.black); 
             }
         }
     }

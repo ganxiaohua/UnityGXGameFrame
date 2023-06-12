@@ -45,14 +45,6 @@ namespace GameFrame.Editor
             else
             {
                 root = ientity;
-                // List<IEntity> entityList = EnitityHouse.Instance.GetEntity(ientity.GetType());
-                // foreach (var item in entityList)
-                // {
-                //     if (item == ientity)
-                //     {
-                //         root = ientity
-                //     }
-                // }
             }
 
             RootNode.entity = root;
