@@ -1,0 +1,9 @@
+                
+                if (self.HasComponent<{0}Data>())
+                {{
+                    self.RemoveComponent(typeof({0}Data));
+                }}
+                self.AddComponent<{0}Data>();
+                //这里可以处理通讯和其他资源加载,在完成之后在show这样可以保证不会出现闪烁出现
+                //UI等待:加入self.AddComponent<WaitComponent,Type>(typeof(IUIWait));
+                //当需求完成的时候RemoveComponent<WaitComponent>

@@ -351,7 +351,7 @@ MonoBehaviour:
   componentName: CardListWindow2
   fitScreen: 0
   sortingOrder: 0
-  packagePath: Assets/GXGame/UI/Card
+  packagePath: Assets/GXGame/UI/TestUI/Card
   renderMode: 0
   renderCamera: {fileID: 0}
   position: {x: 0, y: 0, z: 0}
@@ -391,7 +391,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dafaultPath: Assets/GXGame/Scripts/UI
   custom_Path: Assets/GXGame/Scripts/UI
-  className: 
+  className: UICardListWindow2sss
   bindList:
   - Path: n43
     FieldName: n43

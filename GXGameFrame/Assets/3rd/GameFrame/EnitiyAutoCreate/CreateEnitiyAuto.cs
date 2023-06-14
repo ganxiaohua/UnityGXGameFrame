@@ -7,9 +7,12 @@ using UnityEngine;
 
 public class CreateEnitiyAuto
 {
+    
     public static string EnitityTxtPath = "Assets/3rd/GameFrame/Editor/Text/EnitiyCreate/EnitiyCreate.txt";
 
     public static string UIStartText = "Assets/3rd/GameFrame/Editor/Text/UI/UIStartText.txt";
+    
+    public static string UIProShowText = "Assets/3rd/GameFrame/Editor/Text/UI/UIProShowText.txt";
 
     public static string UIViewText = "Assets/3rd/GameFrame/Editor/Text/UI/UIViewText.txt";
 
@@ -142,9 +145,8 @@ public class CreateEnitiyAuto
     {
         if (isUI)
         {
-            return $"//这里可以处理通讯和其他资源加载,在完成之后在show这样可以保证不会出现闪烁出现" +
-                   $"//例子UI等待:加入self.AddComponent<WaitComponent,Type>(typeof(IUIWait));" +
-                   $"//当需求完成的时候RemoveComponent<WaitComponent>";
+            var txt = File.ReadAllText(UIProShowText);
+            return string.Format(txt, componentName);
         }
 
         return "";
@@ -183,7 +185,7 @@ public class CreateEnitiyAuto
     public static void CreateUIDataText(string createPath, string componentName)
     {
         componentName = componentName + "Data";
-        WriteEnitit((CreateEnitiyAuto.InheritedObject) 0b10001001, componentName, false, createPath);
+        WriteEnitit((CreateEnitiyAuto.InheritedObject) 0b10010001, componentName, false, createPath);
     }
 
     public static void CreateUIViewText(string createPath, string componentName, string FGUIPakeName, string FGUIClassName)

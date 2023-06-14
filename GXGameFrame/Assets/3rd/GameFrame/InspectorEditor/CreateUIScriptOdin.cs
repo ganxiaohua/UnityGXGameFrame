@@ -56,6 +56,7 @@ public class CreateUIScriptOdin : MonoBehaviour
     private string[] m_ExportTypes = {"GButton", "GList", "GRichTextField", "GTextField", "GComponent", "GLoader", "GTextInput", "GProgressBar"};
 
     [Title("自定义路径选择")] [HideLabel] [OnValueChanged("ButtonBind")]
+    [FolderPath(ParentFolder = "Assets", AbsolutePath = true)]
     public string custom_Path;
 
     [Button("绑定组件"), ButtonGroup]
@@ -244,7 +245,7 @@ public class CreateUIScriptOdin : MonoBehaviour
 
         void LogicFunc(string codepath, string classname)
         {
-            CreateEnitiyAuto.WriteEnitit((CreateEnitiyAuto.InheritedObject) 0b11111001, classname, true, codepath, UIPanel.packageName);
+            CreateEnitiyAuto.WriteEnitit((CreateEnitiyAuto.InheritedObject) 0b10011111, classname, true, codepath, UIPanel.packageName);
             CreateEnitiyAuto.CreateUIViewText(codepath, classname, UIPanel.packageName, UIPanel.componentName);
             CreateEnitiyAuto.CreateUIDataText(codepath, classname);
         }

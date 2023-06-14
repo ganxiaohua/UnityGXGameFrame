@@ -20,8 +20,6 @@ namespace GameFrame
 
         public Dictionary<Type, IEntity> Components => m_Components;
 
-        private List<int> TypeHashCode;
-
         private Dictionary<int, IEntity> m_Children;
 
         public Dictionary<int, IEntity> Children => m_Children;
@@ -32,7 +30,6 @@ namespace GameFrame
         {
             m_Components = new();
             m_Children = new();
-            TypeHashCode = new(8);
         }
 
         public virtual void Initialize()
@@ -64,7 +61,6 @@ namespace GameFrame
             if (isComponent)
             {
                 m_Components.Add(type, entity);
-                TypeHashCode.Add(type.GetHashCode());
             }
             else
             {
@@ -96,7 +92,6 @@ namespace GameFrame
             }
 
             m_Components.Remove(type);
-            TypeHashCode.Remove(type.GetHashCode());
             Remove(entity);
         }
 
@@ -217,6 +212,15 @@ namespace GameFrame
             }
         }
 
+        public bool HasComponent<T>() where T : class, IEntity
+        {
+            if (GetComponent<T>() != null)
+            {
+                return true;
+            }
+            return false;
+        }
+        
         public T GetComponent<T>() where T : class, IEntity
         {
             Type type = typeof(T);
@@ -342,7 +346,6 @@ namespace GameFrame
             }
 
             m_Components.Clear();
-            TypeHashCode.Clear();
         }
 
 
