@@ -61,10 +61,10 @@ namespace GameFrame.Editor
             {
                 FloorGrid[floor] = 0;
             }
-
+            
             if (entityNode.entity is Entity entity)
             {
-                foreach (IEntity childEntity in entity.Children.Values)
+                foreach (IEntity childEntity in entity.Children)
                 {
                     CreateNode(entityNode, childEntity, floor + 1, FloorGrid[floor]++);
                 }

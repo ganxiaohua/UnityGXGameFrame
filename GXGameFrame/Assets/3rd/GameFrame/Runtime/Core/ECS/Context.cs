@@ -21,11 +21,10 @@ namespace GameFrame
             return ecsEntity;
         }
 
-        public new void RemoveChild(int id)
+        public new void RemoveChild(ECSEntity ecsEntity)
         {
-            ECSEntity ecsentity = Children[id] as ECSEntity;
-            base.RemoveChild(id);
-            ChangeAddRomoveChildOrCompone(ecsentity);
+            base.RemoveChild(ecsEntity);
+            ChangeAddRomoveChildOrCompone(ecsEntity);
         }
 
         public void ChangeAddRomoveChildOrCompone(ECSEntity ecsEntity)
@@ -44,7 +43,7 @@ namespace GameFrame
                 grop = Group.CreateGroup(matcher);
                 foreach (var item in Children)
                 {
-                    grop.HandleEntitySilently(item.Value as ECSEntity);
+                    grop.HandleEntitySilently(item as ECSEntity);
                 }
                 m_Groups.Add(matcher, grop);
             }

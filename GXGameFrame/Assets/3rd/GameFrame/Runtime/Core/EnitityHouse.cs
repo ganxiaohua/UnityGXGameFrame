@@ -294,9 +294,9 @@ namespace GameFrame
                 }
             }
 
-            foreach (KeyValuePair<int, IEntity> enitiy in entity.Children)
+            foreach (IEntity enitiy in entity.Children)
             {
-                RunShow((Entity) enitiy.Value);
+                RunShow((Entity) enitiy);
             }
 
             foreach (KeyValuePair<Type, IEntity> enitiy in entity.Components)
@@ -337,9 +337,9 @@ namespace GameFrame
                 sysObject.System.SystemHide(entity);
             }
 
-            foreach (KeyValuePair<int, IEntity> enitiy in entity.Children)
+            foreach (IEntity enitiy in entity.Children)
             {
-                RunHide((Entity) enitiy.Value);
+                RunHide((Entity) enitiy);
             }
 
             foreach (KeyValuePair<Type, IEntity> enitiy in entity.Components)
@@ -377,6 +377,7 @@ namespace GameFrame
                 //这个实体上不存在系统
                 return;
             }
+
             RemoveUpdateSystem(entity);
             if (GetEntityCount(entityType) == 0)
             {
@@ -390,19 +391,19 @@ namespace GameFrame
 
         public void Update(float elapseSeconds, float realElapseSeconds)
         {
-            m_UpdateSystems.UpdateSystemEnitiys[(int)UpdateType.Update].SystemUpdate(elapseSeconds, realElapseSeconds);
+            m_UpdateSystems.UpdateSystemEnitiys[(int) UpdateType.Update].SystemUpdate(elapseSeconds, realElapseSeconds);
         }
 
         public void LateUpdate(float elapseSeconds, float realElapseSeconds)
         {
-            m_UpdateSystems.UpdateSystemEnitiys[(int)UpdateType.LateUpdate].SystemLateUpdate(elapseSeconds, realElapseSeconds);
+            m_UpdateSystems.UpdateSystemEnitiys[(int) UpdateType.LateUpdate].SystemLateUpdate(elapseSeconds, realElapseSeconds);
         }
-        
+
         public void FixedUpdate(float elapseSeconds, float realElapseSeconds)
         {
-            m_UpdateSystems.UpdateSystemEnitiys[(int)UpdateType.FixedUpdate].SystemFixedUpdate(elapseSeconds, realElapseSeconds);
+            m_UpdateSystems.UpdateSystemEnitiys[(int) UpdateType.FixedUpdate].SystemFixedUpdate(elapseSeconds, realElapseSeconds);
         }
-        
+
 
         public void Disable()
         {

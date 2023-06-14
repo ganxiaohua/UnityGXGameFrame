@@ -71,7 +71,7 @@ namespace GameFrame.Editor
         /// </summary>
         /// <param name="outputPort"></param>
         /// <param name="inputPort"></param>
-        public void AddEdgeByPorts(Port outputPort, Port inputPort)
+        public void AddEdgeByPorts(Port outputPort, Port inputPort,PickingMode picking)
         {
             Edge tempEdge = new Edge()
             {
@@ -82,6 +82,7 @@ namespace GameFrame.Editor
             tempEdge.output.Connect(tempEdge);
             m_EdgeList.Add(tempEdge);
             AddElement(tempEdge);
+            tempEdge.pickingMode =picking;
         }
 
         // /// <summary>

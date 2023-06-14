@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace GameFrame.Editor
 {
@@ -112,7 +113,7 @@ namespace GameFrame.Editor
                 graphNode.RefreshExpandedState();
                 graphNode.RefreshPorts();
                 m_GeneralGraphView.AddElement(graphNode);
-                m_GeneralGraphView.AddEdgeByPorts(node.GraphNode.OutPort, inPort);
+                m_GeneralGraphView.AddEdgeByPorts(node.GraphNode.OutPort, inPort,PickingMode.Ignore);
                 CreateEnitiyNode(enititnode);
                 EnitiyHide(enititnode);
             }

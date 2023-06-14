@@ -20,9 +20,9 @@ namespace GameFrame
 
         public Dictionary<Type, IEntity> Components => m_Components;
 
-        private Dictionary<int, IEntity> m_Children;
+        private HashSet<IEntity> m_Children;
 
-        public Dictionary<int, IEntity> Children => m_Children;
+        public HashSet<IEntity> Children => m_Children;
 
         private static int m_SerialId;
 
@@ -64,7 +64,7 @@ namespace GameFrame
             }
             else
             {
-                m_Children.Add(entity.ID, entity);
+                m_Children.Add(entity);
             }
 
             // entity.Parameter = parameter;
@@ -95,21 +95,6 @@ namespace GameFrame
             Remove(entity);
         }
 
-        /// <summary>
-        /// 删除children
-        /// </summary>
-        /// <param name="id"></param>
-        /// <exception cref="Exception"></exception>
-        private void Remove(int id)
-        {
-            if (!m_Children.TryGetValue(id, out var entity))
-            {
-                throw new Exception($"entity not already  child: {id}");
-            }
-
-            m_Children.Remove(id);
-            Remove(entity);
-        }
 
         /// <summary>
         /// 删除组件
@@ -218,9 +203,10 @@ namespace GameFrame
             {
                 return true;
             }
+
             return false;
         }
-        
+
         public T GetComponent<T>() where T : class, IEntity
         {
             Type type = typeof(T);
@@ -304,9 +290,13 @@ namespace GameFrame
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public void RemoveChild(int id)
+        public void RemoveChild(IEntity entity)
         {
-            Remove(id);
+            if (!m_Children.Remove(entity))
+            {
+                throw new Exception($"entity already not child: {entity.GetType().FullName}");
+            }
+            Remove(entity);
         }
 
         /// <summary>
@@ -316,13 +306,13 @@ namespace GameFrame
         {
             foreach (var item in m_Children)
             {
-                if (item.Value is Entity entity)
+                if (item is Entity entity)
                 {
                     entity.ClearAllChild();
                 }
 
-                Remove(item.Value);
-                item.Value.ClearAllComponent();
+                Remove(item);
+                item.ClearAllComponent();
             }
 
             m_Children.Clear();
