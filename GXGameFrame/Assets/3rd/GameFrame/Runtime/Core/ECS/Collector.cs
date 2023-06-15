@@ -10,7 +10,7 @@ namespace GameFrame
     {
         private HashSet<ECSEntity> m_CollectedEntities;
 
-        public Dictionary<ECSEntity, int> m_EntityDictonary;
+        private Dictionary<int, int> m_EntityDictonary;
 
         public HashSet<ECSEntity> CollectedEntities => m_CollectedEntities;
 
@@ -50,33 +50,33 @@ namespace GameFrame
             foreach (var item in grop.EntitiesMap)
             {
                 m_CollectedEntities.Add(item);
-                if (!m_EntityDictonary.ContainsKey(item))
+                if (!m_EntityDictonary.ContainsKey(item.ID))
                 {
-                    m_EntityDictonary[item] = 0;
+                    m_EntityDictonary[item.ID] = 0;
                 }
-                m_EntityDictonary[item]++;
+                m_EntityDictonary[item.ID]++;
             }
         }
 
         private void EventAdd(Group group, ECSEntity ecsEntity)
         {
             m_CollectedEntities.Add(ecsEntity);
-            if (!m_EntityDictonary.ContainsKey(ecsEntity))
+            if (!m_EntityDictonary.ContainsKey(ecsEntity.ID))
             {
-                m_EntityDictonary[ecsEntity] = 0;
+                m_EntityDictonary[ecsEntity.ID] = 0;
             }
 
-            m_EntityDictonary[ecsEntity]++;
+            m_EntityDictonary[ecsEntity.ID]++;
         }
 
         private void EventRemove(Group group, ECSEntity ecsEntity)
         {
-            if (m_EntityDictonary.ContainsKey(ecsEntity))
+            if (m_EntityDictonary.ContainsKey(ecsEntity.ID))
             {
-                if (--m_EntityDictonary[ecsEntity] == 0)
+                if (--m_EntityDictonary[ecsEntity.ID] == 0)
                 {
                     m_CollectedEntities.Remove(ecsEntity);
-                    m_EntityDictonary.Remove(ecsEntity);
+                    m_EntityDictonary.Remove(ecsEntity.ID);
                 }
             }
         }

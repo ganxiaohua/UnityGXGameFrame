@@ -122,6 +122,11 @@ namespace GameFrame.Editor
         //创建c#脚本
         public static void CreateCshap(Type type)
         {
+            if (type.Name == nameof(ECSComponent))
+            {
+                return;
+            }
+
             string ECSComponentName = "ECSEntity";
             var vb = type.GetCustomAttribute<AssignBindAttribute>();
             if (vb != null)
@@ -184,6 +189,10 @@ namespace GameFrame.Editor
 
         public static void SetComponents(Type type)
         {
+            if (type.Name == nameof(ECSComponent))
+            {
+                return;
+            }
             ComponentsSub += string.Format(s_TextDictionary[CreateAuto.ComponentsSub], type.Name, ComponentsSubIndex);
             ComponentsSubIndex++;
             ComponentsTypeSub += string.Format(s_TextDictionary[CreateAuto.ComponentsTypeSub], type.FullName);
