@@ -1,4 +1,4 @@
-# UnityGXGameFame
+# UnityGXGameFrame
 高性能组件式框架,参考ET,GF,Entitas框架
 
 * 需要odin插件
