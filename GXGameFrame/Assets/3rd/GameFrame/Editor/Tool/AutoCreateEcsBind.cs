@@ -99,6 +99,7 @@ namespace GameFrame.Editor
             ComponentsSubIndex = 0;
             ComponentsTypeSub = "";
             ComponentsSub = "";
+            Directory.Delete(EditorString.ECSOutPutPath,true);
             foreach (var tp in types)
             {
                 if (typeof(ECSComponent).IsAssignableFrom(tp) && tp.IsClass)
@@ -126,7 +127,6 @@ namespace GameFrame.Editor
             {
                 return;
             }
-
             string ECSComponentName = "ECSEntity";
             var vb = type.GetCustomAttribute<AssignBindAttribute>();
             if (vb != null)

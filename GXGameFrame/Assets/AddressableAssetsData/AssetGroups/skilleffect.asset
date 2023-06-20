@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: skilleffect
+  m_EditorClassIdentifier: 
+  m_GroupName: skilleffect
+  m_Data:
+    m_SerializedData: []
+  m_GUID: bf259a864637c3c4a828d4b0439c8b12
+  m_SerializeEntries:
+  - m_GUID: efa415f2810d0eb46a680b743d2587a3
+    m_Address: New Animator Override Controller 1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - skilleffect
+  - m_GUID: 3f5f83a33c7b5ae49976f9e0e70f38b4
+    m_Address: New Animator Override Controller
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - skilleffect
+  - m_GUID: 80ee4e20519678a469f61de4fc048ee0
+    m_Address: Skill1Effect
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - Role
+    - skilleffect
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 1765143bf1e4ef948a398b5a8cb3ff52, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 8cb3767f11f53b5418dc5985a7953001, type: 2}
+    - {fileID: 11400000, guid: 2558a9532a87e2f498aea56b79f620ce, type: 2}

@@ -45,6 +45,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 9efe8eaf378f84c4f927191e391ea664, type: 2}
   - {fileID: 11400000, guid: cda78822a7077ae48b9c37d48a475a7a, type: 2}
   - {fileID: 11400000, guid: 84a0e990b854e774f9a1b676625d8d6f, type: 2}
+  - {fileID: 11400000, guid: f2a8ca1346468b244b51c1b93beae251, type: 2}
   m_BuildSettings:
     m_CompileScriptsInVirtualMode: 0
     m_CleanupStreamingAssetsAfterBuilds: 1
@@ -110,6 +111,7 @@ MonoBehaviour:
     - PrefabTest
     - Role
     - Scene
+    - skilleffect
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: a95052cee2284dd49ab7974223b3cb80, type: 2}

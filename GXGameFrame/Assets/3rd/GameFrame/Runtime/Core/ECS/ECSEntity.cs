@@ -55,7 +55,7 @@ namespace GameFrame
                 throw new Exception($"entity already has component: {type.FullName}");
             }
 
-            ECSComponent entity = m_ECSComponentArray.Add(index,Components.ComponentTypes[index]);
+            ECSComponent entity = m_ECSComponentArray.Add(index, Components.ComponentTypes[index]);
             ((Context) Parent).ChangeAddRomoveChildOrCompone(this);
             return entity;
         }
@@ -72,6 +72,7 @@ namespace GameFrame
             {
                 throw new Exception($"entity not already  component: {type.FullName}");
             }
+
             m_ECSComponentArray.Remove(index);
             ((Context) Parent).ChangeAddRomoveChildOrCompone(this);
         }
@@ -102,6 +103,15 @@ namespace GameFrame
                 }
             }
 
+            return true;
+        }
+
+        public bool HasComponent(int indexs)
+        {
+            if (m_ECSComponentArray[indexs] == null)
+            {
+                return false;
+            }
             return true;
         }
 
