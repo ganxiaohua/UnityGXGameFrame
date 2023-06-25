@@ -17,18 +17,6 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: bf259a864637c3c4a828d4b0439c8b12
   m_SerializeEntries:
-  - m_GUID: efa415f2810d0eb46a680b743d2587a3
-    m_Address: New Animator Override Controller 1
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Preload
-    - skilleffect
-  - m_GUID: 3f5f83a33c7b5ae49976f9e0e70f38b4
-    m_Address: New Animator Override Controller
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Preload
-    - skilleffect
   - m_GUID: 80ee4e20519678a469f61de4fc048ee0
     m_Address: Skill1Effect
     m_ReadOnly: 0
