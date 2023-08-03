@@ -119,6 +119,7 @@ namespace GameFrame
                 }
             }
         }
+        
 
         public Vector3 WorldScale
         {

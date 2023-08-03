@@ -51,11 +51,27 @@ namespace GameFrame
         }
 
 
-        public static GameObjectObjectBase Get(this GameObjectPoolComponent self, string path)
+        /// <summary>
+        /// 获取一个对象
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="path">路径</param>
+        /// <param name="size">对象池大小</param>
+        /// <param name="expiretime">对象在对象池中存在的时间</param>
+        /// <returns></returns>
+        public static GameObjectObjectBase Get(this GameObjectPoolComponent self, string path,int size = 0,int expiretime = 0)
         {
             if (!self.AllGameObjectPools.TryGetValue(path, out var pool))
             {
-                pool = CreatePool(self, path, self.DefaultSize, self.ExpireTime);
+                if (size == 0)
+                {
+                    size = self.DefaultSize;
+                }
+                if (expiretime == 0)
+                {
+                    expiretime = self.ExpireTime;
+                }
+                pool = CreatePool(self, path, size, expiretime);
             }
             GameObjectObjectBase gb = pool.Spawn();
             return gb;
