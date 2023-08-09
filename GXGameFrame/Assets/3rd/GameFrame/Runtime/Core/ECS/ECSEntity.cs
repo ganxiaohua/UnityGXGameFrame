@@ -112,6 +112,7 @@ namespace GameFrame
             {
                 return false;
             }
+
             return true;
         }
 

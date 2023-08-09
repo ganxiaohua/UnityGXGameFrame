@@ -14,7 +14,7 @@ namespace GameFrame
         /// <summary>
         /// 我想要关注的实体
         /// </summary>
-        private Collector m_Collector;
+        public Collector m_Collector;
 
         // private = new List<ECSEntity>();
         public virtual void Start(Context entity)

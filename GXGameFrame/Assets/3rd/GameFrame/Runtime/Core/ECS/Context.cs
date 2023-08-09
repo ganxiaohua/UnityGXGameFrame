@@ -5,11 +5,14 @@ namespace GameFrame
 {
     public class Context : Entity
     {
+        private Dictionary<ECSEntity, Group> m_ECSEnitiyGroup;
         private Dictionary<Matcher, Group> m_Groups;
         private List<KeyValuePair<Matcher,Group>> m_RemoveGroup;
+        
 
         public override void Initialize()
         {
+            m_ECSEnitiyGroup = new();
             m_Groups = new();
             m_RemoveGroup = new();
         }
@@ -25,13 +28,18 @@ namespace GameFrame
         {
             base.RemoveChild(ecsEntity);
             ChangeAddRomoveChildOrCompone(ecsEntity);
+            // foreach (var group in m_Groups.Values)
+            // {
+            //     Group gourp = group;
+            //     gourp.RemoveComponent(ecsEntity);
+            // }
         }
 
         public void ChangeAddRomoveChildOrCompone(ECSEntity ecsEntity)
         {
-            foreach (var groupkv in m_Groups)
+            foreach (var group in m_Groups.Values)
             {
-                Group gourp = groupkv.Value;
+                Group gourp = group;
                 gourp.HandleEntitySilently(ecsEntity);
             }
         }
