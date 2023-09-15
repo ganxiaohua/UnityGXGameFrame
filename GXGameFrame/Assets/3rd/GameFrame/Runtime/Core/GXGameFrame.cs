@@ -30,6 +30,7 @@ namespace GameFrame
             UIManager.Instance.Update(datetime, realtimeSinceStartup);
             ReferencePool.Update(datetime, realtimeSinceStartup);
         }
+
         public void LateUpdate()
         {
             float datetime = Time.deltaTime;
@@ -46,9 +47,9 @@ namespace GameFrame
 
         public void OnDisable()
         {
-            ReferencePool.Release(MainScene);
             ObjectPoolManager.Instance.DeleteAll();
             EnitityHouse.Instance.Disable();
+            ReferencePool.Release(MainScene);
         }
     }
 }
