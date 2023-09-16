@@ -83,11 +83,11 @@ namespace GameFrame
             public void Dispose()
             {
                 m_PackageItemsResPath.Clear();
-                if (m_UIpackage != null)
-                    UIPackage.RemovePackage(m_UIpackage.id);
-                m_UIpackage = null;
-                CancelOver = true;
-                Count = 0;
+                // if (m_UIpackage != null)
+                //     UIPackage.RemovePackage(m_UIpackage.id);
+                // m_UIpackage = null;
+                // CancelOver = true;
+                // Count = 0;
                 // ChildReference.Clear();
             }
 
