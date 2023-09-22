@@ -13,6 +13,13 @@ namespace GameFrame.Editor
         {
             DialogueGraphWindow.OpenDialogueGraphWindow();
         }
+        
+        [MenuItem("GX框架工具/打开图片处理工具")]
+        public static void OpenPictureDispose()
+        {
+            PictureDispose.Picture();
+        }
+        
 
         [MenuItem("GX框架工具/生成ECS绑定脚本", false, 2)]
         public static void AutoCreateScript()
