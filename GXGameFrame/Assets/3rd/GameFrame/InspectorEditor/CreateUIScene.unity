@@ -391,7 +391,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dafaultPath: Assets/GXGame/Scripts/UI
   custom_Path: Assets/GXGame/Scripts/UI
-  className: UICardListWindow2sss
+  className: UICardListWindow2
   bindList:
   - Path: n43
     FieldName: n43

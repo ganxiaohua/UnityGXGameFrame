@@ -1,5 +1,6 @@
 ﻿using System;
 using Cysharp.Threading.Tasks;
+using Unity.VisualScripting;
 
 namespace GameFrame
 {
@@ -76,7 +77,7 @@ namespace GameFrame
         {
             if (Window == null)
                 return;
-            EnitityHouse.Instance.RunPreShowSystem(Window,isFirstOpen);
+            EnitityHouse.Instance.RunPreShowSystem(Window, isFirstOpen);
         }
 
         public void Show()

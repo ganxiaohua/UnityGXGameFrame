@@ -4,18 +4,13 @@ namespace GXGame
 {{
     public partial class {0}View : UIViewBase
     {{
-        {1}
+            {1}
+            private void ViewInit()
+            {{
+                 {2}
+            }}
+           
     }}
 }}
 #
-        private {0} m_{1};
-        private {0} {1}
-        {{
-            get {{
-                if (m_{1} == null)
-                {{
-                    m_{1} = contentPane.GetChildByPath("{2}") as {3};
-                }}
-                return m_{1};
-            }}
-        }}
+               {0} = {1}  as {2};

@@ -45,6 +45,14 @@ namespace FairyGUI
 
         EventListener _onDrop;
 
+        public GObject this[int i]
+        {
+            get
+            {
+                return GetChildAt(i);
+            }
+        }
+
         public GComponent()
         {
             _children = new List<GObject>();

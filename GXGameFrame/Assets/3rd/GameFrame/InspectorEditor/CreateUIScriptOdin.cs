@@ -14,12 +14,13 @@ using UnityEngine.Serialization;
 [Serializable]
 public class FairyData
 {
-    [FormerlySerializedAs("path")] [ReadOnly]
-    public string Path;
+    [ReadOnly] public string Path;
 
-    [FormerlySerializedAs("luaName")] public string FieldName;
+    public string FieldName;
 
-    [FormerlySerializedAs("typeName")] [ReadOnly] [HideLabel] [VerticalGroup("Type")]
+    public Stack<int> Index;
+
+    [ReadOnly] [HideLabel] [VerticalGroup("Type")]
     public string TypeName;
 
     [ReadOnly] [HideLabel] [VerticalGroup("Type")]
@@ -55,8 +56,7 @@ public class CreateUIScriptOdin : MonoBehaviour
 
     private string[] m_ExportTypes = {"GButton", "GList", "GRichTextField", "GTextField", "GComponent", "GLoader", "GTextInput", "GProgressBar"};
 
-    [Title("自定义路径选择")] [HideLabel] [OnValueChanged("ButtonBind")]
-    [FolderPath(ParentFolder = "Assets", AbsolutePath = true)]
+    [Title("自定义路径选择")] [HideLabel] [OnValueChanged("ButtonBind")] [FolderPath(ParentFolder = "Assets", AbsolutePath = true)]
     public string custom_Path;
 
     [Button("绑定组件"), ButtonGroup]
@@ -187,6 +187,17 @@ public class CreateUIScriptOdin : MonoBehaviour
                 item.FieldName = luaName;
                 item.TypeName = child.GetType().ToString().Replace("FairyGUI.", "");
                 item.Com = child.displayObject.gameObject;
+                item.Index = new Stack<int>();
+                GComponent thisParent = child.parent;
+                GObject thisChild = child;
+                while (thisParent != null)
+                {
+                    int x = thisParent.GetChildIndex(thisChild);
+                    thisChild = thisParent;
+                    thisParent = thisParent.parent;
+                    item.Index.Push(x);
+                }
+
                 bindList.Add(item);
 
                 if (child is GComponent)
@@ -207,7 +218,7 @@ public class CreateUIScriptOdin : MonoBehaviour
         }
 
         CheckSavePath();
-        try
+
         {
             if (File.Exists($"{SaveCodePath}/{className}.cs"))
             {
@@ -222,25 +233,34 @@ public class CreateUIScriptOdin : MonoBehaviour
                 ViewFunc(SaveCodePath, className);
             }
         }
-        catch (Exception e)
-        {
-            Debug.LogError(e.Message);
-        }
 
 
         void ViewFunc(string codepath, string classname)
         {
+            string Text = "";
             string fields = "";
             for (int i = 0; i < bindList.Count; i++)
             {
                 var v = bindList[i];
                 string name = v.FieldName;
-                string path = v.Path;
-                string typeName = v.TypeName;
-                fields += CreateEnitiyAuto.CreateUIAutoComText(typeName, name, path, typeName);
+                string path = "contentPane";
+                fields += $"{v.TypeName} {name};\n\t\t\t";
+                int index = 0;
+                foreach (int x in v.Index)
+                {
+                    if (index != v.Index.Count - 1)
+                        path =  $"((GComponent)({path}[{x}]))";
+                    else
+                    {
+                        path += $"[{x}]";
+                    }
+                    index++;
+                }
+
+                Text += CreateEnitiyAuto.CreateUIAutoComText(name, path, v.TypeName);
             }
 
-            CreateEnitiyAuto.CreateUIViewAutoText(codepath, classname, fields);
+            CreateEnitiyAuto.CreateUIViewAutoText(codepath, classname, fields, Text);
         }
 
         void LogicFunc(string codepath, string classname)

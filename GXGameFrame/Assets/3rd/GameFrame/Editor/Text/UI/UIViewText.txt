@@ -12,6 +12,7 @@ namespace GXGame
         protected override void OnInit()
         {{
             base.OnInit();
+            ViewInit();
             contentPane = UIPackage.CreateObject("{1}", "{2}").asCom;
             m_{0} = ({0})UIBase;
         }}

@@ -195,7 +195,7 @@ public class CreateEnitiyAuto
         File.WriteAllText($"{createPath}/{componentName}View.cs", txt);
     }
 
-    public static string CreateUIAutoComText(string fguiComponentClassName, string fieldName, string Componentpath, string asClass)
+    public static string CreateUIAutoComText(string fguiComponentClassName, string fieldName, string asClass)
     {
         if (UIViewAutoTexts == null)
         {
@@ -203,12 +203,12 @@ public class CreateEnitiyAuto
             UIViewAutoTexts = txt.Split('#', StringSplitOptions.None);
         }
 
-        return string.Format(UIViewAutoTexts[1], fguiComponentClassName, fieldName, Componentpath, asClass);
+        return string.Format(UIViewAutoTexts[1], fguiComponentClassName, fieldName, asClass);
     }
 
-    public static void CreateUIViewAutoText(string createPath, string componentName, string content)
+    public static void CreateUIViewAutoText(string createPath,string componentName,string fied, string content)
     {
-        var txt = string.Format(UIViewAutoTexts[0], componentName, content);
+        var txt = string.Format(UIViewAutoTexts[0],componentName,fied, content);
         File.WriteAllText($"{createPath}/{componentName}ViewAuto.cs", txt);
     }
 }

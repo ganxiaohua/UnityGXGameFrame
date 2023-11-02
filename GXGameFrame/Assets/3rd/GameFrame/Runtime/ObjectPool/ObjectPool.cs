@@ -249,6 +249,7 @@ namespace GameFrame
             ClearDic(m_ActionObject);
             ClearDic(m_HitObject);
             m_ActionObject.Clear();
+            m_ActionObjectWithName.Clear();
             m_HitObject.Clear();
         }
     }
