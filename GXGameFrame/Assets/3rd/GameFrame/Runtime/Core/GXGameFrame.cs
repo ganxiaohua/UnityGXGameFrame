@@ -1,6 +1,7 @@
 ﻿using System;
 using cfg;
 using Cysharp.Threading.Tasks;
+using GameFrame.Timer;
 using GXGame;
 using UnityEngine;
 
@@ -28,6 +29,7 @@ namespace GameFrame
             EnitityHouse.Instance.Update(datetime, realtimeSinceStartup);
             ObjectPoolManager.Instance.Update(datetime, realtimeSinceStartup);
             UIManager.Instance.Update(datetime, realtimeSinceStartup);
+            TimerComponent.Instance.Update();
             ReferencePool.Update(datetime, realtimeSinceStartup);
         }
 
@@ -48,9 +50,9 @@ namespace GameFrame
         public void OnDisable()
         {
             UIManager.Instance.Disable();
-            ReferencePool.Release(MainScene);
-            ObjectPoolManager.Instance.DeleteAll();
+            // ReferencePool.Release(MainScene);
             EnitityHouse.Instance.Disable();
+            ObjectPoolManager.Instance.DeleteAll();
         }
     }
 }

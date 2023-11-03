@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace GameFrame.Timer
 {
-    public class TimerComponent : SingletonMono<TimerComponent>
+    public class TimerComponent : Singleton<TimerComponent>
     {
         /// <summary>
         /// timer 类型
@@ -218,7 +218,7 @@ namespace GameFrame.Timer
         /// </summary>
         private long m_MinTime;
 
-        private void Update()
+        public void Update()
         {
             RunUpdateCallBack();
             if (m_TimeId.Count == 0)
