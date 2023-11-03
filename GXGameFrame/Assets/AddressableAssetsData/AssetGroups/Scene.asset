@@ -23,12 +23,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - Preload
     - Scene
-  - m_GUID: 9fc0d4010bbf28b4594072e72b8655ab
-    m_Address: Assets/GXGame/Scenes/Init.unity
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Preload
-    - Scene
   - m_GUID: 0b102afa2443f03499f690165551faec
     m_Address: Assets/GXGame/Scenes/Main.unity
     m_ReadOnly: 0
