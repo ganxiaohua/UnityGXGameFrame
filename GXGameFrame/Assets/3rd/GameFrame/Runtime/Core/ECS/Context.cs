@@ -28,11 +28,6 @@ namespace GameFrame
         {
             base.RemoveChild(ecsEntity);
             ChangeAddRomoveChildOrCompone(ecsEntity);
-            // foreach (var group in m_Groups.Values)
-            // {
-            //     Group gourp = group;
-            //     gourp.RemoveComponent(ecsEntity);
-            // }
         }
 
         public void ChangeAddRomoveChildOrCompone(ECSEntity ecsEntity)
@@ -57,6 +52,19 @@ namespace GameFrame
             }
 
             return grop;
+        }
+        /// <summary>
+        /// 清除
+        /// </summary>
+        public override void Clear()
+        {
+            base.Clear();
+            foreach (var group in m_Groups)
+            {
+                Matcher.RemoveMatcher(group.Key);
+                Group.RemoveGroup(group.Value);
+            }
+            m_Groups.Clear();
         }
     }
 }

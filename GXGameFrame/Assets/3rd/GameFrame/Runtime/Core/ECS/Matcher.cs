@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using Unity.VisualScripting;
 
 namespace GameFrame
 {
@@ -16,6 +18,33 @@ namespace GameFrame
 
     public class Matcher : IAllOfMatcher, INoneOfIndices, IAnyOfMatcher, IReference
     {
+        private static int ApplyHash(int hash, int[] indices, int i1, int i2)
+        {
+            if (indices != null)
+            {
+                for (int index = 0; index < indices.Length; ++index)
+                    hash ^= indices[index] * i1;
+                hash ^= indices.Length * i2;
+            }
+
+            return hash;
+        }
+
+
+        // public override int GetHashCode()
+        // {
+        //     if (!this.m_isHashCached)
+        //     {
+        //         this.m_hash = Matcher.applyHash(
+        //             Matcher.applyHash(Matcher.applyHash(this.GetType().GetHashCode(), this.m_AllOfIndices, 3, 53), this.m_AnyOfIndices, 307,
+        //                 367), this.m_NoneOfIndices, 647, 683);
+        //         this.m_isHashCached = true;
+        //     }
+        //     return this.m_hash;
+        // }
+
+        private int m_hash;
+
         //以下三个只会选择其中一个
         //全部包含
         private int[] m_AllOfIndices;
@@ -29,20 +58,29 @@ namespace GameFrame
         //用于查看
         private string[] m_IndicesName;
 
+        private static Dictionary<int, Matcher> Matchers = new Dictionary<int, Matcher>();
+
         public static Matcher SetAllOfIndices(params int[] snitiyHasCodes)
         {
-            int count = snitiyHasCodes.Length;
-            Matcher matcher = CreateMatcher();
-            matcher.m_AllOfIndices = new int[count];
-#if UNITY_EDITOR
-            matcher.m_IndicesName = new string[count];
-#endif
-            for (int i = 0; i < count; i++)
+            int hascode = ApplyHash(typeof(Matcher).GetHashCode(), snitiyHasCodes, 3, 53);
+            if (!Matchers.TryGetValue(hascode, out Matcher matcher))
             {
-                matcher.m_AllOfIndices[i] = snitiyHasCodes[i];
+                int count = snitiyHasCodes.Length;
+                matcher = CreateMatcher();
+                matcher.m_AllOfIndices = new int[count];
 #if UNITY_EDITOR
-                matcher.m_IndicesName[i] = Components.ComponentTypes[snitiyHasCodes[i]].Name;
+                matcher.m_IndicesName = new string[count];
 #endif
+                for (int i = 0; i < count; i++)
+                {
+                    matcher.m_AllOfIndices[i] = snitiyHasCodes[i];
+#if UNITY_EDITOR
+                    matcher.m_IndicesName[i] = Components.ComponentTypes[snitiyHasCodes[i]].Name;
+#endif
+                }
+
+                matcher.m_hash = hascode;
+                Matchers.Add(hascode, matcher);
             }
 
             return matcher;
@@ -50,18 +88,24 @@ namespace GameFrame
 
         public static Matcher SetAnyOfIndices(params int[] snitiyHasCodes)
         {
-            int count = snitiyHasCodes.Length;
-            Matcher matcher = CreateMatcher();
-            matcher.m_AnyOfIndices = new int[count];
-#if UNITY_EDITOR
-            matcher.m_IndicesName = new string[count];
-#endif
-            for (int i = 0; i < count; i++)
+            int hascode = ApplyHash(typeof(Matcher).GetHashCode(), snitiyHasCodes, 647, 683);
+            if (!Matchers.TryGetValue(hascode, out Matcher matcher))
             {
-                matcher.m_AnyOfIndices[i] = snitiyHasCodes[i];
+                int count = snitiyHasCodes.Length;
+                matcher = CreateMatcher();
+                matcher.m_AnyOfIndices = new int[count];
 #if UNITY_EDITOR
-                matcher.m_IndicesName[i] = Components.ComponentTypes[snitiyHasCodes[i]].Name;
+                matcher.m_IndicesName = new string[count];
 #endif
+                for (int i = 0; i < count; i++)
+                {
+                    matcher.m_AnyOfIndices[i] = snitiyHasCodes[i];
+#if UNITY_EDITOR
+                    matcher.m_IndicesName[i] = Components.ComponentTypes[snitiyHasCodes[i]].Name;
+#endif
+                }
+
+                Matchers.Add(hascode, matcher);
             }
 
             return matcher;
@@ -69,18 +113,23 @@ namespace GameFrame
 
         public static Matcher SetNonefIndices(params int[] snitiyHasCodes)
         {
-            int count = snitiyHasCodes.Length;
-            Matcher matcher = CreateMatcher();
-            matcher.m_NoneOfIndices = new int[count];
-#if UNITY_EDITOR
-            matcher.m_IndicesName = new string[count];
-#endif
-            for (int i = 0; i < count; i++)
+            int hascode = ApplyHash(typeof(Matcher).GetHashCode(), snitiyHasCodes, 307, 367);
+            if (!Matchers.TryGetValue(hascode, out Matcher matcher))
             {
-                matcher.m_NoneOfIndices[i] = snitiyHasCodes[i];
+                int count = snitiyHasCodes.Length;
+                matcher = CreateMatcher();
+                matcher.m_NoneOfIndices = new int[count];
 #if UNITY_EDITOR
-                matcher.m_IndicesName[i] = Components.ComponentTypes[snitiyHasCodes[i]].Name;
+                matcher.m_IndicesName = new string[count];
 #endif
+                for (int i = 0; i < count; i++)
+                {
+                    matcher.m_NoneOfIndices[i] = snitiyHasCodes[i];
+#if UNITY_EDITOR
+                    matcher.m_IndicesName[i] = Components.ComponentTypes[snitiyHasCodes[i]].Name;
+#endif
+                }
+                Matchers.Add(hascode, matcher);
             }
 
             return matcher;
@@ -108,6 +157,10 @@ namespace GameFrame
 
         public void Clear()
         {
+            Matchers.Remove(this.m_hash);
+            m_NoneOfIndices = null;
+            m_AllOfIndices = null;
+            m_NoneOfIndices = null;
         }
     }
 }
