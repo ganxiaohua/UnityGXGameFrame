@@ -24,7 +24,7 @@ namespace GameFrame
             return ecsEntity;
         }
 
-        public new void RemoveChild(ECSEntity ecsEntity)
+        public  void RemoveChild(ECSEntity ecsEntity)
         {
             base.RemoveChild(ecsEntity);
             ChangeAddRomoveChildOrCompone(ecsEntity);

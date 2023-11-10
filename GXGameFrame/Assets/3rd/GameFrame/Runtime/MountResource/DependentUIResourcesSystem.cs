@@ -18,7 +18,7 @@ namespace GameFrame
                 foreach (var path in p1)
                 {
                     self.CurLoadAmount = 0;
-                    AssetManager.Instance.UILoader.AddPackage(path, self.LoadUIAssetOver);
+                    AssetManager.Instance.UILoader.AddPackage(path, self.LoadUIAssetOver).Forget();
                 }
             }
         }

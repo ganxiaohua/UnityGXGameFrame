@@ -19,7 +19,7 @@ namespace GameFrame.Editor
             var assembly = AppDomain.CurrentDomain.GetAssemblies();
             foreach (var item in assembly)
             {
-                if (item.GetName().Name == "Assembly-CSharp")
+                if (item.GetName().Name == "GamePlay.Runtime" || item.GetName().Name == "GameFrame.Runtime")
                 {
                     FindEnitiyClass(item);
                 }

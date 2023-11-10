@@ -2,8 +2,6 @@ using System;
 using Cysharp.Threading.Tasks;
 using GameFrame;
 #if UNITY_EDITOR
-using UnityEditor.AddressableAssets.Settings;
-using UnityEditor.AddressableAssets;
 #endif
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -85,7 +83,7 @@ public static class AddressablesHelper
     {
         bool needUpdateInfo = true;
 #if UNITY_EDITOR
-        needUpdateInfo = ProjectConfigData.ActivePlayModeIndex == 2;
+        needUpdateInfo  = EditorCSharp.GetProjectConfigData_ActivePlayModeIndex() == 2;
 #endif
         if (!needUpdateInfo)
             return;

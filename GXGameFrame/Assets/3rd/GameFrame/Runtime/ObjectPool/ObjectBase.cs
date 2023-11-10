@@ -2,28 +2,40 @@
 
 namespace GameFrame
 {
-    public abstract class ObjectBase : IReference
+    public class ObjectBase : IReference
     {
-        protected object m_InitData;
-
-        public DateTime m_LastUseTime;
-
-
-        /// <summary>
-        /// 进入不活跃列表之后进行设置
-        /// </summary>
+        private DateTime m_LastUseTime;
+        private bool m_Luck;
+        
         public DateTime LastUseTime
         {
-            get { return m_LastUseTime; }
-            internal set { m_LastUseTime = value; }
+            get
+            {
+                return m_LastUseTime;
+            }
+            internal set
+            {
+                m_LastUseTime = value;
+            }
         }
-
+        
+        public bool Luck
+        {
+            get
+            {
+                return m_Luck;
+            }
+             set
+            {
+                m_Luck = value;
+            }
+        }
         /// <summary>
         /// 初始化对象基类。
         /// </summary>
         internal virtual void Initialize(object initData)
         {
-            m_InitData = initData;
+            
         }
 
 
@@ -32,6 +44,7 @@ namespace GameFrame
         /// </summary>
         internal virtual void OnSpawn()
         {
+            
         }
 
         /// <summary>
@@ -39,13 +52,13 @@ namespace GameFrame
         /// </summary>
         internal virtual void OnUnspawn()
         {
+            
         }
 
-        /// <summary>
-        /// 清理对象基类。
-        /// </summary>
         public virtual void Clear()
         {
+            m_LastUseTime = default(DateTime);
+            Luck = false;
         }
     }
 }

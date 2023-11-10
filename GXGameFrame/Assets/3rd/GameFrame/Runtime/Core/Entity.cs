@@ -187,7 +187,7 @@ namespace GameFrame
 
         private void AddSystem(Type type, IEntity entity)
         {
-            List<Type> systemTypesList = AutoBindSystem.Instance.GetEnitityAllSystem(type);
+            List<Type> systemTypesList = BindSystem.Instance.GetEnitityAllSystem(type);
             if (systemTypesList != null)
             {
                 foreach (Type systemtype in systemTypesList)

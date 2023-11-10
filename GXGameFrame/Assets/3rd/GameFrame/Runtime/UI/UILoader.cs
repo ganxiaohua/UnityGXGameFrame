@@ -198,7 +198,7 @@ namespace GameFrame
                 return;
             }
 
-            LoadResPath(resPath, name + extension, item, uiPackAgeData);
+            LoadResPath(resPath, name + extension, item, uiPackAgeData).Forget();
         }
 
         public async UniTask LoadResPath(string path, string readyLoadName, PackageItem package, UIPackageData uiPackAgeData)

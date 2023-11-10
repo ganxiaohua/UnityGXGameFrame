@@ -119,7 +119,7 @@ namespace GameFrame
                 }
             }
         }
-        
+
 
         public Vector3 WorldScale
         {
@@ -150,13 +150,18 @@ namespace GameFrame
         }
 
         //
-        internal override async void Initialize(object initObject)
+        internal override void Initialize(object initObject)
+        {
+            Init(initObject).Forget();
+        }
+
+        async UniTaskVoid Init(object initObject)
         {
             m_SetLocalPos = false;
             m_SetLocalRot = false;
             m_Task = new UniTaskCompletionSource();
             base.Initialize(initObject);
-            await Load(m_InitData as string);
+            await Load(initObject as string);
             m_Task.TrySetResult();
         }
 

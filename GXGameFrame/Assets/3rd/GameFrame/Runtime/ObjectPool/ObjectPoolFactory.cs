@@ -1,19 +1,19 @@
 ﻿
+
 namespace GameFrame
 {
-    public class ObjectPoolFactory: Singleton<ObjectPoolManager>
+    public class ObjectPoolFactory: Singleton<ObjectPoolFactory>
     {
-
-        public static void CreatePool( string path, int defaultSize, int expireTime)
+        public static ObjectPool<GameObjectObjectBase> CreatePool(string path, int defaultSize, int expireTime)
         {
-             GXGameFrame.Instance.MainScene.GetComponent<GameObjectPoolComponent>().CreatePool(path,defaultSize,expireTime);
+           return  GXGameFrame.Instance.MainScene.GetComponent<GameObjectPoolComponent>().CreatePool(path,defaultSize,expireTime);
         }
-        public static void RemovePool( string path)
+        public static void RemovePool( string name)
         {
-            GXGameFrame.Instance.MainScene.GetComponent<GameObjectPoolComponent>().RemovePool(path);
+            GXGameFrame.Instance.MainScene.GetComponent<GameObjectPoolComponent>().RemovePool(name);
         }
         
-
+        
         public static GameObjectObjectBase GetObject(string path)
         {
             return GXGameFrame.Instance.MainScene.GetComponent<GameObjectPoolComponent>().Get(path);

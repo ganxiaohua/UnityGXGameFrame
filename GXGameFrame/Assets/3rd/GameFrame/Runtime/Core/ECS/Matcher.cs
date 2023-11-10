@@ -75,7 +75,7 @@ namespace GameFrame
                 {
                     matcher.m_AllOfIndices[i] = snitiyHasCodes[i];
 #if UNITY_EDITOR
-                    matcher.m_IndicesName[i] = Components.ComponentTypes[snitiyHasCodes[i]].Name;
+                    // matcher.m_IndicesName[i] = Components.ComponentTypes[snitiyHasCodes[i]].Name;
 #endif
                 }
 
@@ -101,7 +101,7 @@ namespace GameFrame
                 {
                     matcher.m_AnyOfIndices[i] = snitiyHasCodes[i];
 #if UNITY_EDITOR
-                    matcher.m_IndicesName[i] = Components.ComponentTypes[snitiyHasCodes[i]].Name;
+                    // matcher.m_IndicesName[i] = Components.ComponentTypes[snitiyHasCodes[i]].Name;
 #endif
                 }
 
@@ -126,7 +126,7 @@ namespace GameFrame
                 {
                     matcher.m_NoneOfIndices[i] = snitiyHasCodes[i];
 #if UNITY_EDITOR
-                    matcher.m_IndicesName[i] = Components.ComponentTypes[snitiyHasCodes[i]].Name;
+                    // matcher.m_IndicesName[i] = Components.ComponentTypes[snitiyHasCodes[i]].Name;
 #endif
                 }
                 Matchers.Add(hascode, matcher);

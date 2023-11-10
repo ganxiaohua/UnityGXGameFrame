@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using GameFrame;
+
 
 namespace GameFrame
 {
@@ -24,7 +26,7 @@ namespace GameFrame
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public ObjectPool<T> CreateObjectPool<T>(string name, int maxNum,int expireTime,object initObject) where T : ObjectBase, new()
+        public ObjectPool<T> CreateObjectPool<T>(string name, int maxNum,int expireTime,object initObject = null) where T : ObjectBase, new()
         {
             Type type = typeof(T);
             TypeNamePair typeNamePair = new TypeNamePair(type, name);
@@ -45,7 +47,7 @@ namespace GameFrame
         /// <param name="name"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public ObjectPool<T> GetObjectPool<T>(string name) where T : ObjectBase, new()
+        public ObjectPool<T> GetObjectPool<T>(string name) where T :ObjectBase, new()
         {
             Type type = typeof(T);
             TypeNamePair typeNamePair = new TypeNamePair(type, name);
@@ -83,7 +85,7 @@ namespace GameFrame
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public void DeleteObjectPool<T>(string name) where T : ObjectBase,new()
+        public void DeleteObjectPool<T>(string name) where T :ObjectBase,new()
         {
             var objectPool = GetObjectPool<T>(name);
             if (objectPool == null)
@@ -96,7 +98,7 @@ namespace GameFrame
         /// <summary>
         /// 删除所有对象池
         /// </summary>
-        public void DeleteAll()
+        public void Disable()
         {
             foreach (KeyValuePair<TypeNamePair, IObjectPoolBase> objectPool in s_ObjectPoolBase)
             {

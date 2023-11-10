@@ -1,0 +1,16 @@
+{
+    "name": "Fgui.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:4ec328fd8ef7e3648910c19f2ae0c29f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

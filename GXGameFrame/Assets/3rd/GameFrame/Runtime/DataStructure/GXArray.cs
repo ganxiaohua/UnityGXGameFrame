@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Sirenix.Utilities;
 
 namespace GameFrame
 {
@@ -24,14 +23,7 @@ namespace GameFrame
                 m_Item = new T[arrayMaxCount];
             }
 
-            if (m_Indexs == null)
-            {
-                m_Indexs = new List<int>(arrayMaxCount);
-            }
-            else
-            {
-                m_Indexs.SetLength(arrayMaxCount);
-            }
+            m_Indexs = new List<int>(arrayMaxCount);
 
             MaxIndex = arrayMaxCount;
             m_Indexs.Clear();

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using Cysharp.Threading.Tasks;
 using GameFrame;
 using UnityEngine;
@@ -131,9 +129,10 @@ public class AssetManager : Singleton<AssetManager>
         };
     }
 
-    public async UniTask<T> LoadAsyncTask<T>(string path)
+    public async UniTask<T> LoadAsyncTask<T>(string path, System.Threading.CancellationToken token = default)
     {
-        var handle = Addressables.LoadAssetAsync<T>(path);
+        AsyncOperationHandle<T> handle = Addressables.LoadAssetAsync<T>(path);
+        UniTask<T> uniTaskHandle =   handle.ToUniTask(null, PlayerLoopTiming.Update, token);
         if (!CacheAssetDic.TryGetValue(path, out Assets asset))
         {
             CacheAssetDic.Add(path, new Assets(handle, path, typeof(T), null));
@@ -142,7 +141,8 @@ public class AssetManager : Singleton<AssetManager>
         {
             asset.Add(path, typeof(T), null);
         }
-        var obj = await handle.Task;
+        
+        var obj = await uniTaskHandle;
         return obj;
     }
     
@@ -297,10 +297,6 @@ public class AssetManager : Singleton<AssetManager>
             {
                 CacheAssetDic.Remove(path);
             }
-        }
-        else
-        {
-            throw new Exception($"no have {path}");
         }
     }
 

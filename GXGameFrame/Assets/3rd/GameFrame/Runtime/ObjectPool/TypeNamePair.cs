@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-
 namespace GameFrame
 {
     [StructLayout(LayoutKind.Auto)]

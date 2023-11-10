@@ -11,7 +11,7 @@ namespace GameFrame
             IsClear = 2,
         }
 
-        private ISystemType m_ISystemType;
+        // private ISystemType m_ISystemType;
         public ISystem System { get; private set; }
 
         public void AddSystem<T>() where T : ISystem
@@ -24,13 +24,13 @@ namespace GameFrame
         {
             var system = ReferencePool.Acquire(type) as ISystem;
             System = system;
-            m_ISystemType = ISystemType.IsCreated;
+            // m_ISystemType = ISystemType.IsCreated;
         }
 
         public void Clear()
         {
             ReferencePool.Release(System);
-            m_ISystemType = ISystemType.IsClear;
+            // m_ISystemType = ISystemType.IsClear;
         }
     }
 }

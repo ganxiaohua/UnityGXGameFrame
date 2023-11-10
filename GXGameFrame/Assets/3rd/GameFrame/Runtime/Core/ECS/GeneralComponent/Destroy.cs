@@ -2,7 +2,7 @@
 {
     public class Destroy : ECSComponent
     {
-        public void Clear()
+        public override void Clear()
         {
         
         }

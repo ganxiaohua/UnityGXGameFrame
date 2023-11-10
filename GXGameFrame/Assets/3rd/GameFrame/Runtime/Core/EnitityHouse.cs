@@ -180,7 +180,7 @@ namespace GameFrame
             if (sysObject == null)
             {
                 sysObject = ReferencePool.Acquire<SystemObject>();
-                Type entitySystem = AutoBindSystem.Instance.GetEnitiySystem(entityType, system);
+                Type entitySystem = BindSystem.Instance.GetEnitiySystem(entityType, system);
                 if (entitySystem == null)
                 {
                     entitySystem = system;
@@ -196,7 +196,7 @@ namespace GameFrame
         public void AddSystem(IEntity entity, Type type)
         {
             Type entityType = entity.GetType();
-            Type systemType = AutoBindSystem.Instance.GetIsystem(entityType, type);
+            Type systemType = BindSystem.Instance.GetIsystem(entityType, type);
             if (systemType == null)
             {
                 systemType = type;
@@ -211,7 +211,7 @@ namespace GameFrame
         {
             Type entityType = entity.GetType();
             Type systemType = typeof(IStartSystem<P1>);
-            if (AutoBindSystem.Instance.GetEnitiySystem(entityType, systemType) == default(Type))
+            if (BindSystem.Instance.GetEnitiySystem(entityType, systemType) == default(Type))
             {
                 throw new Exception($"not have IStartSystem<P1>");
             }
@@ -224,7 +224,7 @@ namespace GameFrame
         {
             Type entityType = entity.GetType();
             Type systemType = typeof(IStartSystem<P1, P2>);
-            if (AutoBindSystem.Instance.GetEnitiySystem(entityType, systemType) == default(Type))
+            if (BindSystem.Instance.GetEnitiySystem(entityType, systemType) == default(Type))
             {
                 throw new Exception($"not have IStartSystem<P1>");
             }

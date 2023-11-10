@@ -37,7 +37,7 @@ namespace GameFrame
         public virtual void Initialize()
         {
             m_ECSComponentArray = ReferencePool.Acquire<GXArray<ECSComponent>>();
-            m_ECSComponentArray.Init(Components.TotalComponents);
+            m_ECSComponentArray.Init(GXComponents.ComponentTypes.Length);
         }
 
 
@@ -49,13 +49,13 @@ namespace GameFrame
         /// <exception cref="Exception"></exception>
         public ECSComponent AddComponent(int index)
         {
-            Type type = Components.ComponentTypes[index];
+            Type type = GXComponents.ComponentTypes[index];
             if (m_ECSComponentArray[index] != null)
             {
                 throw new Exception($"entity already has component: {type.FullName}");
             }
 
-            ECSComponent entity = m_ECSComponentArray.Add(index, Components.ComponentTypes[index]);
+            ECSComponent entity = m_ECSComponentArray.Add(index, GXComponents.ComponentTypes[index]);
             ((Context) Parent).ChangeAddRomoveChildOrCompone(this);
             return entity;
         }
@@ -67,7 +67,7 @@ namespace GameFrame
         /// <exception cref="Exception"></exception>
         public void RemoveComponent(int index)
         {
-            Type type = Components.ComponentTypes[index];
+            Type type = GXComponents.ComponentTypes[index];
             if (m_ECSComponentArray[index] == null)
             {
                 throw new Exception($"entity not already  component: {type.FullName}");

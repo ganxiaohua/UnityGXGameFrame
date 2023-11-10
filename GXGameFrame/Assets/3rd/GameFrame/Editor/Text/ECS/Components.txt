@@ -4,6 +4,11 @@ public static class Components {{
     public const int TotalComponents = {1};
     
     {2}
+    
+    public static void SetComponent()
+    {
+       GXComponents.ComponentTypes = ComponentTypes;   
+    }
 }}
 #
     public const int {0}= {1};#

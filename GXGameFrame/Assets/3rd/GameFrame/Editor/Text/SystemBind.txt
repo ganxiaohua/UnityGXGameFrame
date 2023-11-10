@@ -1,14 +1,15 @@
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using GameFrame;
 using GXGame;
 public partial class AutoBindSystem
 {{
     public void AddSystem()
     {{
+       var systemBind = BindSystem.Instance.SystemBind;
         {0}
     }}
 }}
 
 #
-        m_SystemBind.Add({0},{1},{2});
+        systemBind.Add({0},{1},{2});

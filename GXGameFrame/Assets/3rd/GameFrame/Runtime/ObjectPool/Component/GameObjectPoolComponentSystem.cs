@@ -23,7 +23,7 @@ namespace GameFrame
         {
             protected override void Clear(GameObjectPoolComponent self)
             {
-                ObjectPoolManager.Instance.DeleteAll();
+
             }
         }
 

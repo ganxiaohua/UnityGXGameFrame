@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using GameFrame;
 
-public partial class AutoBindSystem : Singleton<AutoBindSystem>
+public  class BindSystem : Singleton<BindSystem>
 {
     private DDoubleMap<Type, Type, Type> m_SystemBind = new();
+
+    public DDoubleMap<Type, Type, Type> SystemBind => m_SystemBind;
 
 
     public List<Type> GetEnitityAllSystem(Type entityType)

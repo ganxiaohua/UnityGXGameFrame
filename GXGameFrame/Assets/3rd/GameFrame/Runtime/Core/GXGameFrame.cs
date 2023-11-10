@@ -1,8 +1,8 @@
 ﻿using System;
-using cfg;
+// using cfg;
 using Cysharp.Threading.Tasks;
 using GameFrame.Timer;
-using GXGame;
+// using GXGame;
 using UnityEngine;
 
 namespace GameFrame
@@ -13,7 +13,6 @@ namespace GameFrame
 
         public async UniTask Start()
         {
-            AutoBindSystem.Instance.AddSystem();
             EnitityHouse.Instance.Init();
             MainScene = ReferencePool.Acquire<MainScene>();
             MainScene.AddComponent<UIComponent>();
@@ -52,7 +51,7 @@ namespace GameFrame
             UIManager.Instance.Disable();
             // ReferencePool.Release(MainScene);
             EnitityHouse.Instance.Disable();
-            ObjectPoolManager.Instance.DeleteAll();
+            ObjectPoolManager.Instance.Disable();
         }
     }
 }

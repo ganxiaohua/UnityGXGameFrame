@@ -28,17 +28,17 @@ namespace GameFrame.Editor
         /// <summary>
         /// ecs绑定路径
         /// </summary>
-        public static string ECSOutPutPath = "Assets/GXGame/Scripts/Auto/EcsBind/";
+        public static string ECSOutPutPath = "Assets/GXGame/Scripts/Runtime/Auto/EcsBind/";
         
         // ---------------------------------------------------------以下路径最好不要改
         
         public static string GameFramePath = "Assets/3rd/GameFrame/";
         
-        public static string SystemBindOutPutPath = "Assets/3rd/GameFrame/Runtime/Core/Auto/SystemBindAuto.cs";
+        public static string SystemBindOutPutPath = "Assets/GXGame/Scripts/Runtime/Auto/SystemBindAuto.cs";
 
         public static string EditorDatabasePath = "Assets/3rd/GameFrame/Editor/Rec/bansheegz_database.bytes";
         
-        public static string UIScenePath = "Assets/3rd/GameFrame/InspectorEditor/CreateUIScene.unity";
+        public static string UIScenePath = "Assets/3rd/GameFrame/Runtime/InspectorEditor/CreateUIScene.unity";
         
         public static string RESSEQ = "RESSEQ";
     }

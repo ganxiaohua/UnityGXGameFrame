@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
-using Unity.VisualScripting;
-using UnityEngine;
 
 namespace GameFrame
 {
@@ -125,7 +123,8 @@ namespace GameFrame
         {
             if (IsAction())
             {
-                m_WaitOpenUIList.AddRange(types);
+                foreach (Type obj in types)
+                    m_WaitOpenUIList.Add(obj);
                 return;
             }
 
@@ -183,7 +182,7 @@ namespace GameFrame
                 return;
             }
             //打开新窗口
-            Open(type);
+            Open(type).Forget();
         }
 
         /// <summary>
@@ -219,7 +218,7 @@ namespace GameFrame
                 return;
             }
 
-            NodeShowTypeChick(beforeNode);
+            NodeShowTypeChick(beforeNode).Forget();
         }
 
         /// <summary>
@@ -242,14 +241,14 @@ namespace GameFrame
             }
 
             var curUINode = GetFirstUINode();
-            NodeShowTypeChick(curUINode);
+            NodeShowTypeChick(curUINode).Forget();
         }
 
         /// <summary>
         /// 如果window不为空就打开. 如果不存在代表这只是一个占用节点,删除此节点,重新走OpenUI逻辑.
         /// </summary>
         /// <param name="uiNode"></param>
-        private async void NodeShowTypeChick(UINode uiNode)
+        private async UniTaskVoid NodeShowTypeChick(UINode uiNode)
         {
             SetTouchable(false);
             if (uiNode.Window != null)
