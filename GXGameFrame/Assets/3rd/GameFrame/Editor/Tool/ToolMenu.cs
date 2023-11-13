@@ -73,6 +73,33 @@ namespace GameFrame.Editor
             macro = macro.Replace($"{EditorString.RESSEQ};", "");
             PlayerSettings.SetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup, macro);
         }
+        
+        [MenuItem("GX框架工具/SystemBind/开启", false, 5)]
+        public static void OpenSystemBind()
+        {
+            string macro = PlayerSettings.GetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup);
+            if (macro.Contains(EditorString.RESSEQ))
+            {
+                return;
+            }
+
+            macro = $"SYSTEMBIND;{macro}";
+            PlayerSettings.SetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup, macro);
+        }
+        
+        [MenuItem("GX框架工具/SystemBind/关闭", false, 6)]
+        public static void CloseSystemBind()
+        {
+            
+            string macro = PlayerSettings.GetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup);
+            if (!macro.Contains("SYSTEMBIND"))
+            {
+                return;
+            }
+
+            macro = macro.Replace($"SYSTEMBIND", "");
+            PlayerSettings.SetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup, macro);
+        }
 
 
         [MenuItem("GX框架工具/路径/Open PersistentDataPath")]

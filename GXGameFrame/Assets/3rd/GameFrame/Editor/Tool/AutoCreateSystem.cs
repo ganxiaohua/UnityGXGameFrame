@@ -32,7 +32,7 @@ namespace GameFrame.Editor
         {
             string systemPath = EditorString.GameFramePath + "Editor/Text/SystemBind.txt";
             string system = File.ReadAllText(systemPath);
-            string[] text = system.Split('#', StringSplitOptions.None);
+            string[] text = system.Split('@', StringSplitOptions.None);
             MainText = text[0];
             AddText = text[1];
         }

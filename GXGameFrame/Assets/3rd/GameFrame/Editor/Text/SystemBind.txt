@@ -1,15 +1,64 @@
-using System;
 using System.Collections.Generic;
+using System;
+using System.Linq;
+#if !SYSTEMBIND
+using System.Reflection;
+#endif
 using GameFrame;
 using GXGame;
-public partial class AutoBindSystem
+
+public  class AutoBindSystem
 {{
     public void AddSystem()
     {{
-       var systemBind = BindSystem.Instance.SystemBind;
+#if !SYSTEMBIND
+        EditorLoadAssembly();
+#else
+        var systemBind =   BindSystem.Instance.SystemBind;
         {0}
+#endif
     }}
+#if !SYSTEMBIND
+    public void EditorLoadAssembly()
+    {{
+        var assembly = AppDomain.CurrentDomain.GetAssemblies();
+        foreach (var item in assembly)
+        {{
+            if (item.GetName().Name == "GamePlay.Runtime" || item.GetName().Name == "GameFrame.Runtime")
+            {{
+                FindEnitiyClass(item);
+            }}
+        }}
+    }}
+
+    public static void FindEnitiyClass(Assembly assembly)
+    {{
+        Type[] types = assembly.GetTypes();
+        foreach (var tp in types)
+        {{
+            PushDic(assembly, tp);
+        }}
+    }}
+
+    private static void PushDic(Assembly assembly, Type type)
+    {{
+        var vb = type.GetCustomAttribute<SystemBindAttribute>();
+        if (vb != null)
+        {{
+            Type baseType = type.BaseType;
+            Type[] types = baseType.GenericTypeArguments;
+            var x = baseType.GetTypeInfo().ImplementedInterfaces;
+            foreach (var cla in x)
+            {{
+                if (cla != typeof(IReference) && cla != typeof(ISystem))
+                {{
+                    BindSystem.Instance.SystemBind.Add(types[0],cla,type);
+                }}
+            }}
+        }}
+    }}
+    #endif
 }}
 
-#
+@
         systemBind.Add({0},{1},{2});
