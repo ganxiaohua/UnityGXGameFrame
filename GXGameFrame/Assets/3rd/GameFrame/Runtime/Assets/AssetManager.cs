@@ -5,7 +5,6 @@ using GameFrame;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using UnityEngine.ResourceManagement.ResourceProviders;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
@@ -263,26 +262,31 @@ public class AssetManager : Singleton<AssetManager>
     /// <param name="path"></param>
     /// <param name="update"></param>
     /// <param name="completed"></param>
-    public async UniTask<Scene> LoadSceneAsync(string path)
+    public async UniTask<Scene> LoadSceneAsync(string path, System.Threading.CancellationToken token = default)
     {
         if (CacheAssetDic.ContainsKey(path))
         {
             Debugger.LogError($"场景{path}已经存在");
-            
         }
 
-        var handle = Addressables.LoadSceneAsync(path,LoadSceneMode.Additive);
+        var handle = Addressables.LoadSceneAsync(path, LoadSceneMode.Additive);
+        var hand = handle.ToUniTask(null, PlayerLoopTiming.Update, token);
 
         if (!CacheAssetDic.TryGetValue(path, out Assets asset))
         {
-            CacheAssetDic.Add(path, new Assets(handle, path, typeof(SceneManager),null));
+            CacheAssetDic.Add(path, new Assets(handle, path, typeof(SceneManager), null));
         }
         else
         {
             asset.Add(path, typeof(SceneManager), null);
         }
-        SceneInstance sceneinstance = await handle.Task;
-        return sceneinstance.Scene;
+
+        var sceneinstance = await hand.SuppressCancellationThrow();
+        if (sceneinstance.IsCanceled)
+        {
+            return default;
+        }
+        return sceneinstance.Result.Scene;
     }
 
     /// <summary>

@@ -95,28 +95,31 @@ namespace GameFrame
             NodeState = StateType.Hide;
         }
 
-        public async UniTask LoadMustDependentOver()
+        public async UniTask<bool> LoadMustDependentOver()
         {
             NodeState = StateType.Loading;
             DependentUIResources dependentResources = Window.GetComponent<DependentUIResources>();
+            bool over = true;
             if (dependentResources != null)
             {
-                await dependentResources.WaitLoad();
+                over = await dependentResources.WaitLoad();
+                
             }
-
             NodeState = StateType.LoadEnd;
+            return over;
         }
 
-        public async UniTask UIWait()
+        public async UniTask<bool> UIWait()
         {
             NodeState = StateType.Wait;
             WaitComponent waitComponent = Window.GetComponent<WaitComponent>();
+            bool over = true;
             if (waitComponent != null)
             {
-                await waitComponent.Wait();
+                over = await waitComponent.Wait();
             }
-
             NodeState = StateType.WaitEnd;
+            return over;
         }
 
         public void Clear()

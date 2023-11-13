@@ -189,15 +189,25 @@ namespace GameFrame
         /// 打开一个UI
         /// </summary>
         /// <param name="type"></param>
-        private async UniTask Open(Type type)
+        private async UniTaskVoid Open(Type type)
         {
             RemoveRecycleWindowDic(type);
             UINode curUINode = GetCurUINode();
             UINode uinode = UINode.CreateNode(type);
             m_UILinkedLinkedList.AddLast(uinode);
-            await uinode.LoadMustDependentOver();
+            bool loadover = await uinode.LoadMustDependentOver();
+            if (!loadover)
+            {
+                m_UILinkedLinkedList.RemoveLast();
+                return;
+            }
+
             uinode.PreShow(true);
-            await uinode.UIWait();
+            bool wait = await uinode.UIWait();
+            if (!wait)
+            {
+                return;
+            }
             //加入等待打开的UI列表
             m_OpenUIList.Push(uinode);
             if (curUINode != null)

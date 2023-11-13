@@ -7,11 +7,11 @@ namespace GameFrame
     public static class WaitComponentSystem
     {
         [SystemBind]
-        public class WaitComponentStartSystem : StartSystem<WaitComponent, Type>
+        public class WaitComponentStartSystem : StartSystem<WaitComponent>
         {
-            protected override void Start(WaitComponent self, Type type)
+            protected override void Start(WaitComponent self)
             {
-                self.WaitType = type;
+                self.UniTaskCompletionSource = new UniTaskCompletionSource();
             }
         }
 
@@ -20,13 +20,23 @@ namespace GameFrame
         {
             protected override void Clear(WaitComponent self)
             {
-                WaitTask.Notify(self.WaitType);
+                self.UniTaskCompletionSource.TrySetCanceled();
             }
         }
-
-        public static async UniTask Wait(this WaitComponent self)
+        
+        public static void WaitOver(this WaitComponent self)
         {
-            await WaitTask.Wait(self.WaitType);
+            self.UniTaskCompletionSource.TrySetResult();
+        }
+
+        public static async UniTask<bool> Wait(this WaitComponent self)
+        {
+            await self.UniTaskCompletionSource.Task.SuppressCancellationThrow();
+            if (self.UniTaskCompletionSource.GetStatus(0) == UniTaskStatus.Succeeded)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

@@ -23,7 +23,6 @@ namespace GameFrame
         {
             protected override void Clear(GameObjectPoolComponent self)
             {
-
             }
         }
 
@@ -47,6 +46,7 @@ namespace GameFrame
             {
                 Debugger.LogWarning($"{path} not already in pool");
             }
+
             ObjectPoolManager.Instance.DeleteObjectPool<GameObjectObjectBase>(path);
         }
 
@@ -59,7 +59,7 @@ namespace GameFrame
         /// <param name="size">对象池大小</param>
         /// <param name="expiretime">对象在对象池中存在的时间</param>
         /// <returns></returns>
-        public static GameObjectObjectBase Get(this GameObjectPoolComponent self, string path,int size = 0,int expiretime = 0)
+        public static GameObjectObjectBase Get(this GameObjectPoolComponent self, string path, int size = 0, int expiretime = 0)
         {
             if (!self.AllGameObjectPools.TryGetValue(path, out var pool))
             {
@@ -67,15 +67,39 @@ namespace GameFrame
                 {
                     size = self.DefaultSize;
                 }
+
                 if (expiretime == 0)
                 {
                     expiretime = self.ExpireTime;
                 }
+
                 pool = CreatePool(self, path, size, expiretime);
             }
+
             GameObjectObjectBase gb = pool.Spawn();
             return gb;
         }
+
+        // public static GameObjectObjectBase GetAysc(this GameObjectPoolComponent self,string path, int size = 0, int expiretime = 0)
+        // {
+        //     if (!self.AllGameObjectPools.TryGetValue(path, out var pool))
+        //     {
+        //         if (size == 0)
+        //         {
+        //             size = self.DefaultSize;
+        //         }
+        //
+        //         if (expiretime == 0)
+        //         {
+        //             expiretime = self.ExpireTime;
+        //         }
+        //
+        //         pool = CreatePool(self, path, size, expiretime);
+        //     }
+        //
+        //     GameObjectObjectBase gb = pool.Spawn();
+        //     return gb;
+        // }
 
         public static void Recycle(this GameObjectPoolComponent self, GameObjectObjectBase obbase)
         {
@@ -83,6 +107,7 @@ namespace GameFrame
             {
                 Debugger.LogWarning($"{obbase.LoadPath} not already in pool");
             }
+
             pool.UnSpawn(obbase);
         }
     }

@@ -19,6 +19,11 @@ namespace GameFrame
             return GXGameFrame.Instance.MainScene.GetComponent<GameObjectPoolComponent>().Get(path);
         }
         
+        public static GameObjectObjectBase GetObjectAsyn(string path)
+        {
+            return GXGameFrame.Instance.MainScene.GetComponent<GameObjectPoolComponent>().Get(path);
+        }
+        
         public static void RecycleObject(GameObjectObjectBase go)
         {
             GXGameFrame.Instance.MainScene.GetComponent<GameObjectPoolComponent>().Recycle(go);

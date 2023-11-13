@@ -23,7 +23,6 @@ namespace GameFrame
             }
         }
 
-
         [SystemBind]
         public class DependentUIResourcesClearSystem : ClearSystem<DependentUIResources>
         {
@@ -49,14 +48,19 @@ namespace GameFrame
             }
         }
 
-        public static async UniTask WaitLoad(this DependentUIResources self)
+        public static async UniTask<bool> WaitLoad(this DependentUIResources self)
         {
             if (self.Task == null)
             {
-                return;
+                return false;
             }
-            await self.Task.Task;
-            self.Task = null;
+
+            await self.Task.Task.SuppressCancellationThrow();
+            if (self.Task.GetStatus(0) == UniTaskStatus.Succeeded)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }
