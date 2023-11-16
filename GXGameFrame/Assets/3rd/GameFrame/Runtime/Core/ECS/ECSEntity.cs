@@ -25,6 +25,8 @@ namespace GameFrame
 
         public int ID { get; set; }
 
+        public Context Context { get; private set; }
+
         private GXArray<ECSComponent> m_ECSComponentArray;
 
         protected ECSEntity()
@@ -56,7 +58,7 @@ namespace GameFrame
             }
 
             ECSComponent entity = m_ECSComponentArray.Add(index, GXComponents.ComponentTypes[index]);
-            ((Context) Parent).ChangeAddRomoveChildOrCompone(this);
+            Context.ChangeAddRomoveChildOrCompone(this);
             return entity;
         }
 
@@ -74,7 +76,7 @@ namespace GameFrame
             }
 
             m_ECSComponentArray.Remove(index);
-            ((Context) Parent).ChangeAddRomoveChildOrCompone(this);
+            Context.ChangeAddRomoveChildOrCompone(this);
         }
 
         /// <summary>
@@ -104,6 +106,11 @@ namespace GameFrame
             }
 
             return true;
+        }
+
+        public void SetContext(Context context)
+        {
+            Context = context;
         }
 
         public bool HasComponent(int indexs)

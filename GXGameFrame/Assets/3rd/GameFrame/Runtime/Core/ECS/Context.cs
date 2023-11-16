@@ -5,21 +5,20 @@ namespace GameFrame
 {
     public class Context : Entity
     {
-        private Dictionary<ECSEntity, Group> m_ECSEnitiyGroup;
+        private Dictionary<int, HashSet<ECSEntity>> m_ECSEnitiyGroup;
         private Dictionary<Matcher, Group> m_Groups;
-        private List<KeyValuePair<Matcher,Group>> m_RemoveGroup;
-        
+
 
         public override void Initialize()
         {
             m_ECSEnitiyGroup = new();
             m_Groups = new();
-            m_RemoveGroup = new();
         }
         
         public new T AddChild<T>() where T : ECSEntity
         {
             T ecsEntity = base.AddChild<T>();
+            ecsEntity.SetContext(this);
             ChangeAddRomoveChildOrCompone(ecsEntity);
             return ecsEntity;
         }
