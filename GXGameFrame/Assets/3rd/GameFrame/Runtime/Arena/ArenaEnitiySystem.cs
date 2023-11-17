@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using GameFrame;
 namespace GameFrame
 {
-    public static class ArenaComponentSystem
+    public static class ArenaEnitiySystem
     {
         [SystemBind]
-        public class ArenaComponentStartSystem : StartSystem<ArenaComponent, Type>
+        public class ArenaEnitiyStartSystem : StartSystem<ArenaEnitiy, Type>
         {
-            protected override void Start(ArenaComponent self, Type arena)
+            protected override void Start(ArenaEnitiy self, Type arena)
             {
                 self.Arena = (Arena) ReferencePool.Acquire(arena);
                 self.Arena.Init(self);
@@ -19,18 +19,18 @@ namespace GameFrame
         }
 
         [SystemBind]
-        public class ArenaComponentUpdateSystem : UpdateSystem<ArenaComponent>
+        public class ArenaEnitiyUpdateSystem : UpdateSystem<ArenaEnitiy>
         {
-            protected override void Update(ArenaComponent self, float elapseSeconds, float realElapseSeconds)
+            protected override void Update(ArenaEnitiy self, float elapseSeconds, float realElapseSeconds)
             {
                 self.Arena.Update(elapseSeconds);
             }
         }
 
         [SystemBind]
-        public class ArenaComponentClearSystem : ClearSystem<ArenaComponent>
+        public class ArenaEnitiyClearSystem : ClearSystem<ArenaEnitiy>
         {
-            protected override void Clear(ArenaComponent self)
+            protected override void Clear(ArenaEnitiy self)
             {
                 ReferencePool.Release(self.Arena);
                 self.JackdollDic.Clear();
@@ -48,10 +48,10 @@ namespace GameFrame
         /// <param name="self"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static Jackdoll AddJackdoll<T>(this ArenaComponent self) where T : Jackdoll
+        public static Jackdoll AddJackdoll<T>(this ArenaEnitiy self) where T : Jackdoll
         {
             Type type = typeof(T);
-            var jackdollComponent = self.AddChild<JackdollComponent, Type, Arena>(type, self.Arena);
+            var jackdollComponent = self.AddChild<JackdollEnitiy, Type, Arena>(type, self.Arena);
             self.JackdollDic.Add(type, jackdollComponent);
             return jackdollComponent.Jcakdoll;
         }
@@ -62,10 +62,10 @@ namespace GameFrame
         /// <param name="self"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static void RemoveJackdoll<T>(this ArenaComponent self) where T : Jackdoll
+        public static void RemoveJackdoll<T>(this ArenaEnitiy self) where T : Jackdoll
         {
             Type type = typeof(T);
-            if (!self.JackdollDic.TryGetValue(type, out JackdollComponent jackdoll))
+            if (!self.JackdollDic.TryGetValue(type, out JackdollEnitiy jackdoll))
             {
                 return;
             }
@@ -80,10 +80,10 @@ namespace GameFrame
         /// <param name="self"></param>
         /// <param name="jackdollType">人偶师类型</param>
         /// <param name="doll">玩偶本身</param>
-        public static void ChangeJackdoll<T>(this ArenaComponent self, IDoll doll)where T : Jackdoll
+        public static void ChangeJackdoll<T>(this ArenaEnitiy self, IDoll doll)where T : Jackdoll
         {
             Type jackdollType = typeof(T);
-            if (self.DollForJackdollDic.TryGetValue(doll, out JackdollComponent jackdoll))
+            if (self.DollForJackdollDic.TryGetValue(doll, out JackdollEnitiy jackdoll))
             {
                 self.DollForJackdollDic.Remove(doll);
                 jackdoll.DollLeave(doll);
@@ -102,7 +102,7 @@ namespace GameFrame
         /// <summary>
         /// 加入一个人偶到舞台上
         /// </summary>
-        public static T AddDoll<T>(this ArenaComponent self) where T : class, IDoll, new()
+        public static T AddDoll<T>(this ArenaEnitiy self) where T : class, IDoll, new()
         {
             T doll = ReferencePool.Acquire<T>();
             self.Dolls.Add(doll);
@@ -112,7 +112,7 @@ namespace GameFrame
         /// <summary>
         /// 从舞台上删除一个人偶
         /// </summary>
-        public static void RemoveDoll(this ArenaComponent self,IDoll doll)
+        public static void RemoveDoll(this ArenaEnitiy self,IDoll doll)
         {
             if (!self.Dolls.Contains(doll))
             {
@@ -120,7 +120,7 @@ namespace GameFrame
             }
             
             self.Dolls.Remove(doll);
-            if (self.DollForJackdollDic.TryGetValue(doll, out JackdollComponent jackdoll))
+            if (self.DollForJackdollDic.TryGetValue(doll, out JackdollEnitiy jackdoll))
             {
                 self.DollForJackdollDic.Remove(doll);
                 jackdoll.DollLeave(doll);

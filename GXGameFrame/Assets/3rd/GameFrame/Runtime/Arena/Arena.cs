@@ -4,10 +4,10 @@ namespace GameFrame
 {
     public abstract class Arena : IReference
     {
-        private ArenaComponent arenaComponent;
-        public virtual void Init(ArenaComponent arena)
+        private ArenaEnitiy arenaEnitiy;
+        public virtual void Init(ArenaEnitiy arena)
         {
-            arenaComponent = arena;
+            arenaEnitiy = arena;
         }
 
         public virtual void Update(float elapseSeconds)
@@ -16,7 +16,7 @@ namespace GameFrame
 
         internal void ChangeJackdoll<T>(IDoll doll)where T : Jackdoll
         {
-            arenaComponent.ChangeJackdoll<T>(doll);
+            arenaEnitiy.ChangeJackdoll<T>(doll);
         }
 
         public void Clear()
