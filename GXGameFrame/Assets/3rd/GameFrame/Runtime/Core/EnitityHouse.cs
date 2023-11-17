@@ -88,8 +88,8 @@ namespace GameFrame
                 allSystemDic.SystemClear(entity);
             }
 
-            RemoveAllSystem(entity);
             entityList.Remove(entity);
+            RemoveAllSystem(entity);
         }
 
         /// <summary>
