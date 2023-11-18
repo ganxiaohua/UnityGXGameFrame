@@ -131,7 +131,7 @@ public class AssetManager : Singleton<AssetManager>
     public async UniTask<T> LoadAsyncTask<T>(string path, System.Threading.CancellationToken token = default)
     {
         AsyncOperationHandle<T> handle = Addressables.LoadAssetAsync<T>(path);
-        UniTask<T> uniTaskHandle =   handle.ToUniTask(null, PlayerLoopTiming.Update, token);
+        UniTask<T> uniTaskHandle = handle.ToUniTask(null, PlayerLoopTiming.Update, token);
         if (!CacheAssetDic.TryGetValue(path, out Assets asset))
         {
             CacheAssetDic.Add(path, new Assets(handle, path, typeof(T), null));
@@ -140,9 +140,13 @@ public class AssetManager : Singleton<AssetManager>
         {
             asset.Add(path, typeof(T), null);
         }
-        
-        var obj = await uniTaskHandle;
-        return obj;
+
+        var obj = await uniTaskHandle.SuppressCancellationThrow();
+        if (obj.IsCanceled)
+        {
+            return default(T);
+        }
+        return obj.Result;
     }
     
 
