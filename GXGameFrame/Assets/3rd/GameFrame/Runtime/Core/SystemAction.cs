@@ -142,6 +142,7 @@ namespace GameFrame
                 {
                     ecsupdatesystem.Update(elapseSeconds, realElapseSeconds);
                 }
+                count = ets.Count;
             }
         }
 
@@ -159,6 +160,7 @@ namespace GameFrame
                 {
                     ecsupdatesystem.LateUpdate(elapseSeconds, realElapseSeconds);
                 }
+                count = ets.Count;
             }
         }
 
@@ -176,6 +178,8 @@ namespace GameFrame
                 {
                     ecsupdatesystem.FixedUpdate(elapseSeconds, realElapseSeconds);
                 }
+
+                count = ets.Count;
             }
         }
 
