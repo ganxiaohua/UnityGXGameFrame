@@ -24,7 +24,7 @@ namespace GameFrame
         public void Update()
         {
             float datetime = Time.deltaTime;
-            float realtimeSinceStartup = Time.unscaledDeltaTime;
+            float realtimeSinceStartup = Time.realtimeSinceStartup;
             EnitityHouse.Instance.Update(datetime, realtimeSinceStartup);
             ObjectPoolManager.Instance.Update(datetime, realtimeSinceStartup);
             UIManager.Instance.Update(datetime, realtimeSinceStartup);
@@ -35,14 +35,14 @@ namespace GameFrame
         public void LateUpdate()
         {
             float datetime = Time.deltaTime;
-            float realtimeSinceStartup = Time.unscaledDeltaTime;
+            float realtimeSinceStartup = Time.realtimeSinceStartup;
             EnitityHouse.Instance.LateUpdate(datetime, realtimeSinceStartup);
         }
 
         public void FixedUpdate()
         {
             float datetime = Time.deltaTime;
-            float realtimeSinceStartup = Time.unscaledDeltaTime;
+            float realtimeSinceStartup = Time.realtimeSinceStartup;
             EnitityHouse.Instance.FixedUpdate(datetime, realtimeSinceStartup);
         }
 
