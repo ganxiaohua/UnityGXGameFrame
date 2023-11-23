@@ -33,7 +33,7 @@ namespace GameFrame
         /// <summary>
         /// 初始化对象基类。
         /// </summary>
-        internal virtual void Initialize(object initData)
+        public virtual void Initialize(object initData)
         {
             
         }
@@ -42,7 +42,7 @@ namespace GameFrame
         /// <summary>
         /// 获取对象时的事件。
         /// </summary>
-        internal virtual void OnSpawn()
+        public virtual void OnSpawn()
         {
             
         }
@@ -50,7 +50,7 @@ namespace GameFrame
         /// <summary>
         /// 回收对象时的事件。
         /// </summary>
-        internal virtual void OnUnspawn()
+        public virtual void OnUnspawn()
         {
             
         }

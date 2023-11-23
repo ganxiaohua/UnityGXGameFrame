@@ -12,13 +12,18 @@ namespace GameFrame
         {
             protected override void Start(DependentUIResources self, List<string> p1)
             {
-                
+                Init(self, p1).Forget();
+            }
+
+            private async UniTaskVoid Init(DependentUIResources self, List<string> p1)
+            {
                 self.Task = new UniTaskCompletionSource();
                 self.AssetPaths = p1;
+                self.All = 0;
+                self.Cur = 0;
                 foreach (var path in p1)
                 {
-                    self.CurLoadAmount = 0;
-                    AssetManager.Instance.UILoader.AddPackage(path, self.LoadUIAssetOver).Forget();
+                    self.All += await UILoader.Instance.AddPackage(path, self.LoadUIAssetOver);
                 }
             }
         }
@@ -30,7 +35,7 @@ namespace GameFrame
             {
                 foreach (var path in self.AssetPaths)
                 {
-                    AssetManager.Instance.UILoader.RemovePackages(path);
+                    UILoader.Instance.RemovePackages(path);
                 }
 
                 if (self.Task != null)
@@ -42,7 +47,7 @@ namespace GameFrame
 
         public static void LoadUIAssetOver(this DependentUIResources self)
         {
-            if (++self.CurLoadAmount == self.AssetPaths.Count)
+            if (++self.Cur == self.All)
             {
                 self.Task.TrySetResult();
             }
@@ -60,6 +65,7 @@ namespace GameFrame
             {
                 return true;
             }
+
             return false;
         }
     }

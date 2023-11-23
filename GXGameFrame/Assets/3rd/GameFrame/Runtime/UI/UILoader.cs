@@ -3,24 +3,32 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading;
+using Common.Runtime;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using FairyGUI;
-using GameFrame;
 
 namespace GameFrame
 {
-    public class UILoader
+    public class UILoader : Singleton<UILoader>
     {
         /// <summary>
         /// UIPack数据类
         /// </summary>
         public sealed class UIPackageData
         {
+            public Action Completed;
+            public bool LoadOver;
+
+            public CancellationToken CancellationToken;
+
+            public UIPackage mUIpackage; //包本体
+            
+            public DefaultAssetReference assetReference;
             /// <summary>
             /// 被加载的次数
             /// </summary>
-            public int Count = 0;
+            private int count = 0;
 
             /// <summary>
             /// 加入UIPackage
@@ -30,7 +38,8 @@ namespace GameFrame
             {
                 if (uipackage == null)
                     return;
-                m_UIpackage = uipackage;
+                assetReference = new DefaultAssetReference();
+                mUIpackage = uipackage;
             }
 
             /// <summary>
@@ -39,7 +48,7 @@ namespace GameFrame
             /// <param name="childName"></param>
             public void AddReferenceCount()
             {
-                ++Count;
+                ++count;
             }
 
             /// <summary>
@@ -48,7 +57,7 @@ namespace GameFrame
             /// <param name="childName"></param>
             public bool SubReferenceCount()
             {
-                if (--Count == 0)
+                if (--count == 0)
                     return true;
                 return false;
             }
@@ -61,55 +70,34 @@ namespace GameFrame
             {
                 if (string.IsNullOrEmpty(name))
                     return;
-                CancelOver = false;
-                m_PackageItemsResPath.Add(name);
             }
-
-            /// <summary>
-            /// 便利资源,一般用于释放
-            /// </summary>
-            /// <param name="action"></param>
-            public void ConveniencePackageItemsResPath(Action<string> action)
-            {
-                for (int i = 0; i < m_PackageItemsResPath.Count; i++)
-                {
-                    action(m_PackageItemsResPath[i]);
-                }
-            }
+            
 
             /// <summary>
             /// 清除操作
             /// </summary>
             public void Dispose()
             {
-                m_PackageItemsResPath.Clear();
-                // if (m_UIpackage != null)
-                //     UIPackage.RemovePackage(m_UIpackage.id);
-                // m_UIpackage = null;
-                // CancelOver = true;
-                // Count = 0;
-                // ChildReference.Clear();
+                if (mUIpackage != null)
+                    UIPackage.RemovePackage(mUIpackage.id);
             }
-
-            public Action Completed;
-            public bool LoadOver;
-
-            public bool CancelOver;
-
-            private UIPackage m_UIpackage; //包本体
-            private List<string> m_PackageItemsResPath = new List<string>(3); //引用资源的名字
         }
 
         Dictionary<string, UIPackageData> packages = new Dictionary<string, UIPackageData>();
-        private StringBuilder m_TempSb = new StringBuilder(128);
 
         /// <summary>
         /// 加载包
         /// </summary>
         /// <param name="descFileName">包名</param>
         /// <param name="onCompleted">回调函数</param>
-        public async UniTaskVoid AddPackage(string descFileName, System.Action onCompleted = null)
+        public async UniTask<int> AddPackage(string descFileName, System.Action onCompleted = null, CancellationToken token = default(CancellationToken))
         {
+            int allAssetCount = 0;
+            if (!PackNameForPath.PackNameForPathDic.TryGetValue(descFileName,out var desPath))
+            {
+                return allAssetCount;
+            }
+
             if (packages.TryGetValue(descFileName, out UIPackageData uiPackAgeData))
             {
                 uiPackAgeData.AddReferenceCount();
@@ -121,38 +109,41 @@ namespace GameFrame
                 {
                     uiPackAgeData.Completed += onCompleted;
                 }
-
-                return;
+                return allAssetCount;
             }
-
-            var desPath = GetFGUIDesPath(descFileName);
+            
             uiPackAgeData = new UIPackageData();
             uiPackAgeData.LoadOver = false;
             uiPackAgeData.AddReferenceCount();
-
             packages.Add(descFileName, uiPackAgeData);
             uiPackAgeData.Completed = onCompleted;
-
-            var desText = await AssetManager.Instance.LoadAsyncTask<TextAsset>(desPath);
+            var desText = await AssetSystem.Instance.LoadAsync<TextAsset>(desPath, uiPackAgeData.assetReference,token);
             if (desText == null)
             {
-                return;
+                return allAssetCount;
             }
-
-            if (uiPackAgeData.CancelOver)
-            {
-                AssetManager.Instance.UnLoad(desPath);
-                return;
-            }
-
+            
+            uiPackAgeData.CancellationToken = token;
             var uipackage = UIPackage.AddPackage(desText.bytes, descFileName, LoadPackageInternalAsync);
+            allAssetCount = 1; 
             uiPackAgeData.SetUIPackage(uipackage);
             uipackage.LoadAllAssets();
-            AssetManager.Instance.UnLoad(desPath);
+            uiPackAgeData.assetReference.UnrefAsset(desPath);
             if (uipackage.LoadOver())
             {
                 uiPackAgeData.Completed?.Invoke();
             }
+            
+            //加载依赖包
+            var dependencies = uipackage.dependencies;
+            foreach (var dependenciesDic in dependencies)
+            {
+                if (dependenciesDic.TryGetValue("name", out string packname))
+                {
+                    allAssetCount += await AddPackage(packname, onCompleted, token);
+                }
+            }
+            return allAssetCount;
         }
 
         /// <summary>
@@ -164,33 +155,40 @@ namespace GameFrame
         {
             if (packages.TryGetValue(descFileName, out UIPackageData uiPackAgeData) && uiPackAgeData != null)
             {
+                uiPackAgeData.assetReference.UnrefAssets();
                 //只有计数为0才能删除包体
                 if (uiPackAgeData.SubReferenceCount())
                 {
-                    uiPackAgeData.ConveniencePackageItemsResPath((x) => { AssetManager.Instance.UnLoad(x); });
-
                     uiPackAgeData.Dispose();
                     packages.Remove(descFileName);
                 }
+                
+                var dependencies = uiPackAgeData.mUIpackage.dependencies;
+                foreach (var dependenciesDic in dependencies)
+                {
+                    if (dependenciesDic.TryGetValue("name", out string packname))
+                    {
+                        RemovePackages(packname);
+                    }
+                }
             }
         }
+        
 
-        string GetFGUIDesPath(string fileName)
+        string GetFGUIResPath(string packname,string fileName, string extension)
         {
-            return $"{StaticText.UIPath}{fileName}_fui.bytes";
-        }
-
-        string GetFGUIResPath(string fileName, string extension)
-        {
-            return $"{StaticText.UIPath}{fileName}{extension}";
+            string str = PackNameForPath.PackNameForPathDic[packname];
+             str = str.Substring(0, str.LastIndexOf("/")+1);
+            return $"{str}{fileName}{extension}";
         }
 
         private void LoadPackageInternalAsync(string name, string extension, System.Type type, PackageItem item)
         {
-            var resPath = GetFGUIResPath(name, extension);
+            var resPath = "";
             string key = name[..name.IndexOf("_", StringComparison.Ordinal)];
             if (packages.TryGetValue(key, out UIPackageData uiPackAgeData) && uiPackAgeData != null)
             {
+                resPath = GetFGUIResPath(uiPackAgeData.mUIpackage.name,name, extension);
                 uiPackAgeData.AddPackageItemsResPath(resPath);
             }
             else
@@ -201,10 +199,14 @@ namespace GameFrame
             LoadResPath(resPath, name + extension, item, uiPackAgeData).Forget();
         }
 
-        public async UniTask LoadResPath(string path, string readyLoadName, PackageItem package, UIPackageData uiPackAgeData)
+        public async UniTaskVoid LoadResPath(string path, string readyLoadName, PackageItem package, UIPackageData uiPackAgeData)
         {
-            object x = await AssetManager.Instance.LoadAsyncTask<object>(path);
-            package.owner.SetItemAsset(package, x, DestroyMethod.None);
+            object obj = await AssetSystem.Instance.LoadAsync<object>(path,uiPackAgeData.assetReference,uiPackAgeData.CancellationToken);
+            if (obj == null)
+            {
+                return;
+            }
+            package.owner.SetItemAsset(package, obj, DestroyMethod.None);
             try
             {
                 if (package.owner.ReadyLoadFileLoadOver(readyLoadName))

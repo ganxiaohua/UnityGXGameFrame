@@ -13,7 +13,7 @@ namespace GameFrame.Editor
         /// <summary>
         /// UI创建的脚本路径
         /// </summary>
-        public static string UIScriptsPath = "Assets/GXGame/Scripts/UI";
+        public static string UIScriptsPath = "Assets/GXGame/Scripts/Runtime/UI";
         
         /// <summary>
         /// 外部配表数据

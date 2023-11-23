@@ -389,8 +389,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4cb45a8302c5713449dcf0bec31e3329, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dafaultPath: Assets/GXGame/Scripts/UI
-  custom_Path: Assets/GXGame/Scripts/UI
+  dafaultPath: Assets/GXGame/Scripts/Runtime/UI
+  custom_Path: Assets/GXGame/Scripts/Runtime/UI
   className: UICardListWindow2
   bindList:
   - Path: n43

@@ -16,7 +16,7 @@ namespace GameFrame
             EnitityHouse.Instance.Init();
             MainScene = ReferencePool.Acquire<MainScene>();
             MainScene.AddComponent<UIComponent>();
-            MainScene.AddComponent<GameObjectPoolComponent>();
+            
             await MainScene.AddComponent<AssetInitComponent>().WaitLoad();
             Config.Instance.LoadTable();
         }
@@ -25,10 +25,10 @@ namespace GameFrame
         {
             float datetime = Time.deltaTime;
             float realtimeSinceStartup = Time.realtimeSinceStartup;
+            AssetSystem.Instance.Update(datetime);
             EnitityHouse.Instance.Update(datetime, realtimeSinceStartup);
             ObjectPoolManager.Instance.Update(datetime, realtimeSinceStartup);
             UIManager.Instance.Update(datetime, realtimeSinceStartup);
-            TimerComponent.Instance.Update();
             ReferencePool.Update(datetime, realtimeSinceStartup);
         }
 
