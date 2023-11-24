@@ -5,8 +5,9 @@ namespace GameFrame
 {
     public class DependentUIResources : Entity, IStart, IClear
     {
+        public int Cur;
+        public int All;
         public List<string> AssetPaths;
-        public int CurLoadAmount;
         public UniTaskCompletionSource Task;
     }
 }

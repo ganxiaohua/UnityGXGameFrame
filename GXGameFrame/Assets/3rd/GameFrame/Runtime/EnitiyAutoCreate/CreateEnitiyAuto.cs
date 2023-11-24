@@ -17,6 +17,8 @@ public class CreateEnitiyAuto
     public static string UIViewText = "Assets/3rd/GameFrame/Editor/Text/UI/UIViewText.txt";
 
     public static string UIViewAutoText = "Assets/3rd/GameFrame/Editor/Text/UI/UIViewAutoText.txt";
+    
+    public static string UIPackName = "Assets/3rd/GameFrame/Editor/Text/UI/UIAddPack.txt";
 
     public static string[] UIViewAutoTexts;
 
@@ -110,7 +112,28 @@ public class CreateEnitiyAuto
             startSystem + preShowSystem + showSystem + hideSystem + updateSystem + LateUpdateSystem + FixUpdateSystem + clearSystem);
         File.WriteAllText($"{createPath}/{componentName}.cs", scriptComponent);
         File.WriteAllText($"{createPath}/{componentName}System.cs", scriptComponentSystem);
+        if (isUI)
+        {
+            WriteAddPackName();
+        }
         AssetDatabase.Refresh();
+    }
+    
+    public static void WriteAddPackName()
+    {
+        
+        var txt = File.ReadAllText(UIPackName);
+        string[] packStr = txt.Split('@');
+        string[] fuiguids = AssetDatabase.FindAssets($"_fui t:textAsset");
+        string addstr = "";
+        foreach (var fuiid in fuiguids)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(fuiid);
+            string packName = path.Substring(path.LastIndexOf('/')+1, path.Length - path.LastIndexOf('/')-1).Replace("_fui.bytes", "");
+            addstr += string.Format(packStr[1], packName,path);
+        }
+        string lasttext = string.Format(packStr[0], addstr);
+        File.WriteAllText($"Assets/GXGame/Scripts/Runtime/UI/AddPackNameForPath.cs", lasttext);
     }
 
 
@@ -130,12 +153,12 @@ public class CreateEnitiyAuto
 
     public static string StartIsUI(bool isUI, string componentName, string packName)
     {
-        string[] fuiguid = AssetDatabase.FindAssets($"{packName}_fui t:textAsset");
-        string path = AssetDatabase.GUIDToAssetPath(fuiguid[0]);
+        // string[] fuiguid = AssetDatabase.FindAssets($"{packName}_fui t:textAsset");
+        // string path = AssetDatabase.GUIDToAssetPath(fuiguid[0]);
         var txt = File.ReadAllText(UIStartText);
         if (isUI)
         {
-            return string.Format(txt, componentName, path.Replace(StaticText.UIPath, "").Replace("_fui.bytes", ""));
+            return string.Format(txt, componentName, packName);
         }
 
         return "";

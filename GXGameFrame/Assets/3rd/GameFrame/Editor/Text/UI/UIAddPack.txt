@@ -1,0 +1,15 @@
+namespace GameFrame
+{{
+    public class AddPackNameForPath
+    {{
+        /// <summary>
+        /// 自动生成
+        /// </summary>
+        public static void Init()
+        {{
+            {0}
+        }}
+    }}
+}}
+@
+         PackNameForPath.PackNameForPathDic.Add("{0}","{1}");

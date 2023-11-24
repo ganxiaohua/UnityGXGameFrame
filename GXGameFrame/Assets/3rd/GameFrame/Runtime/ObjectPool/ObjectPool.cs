@@ -175,7 +175,10 @@ namespace GameFrame
             ObjectPoolTask objectPoolTask = ReferencePool.Acquire<ObjectPoolTask>();
             objectPoolTask.Init(token);
             m_SpawnAsyncQueue.Enqueue(objectPoolTask);
-            SetAsyncMaxCount();
+            if (!s_MaxSpawnAsynDic.ContainsKey(typeof(T)))
+            {
+                SetAsyncMaxCount();
+            }
             await objectPoolTask;
             bool spawn = (objectPoolTask.TaskState == TaskState.Succ && m_Activate);
             ReferencePool.Release(objectPoolTask);

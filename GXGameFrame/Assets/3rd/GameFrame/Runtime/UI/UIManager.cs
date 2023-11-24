@@ -112,7 +112,7 @@ namespace GameFrame
                 m_OpenUIList.Clear();
             }
 
-            TimeoutDeletion(realElapseSeconds);
+            TimeoutDeletion(elapseSeconds);
         }
 
         /// <summary>
