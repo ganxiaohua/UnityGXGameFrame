@@ -577,13 +577,16 @@ namespace GameFrame
 
         public void Disable()
         {
-            LinkedListNode<UINode> Penult = m_UILinkedLinkedList.Last.Previous;
-            while (m_UILinkedLinkedList.First != m_UILinkedLinkedList.Last)
+            if (m_UILinkedLinkedList != null)
             {
-                DestroyNode(Penult.Value);
-                m_UILinkedLinkedList.Remove(Penult);
+                LinkedListNode<UINode> Penult = m_UILinkedLinkedList.Last.Previous;
+                while (m_UILinkedLinkedList.First != m_UILinkedLinkedList.Last)
+                {
+                    DestroyNode(Penult.Value);
+                    m_UILinkedLinkedList.Remove(Penult);
+                }
             }
-            
+
             foreach (UINode uiNode in m_OpenUIList)
             {
                 DestroyNode(uiNode);
