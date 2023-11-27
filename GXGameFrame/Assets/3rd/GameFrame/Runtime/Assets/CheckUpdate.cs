@@ -120,6 +120,7 @@ public class CheckUpdate
     /// </summary>
     private async UniTask DownloadRes()
     {
+        MovePath(false);
         var startTime = Time.realtimeSinceStartup;
         if (m_TotalDownLoadSize > 0)
             
@@ -145,7 +146,6 @@ public class CheckUpdate
                 m_UpdateResKeysList.RemoveAt(i);
                 Addressables.Release(m_DownloadHandle);
             }
-        MovePath(false);
         Debugger.Log($"下载完毕!下载时间:{Time.realtimeSinceStartup - startTime}s");
     }
 
