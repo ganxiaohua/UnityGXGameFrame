@@ -17,6 +17,8 @@ namespace GameFrame
         {
             public readonly string path;
             public AsyncOperationHandle handle;
+            public Action<object> unloadHandle;
+            public object unloadHandleParameter;
             public int referenceCount;
             public float lifeTime;
 
@@ -30,9 +32,10 @@ namespace GameFrame
             new Dictionary<string, AssetHandleCache>();
 
         private readonly List<AssetHandleCache> dyingAssetHandles = new List<AssetHandleCache>();
-
+        
         public async UniTask<T> LoadAsync<T>(string path, IAssetReference reference = null, System.Threading.CancellationToken cancellationToken = default)
         {
+            IAssetReference tempRef = reference;
             if (!assetHandleCaches.TryGetValue(path, out var cache))
             {
                 cache = new AssetHandleCache(path);
@@ -41,8 +44,8 @@ namespace GameFrame
             
             cache.lifeTime = InfinityLifeTime;
 
-            reference?.RefAsset(path);
-            if (reference == null)
+            tempRef?.RefAsset(path);
+            if (tempRef == null)
             {
                 IncrementReferenceCount(path);
             }
@@ -60,37 +63,28 @@ namespace GameFrame
                 cache.handle = default;
                 return default(T);
             }
-            
+            tempRef?.LoadLater();
             return result.Result;
         }
 
-        public void LoadAsync<T>(string path, IAssetReference reference = null, Action<AsyncOperationHandle<T>> callback = null)
+        /// <summary>
+        /// 当资源销毁的时候执行的操作
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="action"></param>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public bool SetUnloadHandle(string path,Action<object> action,object param)
         {
-            if (!assetHandleCaches.TryGetValue(path, out var cache))
+            if (assetHandleCaches.TryGetValue(path, out var cache))
             {
-                cache = new AssetHandleCache(path);
-                assetHandleCaches.Add(path, cache);
+                cache.unloadHandle = action;
+                cache.unloadHandleParameter = param;
+                return true;
             }
-            
-            cache.lifeTime = InfinityLifeTime;
-            
-            reference?.RefAsset(path);
-            if (reference == null)
-            {
-                IncrementReferenceCount(path);
-            }
-            if (!cache.handle.IsValid())
-                cache.handle = Addressables.LoadAssetAsync<T>(path);
-            
-            var tHandle = cache.handle.Convert<T>();
-            if (tHandle.IsDone)
-            {
-                callback?.Invoke(tHandle);
-                return;
-            }
-
-            tHandle.Completed += callback;
-        } 
+            return false;
+        }
+        
         
         public async UniTask<Scene> LoadSceneAsync(string path,IAssetReference reference = null, System.Threading.CancellationToken token = default)
         {
@@ -146,7 +140,7 @@ namespace GameFrame
             for (int i = dyingAssetHandles.Count - 1; i >= 0; i--)
             {
                 var cache = dyingAssetHandles[i];
-                if (cache.lifeTime == InfinityLifeTime)
+                if (float.IsPositiveInfinity(cache.lifeTime))
                 {
                     dyingAssetHandles.RemoveAt(i);
                 }
@@ -157,6 +151,7 @@ namespace GameFrame
                     {
                         dyingAssetHandles.RemoveAt(i);
                         assetHandleCaches.Remove(cache.path);
+                        cache.unloadHandle?.Invoke(cache.unloadHandleParameter);
                         if (cache.handle.IsValid())
                             Addressables.Release(cache.handle);
                     }

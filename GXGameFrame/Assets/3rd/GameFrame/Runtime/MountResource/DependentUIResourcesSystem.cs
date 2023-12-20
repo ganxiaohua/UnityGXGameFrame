@@ -1,30 +1,32 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Cysharp.Threading.Tasks;
-using Unity.VisualScripting;
+﻿using Cysharp.Threading.Tasks;
+using FairyGUI;
 
 namespace GameFrame
 {
     public static class DependentUIResourcesSystem
     {
         [SystemBind]
-        public class DependentUIResourcesStartSystem : StartSystem<DependentUIResources, List<string>>
+        public class DependentUIResourcesStartSystem : StartSystem<DependentUIResources, string, string>
         {
-            protected override void Start(DependentUIResources self, List<string> p1)
+            protected override void Start(DependentUIResources self, string packageName, string windowName)
             {
-                Init(self, p1).Forget();
+                self.PackageName = packageName;
+                self.DefaultAssetReference = new DefaultAssetReference();
+                self.waitLoadTask = new UniTaskCompletionSource();
+                Init(self, packageName, windowName).Forget();
             }
 
-            private async UniTaskVoid Init(DependentUIResources self, List<string> p1)
+            private async UniTaskVoid Init(DependentUIResources self, string packageName, string windowName)
             {
-                self.Task = new UniTaskCompletionSource();
-                self.AssetPaths = p1;
-                self.All = 0;
-                self.Cur = 0;
-                foreach (var path in p1)
+                await UILoaderNew.Instance.AddPackage(packageName, self.DefaultAssetReference);
+                self.Window = UIPackage.CreateObject(packageName, windowName);
+                var succ = await UILoaderNew.Instance.LoadOver(self.PackageName);
+                if (succ)
                 {
-                    self.All += await UILoader.Instance.AddPackage(path, self.LoadUIAssetOver);
+                    self.waitLoadTask.TrySetResult();
+                    return;
                 }
+                self.waitLoadTask.TrySetCanceled();
             }
         }
 
@@ -33,35 +35,23 @@ namespace GameFrame
         {
             protected override void Clear(DependentUIResources self)
             {
-                foreach (var path in self.AssetPaths)
+                
+                if (self.waitLoadTask != null)
                 {
-                    UILoader.Instance.RemovePackages(path);
+                    self.waitLoadTask.TrySetCanceled();
                 }
-
-                if (self.Task != null)
-                {
-                    self.Task.TrySetCanceled();
-                }
-            }
-        }
-
-        public static void LoadUIAssetOver(this DependentUIResources self)
-        {
-            if (++self.Cur == self.All)
-            {
-                self.Task.TrySetResult();
             }
         }
 
         public static async UniTask<bool> WaitLoad(this DependentUIResources self)
         {
-            if (self.Task == null)
+            if (self.waitLoadTask == null)
             {
                 return false;
             }
 
-            await self.Task.Task.SuppressCancellationThrow();
-            if (self.Task.GetStatus(0) == UniTaskStatus.Succeeded)
+            await self.waitLoadTask.Task.SuppressCancellationThrow();
+            if (self.waitLoadTask.GetStatus(0) == UniTaskStatus.Succeeded)
             {
                 return true;
             }

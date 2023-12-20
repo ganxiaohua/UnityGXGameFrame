@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using FairyGUI;
+using UnityEngine;
 
 namespace GameFrame
 {
@@ -9,7 +10,7 @@ namespace GameFrame
     
     public interface IUIView
     {
-        void Link(Entity ecsEntity);
+        void Link(Entity ecsEntity,GObject root);
     }
     
     

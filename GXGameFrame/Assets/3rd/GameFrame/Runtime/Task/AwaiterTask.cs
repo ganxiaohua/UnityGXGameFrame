@@ -5,7 +5,7 @@ namespace GameFrame
 {
     
     
-    public class AwaiterTask<T> : INotifyCompletion,IReference where T : ITask
+    public class AwaiterTask<T> : INotifyCompletion,IReference where T : IHandle
     {
         private  T m_Task;
         

@@ -9,15 +9,17 @@ namespace GameFrame
         protected IEntity UIBase;
         private PlayCompleteCallback m_PlayCompleteCallbackIn;
         private PlayCompleteCallback m_PlayCompleteCallbackOut;
+
         /// <summary>
         /// 正在播放动画的数量当value的数值为0时代表播放结束
         /// </summary>
         protected Dictionary<string, int> AnimationPlayingCount;
-        
+
         /// <summary>
         /// 当前动画的存储
         /// </summary>
         protected Dictionary<string, Transition[]> AnimationPlayDic;
+
         private const string InAnimationName = "in";
         private const string OutAnimationName = "out";
 
@@ -51,10 +53,9 @@ namespace GameFrame
 
         protected override void DoShowAnimation()
         {
-
             if (!PlayAnimation(InAnimationName, m_PlayCompleteCallbackIn))
             {
-                EventManager.Instance.Send<UIOpenEvent,Type>(UIBase.GetType());
+                EventManager.Instance.Send<UIOpenEvent, Type>(UIBase.GetType());
                 base.DoShowAnimation();
             }
         }
@@ -63,11 +64,11 @@ namespace GameFrame
         {
             if (!PlayAnimation(OutAnimationName, m_PlayCompleteCallbackOut))
             {
-                EventManager.Instance.Send<UICloseEvent,Type>(UIBase.GetType());
+                EventManager.Instance.Send<UICloseEvent, Type>(UIBase.GetType());
                 base.DoHideAnimation();
             }
         }
-        
+
         public virtual void Update(float elapseSeconds, float realElapseSeconds)
         {
         }
@@ -79,19 +80,20 @@ namespace GameFrame
             Dispose();
         }
 
-        public void Link(Entity uiBase)
+        public void Link(Entity uiBase, GObject root)
         {
             UIBase = uiBase;
+            contentPane = (GComponent) root;
         }
 
-        protected bool PlayAnimation(string animationName,PlayCompleteCallback compeleFunc)
+        protected bool PlayAnimation(string animationName, PlayCompleteCallback compeleFunc)
         {
-
-            if (!AnimationPlayDic.TryGetValue(animationName,out Transition[] Transitions))
+            if (!AnimationPlayDic.TryGetValue(animationName, out Transition[] Transitions))
             {
                 Transitions = contentPane.GetTransitionsInChildren(animationName);
-                AnimationPlayDic.Add(animationName,Transitions);
+                AnimationPlayDic.Add(animationName, Transitions);
             }
+
             AnimationPlayingCount[animationName] = Transitions.Length;
 
             foreach (var animatoin in Transitions)
@@ -101,6 +103,7 @@ namespace GameFrame
 
             return Transitions.Length > 0 ? true : false;
         }
+
         protected void AnimatoinInComplete()
         {
             if (!AnimationPlayingCount.ContainsKey(InAnimationName))
@@ -111,21 +114,23 @@ namespace GameFrame
             if (--AnimationPlayingCount[InAnimationName] == 0)
             {
                 OnShown();
-                EventManager.Instance.Send<UIOpenEvent,Type>(UIBase.GetType());
+                EventManager.Instance.Send<UIOpenEvent, Type>(UIBase.GetType());
             }
         }
-        
+
         protected void AnimatoinOutComplete()
         {
             if (!AnimationPlayingCount.ContainsKey(OutAnimationName))
             {
                 return;
             }
+
             if (--AnimationPlayingCount[OutAnimationName] == 0)
             {
                 HideImmediately();
-                EventManager.Instance.Send<UICloseEvent,Type>(UIBase.GetType());
+                EventManager.Instance.Send<UICloseEvent, Type>(UIBase.GetType());
             }
         }
+        
     }
 }

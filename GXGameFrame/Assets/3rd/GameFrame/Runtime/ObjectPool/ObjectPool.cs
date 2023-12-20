@@ -24,7 +24,7 @@ namespace GameFrame
         /// <summary>
         /// 如果说吐出操作比较耗时们可以使用异步突出
         /// </summary>
-        private Queue<ObjectPoolTask> m_SpawnAsyncQueue;
+        private Queue<ObjectPoolHandle> m_SpawnAsyncQueue;
 
         /// <summary>
         /// 对象池最大数量
@@ -159,8 +159,8 @@ namespace GameFrame
             while (m_SpawnAsyncQueue.Count > 0 && cur < s_MaxSpawnAsynDic[typeof(T)])
             {
                 cur++;
-                ObjectPoolTask objectPoolTask = m_SpawnAsyncQueue.Dequeue();
-                objectPoolTask.Complete();
+                ObjectPoolHandle objectPoolHandle = m_SpawnAsyncQueue.Dequeue();
+                objectPoolHandle.Complete();
             }
             
         }
@@ -172,16 +172,16 @@ namespace GameFrame
         /// <returns></returns>
         public async UniTask<T> SpawnAsync( System.Threading.CancellationToken token = default)
         {
-            ObjectPoolTask objectPoolTask = ReferencePool.Acquire<ObjectPoolTask>();
-            objectPoolTask.Init(token);
-            m_SpawnAsyncQueue.Enqueue(objectPoolTask);
+            ObjectPoolHandle objectPoolHandle = ReferencePool.Acquire<ObjectPoolHandle>();
+            objectPoolHandle.Init(token);
+            m_SpawnAsyncQueue.Enqueue(objectPoolHandle);
             if (!s_MaxSpawnAsynDic.ContainsKey(typeof(T)))
             {
                 SetAsyncMaxCount();
             }
-            await objectPoolTask;
-            bool spawn = (objectPoolTask.TaskState == TaskState.Succ && m_Activate);
-            ReferencePool.Release(objectPoolTask);
+            await objectPoolHandle;
+            bool spawn = (objectPoolHandle.TaskState == TaskState.Succ && m_Activate);
+            ReferencePool.Release(objectPoolHandle);
             if (!spawn)
                 return null;
             return Spawn();

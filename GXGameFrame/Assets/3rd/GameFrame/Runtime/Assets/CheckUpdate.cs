@@ -25,7 +25,7 @@ public class CheckUpdate
     private string m_Comunityaddressables;
 
     /// <summary>
-    /// 切换平台
+    /// 切换平台是否需要提前下载
     /// </summary>
     public async UniTask CheckVersions()
     {

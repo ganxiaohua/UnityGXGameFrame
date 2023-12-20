@@ -15,10 +15,22 @@ MonoBehaviour:
   m_GroupName: UI
   m_Data:
     m_SerializedData: []
-  m_GUID: 3d3d575ef5b28dc42a8fd0213a1ecd8d
+  m_GUID: 335b47f02e34fad4285aa92c36e81bc7
   m_SerializeEntries:
   - m_GUID: 7866e3a79e34a4e4e9993b07ceafd927
-    m_Address: Assets/GXGame/UI/TestUI
+    m_Address: TestUI
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - UI
+  - m_GUID: 130f627db3b46ef4ca8106e8dd085461
+    m_Address: Card_atlas0
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - UI
+  - m_GUID: 1cf15296bfc10e3419b68eba1d548e84
+    m_Address: Card_fui
     m_ReadOnly: 0
     m_SerializedLabels:
     - Preload

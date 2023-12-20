@@ -2,17 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Common.Runtime;
+using UnityEditor.Experimental;
 
 namespace GameFrame
 {
     [Serializable]
     public sealed class DefaultAssetReference : IAssetReference
     {
-        private const int MinHashSetCount = 8;
-        
         [SerializeField]
         private List<string> refAssets;
-        private HashSet<string> refAssetSet;
+
+        private int loaded;
+
+        public bool IsLoadAll => refAssets.Count == loaded;
 
         public void RefInitialize()
         {
@@ -25,35 +27,25 @@ namespace GameFrame
         
         public bool RefAsset(string asset)
         {
-            if (refAssets == null) refAssets = new List<string>();
-            if (refAssets.Count < MinHashSetCount)
-            {
-                if (refAssets.Contains(asset))
-                    return false;
-            }
-            else
-            {
-                if (refAssetSet == null) refAssetSet = new HashSet<string>(refAssets);
-                if (refAssetSet.Contains(asset))
-                    return false;
-                refAssetSet.Add(asset);
-            }
+            if (refAssets == null) refAssets = new List<string>(16);
+            if (refAssets.Contains(asset))
+                return false;
             refAssets.Add(asset);
             AssetSystem.Instance.IncrementReferenceCount(asset);
             return true;
+        }
+
+        public void LoadLater()
+        {
+            loaded++;
         }
 
         public void UnrefAsset(string asset)
         {
             if (refAssets == null) return;
             if (!refAssets.Remove(asset)) return;
-            if (refAssetSet != null)
-            {
-                refAssetSet.Remove(asset);
-                if (refAssetSet.Count < MinHashSetCount)
-                    refAssetSet = null;      
-            }
             AssetSystem.Instance.DecrementReferenceCount(asset);
+            --loaded;
         }
 
         public void UnrefAssets()
@@ -64,7 +56,6 @@ namespace GameFrame
                 AssetSystem.Instance.DecrementReferenceCount(asset);
             }
             refAssets = null;
-            refAssetSet = null;
         }
     }
 }

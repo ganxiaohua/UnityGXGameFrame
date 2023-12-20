@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using FairyGUI;
 
 namespace GameFrame
 {
     public class DependentUIResources : Entity, IStart, IClear
     {
-        public int Cur;
-        public int All;
-        public List<string> AssetPaths;
-        public UniTaskCompletionSource Task;
+        public DefaultAssetReference DefaultAssetReference;
+        public string PackageName;
+        public GObject Window;
+        public UniTaskCompletionSource waitLoadTask;
     }
 }

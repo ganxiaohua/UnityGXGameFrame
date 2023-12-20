@@ -2,7 +2,7 @@
 
 namespace GameFrame
 {
-    public class ObjectPoolTask : ITask, IReference
+    public class ObjectPoolHandle : IHandle, IReference
     {
         public TaskState TaskState { get; set; }
         public bool IsDone => TaskState == TaskState.Succ || TaskState == TaskState.Fail;
@@ -15,11 +15,11 @@ namespace GameFrame
 
         // public T Target{ get; private set; }
 
-        private AwaiterTask<ObjectPoolTask> AwaiterTask;
+        private AwaiterTask<ObjectPoolHandle> AwaiterTask;
 
-        public AwaiterTask<ObjectPoolTask> GetAwaiter()
+        public AwaiterTask<ObjectPoolHandle> GetAwaiter()
         {
-            AwaiterTask = ReferencePool.Acquire<AwaiterTask<ObjectPoolTask>>();
+            AwaiterTask = ReferencePool.Acquire<AwaiterTask<ObjectPoolHandle>>();
             AwaiterTask.SetTask(this);
             return AwaiterTask;
         }

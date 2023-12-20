@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 468a46d0ae32c3544b7d98094e6448a9, type: 3}
   m_Name: AddressableAssetSettings
   m_EditorClassIdentifier: 
-  m_DefaultGroup: 3d3d575ef5b28dc42a8fd0213a1ecd8d
+  m_DefaultGroup: 6dafb71f59c47bf438d57d99fff154bd
   m_CachedHash:
     serializedVersion: 2
     Hash: 00000000000000000000000000000000
@@ -41,11 +41,11 @@ MonoBehaviour:
   m_BuildAddressablesWithPlayerBuild: 0
   m_overridePlayerVersion: GXGame.zip
   m_GroupAssets:
-  - {fileID: 11400000, guid: 9644a303da769324aacb66884c0ca349, type: 2}
   - {fileID: 11400000, guid: 9efe8eaf378f84c4f927191e391ea664, type: 2}
   - {fileID: 11400000, guid: cda78822a7077ae48b9c37d48a475a7a, type: 2}
   - {fileID: 11400000, guid: 84a0e990b854e774f9a1b676625d8d6f, type: 2}
   - {fileID: 11400000, guid: f2a8ca1346468b244b51c1b93beae251, type: 2}
+  - {fileID: 11400000, guid: 9644a303da769324aacb66884c0ca349, type: 2}
   m_BuildSettings:
     m_CompileScriptsInVirtualMode: 0
     m_CleanupStreamingAssetsAfterBuilds: 1

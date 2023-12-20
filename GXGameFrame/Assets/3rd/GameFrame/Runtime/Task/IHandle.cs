@@ -8,7 +8,7 @@ namespace GameFrame
         Fail,
         Succ,
     } 
-    public interface ITask
+    public interface IHandle
     {
 
         TaskState TaskState { set;get; }

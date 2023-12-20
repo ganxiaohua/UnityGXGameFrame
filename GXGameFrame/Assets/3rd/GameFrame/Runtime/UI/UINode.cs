@@ -4,7 +4,7 @@ using Unity.VisualScripting;
 
 namespace GameFrame
 {
-    public class UINode : IReference
+    public partial class UINode : IReference
     {
         public enum StateType
         {
@@ -99,11 +99,10 @@ namespace GameFrame
         {
             NodeState = StateType.Loading;
             DependentUIResources dependentResources = Window.GetComponent<DependentUIResources>();
-            bool over = true;
+            bool over = false;
             if (dependentResources != null)
             {
                 over = await dependentResources.WaitLoad();
-                
             }
             NodeState = StateType.LoadEnd;
             return over;
@@ -118,6 +117,7 @@ namespace GameFrame
             {
                 over = await waitComponent.Wait();
             }
+
             NodeState = StateType.WaitEnd;
             return over;
         }
