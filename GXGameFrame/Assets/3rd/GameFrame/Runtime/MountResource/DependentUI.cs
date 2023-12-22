@@ -4,11 +4,12 @@ using FairyGUI;
 
 namespace GameFrame
 {
-    public class DependentUIResources : Entity, IStart, IClear
+    public class DependentUI : Entity, IStart, IClear
     {
         public DefaultAssetReference DefaultAssetReference;
         public string PackageName;
         public GObject Window;
         public UniTaskCompletionSource waitLoadTask;
+        public UINode UINode;
     }
 }

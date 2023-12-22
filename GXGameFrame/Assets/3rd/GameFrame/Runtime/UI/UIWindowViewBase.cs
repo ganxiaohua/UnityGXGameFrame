@@ -4,11 +4,12 @@ using FairyGUI;
 
 namespace GameFrame
 {
-    public class UIViewBase : Window, IUIView
+    public class UIViewBase : IUIView
     {
         protected IEntity UIBase;
         private PlayCompleteCallback m_PlayCompleteCallbackIn;
         private PlayCompleteCallback m_PlayCompleteCallbackOut;
+        protected GComponent Root;
 
         /// <summary>
         /// 正在播放动画的数量当value的数值为0时代表播放结束
@@ -22,50 +23,39 @@ namespace GameFrame
 
         private const string InAnimationName = "in";
         private const string OutAnimationName = "out";
-
-        protected override void OnInit()
+        
+        public virtual void OnInit()
         {
             m_PlayCompleteCallbackIn = AnimatoinInComplete;
             m_PlayCompleteCallbackOut = AnimatoinOutComplete;
             AnimationPlayingCount = new();
             AnimationPlayDic = new();
-            base.OnInit();
         }
 
-        protected override void OnShown()
+        public virtual void OnShow()
         {
-            base.OnShown();
+            DoShowAnimation();
         }
 
-        protected override void OnHide()
+        public virtual void OnHide()
         {
-            base.OnHide();
+            
         }
 
-        public override void Dispose()
-        {
-            m_PlayCompleteCallbackIn = null;
-            m_PlayCompleteCallbackOut = null;
-            AnimationPlayingCount = null;
-            base.Dispose();
-            displayObject = null;
-        }
-
-        protected override void DoShowAnimation()
+        protected virtual void DoShowAnimation()
         {
             if (!PlayAnimation(InAnimationName, m_PlayCompleteCallbackIn))
             {
-                EventManager.Instance.Send<UIOpenEvent, Type>(UIBase.GetType());
-                base.DoShowAnimation();
+                UIManager.Instance.UIOpened(UIBase.GetType());
             }
         }
 
-        protected override void DoHideAnimation()
+        public virtual void DoHideAnimation()
         {
             if (!PlayAnimation(OutAnimationName, m_PlayCompleteCallbackOut))
             {
-                EventManager.Instance.Send<UICloseEvent, Type>(UIBase.GetType());
-                base.DoHideAnimation();
+                UIManager.Instance.UIClose(UIBase.GetType());
+                OnHide();
             }
         }
 
@@ -77,20 +67,29 @@ namespace GameFrame
         {
             AnimationPlayDic.Clear();
             AnimationPlayingCount.Clear();
-            Dispose();
+            m_PlayCompleteCallbackIn = null;
+            m_PlayCompleteCallbackOut = null;
+            AnimationPlayingCount = null;
         }
 
-        public void Link(Entity uiBase, GObject root)
+        public void Link(Entity uiBase, GObject root,bool isMainPanel)
         {
             UIBase = uiBase;
-            contentPane = (GComponent) root;
+            this.Root = (GComponent) root;
+            if (isMainPanel)
+            {
+                Root.SetSize(GRoot.inst.width, GRoot.inst.height);
+                Root.AddRelation(GRoot.inst, RelationType.Size);
+                GRoot.inst.AddChild(Root);
+            }
+            OnInit();
         }
 
         protected bool PlayAnimation(string animationName, PlayCompleteCallback compeleFunc)
         {
             if (!AnimationPlayDic.TryGetValue(animationName, out Transition[] Transitions))
             {
-                Transitions = contentPane.GetTransitionsInChildren(animationName);
+                Transitions = this.Root.GetTransitionsInChildren(animationName);
                 AnimationPlayDic.Add(animationName, Transitions);
             }
 
@@ -101,7 +100,7 @@ namespace GameFrame
                 animatoin.Play(compeleFunc);
             }
 
-            return Transitions.Length > 0 ? true : false;
+            return Transitions.Length > 0;
         }
 
         protected void AnimatoinInComplete()
@@ -113,8 +112,7 @@ namespace GameFrame
 
             if (--AnimationPlayingCount[InAnimationName] == 0)
             {
-                OnShown();
-                EventManager.Instance.Send<UIOpenEvent, Type>(UIBase.GetType());
+                UIManager.Instance.UIOpened(UIBase.GetType());
             }
         }
 
@@ -127,8 +125,8 @@ namespace GameFrame
 
             if (--AnimationPlayingCount[OutAnimationName] == 0)
             {
-                HideImmediately();
-                EventManager.Instance.Send<UICloseEvent, Type>(UIBase.GetType());
+                OnHide();
+                UIManager.Instance.UIClose(UIBase.GetType());
             }
         }
         

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using FairyGUI;
 using Unity.VisualScripting;
 
 namespace GameFrame
@@ -39,11 +41,18 @@ namespace GameFrame
         /// </summary>
         public StateType NodeState;
 
+        public UINode Parent;
+
+        public List<UINode> Childs = new List<UINode>();
 
         /// <summary>
         /// 加载的窗体
         /// </summary>
         public Entity Window;
+
+        public GComponent ParnetRoot;
+        
+        
 
         public static UINode CreateEmptyNode(Type windowType)
         {
@@ -70,6 +79,10 @@ namespace GameFrame
         public static void DestroyNode(UINode uinode)
         {
             uinode.Hide();
+            foreach (var child in uinode.Childs)
+            {
+                DestroyNode(child);
+            }
             ReferencePool.Release(uinode);
         }
 
@@ -78,6 +91,10 @@ namespace GameFrame
             if (Window == null)
                 return;
             EnitityHouse.Instance.RunPreShowSystem(Window, isFirstOpen);
+            foreach (var child in Childs)
+            {
+                child.PreShow(isFirstOpen);
+            }
         }
 
         public void Show()
@@ -85,6 +102,10 @@ namespace GameFrame
             if (Window == null)
                 return;
             EnitityHouse.Instance.RunShowSystem(Window);
+            foreach (var child in Childs)
+            {
+                child.Show();
+            }
         }
 
         public void Hide()
@@ -92,18 +113,30 @@ namespace GameFrame
             if (Window == null)
                 return;
             EnitityHouse.Instance.RunHideSystem(Window);
+            foreach (var child in Childs)
+            {
+                child.Hide();
+            }
             NodeState = StateType.Hide;
         }
 
-        public async UniTask<bool> LoadMustDependentOver()
+        public async UniTask<bool> LoadMustDependentOver(GComponent root = null)
         {
             NodeState = StateType.Loading;
-            DependentUIResources dependentResources = Window.GetComponent<DependentUIResources>();
+            DependentUI dependent = Window.GetComponent<DependentUI>();
             bool over = false;
-            if (dependentResources != null)
+            dependent.UINode = this;
+            if (dependent != null)
             {
-                over = await dependentResources.WaitLoad();
+                over = await dependent.WaitLoad();
             }
+
+            if (root != null)
+            {
+                root.AddChild(dependent.Window);
+            }
+
+
             NodeState = StateType.LoadEnd;
             return over;
         }

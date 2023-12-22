@@ -10,7 +10,7 @@ namespace GameFrame
     
     public interface IUIView
     {
-        void Link(Entity ecsEntity,GObject root);
+        void Link(Entity ecsEntity,GObject root,bool isMainPanel);
     }
     
     

@@ -3,12 +3,12 @@ using FairyGUI;
 
 namespace GameFrame
 {
-    public static class DependentUIResourcesSystem
+    public static class DependentUISystem
     {
         [SystemBind]
-        public class DependentUIResourcesStartSystem : StartSystem<DependentUIResources, string, string>
+        public class DependentUIStartSystem : StartSystem<DependentUI, string, string>
         {
-            protected override void Start(DependentUIResources self, string packageName, string windowName)
+            protected override void Start(DependentUI self, string packageName, string windowName)
             {
                 self.PackageName = packageName;
                 self.DefaultAssetReference = new DefaultAssetReference();
@@ -16,7 +16,7 @@ namespace GameFrame
                 Init(self, packageName, windowName).Forget();
             }
 
-            private async UniTaskVoid Init(DependentUIResources self, string packageName, string windowName)
+            private async UniTaskVoid Init(DependentUI self, string packageName, string windowName)
             {
                 await UILoaderNew.Instance.AddPackage(packageName, self.DefaultAssetReference);
                 self.Window = UIPackage.CreateObject(packageName, windowName);
@@ -31,9 +31,9 @@ namespace GameFrame
         }
 
         [SystemBind]
-        public class DependentUIResourcesClearSystem : ClearSystem<DependentUIResources>
+        public class DependentUIClearSystem : ClearSystem<DependentUI>
         {
-            protected override void Clear(DependentUIResources self)
+            protected override void Clear(DependentUI self)
             {
                 
                 if (self.waitLoadTask != null)
@@ -43,7 +43,7 @@ namespace GameFrame
             }
         }
 
-        public static async UniTask<bool> WaitLoad(this DependentUIResources self)
+        public static async UniTask<bool> WaitLoad(this DependentUI self)
         {
             if (self.waitLoadTask == null)
             {

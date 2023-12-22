@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
+using FairyGUI;
+using UnityEngine.Assertions;
 
 namespace GameFrame
 {
@@ -84,12 +86,12 @@ namespace GameFrame
 
         public UIManager()
         {
-            m_WaitOpenUIList = new(4);
+            m_WaitOpenUIList = new(16);
             m_UILinkedLinkedList = new();
-            m_OpenUIList = new(4);
-            m_WaitCloseUIDic = new(4);
-            m_RecycleWindowDic = new(8);
-            m_TempRecycleWindow = new(4);
+            m_OpenUIList = new(16);
+            m_WaitCloseUIDic = new(16);
+            m_RecycleWindowDic = new(16);
+            m_TempRecycleWindow = new(16);
             m_AutoReleaseInterval = 10;
             m_ReleaseTime = 10;
         }
@@ -104,9 +106,9 @@ namespace GameFrame
             }
             else if (m_OpenUIList.Count > 0 && m_WaitCloseUIDic.Count == 0)
             {
-                foreach (UINode uiNode in m_OpenUIList)
+                for (int i = 0; i < m_OpenUIList.Count; i++)
                 {
-                    uiNode.Show();
+                    m_OpenUIList.Pop().Show();
                 }
 
                 m_OpenUIList.Clear();
@@ -141,7 +143,7 @@ namespace GameFrame
                 }
 
                 UINode uinode = UINode.CreateEmptyNode(type);
-                m_UILinkedLinkedList.AddLast(uinode);
+                AddLastNode(uinode);
             }
 
             OpenUI(types[count - 1]);
@@ -170,6 +172,7 @@ namespace GameFrame
                 m_WaitOpenUIList.Add(type);
                 return;
             }
+
             SetTouchable(false);
             //如果需要打开的UI在列表中则将其拉扯到最上面进行打开
             UINode findUINode = FindUINode(type);
@@ -181,9 +184,45 @@ namespace GameFrame
                 UIHideOrDisposeWithNextUIType(curUINode);
                 return;
             }
+
             //打开新窗口
             Open(type).Forget();
         }
+
+        /// <summary>
+        /// 添加子节点
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="parent"></param>
+        public async UniTaskVoid AddChildUI(Type type, UINode parent, GComponent root)
+        {
+            Assert.IsTrue(parent != null, $"找不到父节点{parent.Name}");
+            UINode uinode = UINode.CreateNode(type);
+            bool loadover = await uinode.LoadMustDependentOver(root);
+            if (!loadover)
+            {
+                return;
+            }
+
+            uinode.PreShow(true);
+            bool wait = await uinode.UIWait();
+            if (!wait)
+            {
+                return;
+            }
+
+            uinode.Show();
+            uinode.Parent = parent;
+            parent.Childs.Add(uinode);
+        }
+
+        public void RemoveChildUI(UINode uiNode)
+        {
+            uiNode.Parent.Childs.Remove(uiNode);
+            uiNode.Parent = null;
+            AddWaitDestroyWindowList(uiNode);
+        }
+
 
         /// <summary>
         /// 打开一个UI
@@ -194,11 +233,11 @@ namespace GameFrame
             RemoveRecycleWindowDic(type);
             UINode curUINode = GetCurUINode();
             UINode uinode = UINode.CreateNode(type);
-            m_UILinkedLinkedList.AddLast(uinode);
+            AddLastNode(uinode);
             bool loadover = await uinode.LoadMustDependentOver();
             if (!loadover)
             {
-                m_UILinkedLinkedList.RemoveLast();
+                RemoveNode(uinode);
                 return;
             }
 
@@ -208,6 +247,7 @@ namespace GameFrame
             {
                 return;
             }
+
             //加入等待打开的UI列表
             m_OpenUIList.Push(uinode);
             if (curUINode != null)
@@ -246,7 +286,7 @@ namespace GameFrame
             while (m_UILinkedLinkedList.First != m_UILinkedLinkedList.Last)
             {
                 DestroyNode(Penult.Value);
-                m_UILinkedLinkedList.Remove(Penult);
+                RemoveNode(Penult.Value);
                 Penult = Penult.Previous;
             }
 
@@ -577,29 +617,27 @@ namespace GameFrame
 
         public void Disable()
         {
-            if (m_UILinkedLinkedList != null)
-            {
-                LinkedListNode<UINode> Penult = m_UILinkedLinkedList.Last.Previous;
-                while (m_UILinkedLinkedList.First != m_UILinkedLinkedList.Last)
-                {
-                    DestroyNode(Penult.Value);
-                    m_UILinkedLinkedList.Remove(Penult);
-                }
-            }
-
-            foreach (UINode uiNode in m_OpenUIList)
-            {
-                DestroyNode(uiNode);
-            }
-
-            foreach (var node in m_WaitCloseUIDic)
-            {
-                DestroyNode(node.Value);
-            }
-     
-            m_WaitOpenUIList.Clear();
-            
+            // if (m_UILinkedLinkedList != null)
+            // {
+            //     LinkedListNode<UINode> Penult = m_UILinkedLinkedList.Last.Previous;
+            //     while (m_UILinkedLinkedList.First != m_UILinkedLinkedList.Last)
+            //     {
+            //         DestroyNode(Penult.Value);
+            //         RemoveNode(Penult.Value);
+            //     }
+            // }
+            //
+            // foreach (UINode uiNode in m_OpenUIList)
+            // {
+            //     DestroyNode(uiNode);
+            // }
+            //
+            // foreach (var node in m_WaitCloseUIDic)
+            // {
+            //     DestroyNode(node.Value);
+            // }
+            //
+            // m_WaitOpenUIList.Clear();
         }
-
     }
 }

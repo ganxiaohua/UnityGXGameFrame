@@ -9,6 +9,7 @@ namespace GameFrame
 {
     public class UILoaderNew : Singleton<UILoaderNew>
     {
+
         private UIPackage.LoadResourceAsync LoadResource;
         private Action<object> UnloadHandle;
         private const string fui = "_fui";
@@ -24,6 +25,12 @@ namespace GameFrame
         public async UniTask AddPackage(string packageName, DefaultAssetReference reference, CancellationToken token = default)
         {
             string desPath = $"{packageName}{fui}";
+            if (AuxResDic.TryGetValue(packageName, out DefaultAssetReference curAsset))
+            {
+                reference.RefAsset(desPath);
+                return;
+            }
+            
             var desText = await AssetSystem.Instance.LoadAsync<TextAsset>(desPath, reference, token);
             if (desText == null)
             {
@@ -71,6 +78,7 @@ namespace GameFrame
                 curAsset = new DefaultAssetReference();
                 AuxResDic.Add(item.owner.name, curAsset);
             }
+
             Load(name, curAsset, item).Forget();
         }
 
