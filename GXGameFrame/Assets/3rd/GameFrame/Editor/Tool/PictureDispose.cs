@@ -11,29 +11,23 @@ using UnityEngine;
 
 namespace GameFrame.Editor
 {
-    public class PictureDispose
+    public class TextureEditor
     {
-        // [MenuItem("工具/图片整体修改")]
-        public static void Picture()
-        {
-            PictureEditor.OpenWindow();
-        }
 
-
-        public class PictureEditor : OdinEditorWindow
+        public class TextureEditorWindow : OdinEditorWindow
         {
             [HideInInspector] public string SavePath = "ToolsData/图片设置.json";
             [HideInInspector] public string[] Extensions = new[] {".jpg", ".png"};
 
             [Serializable]
-            public class PictureData
+            public class TextureData
             {
-                public PictureData(string platformString)
+                public TextureData(string platformString)
                 {
                     PlatformString = platformString;
                 }
 
-                public enum Resolution
+                public enum TextureSize
                 {
                     T64 = 64,
                     T128 = 128,
@@ -43,43 +37,49 @@ namespace GameFrame.Editor
                     T2048 = 2048,
                 }
 
-                public enum TextureType
-                {
-                    Retain,
-                    Texture,
-                    Sprite,
-                }
-
-                public enum WrapMode
-                {
-                    Repeat,
-                    Clamp,
-                }
 
                 public string Name;
                 [ReadOnly] public string Path;
 
-                public Resolution CurResolution = Resolution.T512;
+                public TextureSize TexSize = TextureSize.T1024;
 
-                public TextureType CurTextureType = TextureType.Sprite;
+                public TextureImporterType TextureType = TextureImporterType.Sprite;
 
-                public WrapMode CurWrapMode = WrapMode.Repeat;
+                public TextureWrapMode WrapMode = TextureWrapMode.Repeat;
 
                 [ReadOnly] public string PlatformString;
 
                 [Button("应用")]
-                // [EnableIf("@PictureEditor.window.IsThisPloatform()")]
-                public void Use()
+                public void Do()
                 {
-                    PictureEditor.window.SetImporter(this);
-                    PictureEditor.window.Save();
+                    window.SetTextureData(this);
+                    window.Save();
                 }
 
                 [Button("删除")]
                 public void Remove()
                 {
-                    PictureEditor.window.Remove(Path);
+                    window.Remove(Path);
                 }
+            }
+
+
+            private class TextureImporterData
+            {
+                public List<TextureImporter> TextureImporterList = new();
+                public TextureData TextureData;
+            }
+
+            [Serializable]
+            public class TextureDatas
+            {
+                public List<TextureData> TexWeb = new();
+
+                public List<TextureData> TexIOS = new();
+
+                public List<TextureData> TexAndroid = new();
+
+                public List<TextureData> TexPc = new();
             }
 
             public enum Platform
@@ -90,117 +90,100 @@ namespace GameFrame.Editor
                 Web,
             }
 
-            public class TextureImporterData
-            {
-                public List<TextureImporter> TextureImporterList = new();
-                public PictureData PictureData;
-            }
+            private TextureDatas textureDatas;
 
-            [Serializable]
-            public class JsonClass
-            {
-                public List<PictureData> PicTureWeb = new();
-
-                public List<PictureData> pictureIos = new();
-
-                public List<PictureData> pictureAndrod = new();
-
-                public List<PictureData> picturePc = new();
-            }
-
-            private JsonClass PicTureClass;
-
-            private List<string> ExistingPath = new();
+            private List<string> existingPath = new();
 
             /// <summary>
             /// 当前平台下的数据
             /// </summary>
             [ListDrawerSettings(NumberOfItemsPerPage = 5, HideAddButton = true, HideRemoveButton = true, DraggableItems = false)]
-            public List<PictureData> PlatformPictureData;
+            public List<TextureData> TexDataList;
 
-            [HideInInspector] public TextureImporterData CurTextureImporterData;
+            private TextureImporterData CurTextureImporterData;
 
-            public static PictureEditor window;
-
-            public static void OpenWindow()
-            {
-                if (window == null)
-                {
-                    window = GetWindow<PictureEditor>();
-                    window.CurTextureImporterData = new TextureImporterData();
-                    // window.m_TextureImporterDictionary = new();
-                    if (File.Exists(window.SavePath))
-                    {
-                        window.PicTureClass = JsonUtility.FromJson<JsonClass>(File.ReadAllText(window.SavePath));
-                        foreach (var item in window.PicTureClass.picturePc)
-                        {
-                            window.ExistingPath.Add(item.Path);
-                        }
-                    }
-                    else
-                    {
-                        window.PicTureClass = new JsonClass();
-                    }
-
-                    window.maxSize = new Vector2(400, 600);
-                    window.minSize = new Vector2(400, 300);
-                    window.position = GUIHelper.GetEditorWindowRect().AlignCenter(600, 600);
-                    window.PlatformPictureData = window.PicTureClass.picturePc;
-                }
-
-                InitPloatform(window.PlatformEnmu);
-            }
+            private static TextureEditorWindow window;
 
 
             [Title("需要添加的路径")] [HideLabel] [FolderPath(ParentFolder = "Assets/", AbsolutePath = true)]
             public string NeedPath;
 
+            public static void OpenWindow()
+            {
+                if (window == null)
+                {
+                    window = GetWindow<TextureEditorWindow>();
+                    window.CurTextureImporterData = new TextureImporterData();
+                    window.name = "纹理设置";
+                    if (File.Exists(window.SavePath))
+                    {
+                        window.textureDatas = JsonUtility.FromJson<TextureDatas>(File.ReadAllText(window.SavePath));
+                        foreach (var item in window.textureDatas.TexPc)
+                        {
+                            window.existingPath.Add(item.Path);
+                        }
+                    }
+                    else
+                    {
+                        window.textureDatas = new TextureDatas();
+                    }
+
+                    window.maxSize = new Vector2(400, 600);
+                    window.minSize = new Vector2(400, 300);
+                    window.position = GUIHelper.GetEditorWindowRect().AlignCenter(600, 600);
+                    window.TexDataList = window.textureDatas.TexPc;
+                }
+            }
+
             [Button("添加路径")]
             [PropertyOrder(2)]
             public void AddPicturePath()
             {
+                if (string.IsNullOrEmpty(NeedPath))
+                {
+                    Debug.Log("请选择需要添加的路径!");
+                    return;
+                }
                 string needAddPath = NeedPath.Replace(Application.dataPath, "Assets");
-                if (ExistingPath.Contains(needAddPath))
+                if (existingPath.Contains(needAddPath))
                 {
                     Debug.Log("这个路径已经加入过了!");
                     return;
                 }
 
-                void add(List<PictureData> picTureClass, string platform)
+                void add(List<TextureData> picTureClass, string platform)
                 {
-                    PictureData picturepath = new PictureData(platform);
+                    TextureData picturepath = new TextureData(platform);
                     picturepath.Path = needAddPath;
                     picturepath.Name = Path.GetFileName(NeedPath);
                     picTureClass.Add(picturepath);
                 }
 
-                ExistingPath.Add(needAddPath);
-                add(PicTureClass.PicTureWeb, "WebGL");
-                add(PicTureClass.pictureIos, "iPhone");
-                add(PicTureClass.pictureAndrod, "Android");
-                add(PicTureClass.picturePc, "Standalone");
+                existingPath.Add(needAddPath);
+                add(textureDatas.TexWeb, "WebGL");
+                add(textureDatas.TexIOS, "iPhone");
+                add(textureDatas.TexAndroid, "Android");
+                add(textureDatas.TexPc, "Standalone");
             }
 
-            [Button("应用当前平台")]
+            [Button("应用选中平台")]
             [PropertyOrder(3)]
-            // [EnableIf("@this.IsThisPloatform()")]
             public void Use()
             {
-                SetCurImporter();
+                SetCurTextureData();
                 Save();
             }
 
             [Button("应用所有平台")]
-            [PropertyOrder(3)]
-            // [EnableIf("@this.IsThisPloatform()")]
+            [PropertyOrder(4)]
             public void UseALL()
             {
-                SetAllImporter();
+                SetAllTextureData();
                 Save();
             }
 
             [Button("保存设置")]
-            [PropertyOrder(4)]
+            [PropertyOrder(5)]
             public void Save()
             {
                 if (!Directory.Exists("ToolsData"))
@@ -208,85 +191,15 @@ namespace GameFrame.Editor
                     Directory.CreateDirectory("ToolsData");
                 }
 
-                string json = JsonUtility.ToJson(PicTureClass);
+                string json = JsonUtility.ToJson(textureDatas);
                 Debug.Log(SavePath);
                 File.WriteAllText(SavePath, json);
                 Debug.Log("保存完毕");
             }
 
-            [EnumToggleButtons] [PropertyOrder(5)] [Title("平台")] [OnValueChanged("PloatformChange")]
-            public Platform PlatformEnmu;
-
-
-            public void PloatformChange()
+            private void Remove(string str)
             {
-                if (PlatformEnmu == Platform.Android)
-                {
-                    PlatformPictureData = PicTureClass.pictureAndrod;
-                }
-                else if (PlatformEnmu == Platform.Web)
-                {
-                    PlatformPictureData = PicTureClass.PicTureWeb;
-                }
-                else if (PlatformEnmu == Platform.IOS)
-                {
-                    PlatformPictureData = PicTureClass.pictureIos;
-                }
-                else if (PlatformEnmu == Platform.PC)
-                {
-                    PlatformPictureData = PicTureClass.picturePc;
-                }
-            }
-
-            public static void InitPloatform(Platform platformEnmu)
-            {
-                if (Application.platform == RuntimePlatform.Android)
-                {
-                    platformEnmu = Platform.Android;
-                }
-                else if (Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor)
-                {
-                    platformEnmu = Platform.PC;
-                }
-                else if (Application.platform == RuntimePlatform.WebGLPlayer)
-                {
-                    platformEnmu = Platform.Web;
-                }
-                else if (Application.platform == RuntimePlatform.IPhonePlayer)
-                {
-                    platformEnmu = Platform.IOS;
-                }
-            }
-
-            /// <summary>
-            /// 判断是否是当前平台
-            /// </summary>
-            public bool IsThisPloatform()
-            {
-                if (PlatformEnmu == Platform.Android && Application.platform == RuntimePlatform.Android)
-                {
-                    return true;
-                }
-                else if (PlatformEnmu == Platform.PC &&
-                         (Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor))
-                {
-                    return true;
-                }
-                else if (PlatformEnmu == Platform.IOS && Application.platform == RuntimePlatform.IPhonePlayer)
-                {
-                    return true;
-                }
-                else if (PlatformEnmu == Platform.Web && Application.platform == RuntimePlatform.WebGLPlayer)
-                {
-                    return true;
-                }
-
-                return false;
-            }
-
-            public void Remove(string str)
-            {
-                void remove(List<PictureData> temp)
+                void remove(List<TextureData> temp)
                 {
                     foreach (var inet in temp)
                     {
@@ -298,18 +211,42 @@ namespace GameFrame.Editor
                     }
                 }
 
-                remove(PicTureClass.picturePc);
-                remove(PicTureClass.pictureIos);
-                remove(PicTureClass.pictureAndrod);
-                remove(PicTureClass.PicTureWeb);
+                remove(textureDatas.TexPc);
+                remove(textureDatas.TexIOS);
+                remove(textureDatas.TexAndroid);
+                remove(textureDatas.TexWeb);
+            }
+
+            [EnumToggleButtons] [PropertyOrder(6)] [Title("选择平台")] [OnValueChanged("PloatformChange")]
+            public Platform PlatformEnmu;
+
+
+            public void PloatformChange()
+            {
+                if (PlatformEnmu == Platform.Android)
+                {
+                    TexDataList = textureDatas.TexAndroid;
+                }
+                else if (PlatformEnmu == Platform.Web)
+                {
+                    TexDataList = textureDatas.TexWeb;
+                }
+                else if (PlatformEnmu == Platform.IOS)
+                {
+                    TexDataList = textureDatas.TexIOS;
+                }
+                else if (PlatformEnmu == Platform.PC)
+                {
+                    TexDataList = textureDatas.TexPc;
+                }
             }
 
 
-            public void GetTexture(PictureData pictureData)
+            private void GetTexture(TextureData textureData)
             {
-                CurTextureImporterData.PictureData = pictureData;
+                CurTextureImporterData.TextureData = textureData;
                 CurTextureImporterData.TextureImporterList.Clear();
-                string unityPath = pictureData.Path.Replace("/", "\\");
+                string unityPath = textureData.Path.Replace("/", "\\");
                 List<string> images = Directory
                     .EnumerateFiles(unityPath, "*.*", SearchOption.AllDirectories)
                     .Where(file => Extensions.Any(file.ToLower().EndsWith))
@@ -322,7 +259,7 @@ namespace GameFrame.Editor
                     //排除子文件夹中已经添加近修改列表的组合
                     if (unityPath != directoryName)
                     {
-                        foreach (var picture in PlatformPictureData)
+                        foreach (var picture in TexDataList)
                         {
                             string pictureDirectory = picture.Path.Replace("/", "\\");
                             if (pictureDirectory == directoryName)
@@ -343,66 +280,50 @@ namespace GameFrame.Editor
             }
 
             /// <summary>
-            /// 设置所有图片
+            /// 设置当前选中平台纹理
             /// </summary>
-            public void SetCurImporter()
+            private void SetCurTextureData()
             {
-                for (int i = 0; i < PicTureClass.pictureAndrod.Count; i++)
+                for (int i = 0; i < TexDataList.Count; i++)
                 {
-                    SetImporter(PlatformPictureData[i]);
+                    SetTextureData(TexDataList[i]);
                 }
             }
 
             /// <summary>
-            /// 设置所有图片
+            /// 设置所有纹理
             /// </summary>
-            public void SetAllImporter()
+            private void SetAllTextureData()
             {
-                void Impoter(List<PictureData> piturdatas)
+                void Impoter(List<TextureData> piturdatas)
                 {
                     for (int i = 0; i < piturdatas.Count; i++)
                     {
-                        SetImporter(piturdatas[i]);
+                        SetTextureData(piturdatas[i]);
                     }
                 }
 
-                Impoter(PicTureClass.picturePc);
-                Impoter(PicTureClass.PicTureWeb);
-                Impoter(PicTureClass.pictureAndrod);
-                Impoter(PicTureClass.pictureIos);
+                Impoter(textureDatas.TexPc);
+                Impoter(textureDatas.TexWeb);
+                Impoter(textureDatas.TexAndroid);
+                Impoter(textureDatas.TexIOS);
             }
 
-            public void SetImporter(PictureData pictureData)
+            private void SetTextureData(TextureData textureData)
             {
-                GetTexture(pictureData);
+                GetTexture(textureData);
 
                 foreach (TextureImporter textureImporter in CurTextureImporterData.TextureImporterList)
                 {
-                    var data = CurTextureImporterData.PictureData;
-                    if (data.CurWrapMode == PictureData.WrapMode.Repeat)
-                    {
-                        textureImporter.wrapMode = TextureWrapMode.Repeat;
-                    }
-                    else if (data.CurWrapMode == PictureData.WrapMode.Clamp)
-                    {
-                        textureImporter.wrapMode = TextureWrapMode.Clamp;
-                    }
-
-                    if (data.CurTextureType == PictureData.TextureType.Texture)
-                    {
-                        textureImporter.textureType = TextureImporterType.Default;
-                    }
-                    else if (data.CurTextureType == PictureData.TextureType.Sprite)
-                    {
-                        textureImporter.textureType = TextureImporterType.Sprite;
-                    }
-
+                    var data = CurTextureImporterData.TextureData;
+                    textureImporter.wrapMode = data.WrapMode;
+                    textureImporter.textureType = data.TextureType;
                     textureImporter.mipmapEnabled = false;
                     TextureImporterSettings textureSettings = new TextureImporterSettings();
-                    TextureImporterPlatformSettings platformSettings = textureImporter.GetPlatformTextureSettings(pictureData.PlatformString);
-                    platformSettings.maxTextureSize = (int) pictureData.CurResolution;
+                    TextureImporterPlatformSettings platformSettings = textureImporter.GetPlatformTextureSettings(textureData.PlatformString);
+                    platformSettings.maxTextureSize = (int) textureData.TexSize;
                     platformSettings.overridden = true;
-                    platformSettings.format = SetTextFormat(pictureData.PlatformString);
+                    platformSettings.format = SetTextFormat(textureData.PlatformString);
                     textureImporter.ReadTextureSettings(textureSettings);
                     textureSettings.spriteMeshType = SpriteMeshType.FullRect;
                     textureImporter.SetPlatformTextureSettings(platformSettings);
@@ -412,26 +333,26 @@ namespace GameFrame.Editor
             }
 
 
-            public TextureImporterFormat SetTextFormat(string str)
+            private TextureImporterFormat SetTextFormat(string str)
             {
-                if (str == "Standalone")
+                if (str.Equals("Standalone"))
                 {
                     return TextureImporterFormat.RGBA32;
                 }
-                else if (str == "Android")
+                else if (str.Equals("Android"))
                 {
                     return TextureImporterFormat.ASTC_4x4;
                 }
-                else if (str == "iPhone")
+                else if (str.Equals("iPhone"))
                 {
                     return TextureImporterFormat.ASTC_4x4;
                 }
-                else if (str == "WebGL")
+                else if (str.Equals("WebGL"))
                 {
                     return TextureImporterFormat.ETC2_RGB4;
                 }
-
-                return TextureImporterFormat.ETC2_RGB4;
+                
+                return TextureImporterFormat.ASTC_4x4;
             }
         }
     }

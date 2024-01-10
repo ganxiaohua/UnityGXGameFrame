@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace GameFrame
 {
@@ -55,6 +53,7 @@ namespace GameFrame
             if (m_ECSComponentArray[index] != null)
             {
                 throw new Exception($"entity already has component: {type.FullName}");
+                
             }
 
             ECSComponent entity = m_ECSComponentArray.Add(index, GXComponents.ComponentTypes[index]);

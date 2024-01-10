@@ -1,6 +1,4 @@
 ﻿using UnityEditor;
-using UnityEditor.AddressableAssets;
-using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
@@ -17,7 +15,7 @@ namespace GameFrame.Editor
         [MenuItem("GX框架工具/打开图片处理工具")]
         public static void OpenPictureDispose()
         {
-            PictureDispose.Picture();
+            TextureEditor.TextureEditorWindow.OpenWindow();
         }
         
 
