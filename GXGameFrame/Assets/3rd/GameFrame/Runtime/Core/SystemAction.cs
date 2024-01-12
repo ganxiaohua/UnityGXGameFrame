@@ -1,62 +1,49 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace GameFrame
 {
-    using DDictionaryETS = DDictionary<IEntity, Type, SystemObject>;
-    using DDictionaryET = Dictionary<Type, SystemObject>;
+    using DDictionaryET = Dictionary<Type, ISystemObject>;
 
     public static class SystemAction
     {
-        public static bool SystemStart(this ISystem system, IEntity entity)
+        public static bool SystemStart(this ISystem system)
         {
-            if (system is IStartSystem initsys)
+            if (system is IStartSystem ecsinitsystem)
             {
-                initsys.Run(entity);
-                return true;
-            }
-            else if (system is IECSStartSystem ecsinitsystem)
-            {
-                if (entity is not Context context)
-                {
-                    throw new Exception($"{entity.GetType()} not has Content");
-                }
-
-                ecsinitsystem.Start(context);
+                ecsinitsystem.Start();
                 return true;
             }
 
             return false;
         }
-
-        public static bool SystemStart<P1>(this ISystem system, IEntity entity, P1 p1)
+        
+        public static bool SystemStart<P1>(this ISystem system,P1 p1)
         {
-            if (system is IStartSystem<P1> initsys)
+            if (system is IStartSystem<P1> ecsinitsystem)
             {
-                initsys.Run(entity, p1);
+                ecsinitsystem.Start(p1);
                 return true;
             }
-
+            return false;
+        }
+        
+        public static bool SystemStart<P1,P2>(this ISystem system,P1 p1,P2 p2)
+        {
+            if (system is IStartSystem<P1,P2> ecsinitsystem)
+            {
+                ecsinitsystem.Start(p1,p2);
+                return true;
+            }
             return false;
         }
 
-        public static bool SystemStart<P1, P2>(this ISystem system, IEntity entity, P1 p1, P2 p2)
-        {
-            if (system is IStartSystem<P1, P2> initsys)
-            {
-                initsys.Run(entity, p1, p2);
-                return true;
-            }
 
-            return false;
-        }
-
-        public static bool SystemPreShow(this ISystem system, IEntity entity, bool p1)
+        public static bool SystemPreShow(this ISystem system, bool p1)
         {
             if (system is IPreShowSystem showsystem)
             {
-                showsystem.Run(entity, p1);
+                showsystem.PreShow(p1);
                 return true;
             }
 
@@ -64,44 +51,23 @@ namespace GameFrame
         }
 
 
-        public static bool SystemShow(this ISystem system, IEntity entity)
+        public static bool SystemShow(this ISystem system)
         {
             if (system is IShowSystem showsystem)
             {
-                showsystem.Run(entity);
+                showsystem.Show();
                 return true;
             }
 
             return false;
         }
+        
 
-        public static bool SystemShow<P1>(this ISystem system, IEntity entity, P1 p1)
-        {
-            if (system is IShowSystem showsystem)
-            {
-                showsystem.Run(entity);
-                return true;
-            }
-
-            return false;
-        }
-
-        public static bool SystemShow<P1, P2>(this ISystem system, IEntity entity, P1 p1, P2 p2)
-        {
-            if (system is IShowSystem showsystem)
-            {
-                showsystem.Run(entity);
-                return true;
-            }
-
-            return false;
-        }
-
-        public static bool SystemHide(this ISystem system, IEntity entity)
+        public static bool SystemHide(this ISystem system)
         {
             if (system is IHideSystem showsystem)
             {
-                showsystem.Run(entity);
+                showsystem.Hide();
                 return true;
             }
 
@@ -111,15 +77,16 @@ namespace GameFrame
 
         public static UpdateType IsUpdateSystem(this ISystem system)
         {
-            if (system is IUpdateSystem or IECSUpdateSystem)
+            UpdateType updateType;
+            if (system is IUpdateSystem)
             {
                 return UpdateType.Update;
             }
-            else if (system is ILateUpdateSystem or IECSLateUpdateSystem)
+            else if (system is ILateUpdateSystem)
             {
                 return UpdateType.LateUpdate;
             }
-            else if (system is IFixedUpdateSystem or IECSFixedUpdateSystem)
+            else if (system is IFixedUpdateSystem)
             {
                 return UpdateType.FixedUpdate;
             }
@@ -134,14 +101,7 @@ namespace GameFrame
             for (int i = 0; i < count; i++)
             {
                 SystemEnitiy es = ets[i];
-                if (es.SystemObject.System is IUpdateSystem updatesystem)
-                {
-                    updatesystem.Run(es.Entity, elapseSeconds, realElapseSeconds);
-                }
-                else if (es.SystemObject.System is IECSUpdateSystem ecsupdatesystem)
-                {
-                    ecsupdatesystem.Update(elapseSeconds, realElapseSeconds);
-                }
+                ((IUpdateSystem) es.SystemObject.System).Update(elapseSeconds, realElapseSeconds);
                 count = ets.Count;
             }
         }
@@ -152,14 +112,7 @@ namespace GameFrame
             for (int i = 0; i < count; i++)
             {
                 SystemEnitiy es = ets[i];
-                if (es.SystemObject.System is ILateUpdateSystem updatesystem)
-                {
-                    updatesystem.Run(es.Entity, elapseSeconds, realElapseSeconds);
-                }
-                else if (es.SystemObject.System is IECSLateUpdateSystem ecsupdatesystem)
-                {
-                    ecsupdatesystem.LateUpdate(elapseSeconds, realElapseSeconds);
-                }
+                ((ILateUpdateSystem) es.SystemObject.System).LateUpdate(elapseSeconds, realElapseSeconds);
                 count = ets.Count;
             }
         }
@@ -170,26 +123,18 @@ namespace GameFrame
             for (int i = 0; i < count; i++)
             {
                 SystemEnitiy es = ets[i];
-                if (es.SystemObject.System is IFixedUpdateSystem updatesystem)
-                {
-                    updatesystem.Run(es.Entity, elapseSeconds, realElapseSeconds);
-                }
-                else if (es.SystemObject.System is IECSFixedUpdateSystem ecsupdatesystem)
-                {
-                    ecsupdatesystem.FixedUpdate(elapseSeconds, realElapseSeconds);
-                }
-
+                ((IFixedUpdateSystem) es.SystemObject.System).FixedUpdate(elapseSeconds, realElapseSeconds);
                 count = ets.Count;
             }
         }
 
-        public static void SystemClear(this DDictionaryET system, IEntity entity)
+        public static void SystemClear(this DDictionaryET system)
         {
             foreach (var vt in system)
             {
                 if (vt.Value.System is IClearSystem dessys)
                 {
-                    dessys.Run(entity);
+                    dessys.Clear();
                 }
             }
         }

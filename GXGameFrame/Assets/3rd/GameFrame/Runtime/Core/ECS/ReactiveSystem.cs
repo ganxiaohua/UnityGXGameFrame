@@ -2,7 +2,7 @@
 
 namespace GameFrame
 {
-    public abstract class ReactiveSystem : IECSStartSystem, IECSUpdateSystem
+    public abstract class ReactiveSystem : IStartSystem<Context>, IUpdateSystem
     {
         /// <summary>
         /// 挂载的父实体
@@ -45,6 +45,7 @@ namespace GameFrame
             Update(this.m_Buffer);
             this.m_Buffer.Clear();
         }
+
         public abstract void Clear();
     }
 }

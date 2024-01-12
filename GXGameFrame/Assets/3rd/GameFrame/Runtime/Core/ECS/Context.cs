@@ -1,19 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace GameFrame
 {
     public class Context : Entity
     {
-        private Dictionary<int, HashSet<ECSEntity>> m_ECSEnitiyGroup;
-        private Dictionary<Matcher, Group> m_Groups;
-
-
-        public override void Initialize()
-        {
-            m_ECSEnitiyGroup = new();
-            m_Groups = new();
-        }
+        private Dictionary<int, HashSet<ECSEntity>> m_ECSEnitiyGroup =new();
+        private Dictionary<Matcher, Group> m_Groups = new ();
         
         public new T AddChild<T>() where T : ECSEntity
         {

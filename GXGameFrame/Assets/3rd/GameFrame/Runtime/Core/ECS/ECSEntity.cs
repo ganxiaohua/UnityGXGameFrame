@@ -26,11 +26,7 @@ namespace GameFrame
         public Context Context { get; private set; }
 
         private GXArray<ECSComponent> m_ECSComponentArray;
-
-        protected ECSEntity()
-        {
-        }
-
+        
         /// <summary>
         /// 通用书初始化
         /// </summary>

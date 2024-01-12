@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace GameFrame
 {
@@ -14,31 +13,31 @@ namespace GameFrame
 
         public UpdateSystems()
         {
-            m_UpdateSystemEnitiys = new[] {new List<SystemEnitiy>(), new List<SystemEnitiy>(), new List<SystemEnitiy>()};
+            m_UpdateSystemEnitiys = new[] {new List<SystemEnitiy>(256), new List<SystemEnitiy>(256), new List<SystemEnitiy>(256)};
         }
 
         /// <summary>
         /// 加入update系统
         /// </summary>
         /// <param name="entity"></param>
-        /// <param name="systemObject"></param>
-        public void AddUpdateSystem(IEntity entity, SystemObject systemObject)
+        /// <param name="ecsSystemObject"></param>
+        public void AddUpdateSystem(IEntity entity, ISystemObject ecsSystemObject)
         {
-            UpdateType updateType = systemObject.System.IsUpdateSystem();
-            if (updateType != UpdateType.Node && !HasUpdateSystem(entity, systemObject.System))
+            UpdateType updateType = ecsSystemObject.System.IsUpdateSystem();
+            if (updateType != UpdateType.Node && !HasUpdateSystem(entity, ecsSystemObject.System))
             {
-                if (m_Index.ContainsTk(entity, systemObject.System))
+                if (m_Index.ContainsTk(entity, ecsSystemObject.System))
                 {
                     Debugger.LogWarning("entity has add in the Index");
                     return;
                 }
 
                 SystemEnitiy systenitiy = ReferencePool.Acquire<SystemEnitiy>();
-                systenitiy.Create(systemObject, entity);
+                systenitiy.Create(ecsSystemObject, entity);
 
                 m_UpdateSystemEnitiys[(int)updateType].Add(systenitiy);
 
-                m_Index.Add(entity, systemObject.System, systenitiy);
+                m_Index.Add(entity, ecsSystemObject.System, systenitiy);
             }
         }
 
@@ -83,7 +82,7 @@ namespace GameFrame
                     foreach (var systemObject in systemdic)
                     {
                         UpdateType updateType = systemObject.Key.IsUpdateSystem();
-                        m_UpdateSystemEnitiys[(int)updateType].Remove(systemObject.Value);
+                        m_UpdateSystemEnitiys[(int)updateType].RemoveSwapBack(systemObject.Value);
                     }
 
                     m_Index.RemoveTkey(enitity);
@@ -97,7 +96,7 @@ namespace GameFrame
                     UpdateType updateType = system.IsUpdateSystem();
                     if (updateType != UpdateType.Node)
                     {
-                        m_UpdateSystemEnitiys[(int) updateType].Remove(systemobejct);
+                        m_UpdateSystemEnitiys[(int) updateType].RemoveSwapBack(systemobejct);
                         m_Index.RemoveKkey(enitity, system);
                     }
                 }

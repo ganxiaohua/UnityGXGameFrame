@@ -15,8 +15,7 @@
         public int ID { get; set; }
 
         public EntityStatus m_EntityStatus { set; }
-
-        public void Initialize();
+        
         public void ClearAllComponent();
     }
 }

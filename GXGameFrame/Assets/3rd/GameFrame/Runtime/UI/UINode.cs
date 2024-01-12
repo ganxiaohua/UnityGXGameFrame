@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using FairyGUI;
-using Unity.VisualScripting;
 
 namespace GameFrame
 {
@@ -53,7 +52,6 @@ namespace GameFrame
         public GComponent ParnetRoot;
         
         
-
         public static UINode CreateEmptyNode(Type windowType)
         {
             UINode uiNode = ReferencePool.Acquire<UINode>();
@@ -90,7 +88,7 @@ namespace GameFrame
         {
             if (Window == null)
                 return;
-            EnitityHouse.Instance.RunPreShowSystem(Window, isFirstOpen);
+            EnitityHouse.Instance.RunPreShowSystem((ISystem)Window, isFirstOpen);
             foreach (var child in Childs)
             {
                 child.PreShow(isFirstOpen);

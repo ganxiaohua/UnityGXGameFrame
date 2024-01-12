@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Principal;
-using Unity.VisualScripting;
 
 namespace GameFrame
 {
-    using DDictionaryETC = DDictionary<Type, Type, SystemObject>;
+    using DDictionaryETC = DDictionary<Type, Type, ISystemObject>;
 
     public class EnitityHouse : Singleton<EnitityHouse>
     {
@@ -20,10 +17,6 @@ namespace GameFrame
         private DDictionaryETC m_EntitySystems = new();
 
         private UpdateSystems m_UpdateSystems = new UpdateSystems();
-
-        private List<IEntity> m_HideEnitiys = new(16);
-
-        public List<IEntity> HideEnitiys => m_HideEnitiys;
 
         public void Init()
         {
@@ -85,7 +78,7 @@ namespace GameFrame
             var allSystemDic = m_EntitySystems.GetValue(entityType);
             if (allSystemDic != null)
             {
-                allSystemDic.SystemClear(entity);
+                allSystemDic.SystemClear();
             }
 
             entityList.Remove(entity);
@@ -162,9 +155,9 @@ namespace GameFrame
             m_EverySceneEntity.Remove(sceneType);
         }
 
-        public void AddSystem<T>(IEntity entity) where T : ISystem
+        public void AddEcsSystem<T>(Context entity) where T : ISystem
         {
-            AddSystem(entity, typeof(T));
+            AddEcsSystem(entity, typeof(T));
         }
 
         /// <summary>
@@ -173,79 +166,69 @@ namespace GameFrame
         /// <param name="entity"></param>
         /// <param name="system"> 系统类</param>
         /// <returns></returns>
-        private SystemObject CreateSystem(IEntity entity, Type system)
+        private ISystemObject CreateSystem(IEntity entity, Type system)
         {
             Type entityType = entity.GetType();
-            SystemObject sysObject = m_EntitySystems.GetVValue(entityType, system);
+            ISystemObject sysObject = m_EntitySystems.GetVValue(entityType, system);
             if (sysObject == null)
             {
-                sysObject = ReferencePool.Acquire<SystemObject>();
-                Type entitySystem = BindSystem.Instance.GetEnitiySystem(entityType, system);
-                if (entitySystem == null)
-                {
-                    entitySystem = system;
-                }
-
-                sysObject.AddSystem(entitySystem);
+                sysObject = ReferencePool.Acquire<EcsSystemObject>();
+                ((EcsSystemObject) sysObject).AddSystem(system);
                 m_EntitySystems.Add(entityType, system, sysObject);
             }
 
             return sysObject;
         }
 
-        public void AddSystem(IEntity entity, Type type)
+        /// <summary>
+        /// ecs 加入系统
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="type"></param>
+        private void AddEcsSystem(Context entity, Type type)
         {
-            Type entityType = entity.GetType();
-            Type systemType = BindSystem.Instance.GetIsystem(entityType, type);
-            if (systemType == null)
-            {
-                systemType = type;
-            }
-
-            SystemObject sysObject = CreateSystem(entity, systemType);
-            sysObject.System.SystemStart(entity);
+            ISystemObject sysObject = CreateSystem(entity, type);
+            sysObject.System.SystemStart<Context>((Context)entity);
             m_UpdateSystems.AddUpdateSystem(entity, sysObject);
         }
 
-        public void AddStartSystem<P1>(IEntity entity, P1 p1)
+        /// <summary>
+        /// 自身又是实体又是系统
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="type"></param>
+        public void AddSlefUpdateSystem(IEntity entity)
         {
-            Type entityType = entity.GetType();
-            Type systemType = typeof(IStartSystem<P1>);
-            if (BindSystem.Instance.GetEnitiySystem(entityType, systemType) == default(Type))
+            if (entity is not ISystem system)
             {
-                throw new Exception($"not have IStartSystem<P1>");
+                return;
             }
 
-            SystemObject sysObject = CreateSystem(entity, systemType);
-            sysObject.System.SystemStart(entity, p1);
-        }
-
-        public void AddStartSystem<P1, P2>(IEntity entity, P1 p1, P2 p2)
-        {
             Type entityType = entity.GetType();
-            Type systemType = typeof(IStartSystem<P1, P2>);
-            if (BindSystem.Instance.GetEnitiySystem(entityType, systemType) == default(Type))
+
+            void Add(Type type)
             {
-                throw new Exception($"not have IStartSystem<P1>");
+                var sysObject = ReferencePool.Acquire<SystemObject>();
+                sysObject.AddSystem((ISystem) entity);
+                m_EntitySystems.Add(entityType, type, sysObject);
+                m_UpdateSystems.AddUpdateSystem(entity, sysObject);
             }
 
-            SystemObject sysObject = CreateSystem(entity, systemType);
-            sysObject.System.SystemStart(entity, p1, p2);
-        }
+            if (system is IUpdateSystem)
+            {
+                Add(typeof(IUpdateSystem));
+            }
 
-        // public void AddShowSystem<P1>(IEntity entity, Type type, P1 p1)
-        // {
-        //     Type systemType = AutoBindSystem.Instance.GetIsystem(typeof(Entity), type);
-        //     SystemObject sysObject = CreateSystem(entity, systemType);
-        //     sysObject.System.SystemShow(entity, p1);
-        // }
-        //
-        // public void AddShowSystem<P1, P2>(IEntity entity, Type type, P1 p1, P2 p2)
-        // {
-        //     Type systemType = AutoBindSystem.Instance.GetIsystem(typeof(Entity), type);
-        //     SystemObject sysObject = CreateSystem(entity, systemType);
-        //     sysObject.System.SystemShow(entity, p1, p2);
-        // }
+            if (system is ILateUpdateSystem)
+            {
+                Add(typeof(ILateUpdateSystem));
+            }
+
+            if (system is IFixedUpdateSystem)
+            {
+                Add(typeof(IFixedUpdateSystem));
+            }
+        }
 
         /// <summary>
         /// 删除一个updatesystem
@@ -260,10 +243,9 @@ namespace GameFrame
         /// 运行PreShowsystem
         /// </summary>
         /// <param name="entity"></param>
-        public void RunPreShowSystem(IEntity entity, bool IsFirstShow)
+        public void RunPreShowSystem(ISystem entity, bool IsFirstShow)
         {
-            SystemObject sysObject = m_EntitySystems.GetVValue(entity.GetType(), typeof(IPreShowSystem));
-            sysObject?.System.SystemPreShow(entity, IsFirstShow);
+            entity?.SystemPreShow(IsFirstShow);
         }
 
         /// <summary>
@@ -272,22 +254,23 @@ namespace GameFrame
         /// <param name="entity"></param>
         public void RunShowSystem(Entity entity)
         {
-            if (m_HideEnitiys.Contains(entity))
-            {
-                m_HideEnitiys.Remove(entity);
-            }
-
-            RunShow(entity);
-        }
-
-        public void RunShow(Entity entity)
-        {
-            SystemObject sysObject = m_EntitySystems.GetVValue(entity.GetType(), typeof(IShowSystem));
-            sysObject?.System.SystemShow(entity);
-
+            ISystem system = (ISystem) entity;
+            system?.SystemShow();
             if (!m_UpdateSystems.HasUpdateSystem(entity))
             {
-                SystemObject updateSystem = m_EntitySystems.GetVValue(entity.GetType(), typeof(IUpdateSystem));
+                ISystemObject updateSystem = m_EntitySystems.GetVValue(entity.GetType(), typeof(IUpdateSystem));
+                if (updateSystem != null)
+                {
+                    m_UpdateSystems.AddUpdateSystem(entity, updateSystem);
+                }
+
+                updateSystem = m_EntitySystems.GetVValue(entity.GetType(), typeof(ILateUpdateSystem));
+                if (updateSystem != null)
+                {
+                    m_UpdateSystems.AddUpdateSystem(entity, updateSystem);
+                }
+
+                updateSystem = m_EntitySystems.GetVValue(entity.GetType(), typeof(IFixedUpdateSystem));
                 if (updateSystem != null)
                 {
                     m_UpdateSystems.AddUpdateSystem(entity, updateSystem);
@@ -296,12 +279,12 @@ namespace GameFrame
 
             foreach (IEntity enitiy in entity.Children)
             {
-                RunShow((Entity) enitiy);
+                RunShowSystem((Entity) enitiy);
             }
 
             foreach (KeyValuePair<Type, IEntity> enitiy in entity.Components)
             {
-                RunShow((Entity) enitiy.Value);
+                RunShowSystem((Entity) enitiy.Value);
             }
         }
 
@@ -311,42 +294,20 @@ namespace GameFrame
         /// <param name="entity"></param>
         public void RunHideSystem(Entity entity)
         {
-            SystemObject sysObject = m_EntitySystems.GetVValue(entity.GetType(), typeof(IHideSystem));
-            if (sysObject == null)
-            {
-                Debugger.LogWarning($"{entity.GetType()} not have hidesystem");
-                return;
-            }
-
-            if (m_HideEnitiys.Contains(entity))
-            {
-                Debugger.LogWarning($"{entity.GetType()}  already hide");
-                return;
-            }
-
-            m_HideEnitiys.Add(entity);
-            RunHide(entity);
-        }
-
-        public void RunHide(Entity entity)
-        {
-            SystemObject sysObject = m_EntitySystems.GetVValue(entity.GetType(), typeof(IHideSystem));
-            if (sysObject != null)
-            {
-                RemoveUpdateSystem(entity);
-                sysObject.System.SystemHide(entity);
-            }
-
+            ISystem system = (ISystem) entity;
+            system?.SystemHide();
+            m_UpdateSystems.RemoveUpdateSystem(entity);
             foreach (IEntity enitiy in entity.Children)
             {
-                RunHide((Entity) enitiy);
+                RunHideSystem((Entity) enitiy);
             }
 
             foreach (KeyValuePair<Type, IEntity> enitiy in entity.Components)
             {
-                RunHide((Entity) enitiy.Value);
+                RunHideSystem((Entity) enitiy.Value);
             }
         }
+
 
         /// <summary>
         /// 删除实体身上的某一个系统
@@ -357,10 +318,10 @@ namespace GameFrame
         {
             Type type = typeof(T);
             Type entityType = entity.GetType();
-            SystemObject systemObject = m_EntitySystems.GetVValue(entityType, type);
-            if (systemObject != null)
+            ISystemObject ecsSystemObject = m_EntitySystems.GetVValue(entityType, type);
+            if (ecsSystemObject != null)
             {
-                RemoveUpdateSystem(entity, systemObject.System);
+                RemoveUpdateSystem(entity, ecsSystemObject.System);
             }
         }
 
@@ -382,7 +343,7 @@ namespace GameFrame
             if (GetEntityCount(entityType) == 0)
             {
                 var item = m_EntitySystems.RemoveTkey(entityType);
-                foreach (KeyValuePair<Type, SystemObject> typeSystem in item)
+                foreach (KeyValuePair<Type, ISystemObject> typeSystem in item)
                 {
                     ReferencePool.Release(typeSystem.Value);
                 }

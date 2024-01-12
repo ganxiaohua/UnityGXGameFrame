@@ -1,10 +1,15 @@
-﻿using System;
-using UnityEngine;
-
-namespace GameFrame
+﻿namespace GameFrame
 {
-    public class MainScene : Entity, IStart, IUpdate,IClear,IScene
+    public class MainScene : Entity, IStartSystem,IUpdateSystem
     {
-      
+        public void Start()
+        {
+          
+        }
+
+        public void Update(float elapseSeconds, float realElapseSeconds)
+        {
+                
+        }
     }
 }

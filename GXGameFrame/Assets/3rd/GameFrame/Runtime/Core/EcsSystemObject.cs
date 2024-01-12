@@ -2,14 +2,28 @@
 
 namespace GameFrame
 {
-    public class SystemObject : IReference
+    public interface ISystemObject : IReference
     {
-        enum ISystemType : byte
+        public ISystem System { get;}
+    }
+
+    public class SystemObject : ISystemObject
+    {
+        public ISystem System { get; private set; }
+        
+        public void AddSystem(ISystem system)
         {
-            None = 0,
-            IsCreated = 1,
-            IsClear = 2,
+            System = system;
         }
+
+        public void Clear()
+        {
+           
+        }
+    }
+
+    public class EcsSystemObject :ISystemObject 
+    {
 
         // private ISystemType m_ISystemType;
         public ISystem System { get; private set; }
@@ -24,13 +38,11 @@ namespace GameFrame
         {
             var system = ReferencePool.Acquire(type) as ISystem;
             System = system;
-            // m_ISystemType = ISystemType.IsCreated;
         }
 
         public void Clear()
         {
             ReferencePool.Release(System);
-            // m_ISystemType = ISystemType.IsClear;
         }
     }
 }

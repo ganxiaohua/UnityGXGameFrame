@@ -1,8 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEngine;
 
 namespace GameFrame
 {
@@ -31,12 +28,7 @@ namespace GameFrame
             m_Components = new();
             m_Children = new();
         }
-
-        public virtual void Initialize()
-        {
-        }
-
-
+        
         protected virtual IEntity Create<T>(bool isComponent) where T : IEntity
         {
             Type type = typeof(T);
@@ -48,15 +40,7 @@ namespace GameFrame
             IEntity entity = ReferencePool.Acquire(type) as IEntity;
             entity.m_EntityStatus = IEntity.EntityStatus.IsCreated;
             entity.Parent = this;
-            if (this is MainScene)
-            {
-                entity.SceneParent = this;
-            }
-            else
-            {
-                entity.SceneParent = SceneParent;
-            }
-
+            entity.SceneParent = this is MainScene ? this : SceneParent;
             entity.ID = ++m_SerialId;
             if (isComponent)
             {
@@ -66,15 +50,8 @@ namespace GameFrame
             {
                 m_Children.Add(entity);
             }
-
-            // entity.Parameter = parameter;
-            entity.Initialize();
+            
             EnitityHouse.Instance.AddEntity(entity);
-            // if (Parameter != null)
-            // {
-            //     ReferencePool.Release(Parameter);
-            // }
-
             return entity;
         }
 
@@ -145,7 +122,11 @@ namespace GameFrame
         public IEntity AddComponent(Type type)
         {
             IEntity component = CreateComponent(type);
-            AddSystem(type, component);
+            if (component is IStartSystem system)
+            {
+                system.SystemStart();
+            }
+            EnitityHouse.Instance.AddSlefUpdateSystem(component);
             return component;
         }
 
@@ -159,8 +140,11 @@ namespace GameFrame
         public IEntity AddComponent<P1>(Type type, P1 p1)
         {
             IEntity component = CreateComponent(type);
-            component.AddStartSystem(p1);
-            AddSystem(type, component);
+            if (component is IStartSystem<P1> system)
+            {
+                system.SystemStart(p1);
+            }
+            EnitityHouse.Instance.AddSlefUpdateSystem(component);
             return component;
         }
 
@@ -173,30 +157,14 @@ namespace GameFrame
         public IEntity AddComponent<P1, P2>(Type type, P1 p1, P2 p2)
         {
             IEntity component = CreateComponent(type);
-            component.AddStartSystem(p1, p2);
-            AddSystem(type, component);
+            if (component is IStartSystem<P1,P2> system)
+            {
+                system.SystemStart(p1,p2);
+            }
+            EnitityHouse.Instance.AddSlefUpdateSystem(component);
             return component;
         }
-
-
-        private void AddSystem<T>(IEntity entity) where T : class, IEntity
-        {
-            Type type = typeof(T);
-            AddSystem(type, entity);
-        }
-
-        private void AddSystem(Type type, IEntity entity)
-        {
-            List<Type> systemTypesList = BindSystem.Instance.GetEnitityAllSystem(type);
-            if (systemTypesList != null)
-            {
-                foreach (Type systemtype in systemTypesList)
-                {
-                    entity.AddSystem(systemtype);
-                }
-            }
-        }
-
+        
         public bool HasComponent<T>() where T : class, IEntity
         {
             if (GetComponent<T>() != null)
@@ -253,7 +221,11 @@ namespace GameFrame
         public IEntity AddChild(Type type)
         {
             IEntity component = Create(type, false);
-            AddSystem(type, component);
+            if (component is IStartSystem system)
+            {
+                system.SystemStart();
+            }
+            EnitityHouse.Instance.AddSlefUpdateSystem(component);
             return component;
         }
 
@@ -266,8 +238,11 @@ namespace GameFrame
         public IEntity AddChild<P1>(Type type, P1 p1)
         {
             IEntity component = Create(type, false);
-            component.AddStartSystem(p1);
-            AddSystem(type, component);
+            if (component is IStartSystem<P1> system)
+            {
+                system.SystemStart(p1);
+            }
+            EnitityHouse.Instance.AddSlefUpdateSystem(component);
             return component;
         }
 
@@ -280,10 +255,32 @@ namespace GameFrame
         public IEntity AddChild<P1, P2>(Type type, P1 p1, P2 p2)
         {
             IEntity component = Create(type, false);
-            component.AddStartSystem(p1, p2);
-            AddSystem(type, component);
+            if (component is IStartSystem<P1,P2> system)
+            {
+                system.SystemStart(p1,p2);
+            }
+            EnitityHouse.Instance.AddSlefUpdateSystem(component);
             return component;
         }
+
+
+        // private void AddOtherSystem(IEntity entity)
+        // {
+        //     if (entity is IShowSystem)
+        //     {
+        //         entity.AddSlefSystem((typeof(IShowSystem)));
+        //     }
+        //
+        //     if (entity is IPreShowSystem)
+        //     {
+        //         entity.AddSlefSystem((typeof(IPreShowSystem)));
+        //     }
+        //
+        //     if (entity is IHideSystem)
+        //     {
+        //         entity.AddSlefSystem((typeof(IHideSystem)));
+        //     }
+        // }
 
         /// <summary>
         /// 删除实体
