@@ -16,14 +16,7 @@ MonoBehaviour:
   m_Data:
     m_SerializedData: []
   m_GUID: bf259a864637c3c4a828d4b0439c8b12
-  m_SerializeEntries:
-  - m_GUID: 80ee4e20519678a469f61de4fc048ee0
-    m_Address: Skill1Effect
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Preload
-    - Role
-    - skilleffect
+  m_SerializeEntries: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 1765143bf1e4ef948a398b5a8cb3ff52, type: 2}
   m_SchemaSet:

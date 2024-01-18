@@ -1,9 +1,7 @@
-﻿using System;
-// using cfg;
-using Cysharp.Threading.Tasks;
-using GameFrame.Timer;
-// using GXGame;
+﻿using Cysharp.Threading.Tasks;
 using UnityEngine;
+// using cfg;
+// using GXGame;
 
 namespace GameFrame
 {
@@ -13,10 +11,8 @@ namespace GameFrame
 
         public async UniTask Start()
         {
-            EnitityHouse.Instance.Init();
             MainScene = ReferencePool.Acquire<MainScene>();
             MainScene.AddComponent<UIComponent>();
-            
             await MainScene.AddComponent<AssetInitComponent>().WaitLoad();
             Config.Instance.LoadTable();
         }

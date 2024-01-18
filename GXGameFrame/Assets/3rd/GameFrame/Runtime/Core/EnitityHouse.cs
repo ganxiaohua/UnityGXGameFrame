@@ -17,10 +17,7 @@ namespace GameFrame
         private DDictionaryETC m_EntitySystems = new();
 
         private UpdateSystems m_UpdateSystems = new UpdateSystems();
-
-        public void Init()
-        {
-        }
+        
 
         /// <summary>
         /// 增加实体 所有的实体都会加入到这里

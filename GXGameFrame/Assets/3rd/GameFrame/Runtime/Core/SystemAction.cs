@@ -77,7 +77,6 @@ namespace GameFrame
 
         public static UpdateType IsUpdateSystem(this ISystem system)
         {
-            UpdateType updateType;
             if (system is IUpdateSystem)
             {
                 return UpdateType.Update;
@@ -90,7 +89,6 @@ namespace GameFrame
             {
                 return UpdateType.FixedUpdate;
             }
-
             return UpdateType.Node;
         }
 

@@ -52,7 +52,7 @@ namespace GameFrame
                 
             }
 
-            ECSComponent entity = m_ECSComponentArray.Add(index, GXComponents.ComponentTypes[index]);
+            ECSComponent entity = m_ECSComponentArray.Add(index, type);
             Context.ChangeAddRomoveChildOrCompone(this);
             return entity;
         }
