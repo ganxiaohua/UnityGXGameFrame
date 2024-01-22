@@ -1,14 +1,13 @@
 using System;
 using Cysharp.Threading.Tasks;
 using GameFrame;
-#if UNITY_EDITOR
-#endif
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
-using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceLocations;
 using UnityEngine.ResourceManagement.ResourceProviders;
+#if UNITY_EDITOR
+#endif
 
 public static class AddressablesHelper
 {
@@ -44,7 +43,7 @@ public static class AddressablesHelper
         await UpdateInfoLoad();
 #if UNITY_EDITOR && RESSEQ
         //编辑器模式,加载资源远程资源清单 启动这个优先本地资源,其次远程资源
-        string url = AddressableAssetSettingsDefaultObject.Settings.RemoteCatalogLoadPath.GetValue(AddressableAssetSettingsDefaultObject.Settings);
+        string url = ""; //填写远程URL
         var catalogPath = $"{url}/{CatalogName}";
         var loadCatalogHandle = Addressables.LoadContentCatalogAsync(catalogPath, false);
         await loadCatalogHandle;

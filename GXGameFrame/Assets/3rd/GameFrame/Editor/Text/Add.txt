@@ -1,6 +1,0 @@
-
-         public static void Add{0}(this {1} ecsEntity)
-         {{
-              ecsEntity.AddComponent(Components.{0});
-         }}
-         

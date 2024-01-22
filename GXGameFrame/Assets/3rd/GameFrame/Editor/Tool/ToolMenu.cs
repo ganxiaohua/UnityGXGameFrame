@@ -30,12 +30,12 @@ namespace GameFrame.Editor
         {
             AutoCreateSystem.AutoCreateScript();
         }
-
-        [MenuItem("GX框架工具/创建一组实体脚本", false, 0)]
-        public static void OpenCreateEnitiyWind()
+        [MenuItem("GX框架工具/事件绑定", false, 3)]
+        public static void AutoEventBind()
         {
-            CreateEnitiyWind.OpenCreateEnitiyWind();
+            MakeAutoEventBind.AutoCreateScript();
         }
+
 
         [MenuItem("GX框架工具/UI创建", false, 3)]
         public static void CreateUI()

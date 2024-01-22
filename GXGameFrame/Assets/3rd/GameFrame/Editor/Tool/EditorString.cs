@@ -30,6 +30,10 @@ namespace GameFrame.Editor
         /// </summary>
         public static string ECSOutPutPath = "Assets/GXGame/Scripts/Runtime/Auto/EcsBind/";
         
+        public static  string EventBindOutPutPath = "";
+
+        public static string EventSendOutPutPath = "";
+        
         // ---------------------------------------------------------以下路径最好不要改
         
         public static string GameFramePath = "Assets/3rd/GameFrame/";

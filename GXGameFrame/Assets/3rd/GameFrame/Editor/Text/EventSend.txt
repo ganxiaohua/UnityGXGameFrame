@@ -1,0 +1,24 @@
+using Common.Runtime;
+using Eden.Core.Runtime.GF;
+
+namespace Eden.Gameplay.Runtime
+{{
+    public class EventSend : Singleton<EventSend>
+    {{
+       {0}
+    }}
+}}
+@
+        public void Fire{0}({1})
+        {{
+            var allenitiy = EventData.Instance.GetEnitiy(typeof(I{0}));
+            if (allenitiy == null)
+            {{
+                return;
+            }}
+            foreach (var enitiy in allenitiy)
+            {{
+                ((I{0}) enitiy).{2}({3});
+            }}
+        }}
+        

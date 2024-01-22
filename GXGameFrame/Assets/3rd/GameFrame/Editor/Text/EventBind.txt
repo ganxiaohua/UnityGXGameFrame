@@ -1,0 +1,17 @@
+using System.Collections.Generic;
+using System;
+using System.Linq;
+using Eden.Gameplay.Runtime;
+using Eden.Core.Runtime.GF;
+
+public class AutoBindEvent
+{{
+    public void AddSystem()
+    {{
+        var  eventData =  EventData.Instance;
+        {0}
+    }}
+}}
+
+@
+        eventData.AddSourceDic(typeof({0}),typeof({1}));

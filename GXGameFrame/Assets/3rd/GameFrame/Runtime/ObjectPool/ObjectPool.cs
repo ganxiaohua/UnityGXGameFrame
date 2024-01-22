@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Principal;
 using Cysharp.Threading.Tasks;
 
 namespace GameFrame
@@ -149,7 +148,7 @@ namespace GameFrame
         /// <summary>
         /// 按帧吐出对象
         /// </summary>
-        public void FrameSpawn()
+        private void FrameSpawn()
         {
             if (m_SpawnAsyncQueue.Count == 0)
             {
