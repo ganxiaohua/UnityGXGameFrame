@@ -50,7 +50,7 @@ namespace GameFrame
             {
                 m_Children.Add(entity);
             }
-            
+            EventData.Instance.AddEventEnitiy(entity);
             EnitityHouse.Instance.AddEntity(entity);
             return entity;
         }
@@ -343,6 +343,7 @@ namespace GameFrame
         {
             m_EntityStatus = IEntity.EntityStatus.IsClear;
             Parent = null;
+            EventData.Instance.RemoveEventEnitiy(this);
             ClearAllChild();
             ClearAllComponent();
         }

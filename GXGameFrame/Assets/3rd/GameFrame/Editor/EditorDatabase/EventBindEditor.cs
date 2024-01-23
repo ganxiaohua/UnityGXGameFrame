@@ -37,7 +37,7 @@ namespace GameFrame.Editor
             Create();
         }
 
-        public static void LoadText()
+        private static void LoadText()
         {
             string systemPath = EditorString.GameFramePath + "Editor/Text/EventBind.txt";
             string system = File.ReadAllText(systemPath);
@@ -46,7 +46,7 @@ namespace GameFrame.Editor
             AddText = text[1];
         }
 
-        public static void LoadText2()
+        private static void LoadText2()
         {
             string systemPath = EditorString.GameFramePath + "Editor/Text/EventSend.txt";
             string system = File.ReadAllText(systemPath);
@@ -55,7 +55,7 @@ namespace GameFrame.Editor
             AddTextSend = text[1];
         }
 
-        public static void FindEnitiyClass(Assembly assembly)
+        private static void FindEnitiyClass(Assembly assembly)
         {
             Type[] types = assembly.GetTypes();
             foreach (var tp in types)
@@ -75,22 +75,27 @@ namespace GameFrame.Editor
                                 return;
                             }
 
-                            string parameter = "";{}//{1}
-                            string typex = item.Name.Substring(1, item.Name.Length - 1);//{0}
+                            string parameter = "";
+                            {
+                            } //{1}
+                            string typex = item.Name.Substring(1, item.Name.Length - 1); //{0}
                             MethodInfo[] ins = item.GetMethods();
                             ParameterInfo[] parmeters = ins[0].GetParameters();
-                            string method = ins[0].Name;//{2}
-                            string paremwairte = "";//{3}
+                            string method = ins[0].Name; //{2}
+                            string paremwairte = ""; //{3}
                             foreach (ParameterInfo parmeter in parmeters)
                             {
-                                parameter += parmeter.ParameterType.FullName + " " + parmeter.Name+",";
+                                parameter += parmeter.ParameterType.FullName + " " + parmeter.Name + ",";
                                 paremwairte += parmeter.Name + ",";
                             }
-                            parameter = parameter.Substring(0, parameter.Length - 1);
-                            paremwairte = paremwairte.Substring(0, paremwairte.Length - 1);
-                             str = string.Format(AddTextSend,typex, parameter,method,paremwairte);
-                             AllAddTextSend.Add(str);
-                             SendEventHas.Add(item);
+
+                            if (!string.IsNullOrEmpty(parameter))
+                                parameter = parameter.Substring(0, parameter.Length - 1);
+                            if (!string.IsNullOrEmpty(paremwairte))
+                                paremwairte = paremwairte.Substring(0, paremwairte.Length - 1);
+                            str = string.Format(AddTextSend, typex, parameter, method, paremwairte);
+                            AllAddTextSend.Add(str);
+                            SendEventHas.Add(item);
                         }
                     }
                 }
@@ -105,6 +110,7 @@ namespace GameFrame.Editor
             {
                 bigtext += item;
             }
+
             string sendeventtext = "";
             foreach (var item in AllAddTextSend)
             {

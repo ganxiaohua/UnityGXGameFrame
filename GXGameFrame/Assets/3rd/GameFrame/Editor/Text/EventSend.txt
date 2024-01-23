@@ -1,5 +1,5 @@
-using Common.Runtime;
-using Eden.Core.Runtime.GF;
+using GameFrame;
+using GXGame;
 
 namespace Eden.Gameplay.Runtime
 {{

@@ -1,8 +1,4 @@
-using System.Collections.Generic;
-using System;
-using System.Linq;
-using Eden.Gameplay.Runtime;
-using Eden.Core.Runtime.GF;
+using GameFrame;
 
 public class AutoBindEvent
 {{
