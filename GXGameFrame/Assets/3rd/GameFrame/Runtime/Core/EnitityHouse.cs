@@ -37,7 +37,7 @@ namespace GameFrame
             {
                 throw new Exception($"TypeWithEntitys have enitiy:{entity.ID}");
             }
-
+            EventData.Instance.AddEventEnitiy(entity);
             entityList.Add(entity);
         }
 
@@ -70,7 +70,7 @@ namespace GameFrame
             {
                 throw new Exception($"TypeWithEntitys not have enitiy:{entity.ID}");
             }
-
+            EventData.Instance.AddEventEnitiy(entity);
             Type entityType = entity.GetType();
             var allSystemDic = m_EntitySystems.GetValue(entityType);
             if (allSystemDic != null)
@@ -253,6 +253,7 @@ namespace GameFrame
         {
             ISystem system = (ISystem) entity;
             system?.SystemShow();
+            EventData.Instance.AddEventEnitiy(entity);
             if (!m_UpdateSystems.HasUpdateSystem(entity))
             {
                 ISystemObject updateSystem = m_EntitySystems.GetVValue(entity.GetType(), typeof(IUpdateSystem));
@@ -293,6 +294,7 @@ namespace GameFrame
         {
             ISystem system = (ISystem) entity;
             system?.SystemHide();
+            EventData.Instance.RemoveEventEnitiy(entity);
             m_UpdateSystems.RemoveUpdateSystem(entity);
             foreach (IEntity enitiy in entity.Children)
             {
@@ -326,7 +328,7 @@ namespace GameFrame
         /// 有实体进行销毁
         /// </summary>
         /// <param name="entity"></param>
-        public void RemoveAllSystem(IEntity entity)
+        private void RemoveAllSystem(IEntity entity)
         {
             Type entityType = entity.GetType();
             var allSystemDic = m_EntitySystems.GetValue(entityType);
