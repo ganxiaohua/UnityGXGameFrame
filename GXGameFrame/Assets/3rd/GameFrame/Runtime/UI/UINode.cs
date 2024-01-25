@@ -5,7 +5,7 @@ using FairyGUI;
 
 namespace GameFrame
 {
-    public partial class UINode : IReference
+    public class UINode : IReference
     {
         public enum StateType
         {
@@ -47,11 +47,11 @@ namespace GameFrame
         /// <summary>
         /// 加载的窗体
         /// </summary>
-        public Entity Window;
+        public UIEntity Window;
 
         public GComponent ParnetRoot;
-        
-        
+
+
         public static UINode CreateEmptyNode(Type windowType)
         {
             UINode uiNode = ReferencePool.Acquire<UINode>();
@@ -68,9 +68,9 @@ namespace GameFrame
             uiNode.WindowType = windowType;
             uiNode.NextActionState = WindowState.Hide;
             uiNode.NodeState = StateType.WaitOpen;
-            uiNode.Window = (Entity) UIComponent.GetComponent(windowType);
+            uiNode.Window = (UIEntity) UIComponent.GetComponent(windowType);
             if (uiNode.Window == null)
-                uiNode.Window = (Entity) UIComponent.AddComponent(windowType);
+                uiNode.Window = (UIEntity) UIComponent.AddComponent(windowType);
             return uiNode;
         }
 
@@ -81,6 +81,7 @@ namespace GameFrame
             {
                 DestroyNode(child);
             }
+
             ReferencePool.Release(uinode);
         }
 
@@ -88,7 +89,7 @@ namespace GameFrame
         {
             if (Window == null)
                 return;
-            EnitityHouse.Instance.RunPreShowSystem((ISystem)Window, isFirstOpen);
+            EnitityHouse.Instance.RunPreShowSystem((ISystem) Window, isFirstOpen);
             foreach (var child in Childs)
             {
                 child.PreShow(isFirstOpen);
@@ -115,6 +116,7 @@ namespace GameFrame
             {
                 child.Hide();
             }
+
             NodeState = StateType.Hide;
         }
 
@@ -123,7 +125,7 @@ namespace GameFrame
             NodeState = StateType.Loading;
             DependentUI dependent = Window.GetComponent<DependentUI>();
             bool over = false;
-            dependent.UINode = this;
+            Window.UINode = this;
             if (dependent != null)
             {
                 over = await dependent.WaitLoad();

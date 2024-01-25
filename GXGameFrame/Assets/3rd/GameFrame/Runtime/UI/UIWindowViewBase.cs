@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FairyGUI;
 
 namespace GameFrame
@@ -26,6 +25,7 @@ namespace GameFrame
         
         public virtual void OnInit()
         {
+            Root.visible = false;
             m_PlayCompleteCallbackIn = AnimatoinInComplete;
             m_PlayCompleteCallbackOut = AnimatoinOutComplete;
             AnimationPlayingCount = new();
@@ -34,6 +34,7 @@ namespace GameFrame
 
         public virtual void OnShow()
         {
+            Root.visible = true;
             DoShowAnimation();
         }
 

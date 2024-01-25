@@ -4,13 +4,9 @@ namespace GXGame
 {{
     public partial class {0}View : UIViewBase
     {{
-            {1}
-            private void ViewInit()
-            {{
-                 {2}
-            }}
-           
+           {1}     
     }}
 }}
 #
-               {0} = ({2})({1});
+        private {0} m_{1};
+        public {0} {1} {{ get {{ return m_{1} ??= Root.GetChildByPath("{2}") as GImage; }} }}     

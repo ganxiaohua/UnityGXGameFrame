@@ -1,6 +1,0 @@
-                
-                self.{0}View = new {0}View();
-                self.{0}View.Link(self);
-                List<string> temp = new List<string>();
-                temp.Add("{1}");
-                self.AddComponent<DependentUIResources, List<string>>(temp);

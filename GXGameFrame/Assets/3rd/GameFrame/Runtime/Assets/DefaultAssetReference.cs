@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Common.Runtime;
-using UnityEditor.Experimental;
 
 namespace GameFrame
 {
@@ -55,6 +53,7 @@ namespace GameFrame
             {
                 AssetSystem.Instance.DecrementReferenceCount(asset);
             }
+            loaded = 0;
             refAssets = null;
         }
     }

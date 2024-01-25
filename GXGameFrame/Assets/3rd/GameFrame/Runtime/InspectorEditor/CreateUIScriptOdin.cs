@@ -1,15 +1,13 @@
 ﻿#if UNITY_EDITOR
-using FairyGUI;
-using Sirenix.OdinInspector;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using System.Text.RegularExpressions;
+using FairyGUI;
+using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 [Serializable]
 public class FairyData
@@ -243,31 +241,17 @@ public class CreateUIScriptOdin : MonoBehaviour
             {
                 var v = bindList[i];
                 string name = v.FieldName;
-                string path = "contentPane";
-                fields += $"{v.TypeName} {name};\n\t\t\t";
-                int index = 0;
-                foreach (int x in v.Index)
-                {
-                    if (index != v.Index.Count - 1)
-                        path =  $"((GComponent)({path}[{x}]))";
-                    else
-                    {
-                        path += $"[{x}]";
-                    }
-                    index++;
-                }
 
-                Text += CreateEnitiyAuto.CreateUIAutoComText(name, path, v.TypeName);
+                Text += CreateEnitiyAuto.CreateUIAutoComText(v.TypeName, v.FieldName,v.Path);
             }
 
-            CreateEnitiyAuto.CreateUIViewAutoText(codepath, classname, fields, Text);
+            CreateEnitiyAuto.CreateUIViewAutoText(codepath, classname, Text);
         }
 
         void LogicFunc(string codepath, string classname)
         {
-            CreateEnitiyAuto.WriteEnitit((CreateEnitiyAuto.InheritedObject) 0b10011111, classname, true, codepath, UIPanel.packageName);
+            CreateEnitiyAuto.CreateUIMain( codepath, classname, UIPanel.packageName, UIPanel.componentName);
             CreateEnitiyAuto.CreateUIViewText(codepath, classname, UIPanel.packageName, UIPanel.componentName);
-            CreateEnitiyAuto.CreateUIDataText(codepath, classname);
         }
 
         AssetDatabase.Refresh();

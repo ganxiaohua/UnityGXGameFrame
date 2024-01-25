@@ -1,4 +1,3 @@
-
 using System;
 using FairyGUI;
 using GameFrame;
@@ -9,35 +8,27 @@ namespace GXGame
     public partial class {0}View : UIViewBase
     {{
         private {0} m_{0};
-        protected override void OnInit()
+        public override void OnInit()
         {{
             base.OnInit();
-            contentPane = UIPackage.CreateObject("{1}", "{2}").asCom;
-            ViewInit();
             m_{0} = ({0})UIBase;
         }}
 
-        protected override void OnShown()
+        public override void OnShow()
         {{
-            base.OnShown();
+            base.OnShow();
         }}
 
-        protected override void OnHide()
+        public override void OnHide()
         {{
             base.OnHide();
         }}
-
-        public override void Dispose()
-        {{
-            base.Dispose();
-        }}
-
         protected override void DoShowAnimation()
         {{
             base.DoShowAnimation();
         }}
 
-        protected override void DoHideAnimation()
+        public override void DoHideAnimation()
         {{
             base.DoHideAnimation();
         }}

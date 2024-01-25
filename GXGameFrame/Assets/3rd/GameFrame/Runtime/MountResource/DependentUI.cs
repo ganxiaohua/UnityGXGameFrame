@@ -5,15 +5,12 @@ namespace GameFrame
 {
     public class DependentUI : Entity, IStartSystem<string,string>, IClearSystem
     {
-        public DefaultAssetReference DefaultAssetReference;
-        public string PackageName;
+        private DefaultAssetReference DefaultAssetReference;
         public GObject Window;
-        public UniTaskCompletionSource waitLoadTask;
-        public UINode UINode;
+        private UniTaskCompletionSource waitLoadTask;
 
         public void Start(string packageName,string windowName)
         {
-            PackageName = packageName;
             DefaultAssetReference = new DefaultAssetReference();
             waitLoadTask = new UniTaskCompletionSource();
             Init(packageName, windowName).Forget();
@@ -21,9 +18,9 @@ namespace GameFrame
 
         private async UniTaskVoid Init(string packageName, string windowName)
         {
-            await UILoaderNew.Instance.AddPackage(packageName, DefaultAssetReference);
+            await UILoader.Instance.AddPackage(packageName, DefaultAssetReference);
             Window = UIPackage.CreateObject(packageName, windowName);
-            var succ = await UILoaderNew.Instance.LoadOver(PackageName);
+            var succ = await UILoader.Instance.LoadOver(packageName);
             if (succ)
             {
                 waitLoadTask.TrySetResult();

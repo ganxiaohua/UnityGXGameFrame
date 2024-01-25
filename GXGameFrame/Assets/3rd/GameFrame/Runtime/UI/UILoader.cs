@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace GameFrame
 {
-    public class UILoaderNew : Singleton<UILoaderNew>
+    public class UILoader : Singleton<UILoader>
     {
 
         private UIPackage.LoadResourceAsync LoadResource;
@@ -15,7 +15,7 @@ namespace GameFrame
         private const string fui = "_fui";
         private Dictionary<string, DefaultAssetReference> AuxResDic;
 
-        public UILoaderNew()
+        public UILoader()
         {
             LoadResource = LoadPackageInternalAsync;
             UnloadHandle = RemovePackage;

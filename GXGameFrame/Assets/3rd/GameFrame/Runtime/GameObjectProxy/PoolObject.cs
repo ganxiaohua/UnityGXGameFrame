@@ -1,6 +1,4 @@
-﻿using System;
-using GameFrame;
-using UnityEngine;
+﻿using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace GameFrame
