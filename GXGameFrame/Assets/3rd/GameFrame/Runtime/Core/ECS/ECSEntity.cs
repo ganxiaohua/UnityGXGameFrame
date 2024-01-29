@@ -13,7 +13,7 @@ namespace GameFrame
     /// <summary>
     /// ECSEntity挂载的一定是Context
     /// </summary>
-    public abstract class ECSEntity : IEntity
+    public abstract class ECSEntity : IEntity,IStartSystem
     {
         public IEntity.EntityStatus m_EntityStatus { get; set; }
 
@@ -27,15 +27,11 @@ namespace GameFrame
 
         private GXArray<ECSComponent> m_ECSComponentArray;
         
-        /// <summary>
-        /// 通用书初始化
-        /// </summary>
-        public virtual void Initialize()
+        public virtual void Start()
         {
             m_ECSComponentArray = ReferencePool.Acquire<GXArray<ECSComponent>>();
             m_ECSComponentArray.Init(GXComponents.ComponentTypes.Length);
         }
-
 
         /// <summary>
         /// 加入组件
@@ -52,7 +48,7 @@ namespace GameFrame
             }
 
             ECSComponent entity = m_ECSComponentArray.Add(index, type);
-            Context.ChangeAddRomoveChildOrCompone(this);
+            Context.ChangeAddRomoveChildOrCompone(this,false);
             return entity;
         }
 
@@ -70,7 +66,7 @@ namespace GameFrame
             }
 
             m_ECSComponentArray.Remove(index);
-            Context.ChangeAddRomoveChildOrCompone(this);
+            Context.ChangeAddRomoveChildOrCompone(this,false);
         }
 
         /// <summary>
@@ -141,12 +137,13 @@ namespace GameFrame
         public void ClearAllComponent()
         {
             ReferencePool.Release(m_ECSComponentArray);
-            ((Context) Parent).ChangeAddRomoveChildOrCompone(this);
+            ((Context) Parent).ChangeAddRomoveChildOrCompone(this,false);
         }
 
         public void Clear()
         {
             ClearAllComponent();
         }
+        
     }
 }

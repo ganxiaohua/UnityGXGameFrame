@@ -2,36 +2,38 @@
 
 namespace GameFrame
 {
-    public class Context : Entity,IStartSystem
+    public class Context : Entity, IStartSystem
     {
-        private Dictionary<int, HashSet<ECSEntity>> m_ECSEnitiyGroup =new();
-        private Dictionary<Matcher, Group> m_Groups = new ();
+        private Dictionary<int, HashSet<ECSEntity>> m_ECSEnitiyGroup = new();
+        private Dictionary<Matcher, Group> m_Groups = new();
         private List<Group>[] m_GroupsList;
-        
+
         public virtual void Start()
         {
             m_GroupsList = new List<Group>[GXComponents.ComponentTypes.Length];
         }
+
         public new T AddChild<T>() where T : ECSEntity
         {
             T ecsEntity = base.AddChild<T>();
             ecsEntity.SetContext(this);
-            ChangeAddRomoveChildOrCompone(ecsEntity);
             return ecsEntity;
         }
 
-        public  void RemoveChild(ECSEntity ecsEntity)
+        public void RemoveChild(ECSEntity ecsEntity)
         {
             base.RemoveChild(ecsEntity);
-            ChangeAddRomoveChildOrCompone(ecsEntity);
         }
 
-        public void ChangeAddRomoveChildOrCompone(ECSEntity ecsEntity)
+        public void ChangeAddRomoveChildOrCompone(ECSEntity ecsEntity, bool silently)
         {
             foreach (var group in m_Groups.Values)
             {
                 Group gourp = group;
-                gourp.HandleEntitySilently(ecsEntity);
+                if (silently)
+                    gourp.HandleEntitySilently(ecsEntity);
+                else
+                    gourp.HandleEntity(ecsEntity);
             }
         }
 
@@ -44,6 +46,7 @@ namespace GameFrame
                 {
                     grop.HandleEntitySilently(item as ECSEntity);
                 }
+
                 m_Groups.Add(matcher, grop);
                 foreach (var index in matcher.Indices)
                 {
@@ -51,6 +54,7 @@ namespace GameFrame
                     m_GroupsList[index].Add(grop);
                 }
             }
+
             return grop;
         }
 
@@ -61,7 +65,7 @@ namespace GameFrame
             {
                 foreach (var t in groupList)
                 {
-                    t.HandleEntitySilently(entity);
+                    t.HandleEntity(entity);
                 }
             }
         }
@@ -78,8 +82,8 @@ namespace GameFrame
                 // Matcher.RemoveMatcher(group.Key);
                 Group.RemoveGroup(group.Value);
             }
+
             m_Groups.Clear();
         }
-        
     }
 }

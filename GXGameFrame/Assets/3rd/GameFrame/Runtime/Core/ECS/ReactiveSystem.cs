@@ -14,7 +14,7 @@ namespace GameFrame
         /// <summary>
         /// 我想要关注的实体
         /// </summary>
-        public Collector m_Collector;
+        private Collector m_Collector;
 
         public virtual void Start(Context entity)
         {
@@ -27,7 +27,7 @@ namespace GameFrame
         
         protected abstract bool Filter(ECSEntity entity);
 
-        protected abstract void Update(List<ECSEntity> entities);
+        protected abstract void Execute(List<ECSEntity> entities);
 
         public void Update(float elapseSeconds, float realElapseSeconds)
         {
@@ -44,7 +44,7 @@ namespace GameFrame
 
             if (this.m_Buffer.Count == 0)
                 return;
-            Update(this.m_Buffer);
+            Execute(this.m_Buffer);
             this.m_Buffer.Clear();
             m_Collector.CollectedEntities.Clear();
         }

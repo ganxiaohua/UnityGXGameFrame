@@ -23,24 +23,38 @@ namespace GameFrame
             ReferencePool.Release(group);
         }
 
-        private void AddComponent(ECSEntity entity)
+        private void AddComponent(ECSEntity entity, bool silently)
         {
             m_EntitiesMap.Add(entity);
-            GroupAdd?.Invoke(this, entity);
+            if (!silently)
+                GroupAdd?.Invoke(this, entity);
         }
 
-        private void RemoveComponent(ECSEntity entity)
+        private void RemoveComponent(ECSEntity entity, bool silently)
         {
-            m_EntitiesMap.Remove(entity);
-            GroupRomve?.Invoke(this, entity);
+            bool b = m_EntitiesMap.Remove(entity);
+            if (!silently && b)
+                GroupRomve?.Invoke(this, entity);
         }
 
         public int HandleEntitySilently(ECSEntity entity)
         {
+            return DoEntity(entity, true);
+        }
+
+
+        public int HandleEntity(ECSEntity entity)
+        {
+            return DoEntity(entity, false);
+        }
+
+        
+        private int DoEntity(ECSEntity entity, bool silently)
+        {
             if (this.Matcher.Match(entity))
-                this.AddComponent(entity);
+                this.AddComponent(entity, silently);
             else
-                this.RemoveComponent(entity);
+                this.RemoveComponent(entity, silently);
             return m_EntitiesMap.Count;
         }
 
@@ -52,7 +66,7 @@ namespace GameFrame
             Matcher = null;
             m_EntitiesMap.Clear();
         }
-        
+
         public IEnumerable<ECSEntity> AsEnumerable() => (IEnumerable<ECSEntity>) this.EntitiesMap;
 
         public HashSet<ECSEntity>.Enumerator GetEnumerator() => this.EntitiesMap.GetEnumerator();

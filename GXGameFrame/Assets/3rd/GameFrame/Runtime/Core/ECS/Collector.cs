@@ -5,8 +5,13 @@ namespace GameFrame
     public class Collector : IReference
     {
         private HashSet<ECSEntity> m_CollectedEntities;
-        
+
         public HashSet<ECSEntity> CollectedEntities => m_CollectedEntities;
+
+        private Group[] m_Groups;
+
+        private GroupChanged AddChnage;
+        private GroupChanged RemoveChnage;
 
         public static Collector CreateCollector(Context context, params int[] indexs)
         {
@@ -24,15 +29,16 @@ namespace GameFrame
 
         private void InitCollector(Group[] group)
         {
-            m_CollectedEntities = new HashSet<ECSEntity>();
-            var temAdd = new GroupChanged(this.EventAdd);
-            var temremove = new GroupChanged(this.EventRemove);
-            foreach (var item in group)
+            m_Groups = group;
+            m_CollectedEntities ??= new HashSet<ECSEntity>();
+            AddChnage ??= this.EventAdd;
+            RemoveChnage ??= this.EventAdd;
+            foreach (var item in m_Groups)
             {
-                item.GroupAdd -= temAdd;
-                item.GroupAdd += temAdd;
-                item.GroupRomve -= temremove;
-                item.GroupRomve += temremove;
+                item.GroupAdd -= AddChnage;
+                item.GroupAdd += AddChnage;
+                item.GroupRomve -= RemoveChnage;
+                item.GroupRomve += RemoveChnage;
                 Add(item);
             }
         }
@@ -45,19 +51,24 @@ namespace GameFrame
             }
         }
 
+        /// <summary>
+        /// 当有组件加入的时候或者更新的时候触发
+        /// </summary>
+        /// <param name="group"></param>
+        /// <param name="ecsEntity"></param>
         private void EventAdd(Group group, ECSEntity ecsEntity)
         {
             m_CollectedEntities.Add(ecsEntity);
         }
 
-        private void EventRemove(Group group, ECSEntity ecsEntity)
-        {
-            m_CollectedEntities.Remove(ecsEntity);
-        }
 
         public void Clear()
         {
             m_CollectedEntities.Clear();
+            foreach (var item in m_Groups)
+            {
+                item.GroupAdd -= AddChnage;
+            }
         }
     }
 }
