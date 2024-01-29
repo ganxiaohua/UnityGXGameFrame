@@ -6,9 +6,9 @@ public static class Components {{
     {2}
     
     public static void SetComponent()
-    {
+    {{
        GXComponents.ComponentTypes = ComponentTypes;   
-    }
+    }}
 }}
 #
     public const int {0}= {1};#

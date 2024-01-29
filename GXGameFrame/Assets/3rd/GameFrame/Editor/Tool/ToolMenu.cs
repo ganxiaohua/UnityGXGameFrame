@@ -24,12 +24,7 @@ namespace GameFrame.Editor
         {
             AutoCreate.AutoCreateScript();
         }
-
-        [MenuItem("GX框架工具/生成System绑定脚本", false, 1)]
-        public static void AutoCreateSystemScript()
-        {
-            AutoCreateSystem.AutoCreateScript();
-        }
+        
         [MenuItem("GX框架工具/事件绑定", false, 3)]
         public static void AutoEventBind()
         {

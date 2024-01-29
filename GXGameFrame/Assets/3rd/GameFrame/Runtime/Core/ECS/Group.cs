@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Principal;
+﻿using System.Collections.Generic;
 
 namespace GameFrame
 {
@@ -26,20 +23,16 @@ namespace GameFrame
             ReferencePool.Release(group);
         }
 
-        public void AddComponent(ECSEntity entity)
+        private void AddComponent(ECSEntity entity)
         {
-            if (m_EntitiesMap.Add(entity))
-            {
-                GroupAdd?.Invoke(this, entity);
-            }
+            m_EntitiesMap.Add(entity);
+            GroupAdd?.Invoke(this, entity);
         }
 
-        public void RemoveComponent(ECSEntity entity)
+        private void RemoveComponent(ECSEntity entity)
         {
-            if (m_EntitiesMap.Remove(entity))
-            {
-                GroupRomve?.Invoke(this, entity);
-            }
+            m_EntitiesMap.Remove(entity);
+            GroupRomve?.Invoke(this, entity);
         }
 
         public int HandleEntitySilently(ECSEntity entity)
@@ -59,5 +52,9 @@ namespace GameFrame
             Matcher = null;
             m_EntitiesMap.Clear();
         }
+        
+        public IEnumerable<ECSEntity> AsEnumerable() => (IEnumerable<ECSEntity>) this.EntitiesMap;
+
+        public HashSet<ECSEntity>.Enumerator GetEnumerator() => this.EntitiesMap.GetEnumerator();
     }
 }

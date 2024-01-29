@@ -34,7 +34,7 @@ namespace GameFrame
         {
         }
 
-        public virtual void Clear()
+        public override void Clear()
         {
             
         }

@@ -49,9 +49,6 @@ namespace GameFrame
         /// </summary>
         public UIEntity Window;
 
-        public GComponent ParnetRoot;
-
-
         public static UINode CreateEmptyNode(Type windowType)
         {
             UINode uiNode = ReferencePool.Acquire<UINode>();

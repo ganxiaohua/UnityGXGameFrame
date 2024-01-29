@@ -236,12 +236,9 @@ public class CreateUIScriptOdin : MonoBehaviour
         void ViewFunc(string codepath, string classname)
         {
             string Text = "";
-            string fields = "";
             for (int i = 0; i < bindList.Count; i++)
             {
                 var v = bindList[i];
-                string name = v.FieldName;
-
                 Text += CreateEnitiyAuto.CreateUIAutoComText(v.TypeName, v.FieldName,v.Path);
             }
 

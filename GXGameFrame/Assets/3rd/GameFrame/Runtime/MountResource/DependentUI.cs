@@ -5,39 +5,39 @@ namespace GameFrame
 {
     public class DependentUI : Entity, IStartSystem<string,string>, IClearSystem
     {
-        private DefaultAssetReference DefaultAssetReference;
+        private DefaultAssetReference m_DefaultAssetReference;
         public GObject Window;
-        private UniTaskCompletionSource waitLoadTask;
+        private UniTaskCompletionSource m_WaitLoadTask;
 
         public void Start(string packageName,string windowName)
         {
-            DefaultAssetReference = new DefaultAssetReference();
-            waitLoadTask = new UniTaskCompletionSource();
+            m_DefaultAssetReference = new DefaultAssetReference();
+            m_WaitLoadTask = new UniTaskCompletionSource();
             Init(packageName, windowName).Forget();
         }
 
         private async UniTaskVoid Init(string packageName, string windowName)
         {
-            await UILoader.Instance.AddPackage(packageName, DefaultAssetReference);
+            await UILoader.Instance.AddPackage(packageName, m_DefaultAssetReference);
             Window = UIPackage.CreateObject(packageName, windowName);
             var succ = await UILoader.Instance.LoadOver(packageName);
             if (succ)
             {
-                waitLoadTask.TrySetResult();
+                m_WaitLoadTask.TrySetResult();
                 return;
             }
-            waitLoadTask.TrySetCanceled();
+            m_WaitLoadTask.TrySetCanceled();
         }
         
         public  async UniTask<bool> WaitLoad()
         {
-            if (waitLoadTask == null)
+            if (m_WaitLoadTask == null)
             {
                 return false;
             }
 
-            await waitLoadTask.Task.SuppressCancellationThrow();
-            if (waitLoadTask.GetStatus(0) == UniTaskStatus.Succeeded)
+            await m_WaitLoadTask.Task.SuppressCancellationThrow();
+            if (m_WaitLoadTask.GetStatus(0) == UniTaskStatus.Succeeded)
             {
                 return true;
             }
@@ -47,7 +47,7 @@ namespace GameFrame
         public override void Clear()
         {
             base.Clear();
-            waitLoadTask?.TrySetCanceled();
+            m_WaitLoadTask?.TrySetCanceled();
         }
     }
 }

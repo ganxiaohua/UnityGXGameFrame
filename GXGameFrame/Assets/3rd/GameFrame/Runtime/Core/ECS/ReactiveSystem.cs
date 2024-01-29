@@ -16,7 +16,6 @@ namespace GameFrame
         /// </summary>
         public Collector m_Collector;
 
-        // private = new List<ECSEntity>();
         public virtual void Start(Context entity)
         {
             m_Buffer = new List<ECSEntity>();
@@ -25,12 +24,15 @@ namespace GameFrame
         }
 
         protected abstract Collector GetTrigger(Context context);
+        
         protected abstract bool Filter(ECSEntity entity);
 
         protected abstract void Update(List<ECSEntity> entities);
 
         public void Update(float elapseSeconds, float realElapseSeconds)
         {
+            if (m_Collector.CollectedEntities.Count == 0)
+                return;
             foreach (ECSEntity collectedEntity in m_Collector.CollectedEntities)
             {
                 var ecsentity = collectedEntity;
@@ -44,6 +46,7 @@ namespace GameFrame
                 return;
             Update(this.m_Buffer);
             this.m_Buffer.Clear();
+            m_Collector.CollectedEntities.Clear();
         }
 
         public abstract void Clear();

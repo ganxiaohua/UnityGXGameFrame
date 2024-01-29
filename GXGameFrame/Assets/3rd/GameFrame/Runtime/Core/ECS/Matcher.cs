@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Unity.VisualScripting;
+﻿using System.Collections.Generic;
 
 namespace GameFrame
 {
@@ -29,20 +27,7 @@ namespace GameFrame
 
             return hash;
         }
-
-
-        // public override int GetHashCode()
-        // {
-        //     if (!this.m_isHashCached)
-        //     {
-        //         this.m_hash = Matcher.applyHash(
-        //             Matcher.applyHash(Matcher.applyHash(this.GetType().GetHashCode(), this.m_AllOfIndices, 3, 53), this.m_AnyOfIndices, 307,
-        //                 367), this.m_NoneOfIndices, 647, 683);
-        //         this.m_isHashCached = true;
-        //     }
-        //     return this.m_hash;
-        // }
-
+        
         private int m_hash;
 
         //以下三个只会选择其中一个
@@ -54,6 +39,9 @@ namespace GameFrame
 
         //除了这个之外
         private int[] m_NoneOfIndices;
+
+
+        public HashSet<int> Indices { get; } = new HashSet<int>();
 
         //用于查看
         private string[] m_IndicesName;
@@ -74,9 +62,7 @@ namespace GameFrame
                 for (int i = 0; i < count; i++)
                 {
                     matcher.m_AllOfIndices[i] = snitiyHasCodes[i];
-#if UNITY_EDITOR
-                    // matcher.m_IndicesName[i] = Components.ComponentTypes[snitiyHasCodes[i]].Name;
-#endif
+                    matcher.Indices.Add(snitiyHasCodes[i]);
                 }
 
                 matcher.m_hash = hascode;
@@ -100,9 +86,7 @@ namespace GameFrame
                 for (int i = 0; i < count; i++)
                 {
                     matcher.m_AnyOfIndices[i] = snitiyHasCodes[i];
-#if UNITY_EDITOR
-                    // matcher.m_IndicesName[i] = Components.ComponentTypes[snitiyHasCodes[i]].Name;
-#endif
+                    matcher.Indices.Add(snitiyHasCodes[i]);
                 }
 
                 Matchers.Add(hascode, matcher);
@@ -125,9 +109,7 @@ namespace GameFrame
                 for (int i = 0; i < count; i++)
                 {
                     matcher.m_NoneOfIndices[i] = snitiyHasCodes[i];
-#if UNITY_EDITOR
-                    // matcher.m_IndicesName[i] = Components.ComponentTypes[snitiyHasCodes[i]].Name;
-#endif
+                    matcher.Indices.Add(snitiyHasCodes[i]);
                 }
                 Matchers.Add(hascode, matcher);
             }

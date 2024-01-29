@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Text;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using Sirenix.Utilities.Editor;
+using System.Text;
 using UnityEditor;
-using UnityEngine;
 
 namespace GameFrame.Editor
 {
@@ -40,7 +37,7 @@ namespace GameFrame.Editor
             var assembly = AppDomain.CurrentDomain.GetAssemblies();
             foreach (var item in assembly)
             {
-                if (item.GetName().Name == "Assembly-CSharp")
+                if (item.GetName().Name == "GamePlay.Runtime" || item.GetName().Name == "GameFrame.Runtime")
                 {
                     FindAllECSCom(item);
                 }
@@ -49,13 +46,13 @@ namespace GameFrame.Editor
 
         public static void LoadText()
         {
-            string add = EditorString.GameFramePath + "Editor/Text/Add.txt";
+            string add = EditorString.GameFramePath + "Editor/Text/ECS/Add.txt";
             string cls = EditorString.GameFramePath + "Editor/Text/Class.txt";
-            string addparameter = EditorString.GameFramePath + "Editor/Text/AddParameter.txt";
-            string get = EditorString.GameFramePath + "Editor/Text/Get.txt";
-            string set = EditorString.GameFramePath + "Editor/Text/Set.txt";
-            string eventClass = EditorString.GameFramePath + "Editor/Text/EventClass.txt";
-            string Event = EditorString.GameFramePath + "Editor/Text/Event.txt";
+            string addparameter = EditorString.GameFramePath + "Editor/Text/ECS/AddParameter.txt";
+            string get = EditorString.GameFramePath + "Editor/Text/ECS/Get.txt";
+            string set = EditorString.GameFramePath + "Editor/Text/ECS/Set.txt";
+            string eventClass = EditorString.GameFramePath + "Editor/Text/ECS/EventClass.txt";
+            string Event = EditorString.GameFramePath + "Editor/Text/ECS/Event.txt";
             string ECSALLComponents = EditorString.GameFramePath + "Editor/Text/ECS/Components.txt";
 
             string stradd = File.ReadAllText(add);
@@ -99,7 +96,7 @@ namespace GameFrame.Editor
             ComponentsSubIndex = 0;
             ComponentsTypeSub = "";
             ComponentsSub = "";
-            Directory.Delete(EditorString.ECSOutPutPath,true);
+            // Directory.Delete(EditorString.ECSOutPutPath,true);
             foreach (var tp in types)
             {
                 if (typeof(ECSComponent).IsAssignableFrom(tp) && tp.IsClass)
