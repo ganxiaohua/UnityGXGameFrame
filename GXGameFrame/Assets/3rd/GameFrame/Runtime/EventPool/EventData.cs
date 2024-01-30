@@ -13,7 +13,7 @@ namespace GameFrame
         /// <summary>
         /// 标记事件和对应的实体
         /// </summary>
-        private Dictionary<Type, HashSet<IEntity>> eventEnitiyDic = new();
+        private Dictionary<Type, QueryList<IEntity>> eventEnitiyDic = new();
 
         public void AddSourceDic(Type key, Type vale)
         {
@@ -43,7 +43,7 @@ namespace GameFrame
             {
                 if (!eventEnitiyDic.TryGetValue(eventType, out var entities))
                 {
-                    entities = new HashSet<IEntity>();
+                    entities = new QueryList<IEntity>();
                     eventEnitiyDic.Add(eventType, entities);
                 }
 
@@ -69,19 +69,13 @@ namespace GameFrame
                 {
                     continue;
                 }
-
                 entities.Remove(entity);
             }
         }
 
-        public HashSet<IEntity> GetEnitiy(Type eventType)
+        public QueryList<IEntity> GetEnitiy(Type eventType)
         {
-            if (!eventEnitiyDic.TryGetValue(eventType, out var entities))
-            {
-                return null;
-            }
-
-            return entities;
+            return eventEnitiyDic.GetValueOrDefault(eventType);
         }
     }
 }

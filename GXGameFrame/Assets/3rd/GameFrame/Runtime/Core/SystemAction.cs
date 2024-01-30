@@ -93,36 +93,28 @@ namespace GameFrame
         }
 
 
-        public static void SystemUpdate(this List<SystemEnitiy> ets, float elapseSeconds, float realElapseSeconds)
+        public static void SystemUpdate(this QueryList<SystemEnitiy> ets, float elapseSeconds, float realElapseSeconds)
         {
-            int count = ets.Count;
-            for (int i = 0; i < count; i++)
+            foreach (var es in ets)
             {
-                SystemEnitiy es = ets[i];
                 ((IUpdateSystem) es.SystemObject.System).Update(elapseSeconds, realElapseSeconds);
-                count = ets.Count;
             }
         }
 
-        public static void SystemLateUpdate(this List<SystemEnitiy> ets, float elapseSeconds, float realElapseSeconds)
+        public static void SystemLateUpdate(this QueryList<SystemEnitiy> ets, float elapseSeconds, float realElapseSeconds)
         {
-            int count = ets.Count;
-            for (int i = 0; i < count; i++)
+            
+            foreach (var es in ets)
             {
-                SystemEnitiy es = ets[i];
                 ((ILateUpdateSystem) es.SystemObject.System).LateUpdate(elapseSeconds, realElapseSeconds);
-                count = ets.Count;
             }
         }
 
-        public static void SystemFixedUpdate(this List<SystemEnitiy> ets, float elapseSeconds, float realElapseSeconds)
+        public static void SystemFixedUpdate(this QueryList<SystemEnitiy> ets, float elapseSeconds, float realElapseSeconds)
         {
-            int count = ets.Count;
-            for (int i = 0; i < count; i++)
+            foreach (var es in ets)
             {
-                SystemEnitiy es = ets[i];
                 ((IFixedUpdateSystem) es.SystemObject.System).FixedUpdate(elapseSeconds, realElapseSeconds);
-                count = ets.Count;
             }
         }
 

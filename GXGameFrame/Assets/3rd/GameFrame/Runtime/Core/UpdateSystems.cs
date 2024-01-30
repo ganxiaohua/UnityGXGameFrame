@@ -4,16 +4,16 @@ namespace GameFrame
 {
     public class UpdateSystems
     {
-        private List<SystemEnitiy>[] m_UpdateSystemEnitiys;
+        private QueryList<SystemEnitiy>[] m_UpdateSystemEnitiys;
 
         
-        public List<SystemEnitiy>[] UpdateSystemEnitiys => m_UpdateSystemEnitiys;
+        public QueryList<SystemEnitiy>[] UpdateSystemEnitiys => m_UpdateSystemEnitiys;
 
         private DDictionary<IEntity, ISystem, SystemEnitiy> m_Index = new();
 
         public UpdateSystems()
         {
-            m_UpdateSystemEnitiys = new[] {new List<SystemEnitiy>(256), new List<SystemEnitiy>(256), new List<SystemEnitiy>(256)};
+            m_UpdateSystemEnitiys = new[] {new QueryList<SystemEnitiy>(256), new QueryList<SystemEnitiy>(256), new QueryList<SystemEnitiy>(256)};
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace GameFrame
                     foreach (var systemObject in systemdic)
                     {
                         UpdateType updateType = systemObject.Key.IsUpdateSystem();
-                        m_UpdateSystemEnitiys[(int)updateType].RemoveSwapBack(systemObject.Value);
+                        m_UpdateSystemEnitiys[(int)updateType].Remove(systemObject.Value);
                     }
 
                     m_Index.RemoveTkey(enitity);
@@ -96,7 +96,7 @@ namespace GameFrame
                     UpdateType updateType = system.IsUpdateSystem();
                     if (updateType != UpdateType.Node)
                     {
-                        m_UpdateSystemEnitiys[(int) updateType].RemoveSwapBack(systemobejct);
+                        m_UpdateSystemEnitiys[(int) updateType].Remove(systemobejct);
                         m_Index.RemoveKkey(enitity, system);
                     }
                 }
