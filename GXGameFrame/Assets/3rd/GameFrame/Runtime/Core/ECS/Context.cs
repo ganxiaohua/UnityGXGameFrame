@@ -23,6 +23,7 @@ namespace GameFrame
         public void RemoveChild(ECSEntity ecsEntity)
         {
             base.RemoveChild(ecsEntity);
+            ChangeAddRomoveChildOrCompone(ecsEntity, false);
         }
 
         public void ChangeAddRomoveChildOrCompone(ECSEntity ecsEntity, bool silently)
@@ -78,11 +79,9 @@ namespace GameFrame
             base.Clear();
             foreach (var group in m_Groups)
             {
-                //Matcher 匹配器其他的Context可能也会用到不需要删除.
-                // Matcher.RemoveMatcher(group.Key);
+                Matcher.RemoveMatcher(group.Key);
                 Group.RemoveGroup(group.Value);
             }
-
             m_Groups.Clear();
         }
     }

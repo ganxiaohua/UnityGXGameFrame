@@ -1,36 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace GameFrame
 {
-    public interface IAllOfMatcher
+    public class Matcher : IReference
     {
-    }
+        private int m_Hash;
+        private bool m_IsHashCached = false;
 
-    public interface IAnyOfMatcher
-    {
-    }
-
-    public interface INoneOfIndices
-    {
-    }
-
-    public class Matcher : IAllOfMatcher, INoneOfIndices, IAnyOfMatcher, IReference
-    {
-        private static int ApplyHash(int hash, int[] indices, int i1, int i2)
-        {
-            if (indices != null)
-            {
-                for (int index = 0; index < indices.Length; ++index)
-                    hash ^= indices[index] * i1;
-                hash ^= indices.Length * i2;
-            }
-
-            return hash;
-        }
         
-        private int m_hash;
-
-        //以下三个只会选择其中一个
         //全部包含
         private int[] m_AllOfIndices;
 
@@ -40,88 +18,64 @@ namespace GameFrame
         //除了这个之外
         private int[] m_NoneOfIndices;
 
-
         public HashSet<int> Indices { get; } = new HashSet<int>();
 
         //用于查看
         private string[] m_IndicesName;
 
-        private static Dictionary<int, Matcher> Matchers = new Dictionary<int, Matcher>();
-
-        public static Matcher SetAllOfIndices(params int[] snitiyHasCodes)
+        private int[] Set(params int[] snitiyHasCodes)
         {
-            int hascode = ApplyHash(typeof(Matcher).GetHashCode(), snitiyHasCodes, 3, 53);
-            if (!Matchers.TryGetValue(hascode, out Matcher matcher))
+            Array.Sort(snitiyHasCodes);
+            int count = snitiyHasCodes.Length;
+            var arr = new int[count];
+            for (int i = 0; i < count; i++)
             {
-                int count = snitiyHasCodes.Length;
-                matcher = CreateMatcher();
-                matcher.m_AllOfIndices = new int[count];
-#if UNITY_EDITOR
-                matcher.m_IndicesName = new string[count];
-#endif
-                for (int i = 0; i < count; i++)
-                {
-                    matcher.m_AllOfIndices[i] = snitiyHasCodes[i];
-                    matcher.Indices.Add(snitiyHasCodes[i]);
-                }
-
-                matcher.m_hash = hascode;
-                Matchers.Add(hascode, matcher);
+                arr[i] = snitiyHasCodes[i];
+                Indices.Add(snitiyHasCodes[i]);
             }
-
-            return matcher;
+            return arr;
         }
 
-        public static Matcher SetAnyOfIndices(params int[] snitiyHasCodes)
-        {
-            int hascode = ApplyHash(typeof(Matcher).GetHashCode(), snitiyHasCodes, 647, 683);
-            if (!Matchers.TryGetValue(hascode, out Matcher matcher))
-            {
-                int count = snitiyHasCodes.Length;
-                matcher = CreateMatcher();
-                matcher.m_AnyOfIndices = new int[count];
-#if UNITY_EDITOR
-                matcher.m_IndicesName = new string[count];
-#endif
-                for (int i = 0; i < count; i++)
-                {
-                    matcher.m_AnyOfIndices[i] = snitiyHasCodes[i];
-                    matcher.Indices.Add(snitiyHasCodes[i]);
-                }
-
-                Matchers.Add(hascode, matcher);
-            }
-
-            return matcher;
-        }
-
-        public static Matcher SetNonefIndices(params int[] snitiyHasCodes)
-        {
-            int hascode = ApplyHash(typeof(Matcher).GetHashCode(), snitiyHasCodes, 307, 367);
-            if (!Matchers.TryGetValue(hascode, out Matcher matcher))
-            {
-                int count = snitiyHasCodes.Length;
-                matcher = CreateMatcher();
-                matcher.m_NoneOfIndices = new int[count];
-#if UNITY_EDITOR
-                matcher.m_IndicesName = new string[count];
-#endif
-                for (int i = 0; i < count; i++)
-                {
-                    matcher.m_NoneOfIndices[i] = snitiyHasCodes[i];
-                    matcher.Indices.Add(snitiyHasCodes[i]);
-                }
-                Matchers.Add(hascode, matcher);
-            }
-
-            return matcher;
-        }
-
-        private static Matcher CreateMatcher()
+        public static Matcher SetAll(params int[] snitiyHasCodes)
         {
             Matcher matcher = ReferencePool.Acquire<Matcher>();
+            matcher.m_AllOfIndices = matcher.Set(snitiyHasCodes);
             return matcher;
         }
+        
+        public static Matcher SetAny(params int[] snitiyHasCodes)
+        {
+            Matcher matcher = ReferencePool.Acquire<Matcher>();
+            matcher.m_AnyOfIndices = matcher.Set(snitiyHasCodes);
+            return matcher;
+        }
+        
+        public static Matcher SetNoneOf(params int[] snitiyHasCodes)
+        {
+            Matcher matcher = ReferencePool.Acquire<Matcher>();
+            matcher.m_NoneOfIndices = matcher.Set(snitiyHasCodes);
+            return matcher;
+        }
+
+        public Matcher All(params int[] snitiyHasCodes)
+        {
+            m_AllOfIndices = Set(snitiyHasCodes);
+            return this;
+        }
+        
+        public Matcher Any(params int[] snitiyHasCodes)
+        {
+            m_AnyOfIndices = Set(snitiyHasCodes);
+            return this;
+        }
+        
+        public Matcher NoneOf(params int[] snitiyHasCodes)
+        {
+            m_NoneOfIndices = Set(snitiyHasCodes);
+            return this;
+        }
+
+
 
         public static void RemoveMatcher(Matcher matcher)
         {
@@ -139,10 +93,60 @@ namespace GameFrame
 
         public void Clear()
         {
-            Matchers.Remove(this.m_hash);
             m_NoneOfIndices = null;
             m_AllOfIndices = null;
             m_NoneOfIndices = null;
+            Indices.Clear();
+            m_IsHashCached = false;
+        }
+
+        private int ApplyHash(int hash, int[] indices, int i1, int i2)
+        {
+            if (indices != null)
+            {
+                for (int index = 0; index < indices.Length; ++index)
+                    hash ^= (indices[index] * i1);
+                hash ^= (indices.Length * i2);
+            }
+            return hash;
+        }
+
+        public override int GetHashCode()
+        {
+            if (!this.m_IsHashCached)
+            {
+                this.m_Hash = ApplyHash(ApplyHash(ApplyHash(this.GetType().GetHashCode(), this.m_AllOfIndices, 3, 53), this.m_AnyOfIndices, 307, 367),
+                    this.m_NoneOfIndices, 647, 683);
+                this.m_IsHashCached = true;
+            }
+
+            return this.m_Hash;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || obj.GetType() != this.GetType() || obj.GetHashCode() != this.GetHashCode())
+                return false;
+            Matcher matcher = (Matcher) obj;
+            return equalIndices(matcher.m_AllOfIndices, this.m_AllOfIndices) && equalIndices(matcher.m_AnyOfIndices, m_AnyOfIndices) &&
+                   equalIndices(matcher.m_NoneOfIndices, this.m_NoneOfIndices);
+        }
+
+        private bool equalIndices(int[] i1, int[] i2)
+        {
+            if (i1 == null != (i2 == null))
+                return false;
+            if (i1 == null)
+                return true;
+            if (i1.Length != i2.Length)
+                return false;
+            for (int index = 0; index < i1.Length; ++index)
+            {
+                if (i1[index] != i2[index])
+                    return false;
+            }
+
+            return true;
         }
     }
 }

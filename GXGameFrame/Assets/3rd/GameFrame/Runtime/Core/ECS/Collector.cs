@@ -18,7 +18,7 @@ namespace GameFrame
             Group[] groups = new Group[indexs.Length];
             for (int i = 0; i < indexs.Length; i++)
             {
-                Matcher matcher = Matcher.SetAllOfIndices(indexs[i]);
+                Matcher matcher = Matcher.SetAll(indexs[i]);
                 groups[i] = context.GetGroup(matcher);
             }
 
@@ -32,7 +32,7 @@ namespace GameFrame
             m_Groups = group;
             m_CollectedEntities ??= new HashSet<ECSEntity>();
             AddChnage ??= this.EventAdd;
-            RemoveChnage ??= this.EventAdd;
+            RemoveChnage ??= this.EventRemove;
             foreach (var item in m_Groups)
             {
                 item.GroupAdd -= AddChnage;
@@ -50,15 +50,15 @@ namespace GameFrame
                 m_CollectedEntities.Add(item);
             }
         }
-
-        /// <summary>
-        /// 当有组件加入的时候或者更新的时候触发
-        /// </summary>
-        /// <param name="group"></param>
-        /// <param name="ecsEntity"></param>
+        
         private void EventAdd(Group group, ECSEntity ecsEntity)
         {
             m_CollectedEntities.Add(ecsEntity);
+        }
+        
+        private void EventRemove(Group group, ECSEntity ecsEntity)
+        {
+            m_CollectedEntities.Remove(ecsEntity);
         }
 
 
@@ -68,6 +68,7 @@ namespace GameFrame
             foreach (var item in m_Groups)
             {
                 item.GroupAdd -= AddChnage;
+                item.GroupRomve -= RemoveChnage;
             }
         }
     }

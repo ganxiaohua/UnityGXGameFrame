@@ -4,7 +4,7 @@ namespace GameFrame
 {
     public class Group : IReference
     {
-        private Matcher Matcher;
+        private Matcher m_Matcher;
         private HashSet<ECSEntity> m_EntitiesMap;
         public event GroupChanged GroupAdd;
         public event GroupChanged GroupRomve;
@@ -13,7 +13,7 @@ namespace GameFrame
         public static Group CreateGroup(Matcher matcher)
         {
             Group Group = ReferencePool.Acquire<Group>();
-            Group.Matcher = matcher;
+            Group.m_Matcher = matcher;
             Group.m_EntitiesMap = new();
             return Group;
         }
@@ -51,7 +51,7 @@ namespace GameFrame
         
         private int DoEntity(ECSEntity entity, bool silently)
         {
-            if (this.Matcher.Match(entity))
+            if (this.m_Matcher.Match(entity))
                 this.AddComponent(entity, silently);
             else
                 this.RemoveComponent(entity, silently);
@@ -63,7 +63,7 @@ namespace GameFrame
         {
             GroupAdd -= GroupAdd;
             GroupRomve -= GroupRomve;
-            Matcher = null;
+            m_Matcher = null;
             m_EntitiesMap.Clear();
         }
 
