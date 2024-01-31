@@ -37,9 +37,11 @@ namespace GameFrame.Editor
             var assembly = AppDomain.CurrentDomain.GetAssemblies();
             foreach (var item in assembly)
             {
-                if (item.GetName().Name == "GamePlay.Runtime" || item.GetName().Name == "GameFrame.Runtime")
+                foreach (var name in  EditorString.AssemblyNames)
                 {
-                    FindAllECSCom(item);
+                    if (item.GetName().Name != name) continue;
+                    FindAllECSCom(item); 
+                    break;
                 }
             }
         }

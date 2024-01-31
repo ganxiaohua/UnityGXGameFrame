@@ -1,10 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 
 namespace GameFrame
 {
-    public class DDictionary<T, K, V> : IEnumerable<KeyValuePair<T, Dictionary<K, V>>>
+    public class DDictionary<T, K, V> 
     {
         private readonly Dictionary<T, Dictionary<K, V>> DDTKV = new();
 
@@ -86,13 +85,8 @@ namespace GameFrame
             return true;
         }
 
-
-        IEnumerator<KeyValuePair<T, Dictionary<K, V>>> IEnumerable<KeyValuePair<T, Dictionary<K, V>>>.GetEnumerator()
-        {
-            return DDTKV.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
+        
+        public  IEnumerator GetEnumerator()
         {
             return DDTKV.GetEnumerator();
         }

@@ -19,11 +19,14 @@ namespace GameFrame.Editor
             var assembly = AppDomain.CurrentDomain.GetAssemblies();
             foreach (var item in assembly)
             {
-                if (item.GetName().Name == "GamePlay.Runtime" || item.GetName().Name == "GameFrame.Runtime")
+                foreach (var name in  EditorString.AssemblyNames)
                 {
-                    FindEnitiyClass(item);
+                    if (item.GetName().Name != name) continue;
+                    FindEnitiyClass(item); 
+                    break;
                 }
             }
+
 
             Create();
         }
@@ -48,7 +51,7 @@ namespace GameFrame.Editor
 
         private static void PushDic(Assembly assembly, Type type)
         {
-            var vb = type.GetCustomAttribute<SystemBindAttribute>();
+            var vb = CustomAttributeExtensions.GetCustomAttribute<SystemBindAttribute>(type);
             if (vb != null)
             {
                 Type baseType = type.BaseType;

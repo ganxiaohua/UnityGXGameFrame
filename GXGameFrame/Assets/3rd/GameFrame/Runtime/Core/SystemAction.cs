@@ -17,24 +17,26 @@ namespace GameFrame
 
             return false;
         }
-        
-        public static bool SystemStart<P1>(this ISystem system,P1 p1)
+
+        public static bool SystemStart<P1>(this ISystem system, P1 p1)
         {
             if (system is IStartSystem<P1> ecsinitsystem)
             {
                 ecsinitsystem.Start(p1);
                 return true;
             }
+
             return false;
         }
-        
-        public static bool SystemStart<P1,P2>(this ISystem system,P1 p1,P2 p2)
+
+        public static bool SystemStart<P1, P2>(this ISystem system, P1 p1, P2 p2)
         {
-            if (system is IStartSystem<P1,P2> ecsinitsystem)
+            if (system is IStartSystem<P1, P2> ecsinitsystem)
             {
-                ecsinitsystem.Start(p1,p2);
+                ecsinitsystem.Start(p1, p2);
                 return true;
             }
+
             return false;
         }
 
@@ -61,7 +63,7 @@ namespace GameFrame
 
             return false;
         }
-        
+
 
         public static bool SystemHide(this ISystem system)
         {
@@ -89,6 +91,7 @@ namespace GameFrame
             {
                 return UpdateType.FixedUpdate;
             }
+
             return UpdateType.Node;
         }
 
@@ -103,7 +106,6 @@ namespace GameFrame
 
         public static void SystemLateUpdate(this QueryList<SystemEnitiy> ets, float elapseSeconds, float realElapseSeconds)
         {
-            
             foreach (var es in ets)
             {
                 ((ILateUpdateSystem) es.SystemObject.System).LateUpdate(elapseSeconds, realElapseSeconds);

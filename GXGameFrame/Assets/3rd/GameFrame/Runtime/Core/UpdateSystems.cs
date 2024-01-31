@@ -5,7 +5,6 @@ namespace GameFrame
     public class UpdateSystems
     {
         private QueryList<SystemEnitiy>[] m_UpdateSystemEnitiys;
-
         
         public QueryList<SystemEnitiy>[] UpdateSystemEnitiys => m_UpdateSystemEnitiys;
 
