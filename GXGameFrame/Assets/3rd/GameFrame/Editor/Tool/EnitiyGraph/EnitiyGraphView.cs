@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -20,16 +22,26 @@ namespace GameFrame.Editor
 
         private int m_FlootWidth;
 
+        public EnitiyNode SelectEnitiyNode;
+
+        private GeneralGraphGroup group;
+
+        private float m_LastTime;
+
+        private List<string> tempComList = new List<string>();
+
         public void Init(EditorWindow editorWindow)
         {
-            base.Init();
+            base.Init(null);
             m_FlootHeght = 200;
             m_FlootWidth = 200;
-            m_GeneralGraphView = AddComponent<GeneralGraphView>();
+            m_GeneralGraphView = new GeneralGraphView();
             m_GeneralGraphView.Init();
             m_NodeDic = new();
             m_EditorWindow = editorWindow;
             editorWindow.rootVisualElement.Add(m_GeneralGraphView);
+            EditorApplication.update += OnEditorUpdate;
+            EditorApplication.playModeStateChanged += PlayModeStateChange;
         }
 
         public override void Show()
@@ -51,6 +63,11 @@ namespace GameFrame.Editor
             base.Clear();
             m_EditorWindow.rootVisualElement.Remove(m_GeneralGraphView);
             m_NodeDic.Clear();
+            m_GeneralGraphView.Clear();
+            group.Clear();
+            group = null;
+            EditorApplication.update -= OnEditorUpdate;
+            EditorApplication.playModeStateChanged -= PlayModeStateChange;
         }
 
         public void RemoveAll()
@@ -91,13 +108,14 @@ namespace GameFrame.Editor
                 ? root.entity.GetType().Name
                 : $"{root.entity.GetType().Name} ({root.entity.Name})";
             m_NodeDic.Add(graphNode, root);
-            graphNode.Init(m_GeneralGraphView,root,graphNodeName, new Rect(root.Floor * (m_FlootHeght + 50), m_FlootHeght + root.Grid * 100, m_FlootWidth - 50, 100));
+            graphNode.Init(this, root, graphNodeName, new Rect(root.Floor * (m_FlootHeght + 50), m_FlootHeght + root.Grid * 100, m_FlootWidth - 50, 100));
             var outPort = graphNode.AddProt("", typeof(bool), Direction.Output);
             root.GraphNode = graphNode;
             graphNode.RefreshExpandedState();
             graphNode.RefreshPorts();
-            graphNode.SetColor(root.entity is ECSEntity ? new Color(0.5f,0.2f,0.1f) : Color.gray);
+            graphNode.SetColor(root.entity is ECSEntity ? new Color(0.5f, 0.2f, 0.1f) : Color.gray);
         }
+
 
         private void CreateEnitiyNode(EnitiyNode node)
         {
@@ -110,7 +128,8 @@ namespace GameFrame.Editor
                     : $"{enititnode.entity.GetType().Name} ({enititnode.entity.Name})";
                 graphNode.AddButton("关注", FollowNode);
                 m_NodeDic.Add(graphNode, enititnode);
-                graphNode.Init(m_GeneralGraphView,enititnode,graphNodeName, new Rect(enititnode.Floor * (m_FlootHeght + 50), m_FlootHeght + enititnode.Grid * 100, m_FlootWidth - 50, 100));
+                graphNode.Init(this, enititnode, graphNodeName,
+                    new Rect(enititnode.Floor * (m_FlootHeght + 50), m_FlootHeght + enititnode.Grid * 100, m_FlootWidth - 50, 100));
                 var inPort = graphNode.AddProt("", typeof(bool), Direction.Input);
                 var outPort = graphNode.AddProt("", typeof(bool), Direction.Output);
                 enititnode.GraphNode = graphNode;
@@ -119,9 +138,51 @@ namespace GameFrame.Editor
                 m_GeneralGraphView.AddElement(graphNode);
                 m_GeneralGraphView.AddEdgeByPorts(node.GraphNode.OutPort, inPort, PickingMode.Ignore);
                 CreateEnitiyNode(enititnode);
-                graphNode.SetColor(enititnode.entity is ECSEntity ? new Color(0.5f,0.2f,0.1f) : Color.gray);
+                graphNode.SetColor(enititnode.entity is ECSEntity ? new Color(0.5f, 0.2f, 0.1f) : Color.gray);
             }
         }
-        
+
+        private void OnEditorUpdate()
+        {
+            if (Time.realtimeSinceStartup - m_LastTime > 0.1f && SelectEnitiyNode!=null)
+            {
+                m_LastTime = Time.realtimeSinceStartup;
+                if (group == null)
+                {
+                    group = AddComponent<GeneralGraphGroup>(m_GeneralGraphView);
+                }
+
+                tempComList.Clear();
+                if (SelectEnitiyNode.entity is ECSEntity ecs)
+                {
+                    List<int> comIndexs = ecs.ECSComponentArray.Indexs;
+                    foreach (var index in comIndexs)
+                    {
+                        ECSComponent ecsComponent = ecs.GetComponent(index);
+
+                        Type type = ecsComponent.GetType();
+
+                        // 获取所有公共字段（包括静态和实例）
+                        FieldInfo[] fields = type.GetFields();
+                        string syr = type.Name;
+                        foreach (var field in fields)
+                        {
+                            syr += ($" - {field.Name}: {field.GetValue(ecsComponent)}");
+                        }
+
+                        tempComList.Add(syr);
+                    }
+
+                    group.CreateList(tempComList, SelectEnitiyNode.GraphNode.GetPosition());
+                }
+            }
+        }
+
+        private void PlayModeStateChange(PlayModeStateChange playModeStateChange)
+        {
+            m_NodeDic.Clear();
+            m_GeneralGraphView.Clear();
+            group.Clear();
+        }
     }
 }

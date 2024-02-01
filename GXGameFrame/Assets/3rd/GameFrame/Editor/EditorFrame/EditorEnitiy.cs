@@ -4,10 +4,17 @@ using UnityEngine;
 
 namespace GameFrame.Editor
 {
-    public interface IEditorEnitiy : IReference
+    public interface IEditorEnitiy: IReference
     {
         public int ID { get; set; }
         public IEditorEnitiy Parent { get; set; }
+
+        public void Init(object obj);
+
+        public void Show();
+
+        public void Hide();
+        
     }
 
     public abstract class EditorEnitiy : IEditorEnitiy
@@ -18,7 +25,7 @@ namespace GameFrame.Editor
         public IEditorEnitiy Parent { get; set; }
         private int LastID;
 
-        public virtual void Init()
+        public virtual void Init(object obj = null)
         {
             
         }
@@ -54,7 +61,7 @@ namespace GameFrame.Editor
             m_Components.Clear();
         }
 
-        public T AddComponent<T>() where T : class, IEditorEnitiy, new()
+        public T AddComponent<T>(object obj) where T : class, IEditorEnitiy, new()
         {
             if (m_Components.ContainsKey(typeof(T)))
             {
@@ -64,7 +71,7 @@ namespace GameFrame.Editor
             T acquireT = ReferencePool.Acquire<T>();
             acquireT.Parent = this;
             acquireT.ID = ++LastID;
-            // acquireT.Init();
+            acquireT.Init(obj);
             m_Components.Add(typeof(T), acquireT);
             return acquireT;
         }
@@ -79,13 +86,14 @@ namespace GameFrame.Editor
 
             return (T) enitity;
         }
+        
 
         public void RemoveComponent<T>() where T : IEditorEnitiy, new()
         {
             RemoveComponent(typeof(T));
         }
-
-        private void RemoveComponent(Type type)
+        
+        public void RemoveComponent(Type type)
         {
             if (!m_Components.TryGetValue(type, out IEditorEnitiy enitity))
             {
@@ -95,7 +103,7 @@ namespace GameFrame.Editor
             ReferencePool.Release(enitity);
             m_Components.Remove(type);
         }
-
+        
         public T AddChild<T>() where T : class, IEditorEnitiy, new()
         {
             T acquireT = ReferencePool.Acquire<T>();

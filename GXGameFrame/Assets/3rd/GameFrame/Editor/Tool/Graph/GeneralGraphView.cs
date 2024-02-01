@@ -1,20 +1,17 @@
 ﻿using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace GameFrame.Editor
 {
-    public class GeneralGraphView : GraphView, IEditorEnitiy
+    public class GeneralGraphView : GraphView
     {
-        public int ID { get; set; }
-        public IEditorEnitiy Parent { get; set; }
+        
+        private List<Edge> m_EdgeList;
 
-        public List<Edge> m_EdgeList;
+        private List<Node> m_NodeList;
 
-        public List<Node> m_NodeList;
-
-        private UnityEditor.Experimental.GraphView.Group group;
+        private float m_LastTime;
 
         public void Init()
         {
@@ -42,7 +39,6 @@ namespace GameFrame.Editor
         {
             base.Clear();
             DeleteAllNode();
-            group = null;
         }
 
         public void DeleteAllNode()
@@ -69,29 +65,8 @@ namespace GameFrame.Editor
             m_NodeList.Add(node);
             return node;
         }
-
-        private void AddMsgBox(Rect pos)
-        {
-            group = new UnityEditor.Experimental.GraphView.Group();
-            group.layer = 2;
-            AddElement(group);
-        }
         
-        public void CreateList(List<string> dataList,Rect pos)
-        {
-            if (group == null)
-                AddMsgBox(pos);
-            group.Clear();
-            var listContainer = new VisualElement();
-            listContainer.style.flexDirection = FlexDirection.Column;
-            foreach (var data in dataList)
-            {
-                var item = new Label(data);
-                listContainer.Add(item);
-            }
-            group.Add(listContainer);
-            group.SetPosition(new Rect(pos.x+pos.width+10, pos.y, group.resolvedStyle.width, group.resolvedStyle.height));
-        }
+        
 
         /// <summary>
         /// 连线
@@ -111,25 +86,5 @@ namespace GameFrame.Editor
             AddElement(tempEdge);
             tempEdge.pickingMode = picking;
         }
-
-        // /// <summary>
-        // /// 将点位连线的回调
-        // /// </summary>
-        // /// <param name="startPort"></param>
-        // /// <param name="adapter"></param>
-        // /// <returns></returns>
-        // public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter adapter)
-        // {
-        //     List<Port> compatiblePorts = new List<Port>();
-        //
-        //     ports.ForEach((port) =>
-        //     {
-        //         if (port != startPort && port.node != startPort.node)
-        //         {
-        //             compatiblePorts.Add(port);
-        //         }
-        //     });
-        //     return compatiblePorts;
-        // }
     }
 }

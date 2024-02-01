@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -12,10 +11,10 @@ namespace GameFrame.Editor
         public bool Entry = false;
         public Port InPort;
         public Port OutPort;
-        private GeneralGraphView m_Parent;
+        private EnitiyGraphView m_Parent;
         private EnitiyNode m_Data;
 
-        public void Init(GeneralGraphView parent, EnitiyNode data, string text, Rect rect)
+        public void Init(EnitiyGraphView parent, EnitiyNode data, string text, Rect rect)
         {
             m_Parent = parent;
             m_Data = data;
@@ -83,16 +82,7 @@ namespace GameFrame.Editor
         {
             if (e.button == 0)
             {
-                List<string> data = new List<string>();
-                if (m_Data.entity is ECSEntity ecs)
-                {
-                    List<int> comIndexs = ecs.ECSComponentArray.Indexs;
-                    foreach (var index in comIndexs)
-                    {
-                        data.Add(GXComponents.ComponentTypes[index].Name);
-                    }
-                    m_Parent.CreateList(data,this.GetPosition());
-                }
+                m_Parent.SelectEnitiyNode = m_Data;
             }
         }
     }
