@@ -4,7 +4,6 @@ namespace GameFrame
 {
     public class Context : Entity, IStartSystem
     {
-        private Dictionary<int, HashSet<ECSEntity>> m_ECSEnitiyGroup = new();
         private Dictionary<Matcher, Group> m_Groups = new();
         private List<Group>[] m_GroupsList;
 
@@ -55,7 +54,6 @@ namespace GameFrame
                     m_GroupsList[index].Add(grop);
                 }
             }
-
             return grop;
         }
 
@@ -71,9 +69,6 @@ namespace GameFrame
             }
         }
 
-        /// <summary>
-        /// 清除
-        /// </summary>
         public override void Clear()
         {
             base.Clear();
@@ -82,6 +77,7 @@ namespace GameFrame
                 Matcher.RemoveMatcher(group.Key);
                 Group.RemoveGroup(group.Value);
             }
+            m_GroupsList = null;
             m_Groups.Clear();
         }
     }

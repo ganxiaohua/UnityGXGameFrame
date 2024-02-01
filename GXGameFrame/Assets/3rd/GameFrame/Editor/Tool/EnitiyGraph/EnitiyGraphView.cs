@@ -64,7 +64,7 @@ namespace GameFrame.Editor
             m_EditorWindow.rootVisualElement.Remove(m_GeneralGraphView);
             m_NodeDic.Clear();
             m_GeneralGraphView.Clear();
-            group.Clear();
+            group?.Clear();
             group = null;
             EditorApplication.update -= OnEditorUpdate;
             EditorApplication.playModeStateChanged -= PlayModeStateChange;
@@ -147,11 +147,7 @@ namespace GameFrame.Editor
             if (Time.realtimeSinceStartup - m_LastTime > 0.1f && SelectEnitiyNode!=null)
             {
                 m_LastTime = Time.realtimeSinceStartup;
-                if (group == null)
-                {
-                    group = AddComponent<GeneralGraphGroup>(m_GeneralGraphView);
-                }
-
+                group ??= AddComponent<GeneralGraphGroup>(m_GeneralGraphView);
                 tempComList.Clear();
                 if (SelectEnitiyNode.entity is ECSEntity ecs)
                 {
@@ -159,10 +155,7 @@ namespace GameFrame.Editor
                     foreach (var index in comIndexs)
                     {
                         ECSComponent ecsComponent = ecs.GetComponent(index);
-
                         Type type = ecsComponent.GetType();
-
-                        // 获取所有公共字段（包括静态和实例）
                         FieldInfo[] fields = type.GetFields();
                         string syr = type.Name;
                         foreach (var field in fields)
@@ -172,7 +165,6 @@ namespace GameFrame.Editor
 
                         tempComList.Add(syr);
                     }
-
                     group.CreateList(tempComList, SelectEnitiyNode.GraphNode.GetPosition());
                 }
             }
