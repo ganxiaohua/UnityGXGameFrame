@@ -1,7 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
 using UnityEngine;
-// using cfg;
-// using GXGame;
 
 namespace GameFrame
 {

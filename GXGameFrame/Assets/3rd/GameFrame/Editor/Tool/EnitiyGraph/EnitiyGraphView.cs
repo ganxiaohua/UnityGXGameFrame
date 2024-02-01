@@ -9,7 +9,7 @@ namespace GameFrame.Editor
     public class EnitiyGraphView : EditorEnitiy
     {
         private GeneralGraphView m_GeneralGraphView;
-        
+
         private EnitiyInfos m_EnitiyInfos;
 
         private EditorWindow m_EditorWindow;
@@ -17,7 +17,7 @@ namespace GameFrame.Editor
         private Dictionary<Node, EnitiyNode> m_NodeDic;
 
         private int m_FlootHeght;
-        
+
         private int m_FlootWidth;
 
         public void Init(EditorWindow editorWindow)
@@ -72,12 +72,13 @@ namespace GameFrame.Editor
             }
         }
 
-        public void CreateNodeWithInfo(EnitiyNode rootNode)
+        private void CreateNodeWithInfo(EnitiyNode rootNode)
         {
             if (rootNode == null || rootNode.entity == null)
             {
                 return;
             }
+
             CreateRoot(rootNode);
             CreateEnitiyNode(rootNode);
         }
@@ -86,13 +87,16 @@ namespace GameFrame.Editor
         {
             var graphNode = m_GeneralGraphView.AddNode<GeneralGrophNode>();
             graphNode.AddButton("关注", FollowNode);
-            var graphNodeName = root.entity.GetType().Name;
+            var graphNodeName = string.IsNullOrEmpty(root.entity.Name)
+                ? root.entity.GetType().Name
+                : $"{root.entity.GetType().Name} ({root.entity.Name})";
             m_NodeDic.Add(graphNode, root);
-            graphNode.Init(graphNodeName, new Rect(root.Floor * (m_FlootHeght+50), m_FlootHeght + root.Grid * 100, m_FlootWidth-50, 100));
+            graphNode.Init(m_GeneralGraphView,root,graphNodeName, new Rect(root.Floor * (m_FlootHeght + 50), m_FlootHeght + root.Grid * 100, m_FlootWidth - 50, 100));
             var outPort = graphNode.AddProt("", typeof(bool), Direction.Output);
             root.GraphNode = graphNode;
             graphNode.RefreshExpandedState();
             graphNode.RefreshPorts();
+            graphNode.SetColor(root.entity is ECSEntity ? new Color(0.5f,0.2f,0.1f) : Color.gray);
         }
 
         private void CreateEnitiyNode(EnitiyNode node)
@@ -101,19 +105,23 @@ namespace GameFrame.Editor
             {
                 var enititnode = node.NextNodes[i];
                 var graphNode = m_GeneralGraphView.AddNode<GeneralGrophNode>();
-                var graphNodeName = enititnode.entity.GetType().Name;
+                var graphNodeName = string.IsNullOrEmpty(enititnode.entity.Name)
+                    ? enititnode.entity.GetType().Name
+                    : $"{enititnode.entity.GetType().Name} ({enititnode.entity.Name})";
                 graphNode.AddButton("关注", FollowNode);
                 m_NodeDic.Add(graphNode, enititnode);
-                graphNode.Init(graphNodeName, new Rect(enititnode.Floor * (m_FlootHeght+50), m_FlootHeght + enititnode.Grid * 100, m_FlootWidth-50, 100));
+                graphNode.Init(m_GeneralGraphView,enititnode,graphNodeName, new Rect(enititnode.Floor * (m_FlootHeght + 50), m_FlootHeght + enititnode.Grid * 100, m_FlootWidth - 50, 100));
                 var inPort = graphNode.AddProt("", typeof(bool), Direction.Input);
                 var outPort = graphNode.AddProt("", typeof(bool), Direction.Output);
                 enititnode.GraphNode = graphNode;
                 graphNode.RefreshExpandedState();
                 graphNode.RefreshPorts();
                 m_GeneralGraphView.AddElement(graphNode);
-                m_GeneralGraphView.AddEdgeByPorts(node.GraphNode.OutPort, inPort,PickingMode.Ignore);
+                m_GeneralGraphView.AddEdgeByPorts(node.GraphNode.OutPort, inPort, PickingMode.Ignore);
                 CreateEnitiyNode(enititnode);
+                graphNode.SetColor(enititnode.entity is ECSEntity ? new Color(0.5f,0.2f,0.1f) : Color.gray);
             }
         }
+        
     }
 }

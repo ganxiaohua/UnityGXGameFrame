@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace GameFrame.Editor
@@ -12,6 +13,8 @@ namespace GameFrame.Editor
         public List<Edge> m_EdgeList;
 
         public List<Node> m_NodeList;
+
+        private UnityEditor.Experimental.GraphView.Group group;
 
         public void Init()
         {
@@ -39,6 +42,7 @@ namespace GameFrame.Editor
         {
             base.Clear();
             DeleteAllNode();
+            group = null;
         }
 
         public void DeleteAllNode()
@@ -66,12 +70,35 @@ namespace GameFrame.Editor
             return node;
         }
 
+        private void AddMsgBox(Rect pos)
+        {
+            group = new UnityEditor.Experimental.GraphView.Group();
+            group.layer = 2;
+            AddElement(group);
+        }
+        
+        public void CreateList(List<string> dataList,Rect pos)
+        {
+            if (group == null)
+                AddMsgBox(pos);
+            group.Clear();
+            var listContainer = new VisualElement();
+            listContainer.style.flexDirection = FlexDirection.Column;
+            foreach (var data in dataList)
+            {
+                var item = new Label(data);
+                listContainer.Add(item);
+            }
+            group.Add(listContainer);
+            group.SetPosition(new Rect(pos.x+pos.width+10, pos.y, group.resolvedStyle.width, group.resolvedStyle.height));
+        }
+
         /// <summary>
         /// 连线
         /// </summary>
         /// <param name="outputPort"></param>
         /// <param name="inputPort"></param>
-        public void AddEdgeByPorts(Port outputPort, Port inputPort,PickingMode picking)
+        public void AddEdgeByPorts(Port outputPort, Port inputPort, PickingMode picking)
         {
             Edge tempEdge = new Edge()
             {
@@ -82,7 +109,7 @@ namespace GameFrame.Editor
             tempEdge.output.Connect(tempEdge);
             m_EdgeList.Add(tempEdge);
             AddElement(tempEdge);
-            tempEdge.pickingMode =picking;
+            tempEdge.pickingMode = picking;
         }
 
         // /// <summary>

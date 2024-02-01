@@ -7,9 +7,9 @@ namespace GameFrame
     {
         private T[] m_Item;
 
-        private List<int> m_Indexs;
+        public List<int> Indexs { get; private set; }
 
-        private int MaxIndex;
+        private int m_MaxIndex;
 
         public T this[int index]
         {
@@ -23,16 +23,16 @@ namespace GameFrame
                 m_Item = new T[arrayMaxCount];
             }
 
-            m_Indexs = new List<int>(arrayMaxCount);
-            MaxIndex = arrayMaxCount;
-            m_Indexs.Clear();
+            Indexs = new List<int>(arrayMaxCount);
+            m_MaxIndex = arrayMaxCount;
+            Indexs.Clear();
         }
 
         public T Add(int index, Type type)
         {
-            if (index >= MaxIndex)
+            if (index >= m_MaxIndex)
             {
-                Debugger.LogError($"array maxcount is{MaxIndex} but you want to {index}");
+                Debugger.LogError($"array maxcount is{m_MaxIndex} but you want to {index}");
                 return null;
             }
 
@@ -42,16 +42,16 @@ namespace GameFrame
             }
 
             var t = (T) ReferencePool.Acquire(type);
-            m_Indexs.Add(index);
+            Indexs.Add(index);
             m_Item[index] = t;
             return t;
         }
 
         public T Get(int index)
         {
-            if (index >= MaxIndex)
+            if (index >= m_MaxIndex)
             {
-                Debugger.LogError($"array maxcount is{MaxIndex} but you want to {index}");
+                Debugger.LogError($"array maxcount is{m_MaxIndex} but you want to {index}");
                 return null;
             }
 
@@ -60,9 +60,9 @@ namespace GameFrame
 
         public void Remove(int index)
         {
-            if (index >= MaxIndex)
+            if (index >= m_MaxIndex)
             {
-                Debugger.LogError($"array maxcount is{MaxIndex} but you want to {index}");
+                Debugger.LogError($"array maxcount is{m_MaxIndex} but you want to {index}");
                 return;
             }
 
@@ -77,21 +77,21 @@ namespace GameFrame
 
         public void Clear()
         {
-            foreach (var index in m_Indexs)
+            foreach (var index in Indexs)
             {
                 ReferencePool.Release(m_Item[index]);
                 m_Item[index] = default(T);
             }
 
-            m_Indexs.Clear();
+            Indexs.Clear();
         }
 
         private void RemoveAtSwapBack(int index)
         {
-            int tail = m_Indexs.Count - 1;
+            int tail = Indexs.Count - 1;
             if (index != tail)
-                m_Indexs[index] = m_Indexs[tail];
-            m_Indexs.RemoveAt(tail);
+                Indexs[index] = Indexs[tail];
+            Indexs.RemoveAt(tail);
         }
     }
 }

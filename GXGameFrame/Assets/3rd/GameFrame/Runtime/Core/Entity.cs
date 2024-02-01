@@ -12,6 +12,8 @@ namespace GameFrame
         public IEntity Parent { get; set; }
 
         public int ID { get; set; }
+        
+        public string Name { get; set; }
 
         private Dictionary<Type, IEntity> m_Components;
 

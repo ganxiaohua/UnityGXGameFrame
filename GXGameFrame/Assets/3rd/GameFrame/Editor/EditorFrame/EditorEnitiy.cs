@@ -8,10 +8,6 @@ namespace GameFrame.Editor
     {
         public int ID { get; set; }
         public IEditorEnitiy Parent { get; set; }
-        //
-        // public void Init();
-        // public void Show();
-        // public void Hide();
     }
 
     public abstract class EditorEnitiy : IEditorEnitiy
@@ -67,7 +63,7 @@ namespace GameFrame.Editor
 
             T acquireT = ReferencePool.Acquire<T>();
             acquireT.Parent = this;
-            acquireT.ID = LastID++;
+            acquireT.ID = ++LastID;
             // acquireT.Init();
             m_Components.Add(typeof(T), acquireT);
             return acquireT;
@@ -104,8 +100,7 @@ namespace GameFrame.Editor
         {
             T acquireT = ReferencePool.Acquire<T>();
             acquireT.Parent = this;
-            acquireT.ID = LastID++;
-            // acquireT.Init();
+            acquireT.ID = ++LastID;
             m_Childs.Add(acquireT.ID, acquireT);
             return acquireT;
         }

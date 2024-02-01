@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -11,12 +12,19 @@ namespace GameFrame.Editor
         public bool Entry = false;
         public Port InPort;
         public Port OutPort;
-        public void Init(string text, Rect rect)
+        private GeneralGraphView m_Parent;
+        private EnitiyNode m_Data;
+
+        public void Init(GeneralGraphView parent, EnitiyNode data, string text, Rect rect)
         {
+            m_Parent = parent;
+            m_Data = data;
             UseDefaultStyling();
             GUID = Guid.NewGuid().ToString();
             title = text;
+            layer = 1;
             SetPosition(rect);
+            this.RegisterCallback<MouseDownEvent>(OnNodeSelected);
         }
 
         public void Show()
@@ -25,7 +33,6 @@ namespace GameFrame.Editor
 
         public void Hide()
         {
-            
         }
 
         public new void Clear()
@@ -42,12 +49,9 @@ namespace GameFrame.Editor
             }
         }
 
-        public void AddButton(string name,Action<Node> action)
+        public void AddButton(string name, Action<Node> action)
         {
-            Button btn = new Button(() =>
-            {
-                action(this);
-            });
+            Button btn = new Button(() => { action(this); });
             btn.text = name;
             titleContainer.Add(btn);
         }
@@ -72,6 +76,24 @@ namespace GameFrame.Editor
         public void SetColor(Color color)
         {
             titleContainer.style.backgroundColor = color;
+        }
+
+
+        private void OnNodeSelected(MouseDownEvent e)
+        {
+            if (e.button == 0)
+            {
+                List<string> data = new List<string>();
+                if (m_Data.entity is ECSEntity ecs)
+                {
+                    List<int> comIndexs = ecs.ECSComponentArray.Indexs;
+                    foreach (var index in comIndexs)
+                    {
+                        data.Add(GXComponents.ComponentTypes[index].Name);
+                    }
+                    m_Parent.CreateList(data,this.GetPosition());
+                }
+            }
         }
     }
 }
