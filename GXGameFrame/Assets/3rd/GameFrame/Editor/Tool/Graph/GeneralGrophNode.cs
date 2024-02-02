@@ -82,7 +82,7 @@ namespace GameFrame.Editor
         {
             if (e.button == 0)
             {
-                m_Parent.SelectEnitiyNode = m_Data;
+                m_Parent.ShowComponent( m_Data);
             }
         }
     }

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
+﻿using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -22,13 +20,13 @@ namespace GameFrame.Editor
 
         private int m_FlootWidth;
 
-        public EnitiyNode SelectEnitiyNode;
+        private EnitiyNode m_SelectEnitiyNode;
 
-        private GeneralGraphGroup group;
+        private GeneralGraphGroup m_Group;
 
         private float m_LastTime;
 
-        private List<string> tempComList = new List<string>();
+        private ComponentView m_ComponentView;
 
         public void Init(EditorWindow editorWindow)
         {
@@ -40,7 +38,6 @@ namespace GameFrame.Editor
             m_NodeDic = new();
             m_EditorWindow = editorWindow;
             editorWindow.rootVisualElement.Add(m_GeneralGraphView);
-            EditorApplication.update += OnEditorUpdate;
             EditorApplication.playModeStateChanged += PlayModeStateChange;
         }
 
@@ -64,9 +61,10 @@ namespace GameFrame.Editor
             m_EditorWindow.rootVisualElement.Remove(m_GeneralGraphView);
             m_NodeDic.Clear();
             m_GeneralGraphView.Clear();
-            group?.Clear();
-            group = null;
-            EditorApplication.update -= OnEditorUpdate;
+            m_Group?.Clear();
+            m_Group = null;
+            m_ComponentView?.Close();
+            m_ComponentView = null;
             EditorApplication.playModeStateChanged -= PlayModeStateChange;
         }
 
@@ -142,31 +140,19 @@ namespace GameFrame.Editor
             }
         }
 
-        private void OnEditorUpdate()
+        public void ShowComponent(EnitiyNode selectEnitiyNode)
         {
-            if (Time.realtimeSinceStartup - m_LastTime > 0.1f && SelectEnitiyNode!=null)
+            m_SelectEnitiyNode = selectEnitiyNode;
+            if (m_SelectEnitiyNode.entity is ECSEntity ecs)
             {
-                m_LastTime = Time.realtimeSinceStartup;
-                group ??= AddComponent<GeneralGraphGroup>(m_GeneralGraphView);
-                tempComList.Clear();
-                if (SelectEnitiyNode.entity is ECSEntity ecs)
+                List<int> comIndexs = ecs.ECSComponentArray.Indexs;
+                List<ECSComponent> ecsComponents = new List<ECSComponent>();
+                foreach (var index in comIndexs)
                 {
-                    List<int> comIndexs = ecs.ECSComponentArray.Indexs;
-                    foreach (var index in comIndexs)
-                    {
-                        ECSComponent ecsComponent = ecs.GetComponent(index);
-                        Type type = ecsComponent.GetType();
-                        FieldInfo[] fields = type.GetFields();
-                        string syr = type.Name;
-                        foreach (var field in fields)
-                        {
-                            syr += ($" - {field.Name}: {field.GetValue(ecsComponent)}");
-                        }
-
-                        tempComList.Add(syr);
-                    }
-                    group.CreateList(tempComList, SelectEnitiyNode.GraphNode.GetPosition());
+                    ECSComponent ecsComponent = ecs.GetComponent(index);
+                    ecsComponents.Add(ecsComponent);
                 }
+                ComponentView.Init(ecsComponents,ecs);
             }
         }
 
@@ -174,7 +160,7 @@ namespace GameFrame.Editor
         {
             m_NodeDic.Clear();
             m_GeneralGraphView.Clear();
-            group.Clear();
+            m_Group?.Clear();
         }
     }
 }

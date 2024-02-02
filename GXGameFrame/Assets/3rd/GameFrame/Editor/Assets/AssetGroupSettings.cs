@@ -1,18 +1,18 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
-using UnityEditor;
 using Sirenix.OdinInspector;
+using UnityEditor;
+using UnityEngine;
 
 namespace GameFrame.Editor
 {
     [CreateAssetMenu(fileName = "AssetGroupSettings", menuName = "Build/AssetGroupSettings", order = 1)]
-
     public class AssetGroupSettings : ScriptableObject
     {
-          [ListDrawerSettings(Expanded = true, ListElementLabelName = "groupName")]
+        [ListDrawerSettings(ListElementLabelName = "groupName")]
         public List<AssetGroup> data = new List<AssetGroup>();
 
         static AssetGroupSettings s_Settings;
+
         public static AssetGroupSettings settings
         {
             get
@@ -21,6 +21,7 @@ namespace GameFrame.Editor
                 {
                     s_Settings = AssetDatabase.LoadAssetAtPath<AssetGroupSettings>("Assets/GXGame/AssetGroupSettings.asset");
                 }
+
                 return s_Settings;
             }
         }
