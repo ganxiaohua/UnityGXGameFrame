@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 
 namespace GameFrame.Editor
@@ -18,10 +17,11 @@ namespace GameFrame.Editor
 
         private static ComponentView sWindow;
 
-        public static void Init(List<ECSComponent> ecsComponents,ECSEntity ecsEntity)
+        public static void Init(List<ECSComponent> ecsComponents, ECSEntity ecsEntity)
         {
-            if (sWindow == null)
-                sWindow = GetWindow<ComponentView>();
+            if (sWindow != null)
+                sWindow.Close();
+            sWindow = GetWindow<ComponentView>();
             sWindow.m_EcsComponents.Clear();
             sWindow.m_EcsEntity = ecsEntity;
             for (int i = 0; i < ecsComponents.Count; i++)
@@ -48,13 +48,8 @@ namespace GameFrame.Editor
             {
                 t.Tree.Dispose();
             }
-            sWindow = null;
-        }
 
-        [Button]
-        private void OnButtonAction()
-        {
-            
+            sWindow = null;
         }
     }
 }
