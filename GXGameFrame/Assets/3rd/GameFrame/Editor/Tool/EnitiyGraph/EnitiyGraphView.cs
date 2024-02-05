@@ -45,7 +45,6 @@ namespace GameFrame.Editor
         {
             base.Show();
             m_GeneralGraphView.Show();
-            m_EnitiyInfos = new EnitiyInfos();
             FollowNode(null);
         }
 
@@ -78,12 +77,24 @@ namespace GameFrame.Editor
             RemoveAll();
             if (node == null)
             {
+                m_EnitiyInfos ??= new EnitiyInfos();
                 m_EnitiyInfos.GetRootEnitiy();
                 CreateNodeWithInfo(m_EnitiyInfos.RootNode);
             }
             else if (m_NodeDic.TryGetValue(node, out EnitiyNode enitiyNode))
             {
                 CreateNodeWithInfo(enitiyNode);
+            }
+        }
+        
+        private void RemoveNode(Node node)
+        {
+            if (m_NodeDic.TryGetValue(node, out EnitiyNode enitiyNode))
+            {
+                (((ECSEntity)enitiyNode.entity).Parent as Context).RemoveChild((ECSEntity)enitiyNode.entity);
+                m_GeneralGraphView.RemoveElement(enitiyNode.GraphNode);
+                enitiyNode.GraphNode.Clear();
+                m_NodeDic.Remove(node);
             }
         }
 
@@ -102,6 +113,7 @@ namespace GameFrame.Editor
         {
             var graphNode = m_GeneralGraphView.AddNode<GeneralGrophNode>();
             graphNode.AddButton("关注", FollowNode);
+            graphNode.AddButton("删除", RemoveNode);
             var graphNodeName = string.IsNullOrEmpty(root.entity.Name)
                 ? root.entity.GetType().Name
                 : $"{root.entity.GetType().Name} ({root.entity.Name})";
@@ -125,6 +137,7 @@ namespace GameFrame.Editor
                     ? enititnode.entity.GetType().Name
                     : $"{enititnode.entity.GetType().Name} ({enititnode.entity.Name})";
                 graphNode.AddButton("关注", FollowNode);
+                graphNode.AddButton("删除", RemoveNode);
                 m_NodeDic.Add(graphNode, enititnode);
                 graphNode.Init(this, enititnode, graphNodeName,
                     new Rect(enititnode.Floor * (m_FlootHeght + 50), m_FlootHeght + enititnode.Grid * 100, m_FlootWidth - 50, 100));
@@ -159,7 +172,8 @@ namespace GameFrame.Editor
         private void PlayModeStateChange(PlayModeStateChange playModeStateChange)
         {
             m_NodeDic.Clear();
-            m_GeneralGraphView.Clear();
+            m_EnitiyInfos = null;
+            // m_GeneralGraphView.Clear();
             m_Group?.Clear();
         }
     }
