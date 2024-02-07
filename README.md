@@ -11,11 +11,27 @@
 
 集成UI框架(基于fgui),资源加载框架(基于AA的的拓展,可以做到一键出包,一键构建,只需要少量配置)
 
-本框架主要有两部分组成,第一部分类似ET的组件式系统,第二部分类似Entitas的高性能的组件系统,两者相辅相成.
-
 本框架特点:
 
 1.可以做到逻辑实体分离,逻辑端只需要关注数据即可,即便是像是位移这种需求,也不需要等待模型加载完成,直接设置位置即可,模型创建完成会自动修改为你设置的位置.
+  ```
+            //比如你想要创建一个实体
+            var cubeHero = entity.AddChild<Cube>();
+            cubeHero.Name = "Hero";
+            cubeHero.AddViewType(typeof(CubeView));
+            cubeHero.AddWorldPos(new Vector3(1.5f, 0, -5));
+            cubeHero.AddWorldRotate(Quaternion.identity);
+            cubeHero.AddInputDirection();
+            cubeHero.AddLocalScale(Vector3.one * 1.5f);
+            cubeHero.AddMeshRendererColor(Color.black);
+            cubeHero.AddMoveDirection();
+            cubeHero.AddMoveSpeed(10);
+            cubeHero.AddDirectionSpeed(360);
+            cubeHero.AddDirection(Vector3.forward);
+            cubeHero.AddAssetPath("Cube");
+            cubeHero.AddCampComponent(Camp.SELF);
+            cubeHero.AddUnitTypeComponent(UnitTypeEnum.HERO);
+  ```
 
 2.全游戏只有一份的GameObject数据类,WorldPos ,LocalPos ,LocalScale,WorldScale,WorldRot,localRot 等等只有一个源头.
 
@@ -24,3 +40,13 @@
 4.强大的资源管理系统,脱离AA原本的设计,无论你是出单机包,还是网络包,配置基本一致,同时也满足上线整包1.0之后,更新一段时间之后,重新上线了整包2.0版本, 1.0的用户不需要删除也能和2.0的用户一致.
 
 5.基于Entitas的设计,在使用ecs系统的时候绝大多数都是数组操作,所以响应极快.
+
+6.所见即所得,生命周期接口以及事件接口,想要什么事件自己创建接口就行
+
+  ```
+  public abstract class UIEntity : Entity, IStartSystem, IPreShowSystem, IShowSystem, IHideSystem, IUpdateSystem
+
+  public class UICardListWindow : UIEntity, ITestEvent
+  ``
+ 7.全方面的editor工具提供,包含打包,事件绑定,ecs绑定,实体审查工具,如果你使用rider就可以在ilviewer中查看c#的il代码或者 低等高等代码.
+
