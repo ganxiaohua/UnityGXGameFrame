@@ -2,7 +2,7 @@
 
 namespace GameFrame
 {
-    public abstract class UIEntity : Entity, IStartSystem, IPreShowSystem, IShowSystem, IHideSystem, IUpdateSystem, IClearSystem
+    public abstract class UIEntity : Entity, IStartSystem, IPreShowSystem, IShowSystem, IHideSystem, IUpdateSystem
     {
         public abstract string PackName { get; }
         public abstract string WindowName { get; }

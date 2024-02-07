@@ -2,7 +2,7 @@ using Cysharp.Threading.Tasks;
 
 namespace GameFrame
 {
-    public class AssetInitComponent : Entity, IStartSystem, IUpdateSystem, IClearSystem
+    public class AssetInitComponent : Entity, IStartSystem, IUpdateSystem
     {
         public CheckUpdate Check;
         public UniTaskCompletionSource Task;

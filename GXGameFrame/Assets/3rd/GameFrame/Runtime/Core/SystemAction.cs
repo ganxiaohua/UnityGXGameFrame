@@ -119,16 +119,6 @@ namespace GameFrame
                 ((IFixedUpdateSystem) es.SystemObject.System).FixedUpdate(elapseSeconds, realElapseSeconds);
             }
         }
-
-        public static void SystemClear(this DDictionaryET system)
-        {
-            foreach (var vt in system)
-            {
-                if (vt.Value.System is IClearSystem dessys)
-                {
-                    dessys.Clear();
-                }
-            }
-        }
+        
     }
 }

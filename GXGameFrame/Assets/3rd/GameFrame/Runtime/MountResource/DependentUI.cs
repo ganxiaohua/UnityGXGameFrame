@@ -3,7 +3,7 @@ using FairyGUI;
 
 namespace GameFrame
 {
-    public class DependentUI : Entity, IStartSystem<string,string>, IClearSystem
+    public class DependentUI : Entity, IStartSystem<string,string>
     {
         public DefaultAssetReference DefaultAssetReference;
         public GObject Window;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace GameFrame
 {
-    public class BehaviorEnitiy : Entity, IStartSystem<Type, BehaviorWorld>, IUpdateSystem, IClearSystem
+    public class BehaviorEnitiy : Entity, IStartSystem<Type, BehaviorWorld>, IUpdateSystem
     {
         public Behavior Behavior;
         private List<IBehaviorData> m_Datas;
