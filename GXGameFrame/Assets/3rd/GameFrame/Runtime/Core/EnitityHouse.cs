@@ -71,13 +71,6 @@ namespace GameFrame
                 throw new Exception($"TypeWithEntitys not have enitiy:{entity.ID}");
             }
             EventData.Instance.AddEventEnitiy(entity);
-            Type entityType = entity.GetType();
-            var allSystemDic = m_EntitySystems.GetValue(entityType);
-            if (allSystemDic != null)
-            {
-                allSystemDic.SystemClear();
-            }
-
             entityList.Remove(entity);
             RemoveAllSystem(entity);
         }

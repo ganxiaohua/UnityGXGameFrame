@@ -55,7 +55,7 @@ namespace GameFrame
                 mObjectPools.Add(assetName,objectPool);
             }
 
-            var prefab = await AssetSystem.Instance.LoadAsync<GameObject>(assetName,null, token);//AssetManager.Instance.LoadAsyncTask<GameObject>(assetName, token);
+            var prefab = await AssetManager.Instance.LoadAsync<GameObject>(assetName,null, token);//AssetManager.Instance.LoadAsyncTask<GameObject>(assetName, token);
             if (prefab == null)
             {
                 return null;
@@ -64,7 +64,7 @@ namespace GameFrame
             //如果这个阶段发现被取消了,那就unload资源.
             if (go == null)
             {
-                AssetSystem.Instance.DecrementReferenceCount(assetName);
+                AssetManager.Instance.DecrementReferenceCount(assetName);
                 return null;
             }
 
@@ -149,7 +149,7 @@ namespace GameFrame
                 return;
             }
             mGoPoolDic.Remove(go);
-            AssetSystem.Instance.DecrementReferenceCount(assetName);
+            AssetManager.Instance.DecrementReferenceCount(assetName);
             objectPool.UnSpawn(poolObject);
         }
 

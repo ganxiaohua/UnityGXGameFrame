@@ -66,8 +66,8 @@ namespace GameFrame
 
         public virtual void Clear()
         {
-            AnimationPlayDic.Clear();
-            AnimationPlayingCount.Clear();
+            AnimationPlayDic?.Clear();
+            AnimationPlayingCount?.Clear();
             m_PlayCompleteCallbackIn = null;
             m_PlayCompleteCallbackOut = null;
             AnimationPlayingCount = null;

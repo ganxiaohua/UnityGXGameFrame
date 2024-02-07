@@ -19,7 +19,7 @@ namespace GameFrame
             if (refAssets == null) return;
             foreach (var asset in refAssets)
             {
-                AssetSystem.Instance.IncrementReferenceCount(asset);
+                AssetManager.Instance.IncrementReferenceCount(asset);
             }
         }
         
@@ -29,7 +29,7 @@ namespace GameFrame
             if (refAssets.Contains(asset))
                 return false;
             refAssets.Add(asset);
-            AssetSystem.Instance.IncrementReferenceCount(asset);
+            AssetManager.Instance.IncrementReferenceCount(asset);
             return true;
         }
 
@@ -42,7 +42,7 @@ namespace GameFrame
         {
             if (refAssets == null) return;
             if (!refAssets.Remove(asset)) return;
-            AssetSystem.Instance.DecrementReferenceCount(asset);
+            AssetManager.Instance.DecrementReferenceCount(asset);
             --loaded;
         }
 
@@ -51,7 +51,7 @@ namespace GameFrame
             if (refAssets == null) return;
             foreach (var asset in refAssets)
             {
-                AssetSystem.Instance.DecrementReferenceCount(asset);
+                AssetManager.Instance.DecrementReferenceCount(asset);
             }
             loaded = 0;
             refAssets = null;

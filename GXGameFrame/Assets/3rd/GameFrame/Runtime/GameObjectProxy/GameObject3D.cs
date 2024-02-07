@@ -52,6 +52,8 @@ namespace Common.Runtime
         protected override void OnBeforeUnbind()
         {
             base.OnBeforeUnbind();
+            if (transform == null)
+                return;
             cachePosition = transform.localPosition;
             cacheRotation = transform.localRotation;
             cacheScale = transform.localScale;

@@ -31,12 +31,12 @@ namespace GameFrame
                 return;
             }
             
-            var desText = await AssetSystem.Instance.LoadAsync<TextAsset>(desPath, reference, token);
+            var desText = await AssetManager.Instance.LoadAsync<TextAsset>(desPath, reference, token);
             if (desText == null)
             {
                 return;
             }
-            AssetSystem.Instance.SetUnloadHandle(desPath, UnloadHandle, packageName);
+            AssetManager.Instance.SetUnloadHandle(desPath, UnloadHandle, packageName);
             var uipackage = UIPackage.AddPackage(desText.bytes, packageName, LoadResource);
             var dependencies = uipackage.dependencies;
             foreach (var dependenciesDic in dependencies)
@@ -84,7 +84,7 @@ namespace GameFrame
 
         private async UniTaskVoid Load(string path, DefaultAssetReference defaultAssetReference, PackageItem item)
         {
-            var obj = await AssetSystem.Instance.LoadAsync<UnityEngine.Object>(path, defaultAssetReference);
+            var obj = await AssetManager.Instance.LoadAsync<UnityEngine.Object>(path, defaultAssetReference);
             item.owner.SetItemAsset(item, obj, DestroyMethod.None);
         }
 

@@ -19,7 +19,7 @@ namespace GameFrame
         {
             float datetime = Time.deltaTime;
             float realtimeSinceStartup = Time.realtimeSinceStartup;
-            AssetSystem.Instance.Update(datetime);
+            AssetManager.Instance.Update(datetime);
             EnitityHouse.Instance.Update(datetime, realtimeSinceStartup);
             ObjectPoolManager.Instance.Update(datetime, realtimeSinceStartup);
             UIManager.Instance.Update(datetime, realtimeSinceStartup);
@@ -43,7 +43,7 @@ namespace GameFrame
         public void OnDisable()
         {
             UIManager.Instance.Disable();
-            // ReferencePool.Release(MainScene);
+            ReferencePool.Release(MainScene);
             EnitityHouse.Instance.Disable();
             ObjectPoolManager.Instance.Disable();
         }
