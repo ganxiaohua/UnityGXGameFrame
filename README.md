@@ -47,6 +47,6 @@
   public abstract class UIEntity : Entity, IStartSystem, IPreShowSystem, IShowSystem, IHideSystem, IUpdateSystem
 
   public class UICardListWindow : UIEntity, ITestEvent
-  ``
+  ```
  7.全方面的editor工具提供,包含打包,事件绑定,ecs绑定,实体审查工具,如果你使用rider就可以在ilviewer中查看c#的il代码或者 低等高等代码.
 
