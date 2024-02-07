@@ -41,7 +41,7 @@
 
 5.基于Entitas的设计,在使用ecs系统的时候绝大多数都是数组操作,所以响应极快.
 
-6.所见即所得,生命周期接口以及事件接口,想要什么事件自己创建接口就行
+6.所见即所得,生命周期接口以及事件接口,想要什么事件自己创建接口就行,顺带一体,事件中去除其他的事件或者删除自己也是不会有问题的.
 
   ```
   public abstract class UIEntity : Entity, IStartSystem, IPreShowSystem, IShowSystem, IHideSystem, IUpdateSystem
