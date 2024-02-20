@@ -3,8 +3,6 @@ using System.Runtime.CompilerServices;
 
 namespace GameFrame
 {
-    
-    
     public class AwaiterTask<T> : INotifyCompletion,IReference where T : IHandle
     {
         private  T m_Task;

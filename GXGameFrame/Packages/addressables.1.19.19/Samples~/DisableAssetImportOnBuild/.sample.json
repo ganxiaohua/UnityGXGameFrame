@@ -1,4 +1,0 @@
-{
-    "displayName": "Disable AssetImport on Build",
-    "description": "A script that disables asset importing during a player build.  This improves build performance since AssetBundles are copied into StreamingAssets at build time."
-}

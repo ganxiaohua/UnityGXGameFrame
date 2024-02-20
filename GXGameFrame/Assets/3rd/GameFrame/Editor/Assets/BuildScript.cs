@@ -1,17 +1,16 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-using UnityEditor;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
-using System;
+using UnityEditor;
 using UnityEditor.AddressableAssets;
-using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.AddressableAssets.Build;
-using System.Diagnostics;
+using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.AddressableAssets.Settings.GroupSchemas;
-using Debug = UnityEngine.Debug;
+using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.ResourceProviders;
+using Debug = UnityEngine.Debug;
 
 namespace GameFrame.Editor
 {
@@ -323,12 +322,10 @@ namespace GameFrame.Editor
 
                 var path = Path.Combine(toPath, filePath);
                 CreateDirectory(path);
-                //进行压缩或者加密
                 if (item.Contains(".json"))
                 {
                     byte[] sourceByte = File.ReadAllBytes(item);
-                    byte[] compressByte = TextDataProvider.CompressBytes(sourceByte);
-                    File.WriteAllBytes(path, compressByte);
+                    File.WriteAllBytes(path, sourceByte);
                 }
                 else
                 {
