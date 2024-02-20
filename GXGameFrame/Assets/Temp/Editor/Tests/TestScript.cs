@@ -10,7 +10,7 @@ public class TestScript
     [Test]
     public void Bytes()
     {
-        ByteSequenceSegmentPipe pipe = new ByteSequenceSegmentPipe();
+        ByteSequenceSegmentPipe pipe = ReferencePool.Acquire<ByteSequenceSegmentPipe>();
         pipe.Write(new byte[] {1,2,3,4,5,6,7,8,9,10}, 0, 10);
         var sequence = pipe.CreateSequence();
         

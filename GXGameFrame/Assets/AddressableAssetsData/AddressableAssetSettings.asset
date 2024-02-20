@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: AddressableAssetSettings
   m_EditorClassIdentifier: 
   m_DefaultGroup: 6dafb71f59c47bf438d57d99fff154bd
-  m_CachedHash:
+  m_currentHash:
     serializedVersion: 2
     Hash: 00000000000000000000000000000000
   m_OptimizeCatalogSize: 1
@@ -32,11 +32,14 @@ MonoBehaviour:
   m_ShaderBundleNaming: 0
   m_ShaderBundleCustomNaming: 
   m_MonoScriptBundleNaming: 0
+  m_CheckForContentUpdateRestrictionsOption: 0
   m_MonoScriptBundleCustomNaming: 
   m_RemoteCatalogBuildPath:
     m_Id: 7ab829e58b1639a45b9ae5003edc3e15
   m_RemoteCatalogLoadPath:
     m_Id: 780dc118169b44f4980c8ef19f0d1dc3
+  m_ContentStateBuildPathProfileVariableName: 
+  m_CustomContentStateBuildPath: 
   m_ContentStateBuildPath: 
   m_BuildAddressablesWithPlayerBuild: 0
   m_overridePlayerVersion: GXGame.zip
@@ -46,23 +49,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 84a0e990b854e774f9a1b676625d8d6f, type: 2}
   - {fileID: 11400000, guid: f2a8ca1346468b244b51c1b93beae251, type: 2}
   - {fileID: 11400000, guid: 9644a303da769324aacb66884c0ca349, type: 2}
-  - {fileID: 11400000, guid: 25ed8002db91c6f469a8dccb6d79e342, type: 2}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 11400000, guid: 6f47f82bcd6ced145ac1f7692c92f94e, type: 2}
-  - {fileID: 11400000, guid: 853c6cbc6ea75884796e5b76c0559316, type: 2}
-  - {fileID: 11400000, guid: e9b54325f8e17f94b8521426dd0ef9e4, type: 2}
-  - {fileID: 11400000, guid: ddce0bae26b85a84085eb4f3dc092b3d, type: 2}
-  - {fileID: 11400000, guid: 53c5d258a09ec05468df449e0c97729a, type: 2}
-  - {fileID: 11400000, guid: 455b12e58ad33cd4eb8c2db95a966f48, type: 2}
-  - {fileID: 11400000, guid: 45a9debacd4ed464db42087543d6e067, type: 2}
-  - {fileID: 11400000, guid: c97572e387bef474686640552ab34f84, type: 2}
   m_BuildSettings:
     m_CompileScriptsInVirtualMode: 0
     m_CleanupStreamingAssetsAfterBuilds: 1
@@ -160,7 +146,7 @@ MonoBehaviour:
           m_Key: HostingServiceUploadSpeed
         - m_AssemblyName: mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
           m_ClassName: System.String
-          m_Data: ServerData/Windows;Library/com.unity.addressables/aa/Windows/StandaloneWindows64
+          m_Data: ServerData/Windows
           m_Key: ContentRoot
         - m_AssemblyName: mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
           m_ClassName: System.Boolean
@@ -178,3 +164,4 @@ MonoBehaviour:
     m_NextInstanceId: 1
     m_RegisteredServiceTypeRefs:
     - UnityEditor.AddressableAssets.HostingServices.HttpHostingService, Unity.Addressables.Editor
+    m_PingTimeoutInMilliseconds: 5000
