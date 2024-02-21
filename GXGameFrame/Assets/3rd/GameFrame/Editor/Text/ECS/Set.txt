@@ -1,10 +1,10 @@
         
         
-        public static ECSEntity Set{0}(this {5} ecsEntity,{1} param)
-        {{
-            var p = ({2})ecsEntity.GetComponent(Components.{0});
-            p.{3} = param;
-            {4}
-            ((Context)ecsEntity.Parent).Reactive(Components.{0}, ecsEntity);
-            return ecsEntity;
-         }}
+    public static ECSEntity Set{0}(this {5} ecsEntity,{1} param)
+    {{
+        var p = ({2})ecsEntity.GetComponent(Components.{0});
+        p.{3} = param;
+        {4}
+        ((Context)ecsEntity.Parent).Reactive(Components.{0}, ecsEntity);
+        return ecsEntity;
+    }}
