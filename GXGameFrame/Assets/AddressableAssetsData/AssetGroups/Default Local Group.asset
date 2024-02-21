@@ -10,24 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: skilleffect
+  m_Name: Default Local Group
   m_EditorClassIdentifier: Unity.Addressables.Editor:UnityEditor.AddressableAssets.Settings:AddressableAssetGroup
-  m_GroupName: skilleffect
+  m_GroupName: Default Local Group
   m_Data:
     m_SerializedData: []
-  m_GUID: 98c265082e828164aa6bd7e96c81f74c
-  m_SerializeEntries:
-  - m_GUID: 80ee4e20519678a469f61de4fc048ee0
-    m_Address: Skill1Effect
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Preload
-    - Role
-    - skilleffect
-    FlaggedDuringContentUpdateRestriction: 0
+  m_GUID: 5a5a331145eeacc4aa0a1240e64f2b07
+  m_SerializeEntries: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 1765143bf1e4ef948a398b5a8cb3ff52, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 8cb3767f11f53b5418dc5985a7953001, type: 2}
-    - {fileID: 11400000, guid: 2558a9532a87e2f498aea56b79f620ce, type: 2}
+    - {fileID: 11400000, guid: c53aa2ccb957d864c91eecc5509fb599, type: 2}
+    - {fileID: 11400000, guid: 1d073f19fa0bf044db8ac0467f8012fd, type: 2}

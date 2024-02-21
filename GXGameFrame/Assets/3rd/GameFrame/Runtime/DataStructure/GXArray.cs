@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine.Assertions;
 
 namespace GameFrame
 {
@@ -30,12 +31,7 @@ namespace GameFrame
 
         public T Add(int index, Type type)
         {
-            if (index >= m_MaxIndex)
-            {
-                Debugger.LogError($"array maxcount is{m_MaxIndex} but you want to {index}");
-                return null;
-            }
-
+            Assert.IsTrue(index < m_MaxIndex, $"Array overreach");
             if (m_Item[index] != null)
             {
                 return default(T);
@@ -49,30 +45,20 @@ namespace GameFrame
 
         public T Get(int index)
         {
-            if (index >= m_MaxIndex)
-            {
-                Debugger.LogError($"array maxcount is{m_MaxIndex} but you want to {index}");
-                return null;
-            }
-
+            // Assert.IsTrue(index < m_MaxIndex, $"Array overreach");
             return m_Item[index];
         }
 
         public void Remove(int index)
         {
-            if (index >= m_MaxIndex)
-            {
-                Debugger.LogError($"array maxcount is{m_MaxIndex} but you want to {index}");
-                return;
-            }
-
+            Assert.IsTrue(index < m_MaxIndex, $"Array overreach");
             if (m_Item[index] == null)
             {
                 return;
             }
 
             m_Item[index] = default(T);
-            RemoveAtSwapBack(index);
+            Indexs.RemoveAtSwapBack(index);
         }
 
         public void Clear()
@@ -84,14 +70,6 @@ namespace GameFrame
             }
 
             Indexs.Clear();
-        }
-
-        private void RemoveAtSwapBack(int index)
-        {
-            int tail = Indexs.Count - 1;
-            if (index != tail)
-                Indexs[index] = Indexs[tail];
-            Indexs.RemoveAt(tail);
         }
     }
 }

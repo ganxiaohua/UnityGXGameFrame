@@ -8,8 +8,10 @@ namespace GameFrame
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class ViewBindAttribute : Attribute
     {
-        public ViewBindAttribute()
+        public Type BindType;
+        public ViewBindAttribute(Type type)
         {
+            BindType = type;
         }
         
     }

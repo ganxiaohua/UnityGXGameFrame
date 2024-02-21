@@ -9,13 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Script: {fileID: 0}
   m_Name: UI
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Unity.Addressables.Editor:UnityEditor.AddressableAssets.Settings:AddressableAssetGroup
   m_GroupName: UI
   m_Data:
     m_SerializedData: []
-  m_GUID: 335b47f02e34fad4285aa92c36e81bc7
+  m_GUID: 8524bc322fbfffd46b304a87d6aa03e5
   m_SerializeEntries:
   - m_GUID: 7866e3a79e34a4e4e9993b07ceafd927
     m_Address: TestUI
@@ -23,18 +23,21 @@ MonoBehaviour:
     m_SerializedLabels:
     - Preload
     - UI
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 130f627db3b46ef4ca8106e8dd085461
     m_Address: Card_atlas0
     m_ReadOnly: 0
     m_SerializedLabels:
     - Preload
     - UI
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1cf15296bfc10e3419b68eba1d548e84
     m_Address: Card_fui
     m_ReadOnly: 0
     m_SerializedLabels:
     - Preload
     - UI
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 1765143bf1e4ef948a398b5a8cb3ff52, type: 2}
   m_SchemaSet:

@@ -9,13 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Script: {fileID: 0}
   m_Name: Scene
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Unity.Addressables.Editor:UnityEditor.AddressableAssets.Settings:AddressableAssetGroup
   m_GroupName: Scene
   m_Data:
     m_SerializedData: []
-  m_GUID: e6126b93fdbb61d4bad65cd1fbbbf3f7
+  m_GUID: 2775b9370678df044a3a283c16cc65c0
   m_SerializeEntries:
   - m_GUID: dccee688add061e4991fccbf88820ca5
     m_Address: Assets/GXGame/Scenes/CubeScene.unity
@@ -23,12 +23,14 @@ MonoBehaviour:
     m_SerializedLabels:
     - Preload
     - Scene
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0b102afa2443f03499f690165551faec
     m_Address: Assets/GXGame/Scenes/Main.unity
     m_ReadOnly: 0
     m_SerializedLabels:
     - Preload
     - Scene
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 1765143bf1e4ef948a398b5a8cb3ff52, type: 2}
   m_SchemaSet:

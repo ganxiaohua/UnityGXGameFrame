@@ -9,13 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Script: {fileID: 0}
   m_Name: Role
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Unity.Addressables.Editor:UnityEditor.AddressableAssets.Settings:AddressableAssetGroup
   m_GroupName: Role
   m_Data:
     m_SerializedData: []
-  m_GUID: 815be3d41d86e5c40af0733d03c7ebfd
+  m_GUID: b253170c813dbea43a578f12fcf772b7
   m_SerializeEntries:
   - m_GUID: 947db585f33ffbf47ab7619266c7fb26
     m_Address: Cube
@@ -23,6 +23,7 @@ MonoBehaviour:
     m_SerializedLabels:
     - Preload
     - Role
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 1765143bf1e4ef948a398b5a8cb3ff52, type: 2}
   m_SchemaSet:

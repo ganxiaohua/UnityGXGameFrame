@@ -15,7 +15,6 @@ namespace GameFrame.Editor
         Get,
         Set,
         EventClass,
-        Event,
         ComponentsMain,
         ComponentsSub,
         ComponentsTypeMain,
@@ -33,6 +32,7 @@ namespace GameFrame.Editor
 
         public static void AutoCreateScript()
         {
+            OpFile.DeleteFilesInDirectory(EditorString.ECSOutPutPath);
             LoadText();
             var assembly = AppDomain.CurrentDomain.GetAssemblies();
             foreach (var item in assembly)
@@ -53,8 +53,6 @@ namespace GameFrame.Editor
             string addparameter = EditorString.GameFramePath + "Editor/Text/ECS/AddParameter.txt";
             string get = EditorString.GameFramePath + "Editor/Text/ECS/Get.txt";
             string set = EditorString.GameFramePath + "Editor/Text/ECS/Set.txt";
-            string eventClass = EditorString.GameFramePath + "Editor/Text/ECS/EventClass.txt";
-            string Event = EditorString.GameFramePath + "Editor/Text/ECS/Event.txt";
             string ECSALLComponents = EditorString.GameFramePath + "Editor/Text/ECS/Components.txt";
 
             string stradd = File.ReadAllText(add);
@@ -62,8 +60,6 @@ namespace GameFrame.Editor
             string straddparameter = File.ReadAllText(addparameter);
             string strget = File.ReadAllText(get);
             string strset = File.ReadAllText(set);
-            string strEventClass = File.ReadAllText(eventClass);
-            string strEvent = File.ReadAllText(Event);
             string strAllComponents = File.ReadAllText(ECSALLComponents);
             string[] strComponentsIndex = strAllComponents.Split('#');
             if (s_EventDictionary == null)
@@ -83,8 +79,6 @@ namespace GameFrame.Editor
             s_TextDictionary.Add(CreateAuto.AddParameter, straddparameter);
             s_TextDictionary.Add(CreateAuto.Get, strget);
             s_TextDictionary.Add(CreateAuto.Set, strset);
-            s_TextDictionary.Add(CreateAuto.EventClass, strEventClass);
-            s_TextDictionary.Add(CreateAuto.Event, strEvent);
             s_TextDictionary.Add(CreateAuto.ComponentsMain, strComponentsIndex[0]);
             s_TextDictionary.Add(CreateAuto.ComponentsSub, strComponentsIndex[1]);
             s_TextDictionary.Add(CreateAuto.ComponentsTypeMain, strComponentsIndex[2]);
@@ -106,7 +100,7 @@ namespace GameFrame.Editor
                     var vb = tp.GetCustomAttribute<ViewBindAttribute>();
                     if (vb != null)
                     {
-                        AddEvent(tp);
+                        AddEvent(tp,vb.BindType);
                     }
 
                     SetComponents(tp);
@@ -169,13 +163,11 @@ namespace GameFrame.Editor
             File.WriteAllText($"{EditorString.ECSOutPutPath}{typeName}Auto.cs", lastText);
         }
 
-        public static void AddEvent(Type type)
+        public static void AddEvent(Type type,Type bindType)
         {
-            string typeName = type.Name;
-            string typeFullName = type.FullName;
-            string str = string.Format(s_TextDictionary[CreateAuto.Event], typeFullName, typeName);
-            s_EventSb.Append(str);
-            s_EventDictionary.Add(type, $"ViewBindEventClass.{typeName}EntityComponentNumericalChange?.Invoke(p,ecsEntity);");
+             MethodInfo[] methods = bindType.GetMethods(BindingFlags.Public | BindingFlags.Instance);
+             string funcName = methods[0].Name;
+            s_EventDictionary.Add(type,  $"(({bindType.FullName}) (ecsEntity.GetView().Value)).{funcName}(p);");
         }
 
         public static void CreateEvent()
@@ -212,5 +204,6 @@ namespace GameFrame.Editor
                 Directory.CreateDirectory(path);
             }
         }
+        
     }
 }
