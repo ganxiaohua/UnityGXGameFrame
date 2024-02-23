@@ -15,7 +15,7 @@ MonoBehaviour:
   m_GroupName: Role
   m_Data:
     m_SerializedData: []
-  m_GUID: b253170c813dbea43a578f12fcf772b7
+  m_GUID: 67c7753067e7ab84096d1b9ee06cba6c
   m_SerializeEntries:
   - m_GUID: 947db585f33ffbf47ab7619266c7fb26
     m_Address: Cube

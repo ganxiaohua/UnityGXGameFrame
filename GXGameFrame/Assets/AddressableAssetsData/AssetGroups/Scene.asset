@@ -15,7 +15,7 @@ MonoBehaviour:
   m_GroupName: Scene
   m_Data:
     m_SerializedData: []
-  m_GUID: 2775b9370678df044a3a283c16cc65c0
+  m_GUID: 0c1cdec0b3668c240bcb95f8b55bf49d
   m_SerializeEntries:
   - m_GUID: dccee688add061e4991fccbf88820ca5
     m_Address: Assets/GXGame/Scenes/CubeScene.unity
