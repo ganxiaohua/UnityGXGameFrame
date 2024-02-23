@@ -37,10 +37,16 @@ namespace GameFrame
             Root.visible = true;
             DoShowAnimation();
         }
-
+        
         public virtual void OnHide()
         {
-            
+            DoHideAnimation();
+        }
+
+
+        protected virtual void OnHideLater()
+        {
+            Root.visible = false;
         }
 
         protected virtual void DoShowAnimation()
@@ -51,12 +57,12 @@ namespace GameFrame
             }
         }
 
-        public virtual void DoHideAnimation()
+        protected virtual void DoHideAnimation()
         {
             if (!PlayAnimation(OutAnimationName, m_PlayCompleteCallbackOut))
             {
                 UIManager.Instance.UIClose(UIBase.GetType());
-                OnHide();
+                OnHideLater();
             }
         }
 
@@ -126,7 +132,7 @@ namespace GameFrame
 
             if (--AnimationPlayingCount[OutAnimationName] == 0)
             {
-                OnHide();
+                OnHideLater();
                 UIManager.Instance.UIClose(UIBase.GetType());
             }
         }
