@@ -31,7 +31,7 @@ namespace GXGame
 
         public override void Hide()
         {{
-            {0}View.DoHideAnimation();
+            {0}View.Hide();
         }}
 
         public override void Update(float elapseSeconds, float realElapseSeconds)
