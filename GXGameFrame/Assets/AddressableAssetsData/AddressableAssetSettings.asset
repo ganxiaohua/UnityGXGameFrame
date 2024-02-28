@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: 9c909050ef388be40bda341f086e78ac
   m_currentHash:
     serializedVersion: 2
-    Hash: 00000000000000000000000000000000
+    Hash: 830248b082c3631b625f92da835b317a
   m_OptimizeCatalogSize: 1
   m_BuildRemoteCatalog: 1
   m_BundleLocalCatalog: 1
@@ -44,7 +44,6 @@ MonoBehaviour:
   m_BuildAddressablesWithPlayerBuild: 0
   m_overridePlayerVersion: GXGame.zip
   m_GroupAssets:
-  - {fileID: 11400000, guid: c2a2d4e9480ce9e4692a3498de14b989, type: 2}
   - {fileID: 11400000, guid: cda78822a7077ae48b9c37d48a475a7a, type: 2}
   - {fileID: 11400000, guid: 9644a303da769324aacb66884c0ca349, type: 2}
   - {fileID: 11400000, guid: 9efe8eaf378f84c4f927191e391ea664, type: 2}
@@ -147,7 +146,7 @@ MonoBehaviour:
           m_Key: HostingServiceUploadSpeed
         - m_AssemblyName: mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
           m_ClassName: System.String
-          m_Data: Library/com.unity.addressables/aa/Windows/Windows;ServerData/Windows
+          m_Data: ServerData/Windows
           m_Key: ContentRoot
         - m_AssemblyName: mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
           m_ClassName: System.Boolean
