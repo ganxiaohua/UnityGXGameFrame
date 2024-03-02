@@ -149,11 +149,6 @@ public class SimpleBRGExample : MonoBehaviour
             BufferCountForInstances(kBytesPerInstance, kNumInstances, kExtraBytes),
             sizeof(int));
     }
-    private void RefreshData()
-    {
-        m_InstanceData.SetData(objectToWorld, 0, (int)(byteAddressObjectToWorld / kSizeOfPackedMatrix), objectToWorld.Length);
-        m_InstanceData.SetData(worldToObject, 0, (int)(byteAddressWorldToObject / kSizeOfPackedMatrix), worldToObject.Length);
-    }
     private void PopulateInstanceDataBuffer()
     {
         // Place a zero matrix at the start of the instance data buffer, so loads from address 0 return zero.

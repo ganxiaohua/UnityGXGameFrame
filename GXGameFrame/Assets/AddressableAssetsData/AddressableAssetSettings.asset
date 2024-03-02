@@ -12,20 +12,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 468a46d0ae32c3544b7d98094e6448a9, type: 3}
   m_Name: AddressableAssetSettings
   m_EditorClassIdentifier: 
-  m_DefaultGroup: 9c909050ef388be40bda341f086e78ac
+  m_DefaultGroup: 8bf35c5c6dcc11146824527ae2d5c24c
   m_currentHash:
     serializedVersion: 2
-    Hash: 830248b082c3631b625f92da835b317a
-  m_OptimizeCatalogSize: 1
-  m_BuildRemoteCatalog: 1
-  m_BundleLocalCatalog: 1
+    Hash: 00000000000000000000000000000000
+  m_OptimizeCatalogSize: 0
+  m_BuildRemoteCatalog: 0
+  m_BundleLocalCatalog: 0
   m_CatalogRequestsTimeout: 0
-  m_DisableCatalogUpdateOnStart: 1
+  m_DisableCatalogUpdateOnStart: 0
   m_IgnoreUnsupportedFilesInBuild: 0
   m_UniqueBundleIds: 0
   m_NonRecursiveBuilding: 1
   m_CCDEnabled: 0
-  m_maxConcurrentWebRequests: 4
+  m_maxConcurrentWebRequests: 3
   m_ContiguousBundles: 1
   m_StripUnityVersionFromBundleBuild: 0
   m_DisableVisibleSubAssetRepresentations: 0
@@ -35,14 +35,14 @@ MonoBehaviour:
   m_CheckForContentUpdateRestrictionsOption: 0
   m_MonoScriptBundleCustomNaming: 
   m_RemoteCatalogBuildPath:
-    m_Id: 7ab829e58b1639a45b9ae5003edc3e15
+    m_Id: 3031c46c02d9c4942a390da847c52148
   m_RemoteCatalogLoadPath:
-    m_Id: 780dc118169b44f4980c8ef19f0d1dc3
+    m_Id: 1e151c7f3f941ae41b4aabd662d82429
   m_ContentStateBuildPathProfileVariableName: <default settings path>
   m_CustomContentStateBuildPath: 
   m_ContentStateBuildPath: 
   m_BuildAddressablesWithPlayerBuild: 0
-  m_overridePlayerVersion: GXGame.zip
+  m_overridePlayerVersion: '[UnityEditor.PlayerSettings.bundleVersion]'
   m_GroupAssets:
   - {fileID: 11400000, guid: cda78822a7077ae48b9c37d48a475a7a, type: 2}
   - {fileID: 11400000, guid: 9644a303da769324aacb66884c0ca349, type: 2}
@@ -57,69 +57,48 @@ MonoBehaviour:
   m_ProfileSettings:
     m_Profiles:
     - m_InheritedParent: 
-      m_Id: 7d72f42cde32f304595d34a6eab45502
+      m_Id: 2f96b0a8e10cf404b972e8090c02de76
       m_ProfileName: Default
       m_Values:
-      - m_Id: 1f1c8299daafc29408464bd8eb7bca9c
-        m_Value: '[GameFrame.Editor.BuildScript.BuildTarget]'
-      - m_Id: 97d364ac98ee3024789b92f551323089
+      - m_Id: eced2eb5747f8724cbcb0c0fabd280cf
+        m_Value: '[UnityEditor.EditorUserBuildSettings.activeBuildTarget]'
+      - m_Id: 900c9e3c1c2251b4d8bdab5d881d38c2
         m_Value: '[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]'
-      - m_Id: 1b4de07eb587e474c8775f8e8b174690
+      - m_Id: a90c588771d90274f9abc65be623774a
         m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
-      - m_Id: 7ab829e58b1639a45b9ae5003edc3e15
+      - m_Id: 3031c46c02d9c4942a390da847c52148
         m_Value: ServerData/[BuildTarget]
-      - m_Id: 780dc118169b44f4980c8ef19f0d1dc3
-        m_Value: http://192.168.62.18/GXGame/aa/[BuildTarget]
+      - m_Id: 1e151c7f3f941ae41b4aabd662d82429
+        m_Value: http://[PrivateIpAddress]:[HostingServicePort]
     m_ProfileEntryNames:
-    - m_Id: 1f1c8299daafc29408464bd8eb7bca9c
+    - m_Id: eced2eb5747f8724cbcb0c0fabd280cf
       m_Name: BuildTarget
       m_InlineUsage: 0
-    - m_Id: 97d364ac98ee3024789b92f551323089
+    - m_Id: 900c9e3c1c2251b4d8bdab5d881d38c2
       m_Name: Local.BuildPath
       m_InlineUsage: 0
-    - m_Id: 1b4de07eb587e474c8775f8e8b174690
+    - m_Id: a90c588771d90274f9abc65be623774a
       m_Name: Local.LoadPath
       m_InlineUsage: 0
-    - m_Id: 7ab829e58b1639a45b9ae5003edc3e15
+    - m_Id: 3031c46c02d9c4942a390da847c52148
       m_Name: Remote.BuildPath
       m_InlineUsage: 0
-    - m_Id: 780dc118169b44f4980c8ef19f0d1dc3
+    - m_Id: 1e151c7f3f941ae41b4aabd662d82429
       m_Name: Remote.LoadPath
       m_InlineUsage: 0
     m_ProfileVersion: 1
   m_LabelTable:
     m_LabelNames:
     - default
-    - Lua
     - Preload
-    - Shader
-    - Audio
-    - Effect
-    - Model
-    - Video
-    - Texture
-    - UI
-    - HomelandMap
-    - Architecture
-    - DecorateType1
-    - Decorate_1
-    - Decorate_2
-    - Decorate_3
-    - Decorate_0
-    - Theme
-    - Mode1
-    - Model2
-    - Config
-    - TextPrefabs
-    - PrefabTest
     - Role
+    - UI
     - Scene
     - skilleffect
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
-  - {fileID: 11400000, guid: 078a848fee1334e4397f8079923808d6, type: 2}
-  m_InitializationObjects:
-  - {fileID: 11400000, guid: ab25798477b3f50439e5d0749193e12c, type: 2}
+  - {fileID: 11400000, guid: 411a8d6b76f3a01449bed522679bbccf, type: 2}
+  m_InitializationObjects: []
   m_CertificateHandlerType:
     m_AssemblyName: 
     m_ClassName: 
@@ -129,39 +108,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a01e71c0f0886b042ab8d98d0a27b76c, type: 2}
   - {fileID: 11400000, guid: 9c3396b7067da1742b52de44747369df, type: 2}
   - {fileID: 11400000, guid: 194799d2226051148a7fbed11150faf1, type: 2}
-  m_ActiveProfileId: 7d72f42cde32f304595d34a6eab45502
+  m_ActiveProfileId: 2f96b0a8e10cf404b972e8090c02de76
   m_HostingServicesManager:
-    m_HostingServiceInfos:
-    - classRef: UnityEditor.AddressableAssets.HostingServices.HttpHostingService,
-        Unity.Addressables.Editor
-      dataStore:
-        m_SerializedData:
-        - m_AssemblyName: mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
-          m_ClassName: System.Int32
-          m_Data: 63105
-          m_Key: HostingServicePort
-        - m_AssemblyName: mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
-          m_ClassName: System.Int32
-          m_Data: 0
-          m_Key: HostingServiceUploadSpeed
-        - m_AssemblyName: mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
-          m_ClassName: System.String
-          m_Data: ServerData/Windows
-          m_Key: ContentRoot
-        - m_AssemblyName: mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
-          m_ClassName: System.Boolean
-          m_Data: False
-          m_Key: IsEnabled
-        - m_AssemblyName: mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
-          m_ClassName: System.String
-          m_Data: Local Hosting 0
-          m_Key: DescriptiveName
-        - m_AssemblyName: mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
-          m_ClassName: System.Int32
-          m_Data: 0
-          m_Key: InstanceId
+    m_HostingServiceInfos: []
     m_Settings: {fileID: 11400000}
-    m_NextInstanceId: 1
-    m_RegisteredServiceTypeRefs:
-    - UnityEditor.AddressableAssets.HostingServices.HttpHostingService, Unity.Addressables.Editor
+    m_NextInstanceId: 0
+    m_RegisteredServiceTypeRefs: []
     m_PingTimeoutInMilliseconds: 5000
