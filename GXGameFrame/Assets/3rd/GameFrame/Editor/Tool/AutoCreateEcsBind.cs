@@ -167,7 +167,9 @@ namespace GameFrame.Editor
         {
              MethodInfo[] methods = bindType.GetMethods(BindingFlags.Public | BindingFlags.Instance);
              string funcName = methods[0].Name;
-            s_EventDictionary.Add(type,  $"(({bindType.FullName}) (ecsEntity.GetView().Value)).{funcName}(p);");
+            s_EventDictionary.Add(type,  $"View view = ecsEntity.GetView();\n" +
+                                         $"        if (view == null) return null;\n" +
+                                         $"        (({bindType.FullName}) (view.Value)).{funcName}(p);");
         }
 
         public static void CreateEvent()
