@@ -15,7 +15,7 @@ MonoBehaviour:
   m_GroupName: skilleffect
   m_Data:
     m_SerializedData: []
-  m_GUID: 3c593cf834a1d7c42942ee91589e0d3f
+  m_GUID: bacb60a9ea936854897a9950bffb8637
   m_SerializeEntries:
   - m_GUID: 80ee4e20519678a469f61de4fc048ee0
     m_Address: Skill1Effect

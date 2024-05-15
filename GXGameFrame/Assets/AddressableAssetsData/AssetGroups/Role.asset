@@ -15,7 +15,7 @@ MonoBehaviour:
   m_GroupName: Role
   m_Data:
     m_SerializedData: []
-  m_GUID: 29d0a62faa37be148b1170a69b83cb94
+  m_GUID: b98fba72ac0be0048b00e5e58792bc93
   m_SerializeEntries:
   - m_GUID: cc81e0220f7bb634da5dcebae6f34938
     m_Address: character

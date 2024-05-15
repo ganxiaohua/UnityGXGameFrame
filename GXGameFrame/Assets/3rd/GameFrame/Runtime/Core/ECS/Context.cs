@@ -21,39 +21,43 @@ namespace GameFrame
 
         public void RemoveChild(ECSEntity ecsEntity)
         {
+            ChangeAddRomoveChildOrCompone(ecsEntity);
             base.RemoveChild(ecsEntity);
-            ChangeAddRomoveChildOrCompone(ecsEntity, false);
         }
 
-        public void ChangeAddRomoveChildOrCompone(ECSEntity ecsEntity, bool silently)
+        public void ChangeAddRomoveChildOrCompone(ECSEntity ecsEntity)
         {
-            foreach (var group in m_Groups.Values)
+            foreach (var cid in ecsEntity.ECSComponentArray.Indexs)
             {
-                Group gourp = group;
-                if (silently)
-                    gourp.HandleEntitySilently(ecsEntity);
-                else
-                    gourp.HandleEntity(ecsEntity);
+                Reactive(cid, ecsEntity);
             }
+
+            // foreach (var group in m_Groups.Values)
+            // {
+            //     Group gourp = group;
+            //     if (silently)
+            //         gourp.HandleEntitySilently(ecsEntity);
+            //     else
+            //         gourp.HandleEntity(ecsEntity);
+            // }
         }
 
         public Group GetGroup(Matcher matcher)
         {
-            if (!m_Groups.TryGetValue(matcher, out Group grop))
+            if (m_Groups.TryGetValue(matcher, out Group grop)) return grop;
+            grop = Group.CreateGroup(matcher);
+            foreach (var item in Children)
             {
-                grop = Group.CreateGroup(matcher);
-                foreach (var item in Children)
-                {
-                    grop.HandleEntitySilently(item as ECSEntity);
-                }
-
-                m_Groups.Add(matcher, grop);
-                foreach (var index in matcher.Indices)
-                {
-                    m_GroupsList[index] ??= new List<Group>();
-                    m_GroupsList[index].Add(grop);
-                }
+                grop.HandleEntitySilently((ECSEntity)item);
             }
+
+            m_Groups.Add(matcher, grop);
+            foreach (var cid in matcher.Indices)
+            {
+                m_GroupsList[cid] ??= new List<Group>(128);
+                m_GroupsList[cid].Add(grop);
+            }
+
             return grop;
         }
 
@@ -77,6 +81,7 @@ namespace GameFrame
                 Matcher.RemoveMatcher(group.Key);
                 Group.RemoveGroup(group.Value);
             }
+
             m_GroupsList = null;
             m_Groups.Clear();
         }

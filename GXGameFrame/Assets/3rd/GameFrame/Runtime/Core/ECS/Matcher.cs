@@ -119,7 +119,6 @@ namespace GameFrame
                     this.m_NoneOfIndices, 647, 683);
                 this.m_IsHashCached = true;
             }
-
             return this.m_Hash;
         }
 

@@ -43,16 +43,16 @@ namespace GameFrame
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public ECSComponent AddComponent(int index)
+        public ECSComponent AddComponent(int cid)
         {
-            Type type = GXComponents.ComponentTypes[index];
-            if (ECSComponentArray[index] != null)
+            Type type = GXComponents.ComponentTypes[cid];
+            if (ECSComponentArray[cid] != null)
             {
                 throw new Exception($"entity already has component: {type.FullName}");
             }
 
-            ECSComponent entity = ECSComponentArray.Add(index, type);
-            m_Context.ChangeAddRomoveChildOrCompone(this, false);
+            ECSComponent entity = ECSComponentArray.Add(cid, type);
+            m_Context.ChangeAddRomoveChildOrCompone(this);
             return entity;
         }
 
@@ -61,16 +61,16 @@ namespace GameFrame
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <exception cref="Exception"></exception>
-        public void RemoveComponent(int index)
+        public void RemoveComponent(int cid)
         {
-            Type type = GXComponents.ComponentTypes[index];
-            if (ECSComponentArray[index] == null)
+            Type type = GXComponents.ComponentTypes[cid];
+            if (ECSComponentArray[cid] == null)
             {
                 throw new Exception($"entity not already  component: {type.FullName}");
             }
 
-            ECSComponentArray.Remove(index);
-            m_Context.ChangeAddRomoveChildOrCompone(this, false);
+            ECSComponentArray.Remove(cid);
+            m_Context.ChangeAddRomoveChildOrCompone(this);
         }
 
         /// <summary>
@@ -78,9 +78,9 @@ namespace GameFrame
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public ECSComponent GetComponent(int index)
+        public ECSComponent GetComponent(int cid)
         {
-            var component = ECSComponentArray[index];
+            var component = ECSComponentArray[cid];
             return component;
         }
 
@@ -89,11 +89,11 @@ namespace GameFrame
         /// </summary>
         /// <param name="hascode"></param>
         /// <returns></returns>
-        public bool HasComponents(int[] indexs)
+        public bool HasComponents(int[] cids)
         {
-            for (int index = 0; index < indexs.Length; ++index)
+            for (int index = 0; index < cids.Length; ++index)
             {
-                if (ECSComponentArray[indexs[index]] == null)
+                if (ECSComponentArray[cids[index]] == null)
                 {
                     return false;
                 }
@@ -107,9 +107,9 @@ namespace GameFrame
             m_Context = context;
         }
 
-        public bool HasComponent(int indexs)
+        public bool HasComponent(int cid)
         {
-            if (ECSComponentArray[indexs] == null)
+            if (ECSComponentArray[cid] == null)
             {
                 return false;
             }
@@ -122,11 +122,11 @@ namespace GameFrame
         /// </summary>
         /// <param name="indexs"></param>
         /// <returns></returns>
-        public bool HasAnyComponent(int[] indexs)
+        public bool HasAnyComponent(int[] cids)
         {
-            for (int index = 0; index < indexs.Length; ++index)
+            for (int index = 0; index < cids.Length; ++index)
             {
-                if (ECSComponentArray[indexs[index]] != null)
+                if (ECSComponentArray[cids[index]] != null)
                 {
                     return true;
                 }
@@ -141,7 +141,7 @@ namespace GameFrame
         public void ClearAllComponent()
         {
             ReferencePool.Release(ECSComponentArray);
-            ((Context) Parent).ChangeAddRomoveChildOrCompone(this, false);
+            ((Context) Parent).ChangeAddRomoveChildOrCompone(this);
         }
 
         public void Clear()

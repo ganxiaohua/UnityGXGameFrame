@@ -15,7 +15,7 @@ MonoBehaviour:
   m_GroupName: UI
   m_Data:
     m_SerializedData: []
-  m_GUID: 5612742288605734a9b2b134e95bf1ef
+  m_GUID: 36525d68ce2bf314283c64e8c314f440
   m_SerializeEntries:
   - m_GUID: 7866e3a79e34a4e4e9993b07ceafd927
     m_Address: TestUI
