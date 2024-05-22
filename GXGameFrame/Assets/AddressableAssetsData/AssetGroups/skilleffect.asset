@@ -9,13 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
   m_Name: skilleffect
-  m_EditorClassIdentifier: Unity.Addressables.Editor:UnityEditor.AddressableAssets.Settings:AddressableAssetGroup
+  m_EditorClassIdentifier: 
   m_GroupName: skilleffect
   m_Data:
     m_SerializedData: []
-  m_GUID: bacb60a9ea936854897a9950bffb8637
+  m_GUID: 26864ff187d76044e8b57c5496407c32
   m_SerializeEntries:
   - m_GUID: 80ee4e20519678a469f61de4fc048ee0
     m_Address: Skill1Effect
@@ -26,8 +26,8 @@ MonoBehaviour:
     - skilleffect
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
-  m_Settings: {fileID: 11400000, guid: 1765143bf1e4ef948a398b5a8cb3ff52, type: 2}
+  m_Settings: {fileID: 11400000, guid: 0020e5d0c8443bd4cb3a8bfd7153ae30, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 8cb3767f11f53b5418dc5985a7953001, type: 2}
-    - {fileID: 11400000, guid: 2558a9532a87e2f498aea56b79f620ce, type: 2}
+    - {fileID: 11400000, guid: f4a4ca9ea3f6bc84abc3a445161c8b9c, type: 2}
+    - {fileID: 11400000, guid: df48d43e36354c94089b4298a4316621, type: 2}

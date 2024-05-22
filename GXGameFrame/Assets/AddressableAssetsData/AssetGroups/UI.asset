@@ -9,13 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
   m_Name: UI
-  m_EditorClassIdentifier: Unity.Addressables.Editor:UnityEditor.AddressableAssets.Settings:AddressableAssetGroup
+  m_EditorClassIdentifier: 
   m_GroupName: UI
   m_Data:
     m_SerializedData: []
-  m_GUID: 36525d68ce2bf314283c64e8c314f440
+  m_GUID: 2ca3cb6ebb62db345a5b52a0a087025e
   m_SerializeEntries:
   - m_GUID: 7866e3a79e34a4e4e9993b07ceafd927
     m_Address: TestUI
@@ -39,8 +39,8 @@ MonoBehaviour:
     - UI
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
-  m_Settings: {fileID: 11400000, guid: 1765143bf1e4ef948a398b5a8cb3ff52, type: 2}
+  m_Settings: {fileID: 11400000, guid: 0020e5d0c8443bd4cb3a8bfd7153ae30, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: b807904e7896ae949a1d652d108620d4, type: 2}
-    - {fileID: 11400000, guid: 556b8c1b11cbf6b43bf04e077496853a, type: 2}
+    - {fileID: 11400000, guid: e0cff53e9440af5498afdbf3549f533c, type: 2}
+    - {fileID: 11400000, guid: 4637fccd0b39e8e449dbddc35451e9cc, type: 2}

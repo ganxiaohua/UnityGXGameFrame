@@ -27,7 +27,7 @@ QualitySettings:
     softVegetation: 0
     realtimeReflectionProbes: 0
     billboardsFaceCameraPosition: 0
-    useLegacyDetailDistribution: 1
+    useLegacyDetailDistribution: 0
     vSyncCount: 0
     realtimeGICPUUsage: 25
     lodBias: 0.3
@@ -76,7 +76,7 @@ QualitySettings:
     softVegetation: 0
     realtimeReflectionProbes: 0
     billboardsFaceCameraPosition: 0
-    useLegacyDetailDistribution: 1
+    useLegacyDetailDistribution: 0
     vSyncCount: 0
     realtimeGICPUUsage: 25
     lodBias: 0.4
@@ -125,7 +125,7 @@ QualitySettings:
     softVegetation: 0
     realtimeReflectionProbes: 0
     billboardsFaceCameraPosition: 0
-    useLegacyDetailDistribution: 1
+    useLegacyDetailDistribution: 0
     vSyncCount: 1
     realtimeGICPUUsage: 25
     lodBias: 0.7
@@ -174,7 +174,7 @@ QualitySettings:
     softVegetation: 1
     realtimeReflectionProbes: 1
     billboardsFaceCameraPosition: 1
-    useLegacyDetailDistribution: 1
+    useLegacyDetailDistribution: 0
     vSyncCount: 1
     realtimeGICPUUsage: 50
     lodBias: 1
@@ -223,7 +223,7 @@ QualitySettings:
     softVegetation: 1
     realtimeReflectionProbes: 1
     billboardsFaceCameraPosition: 1
-    useLegacyDetailDistribution: 1
+    useLegacyDetailDistribution: 0
     vSyncCount: 1
     realtimeGICPUUsage: 50
     lodBias: 1.5
@@ -263,16 +263,16 @@ QualitySettings:
     shadowCascade2Split: 0.33333334
     shadowCascade4Split: {x: 0.06666667, y: 0.2, z: 0.46666667}
     shadowmaskMode: 1
-    skinWeights: 4
+    skinWeights: 255
     globalTextureMipmapLimit: 0
     textureMipmapLimitSettings: []
     anisotropicTextures: 2
-    antiAliasing: 0
+    antiAliasing: 2
     softParticles: 1
     softVegetation: 1
     realtimeReflectionProbes: 1
     billboardsFaceCameraPosition: 1
-    useLegacyDetailDistribution: 1
+    useLegacyDetailDistribution: 0
     vSyncCount: 1
     realtimeGICPUUsage: 100
     lodBias: 2
@@ -303,16 +303,18 @@ QualitySettings:
   m_TextureMipmapLimitGroupNames: []
   m_PerPlatformDefaultQuality:
     Android: 2
+    EmbeddedLinux: 5
     GameCoreScarlett: 5
     GameCoreXboxOne: 5
-    Lumin: 5
-    Nintendo 3DS: 5
+    LinuxHeadlessSimulation: 5
     Nintendo Switch: 5
     PS4: 5
     PS5: 5
-    Server: 0
+    QNX: 5
+    Server: 5
     Stadia: 5
     Standalone: 5
+    VisionOS: 5
     WebGL: 3
     Windows Store Apps: 5
     XboxOne: 5
