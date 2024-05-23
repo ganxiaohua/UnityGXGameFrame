@@ -38,7 +38,7 @@ namespace GameFrame.Editor
 
         public static string GameFramePath = "Assets/3rd/GameFrame/";
 
-        public static string SystemBindOutPutPath = "Assets/GXGame/Scripts/Runtime/Auto/SystemBindAuto.cs";
+        // public static string SystemBindOutPutPath = "Assets/GXGame/Scripts/Runtime/Auto/SystemBindAuto.cs";
         
         public static string UIScenePath = "Assets/3rd/GameFrame/Runtime/InspectorEditor/CreateUIScene.unity";
 

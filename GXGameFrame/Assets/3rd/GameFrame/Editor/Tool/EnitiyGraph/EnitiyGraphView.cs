@@ -14,13 +14,13 @@ namespace GameFrame.Editor
 
         private EditorWindow m_EditorWindow;
 
-        private Dictionary<Node, EnitiyNode> m_NodeDic;
+        private Dictionary<Node, EntityNode> m_NodeDic;
 
         private int m_FlootHeght;
 
         private int m_FlootWidth;
 
-        private EnitiyNode m_SelectEnitiyNode;
+        private EntityNode mSelectEntityNode;
 
         private GeneralGraphGroup m_Group;
 
@@ -81,7 +81,7 @@ namespace GameFrame.Editor
                 m_EnitiyInfos.GetRootEnitiy();
                 CreateNodeWithInfo(m_EnitiyInfos.RootNode);
             }
-            else if (m_NodeDic.TryGetValue(node, out EnitiyNode enitiyNode))
+            else if (m_NodeDic.TryGetValue(node, out EntityNode enitiyNode))
             {
                 CreateNodeWithInfo(enitiyNode);
             }
@@ -89,7 +89,7 @@ namespace GameFrame.Editor
         
         private void RemoveNode(Node node)
         {
-            if (m_NodeDic.TryGetValue(node, out EnitiyNode enitiyNode))
+            if (m_NodeDic.TryGetValue(node, out EntityNode enitiyNode))
             {
                 (((ECSEntity)enitiyNode.entity).Parent as Context).RemoveChild((ECSEntity)enitiyNode.entity);
                 m_GeneralGraphView.RemoveElement(enitiyNode.GraphNode);
@@ -98,7 +98,7 @@ namespace GameFrame.Editor
             }
         }
 
-        private void CreateNodeWithInfo(EnitiyNode rootNode)
+        private void CreateNodeWithInfo(EntityNode rootNode)
         {
             if (rootNode == null || rootNode.entity == null)
             {
@@ -109,7 +109,7 @@ namespace GameFrame.Editor
             CreateEnitiyNode(rootNode);
         }
 
-        private void CreateRoot(EnitiyNode root)
+        private void CreateRoot(EntityNode root)
         {
             var graphNode = m_GeneralGraphView.AddNode<GeneralGrophNode>();
             graphNode.AddButton("关注", FollowNode);
@@ -127,7 +127,7 @@ namespace GameFrame.Editor
         }
 
 
-        private void CreateEnitiyNode(EnitiyNode node)
+        private void CreateEnitiyNode(EntityNode node)
         {
             for (int i = 0; i < node.NextNodes.Count; i++)
             {
@@ -153,10 +153,10 @@ namespace GameFrame.Editor
             }
         }
 
-        public void ShowComponent(EnitiyNode selectEnitiyNode)
+        public void ShowComponent(EntityNode selectEntityNode)
         {
-            m_SelectEnitiyNode = selectEnitiyNode;
-            if (m_SelectEnitiyNode.entity is ECSEntity ecs)
+            mSelectEntityNode = selectEntityNode;
+            if (mSelectEntityNode.entity is ECSEntity ecs)
             {
                 List<int> comIndexs = ecs.ECSComponentArray.Indexs;
                 List<ECSComponent> ecsComponents = new List<ECSComponent>();

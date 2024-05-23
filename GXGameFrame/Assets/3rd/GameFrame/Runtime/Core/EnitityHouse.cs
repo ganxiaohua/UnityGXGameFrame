@@ -37,7 +37,7 @@ namespace GameFrame
             {
                 throw new Exception($"TypeWithEntitys have enitiy:{entity.ID}");
             }
-            EventData.Instance.AddEventEnitiy(entity);
+            EventData.Instance.AddEventEntity(entity);
             entityList.Add(entity);
         }
 
@@ -70,7 +70,7 @@ namespace GameFrame
             {
                 throw new Exception($"TypeWithEntitys not have enitiy:{entity.ID}");
             }
-            EventData.Instance.AddEventEnitiy(entity);
+            EventData.Instance.AddEventEntity(entity);
             entityList.Remove(entity);
             RemoveAllSystem(entity);
         }
@@ -246,7 +246,7 @@ namespace GameFrame
         {
             ISystem system = (ISystem) entity;
             system?.SystemShow();
-            EventData.Instance.AddEventEnitiy(entity);
+            EventData.Instance.AddEventEntity(entity);
             if (!m_UpdateSystems.HasUpdateSystem(entity))
             {
                 ISystemObject updateSystem = m_EntitySystems.GetVValue(entity.GetType(), typeof(IUpdateSystem));
@@ -287,7 +287,7 @@ namespace GameFrame
         {
             ISystem system = (ISystem) entity;
             system?.SystemHide();
-            EventData.Instance.RemoveEventEnitiy(entity);
+            EventData.Instance.RemoveEventEntity(entity);
             m_UpdateSystems.RemoveUpdateSystem(entity);
             foreach (IEntity enitiy in entity.Children)
             {

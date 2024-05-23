@@ -31,7 +31,7 @@ namespace GameFrame
         /// </summary>
         /// <param name="enitiType"></param>
         /// <param name="entity"></param>
-        public void AddEventEnitiy(IEntity entity)
+        public void AddEventEntity(IEntity entity)
         {
             Type enitiType = entity.GetType();
             if (!sourceDic.TryGetValue(enitiType, out var eventhashset))
@@ -55,7 +55,7 @@ namespace GameFrame
         /// 当一个实体从系统中删除的时候删除其系统组件
         /// </summary>
         /// <param name="entity"></param>
-        public void RemoveEventEnitiy(IEntity entity)
+        public void RemoveEventEntity(IEntity entity)
         {
             Type enitiType = entity.GetType();
             if (!sourceDic.TryGetValue(enitiType, out var eventhashset))
@@ -69,11 +69,12 @@ namespace GameFrame
                 {
                     continue;
                 }
+
                 entities.Remove(entity);
             }
         }
 
-        public QueryList<IEntity> GetEnitiy(Type eventType)
+        public QueryList<IEntity> GetEntity(Type eventType)
         {
             return eventEnitiyDic.GetValueOrDefault(eventType);
         }

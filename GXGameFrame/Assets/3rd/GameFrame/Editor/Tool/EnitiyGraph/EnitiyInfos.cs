@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
 namespace GameFrame.Editor
 {
-    public class EnitiyNode
+    public class EntityNode
     {
-        public EnitiyNode PreNode;
-        public List<EnitiyNode> NextNodes = new();
+        public EntityNode PreNode;
+        public List<EntityNode> NextNodes = new();
         public int Floor;
         public int Grid;
         public IEntity entity;
@@ -17,7 +14,7 @@ namespace GameFrame.Editor
 
     public class EnitiyInfos
     {
-        public EnitiyNode RootNode;
+        public EntityNode RootNode;
         public Dictionary<int, int> FloorGrid;
         public bool Find = false;
 
@@ -36,7 +33,7 @@ namespace GameFrame.Editor
         public void GetRootEnitiy(IEntity ientity = null)
         {
             FloorGrid.Clear();
-            RootNode = new EnitiyNode();
+            RootNode = new EntityNode();
             IEntity root = null;
             if (ientity == null)
             {
@@ -55,7 +52,7 @@ namespace GameFrame.Editor
         }
 
 
-        public void StructureNode(EnitiyNode entityNode, int floor)
+        public void StructureNode(EntityNode entityNode, int floor)
         {
             if (!FloorGrid.ContainsKey(floor))
             {
@@ -76,15 +73,15 @@ namespace GameFrame.Editor
             }
         }
 
-        public void CreateNode(EnitiyNode parentNode, IEntity entity, int floor, int grid)
+        public void CreateNode(EntityNode parentNode, IEntity ientity, int floor, int grid)
         {
-            EnitiyNode enitiy = new EnitiyNode();
-            parentNode.NextNodes.Add(enitiy);
-            enitiy.PreNode = parentNode;
-            enitiy.Floor = floor;
-            enitiy.Grid = grid;
-            enitiy.entity = entity;
-            StructureNode(enitiy, enitiy.Floor);
+            EntityNode entity = new EntityNode();
+            parentNode.NextNodes.Add(entity);
+            entity.PreNode = parentNode;
+            entity.Floor = floor;
+            entity.Grid = grid;
+            entity.entity = ientity;
+            StructureNode(entity, entity.Floor);
         }
     }
 }
