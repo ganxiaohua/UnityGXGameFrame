@@ -71,7 +71,7 @@ namespace GameFrame.Editor
         public static void OpenSystemBind()
         {
             string macro = PlayerSettings.GetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup);
-            if (macro.Contains(EditorString.RESSEQ))
+            if (macro.Contains("SYSTEMBIND"))
             {
                 return;
             }
@@ -118,13 +118,32 @@ namespace GameFrame.Editor
         {
             Application.OpenURL($"{Application.dataPath + "/../"}ServerData/{BuildScript.BuildTarget}");
         }
+        
+        [MenuItem("GX框架工具/断言/开启", false, 7)]
+        public static void OpenAssertBind()
+        {
+            string macro = PlayerSettings.GetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup);
+            if (macro.Contains(EditorString.SHOWASSERT))
+            {
+                return;
+            }
 
-        // [MenuItem("GX框架工具/测试")]
-        // public static void Text()
-        // {
-        //     // BuildScript.AssetSettings.ContentStateBuildPath
-        //     // var x = ProjectConfigData.ActivePlayModeIndex;
-        //     // Debugger.Log(BuildScript.AssetSettings.RemoteCatalogLoadPath.GetValue(BuildScript.AssetSettings));
-        // }
+            macro = $"{EditorString.SHOWASSERT};{macro}";
+            PlayerSettings.SetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup, macro);
+        }
+        
+        [MenuItem("GX框架工具/断言/关闭", false, 8)]
+        public static void CloseAssertBind()
+        {
+            string macro = PlayerSettings.GetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup);
+            if (!macro.Contains(EditorString.SHOWASSERT))
+            {
+                return;
+            }
+            
+            macro = macro.Replace(EditorString.SHOWASSERT, "");
+            PlayerSettings.SetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup, macro);
+        }
+
     }
 }

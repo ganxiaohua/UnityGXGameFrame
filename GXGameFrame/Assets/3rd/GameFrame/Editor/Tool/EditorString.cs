@@ -43,6 +43,8 @@ namespace GameFrame.Editor
         public static string UIScenePath = "Assets/3rd/GameFrame/Runtime/InspectorEditor/CreateUIScene.unity";
 
         public static string RESSEQ = "RESSEQ";
+        
+        public static string SHOWASSERT = "SHOWASSERT";
 
         public static string[] AssemblyNames = new string[] {"GamePlay.Runtime", "GameFrame.Runtime"};
     }
