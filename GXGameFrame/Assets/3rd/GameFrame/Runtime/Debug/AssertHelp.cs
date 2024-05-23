@@ -4,10 +4,10 @@ namespace GameFrame
 {
     public class Assert
     {
-#if !UNITY_EDITOR || !SHOWASSERT
-        public const string SHOWASSERT = "NOSHOWASSERT";
-#elif UNITY_EDITOR || SHOWASSERT
-        public const string SHOWASSERT = "UNITY_EDITOR";
+#if !SHOWASSERT
+        private const string SHOWASSERT = "NOSHOWASSERT";
+#elif SHOWASSERT
+        private const string SHOWASSERT = "UNITY_EDITOR";
 #endif
 
         [Conditional(SHOWASSERT)]
@@ -15,7 +15,7 @@ namespace GameFrame
         {
             UnityEngine.Assertions.Assert.IsNotNull(obj, explain);
         }
-        
+
         [Conditional(SHOWASSERT)]
         public static void IsNull(object obj, string explain)
         {
@@ -27,7 +27,7 @@ namespace GameFrame
         {
             UnityEngine.Assertions.Assert.IsTrue(b, explain);
         }
-        
+
         [Conditional(SHOWASSERT)]
         public static void IsFalse(bool b, string explain)
         {
