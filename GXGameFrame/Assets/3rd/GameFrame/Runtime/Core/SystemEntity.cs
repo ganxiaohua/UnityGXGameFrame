@@ -1,6 +1,6 @@
 ﻿namespace GameFrame
 {
-    public class SystemEnitiy : IReference
+    public class SystemEntity : IReference
     {
         public ISystemObject SystemObject { get; set; }
         public IEntity Entity { get; set; }

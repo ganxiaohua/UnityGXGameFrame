@@ -5,10 +5,8 @@ using UnityEngine.UIElements;
 
 namespace GameFrame.Editor
 {
-    public class GeneralGraphGroup: EditorEnitiy
+    public class GeneralGraphGroup: EditorEntity
     {
-        // public int ID { get; set; }
-        // public IEditorEnitiy Parent { get; set; }
         private UnityEditor.Experimental.GraphView.Group group;
         
         public override void Init(object obj)

@@ -11,10 +11,10 @@ namespace GameFrame.Editor
         public bool Entry = false;
         public Port InPort;
         public Port OutPort;
-        private EnitiyGraphView m_Parent;
+        private EntityGraphView m_Parent;
         private EntityNode m_Data;
 
-        public void Init(EnitiyGraphView parent, EntityNode data, string text, Rect rect)
+        public void Init(EntityGraphView parent, EntityNode data, string text, Rect rect)
         {
             m_Parent = parent;
             m_Data = data;

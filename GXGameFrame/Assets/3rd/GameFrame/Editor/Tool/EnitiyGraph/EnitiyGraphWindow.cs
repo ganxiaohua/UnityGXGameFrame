@@ -1,6 +1,4 @@
-using System;
 using UnityEditor;
-using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -9,7 +7,7 @@ namespace GameFrame.Editor
 {
     public class DialogueGraphWindow : EditorWindow
     {
-        private EnitiyGraphView GraphView;
+        private EntityGraphView GraphView;
         
         public static void OpenDialogueGraphWindow()
         {
@@ -19,7 +17,7 @@ namespace GameFrame.Editor
 
         private void OnEnable()
         {
-            GraphView = new EnitiyGraphView();
+            GraphView = new EntityGraphView();
             GraphView.Init(this);
             GraphView.Show();
             CreateTools();

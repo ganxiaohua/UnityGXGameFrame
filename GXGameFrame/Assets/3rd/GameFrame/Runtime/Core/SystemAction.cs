@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace GameFrame
+﻿namespace GameFrame
 {
-    using DDictionaryET = Dictionary<Type, ISystemObject>;
-
     public static class SystemAction
     {
         public static bool SystemStart(this ISystem system)
@@ -96,7 +91,7 @@ namespace GameFrame
         }
 
 
-        public static void SystemUpdate(this QueryList<SystemEnitiy> ets, float elapseSeconds, float realElapseSeconds)
+        public static void SystemUpdate(this QueryList<SystemEntity> ets, float elapseSeconds, float realElapseSeconds)
         {
             foreach (var es in ets)
             {
@@ -104,7 +99,7 @@ namespace GameFrame
             }
         }
 
-        public static void SystemLateUpdate(this QueryList<SystemEnitiy> ets, float elapseSeconds, float realElapseSeconds)
+        public static void SystemLateUpdate(this QueryList<SystemEntity> ets, float elapseSeconds, float realElapseSeconds)
         {
             foreach (var es in ets)
             {
@@ -112,7 +107,7 @@ namespace GameFrame
             }
         }
 
-        public static void SystemFixedUpdate(this QueryList<SystemEnitiy> ets, float elapseSeconds, float realElapseSeconds)
+        public static void SystemFixedUpdate(this QueryList<SystemEntity> ets, float elapseSeconds, float realElapseSeconds)
         {
             foreach (var es in ets)
             {

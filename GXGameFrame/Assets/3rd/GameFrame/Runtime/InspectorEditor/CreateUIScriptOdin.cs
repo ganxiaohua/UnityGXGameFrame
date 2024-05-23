@@ -239,16 +239,16 @@ public class CreateUIScriptOdin : MonoBehaviour
             for (int i = 0; i < bindList.Count; i++)
             {
                 var v = bindList[i];
-                Text += CreateEnitiyAuto.CreateUIAutoComText(v.TypeName, v.FieldName,v.Path);
+                Text += CreateEntityAuto.CreateUIAutoComText(v.TypeName, v.FieldName,v.Path);
             }
 
-            CreateEnitiyAuto.CreateUIViewAutoText(codepath, classname, Text);
+            CreateEntityAuto.CreateUIViewAutoText(codepath, classname, Text);
         }
 
         void LogicFunc(string codepath, string classname)
         {
-            CreateEnitiyAuto.CreateUIMain( codepath, classname, UIPanel.packageName, UIPanel.componentName);
-            CreateEnitiyAuto.CreateUIViewText(codepath, classname, UIPanel.packageName, UIPanel.componentName);
+            CreateEntityAuto.CreateUIMain( codepath, classname, UIPanel.packageName, UIPanel.componentName);
+            CreateEntityAuto.CreateUIViewText(codepath, classname, UIPanel.packageName, UIPanel.componentName);
         }
 
         AssetDatabase.Refresh();

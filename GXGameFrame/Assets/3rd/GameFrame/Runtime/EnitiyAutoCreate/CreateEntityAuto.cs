@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 
-public class CreateEnitiyAuto
+public class CreateEntityAuto
 {
     
     

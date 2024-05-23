@@ -31,7 +31,7 @@ namespace GameFrame.Editor
                 foreach (var name in  EditorString.AssemblyNames)
                 {
                     if (item.GetName().Name != name) continue;
-                    FindEnitiyClass(item); 
+                    FindEntityClass(item); 
                     break;
                 }
             }
@@ -57,7 +57,7 @@ namespace GameFrame.Editor
             AddTextSend = text[1];
         }
 
-        private static void FindEnitiyClass(Assembly assembly)
+        private static void FindEntityClass(Assembly assembly)
         {
             Type[] types = assembly.GetTypes();
             foreach (var tp in types)

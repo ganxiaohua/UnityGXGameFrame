@@ -35,7 +35,7 @@ namespace GameFrame
 
             if (entityList.Contains(entity))
             {
-                throw new Exception($"TypeWithEntitys have enitiy:{entity.ID}");
+                throw new Exception($"TypeWithEntitys have entity:{entity.ID}");
             }
             EventData.Instance.AddEventEntity(entity);
             entityList.Add(entity);
@@ -68,7 +68,7 @@ namespace GameFrame
             Type type = entity.GetType();
             if (!m_TypeWithEntitys.TryGetValue(type, out var entityList) || !entityList.Contains(entity))
             {
-                throw new Exception($"TypeWithEntitys not have enitiy:{entity.ID}");
+                throw new Exception($"TypeWithEntitys not have entity:{entity.ID}");
             }
             EventData.Instance.AddEventEntity(entity);
             entityList.Remove(entity);
@@ -101,7 +101,7 @@ namespace GameFrame
                 Type type = typeof(T);
                 if (IScene.GetType() == type)
                 {
-                    throw new Exception($"EverySceneEntity  have enitiy:{type.Name}");
+                    throw new Exception($"EverySceneEntity  have entity:{type.Name}");
                 }
 
                 RemoveSceneEntity(sceneType);
@@ -122,7 +122,7 @@ namespace GameFrame
         {
             if (!m_EverySceneEntity.TryGetValue(sceneType, out IScene IScene))
             {
-                throw new Exception($"EverySceneEntity not have enitiy:{sceneType}");
+                throw new Exception($"EverySceneEntity not have entity:{sceneType}");
             }
 
             return IScene;
@@ -138,7 +138,7 @@ namespace GameFrame
         {
             if (!m_EverySceneEntity.TryGetValue(sceneType, out IScene scene))
             {
-                throw new Exception($"EverySceneEntity not have enitiy:{sceneType}");
+                throw new Exception($"EverySceneEntity not have entity:{sceneType}");
             }
 
             GXGameFrame.Instance.MainScene.RemoveComponent(scene.GetType());
@@ -268,14 +268,14 @@ namespace GameFrame
                 }
             }
 
-            foreach (IEntity enitiy in entity.Children)
+            foreach (IEntity entity1 in entity.Children)
             {
-                RunShowSystem((Entity) enitiy);
+                RunShowSystem((Entity) entity1);
             }
 
-            foreach (KeyValuePair<Type, IEntity> enitiy in entity.Components)
+            foreach (KeyValuePair<Type, IEntity> valuePair in entity.Components)
             {
-                RunShowSystem((Entity) enitiy.Value);
+                RunShowSystem((Entity) valuePair.Value);
             }
         }
 
@@ -289,14 +289,14 @@ namespace GameFrame
             system?.SystemHide();
             EventData.Instance.RemoveEventEntity(entity);
             m_UpdateSystems.RemoveUpdateSystem(entity);
-            foreach (IEntity enitiy in entity.Children)
+            foreach (IEntity entity1 in entity.Children)
             {
-                RunHideSystem((Entity) enitiy);
+                RunHideSystem((Entity) entity1);
             }
 
-            foreach (KeyValuePair<Type, IEntity> enitiy in entity.Components)
+            foreach (KeyValuePair<Type, IEntity> entity1 in entity.Components)
             {
-                RunHideSystem((Entity) enitiy.Value);
+                RunHideSystem((Entity) entity1.Value);
             }
         }
 
@@ -344,17 +344,17 @@ namespace GameFrame
 
         public void Update(float elapseSeconds, float realElapseSeconds)
         {
-            m_UpdateSystems.UpdateSystemEnitiys[(int) UpdateType.Update].SystemUpdate(elapseSeconds, realElapseSeconds);
+            m_UpdateSystems.UpdateSystemEntitys[(int) UpdateType.Update].SystemUpdate(elapseSeconds, realElapseSeconds);
         }
 
         public void LateUpdate(float elapseSeconds, float realElapseSeconds)
         {
-            m_UpdateSystems.UpdateSystemEnitiys[(int) UpdateType.LateUpdate].SystemLateUpdate(elapseSeconds, realElapseSeconds);
+            m_UpdateSystems.UpdateSystemEntitys[(int) UpdateType.LateUpdate].SystemLateUpdate(elapseSeconds, realElapseSeconds);
         }
 
         public void FixedUpdate(float elapseSeconds, float realElapseSeconds)
         {
-            m_UpdateSystems.UpdateSystemEnitiys[(int) UpdateType.FixedUpdate].SystemFixedUpdate(elapseSeconds, realElapseSeconds);
+            m_UpdateSystems.UpdateSystemEntitys[(int) UpdateType.FixedUpdate].SystemFixedUpdate(elapseSeconds, realElapseSeconds);
         }
 
 

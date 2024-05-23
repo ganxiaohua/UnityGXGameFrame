@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace GameFrame
 {
-    public class BehaviorWorldEnitiy : Entity, IStartSystem<Type>, IUpdateSystem
+    public class BehaviorWorldEntity : Entity, IStartSystem<Type>, IUpdateSystem
     {
         private BehaviorWorld m_BehaviorWorld;
-        private Dictionary<Type, BehaviorEnitiy> m_BehaviorDic;
-        private Dictionary<IBehaviorData, BehaviorEnitiy> m_DataForBehaviorDic;
+        private Dictionary<Type, BehaviorEntity> m_BehaviorDic;
+        private Dictionary<IBehaviorData, BehaviorEntity> m_DataForBehaviorDic;
         private List<IBehaviorData> m_Datas;
 
         public void Start(Type arenatype)
@@ -46,7 +46,7 @@ namespace GameFrame
         public Behavior AddBehavior<T>() where T : Behavior
         {
             Type type = typeof(T);
-            var jackdollComponent = AddChild<BehaviorEnitiy, Type, BehaviorWorld>(type, m_BehaviorWorld);
+            var jackdollComponent = AddChild<BehaviorEntity, Type, BehaviorWorld>(type, m_BehaviorWorld);
             m_BehaviorDic.Add(type, jackdollComponent);
             return jackdollComponent.Behavior;
         }
@@ -60,7 +60,7 @@ namespace GameFrame
         public void RemoveBehavior<T>() where T : Behavior
         {
             Type type = typeof(T);
-            if (!m_BehaviorDic.TryGetValue(type, out BehaviorEnitiy jackdoll))
+            if (!m_BehaviorDic.TryGetValue(type, out BehaviorEntity jackdoll))
             {
                 return;
             }
@@ -77,7 +77,7 @@ namespace GameFrame
         /// <param name="behaviorData">玩偶本身</param>
         public void ChangeBehavior<T>(IBehaviorData behaviorData) where T : Behavior
         {
-            if (m_DataForBehaviorDic.TryGetValue(behaviorData, out BehaviorEnitiy  behavior))
+            if (m_DataForBehaviorDic.TryGetValue(behaviorData, out BehaviorEntity  behavior))
             {
                 m_DataForBehaviorDic.Remove(behaviorData);
                 behavior.DataLeave(behaviorData);
@@ -114,7 +114,7 @@ namespace GameFrame
             }
 
             m_Datas.Remove(behaviorData);
-            if (m_DataForBehaviorDic.TryGetValue(behaviorData, out BehaviorEnitiy jackdoll))
+            if (m_DataForBehaviorDic.TryGetValue(behaviorData, out BehaviorEntity jackdoll))
             {
                 m_DataForBehaviorDic.Remove(behaviorData);
                 jackdoll.DataLeave(behaviorData);

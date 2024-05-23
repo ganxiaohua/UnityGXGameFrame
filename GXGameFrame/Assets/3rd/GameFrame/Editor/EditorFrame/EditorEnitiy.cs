@@ -4,10 +4,10 @@ using UnityEngine;
 
 namespace GameFrame.Editor
 {
-    public interface IEditorEnitiy: IReference
+    public interface IEditorEntity: IReference
     {
         public int ID { get; set; }
-        public IEditorEnitiy Parent { get; set; }
+        public IEditorEntity Parent { get; set; }
 
         public void Init(object obj);
 
@@ -17,12 +17,12 @@ namespace GameFrame.Editor
         
     }
 
-    public abstract class EditorEnitiy : IEditorEnitiy
+    public abstract class EditorEntity : IEditorEntity
     {
-        private Dictionary<Type, IEditorEnitiy> m_Components = new ();
-        private Dictionary<int, IEditorEnitiy> m_Childs = new();
+        private Dictionary<Type, IEditorEntity> m_Components = new ();
+        private Dictionary<int, IEditorEntity> m_Childs = new();
         public int ID { get; set; }
-        public IEditorEnitiy Parent { get; set; }
+        public IEditorEntity Parent { get; set; }
         private int LastID;
 
         public virtual void Init(object obj = null)
@@ -36,12 +36,12 @@ namespace GameFrame.Editor
 
         public virtual void Hide()
         {
-            foreach (EditorEnitiy component in m_Components.Values)
+            foreach (EditorEntity component in m_Components.Values)
             {
                 component.Hide();
             }
 
-            foreach (EditorEnitiy child in m_Childs.Values)
+            foreach (EditorEntity child in m_Childs.Values)
             {
                 child.Hide();
             }
@@ -49,19 +49,19 @@ namespace GameFrame.Editor
 
         public virtual void Clear()
         {
-            foreach (IEditorEnitiy component in m_Components.Values)
+            foreach (IEditorEntity component in m_Components.Values)
             {
                 ReferencePool.Release(component);
             }
 
-            foreach (IEditorEnitiy child in m_Childs.Values)
+            foreach (IEditorEntity child in m_Childs.Values)
             {
                 ReferencePool.Release(child);
             }
             m_Components.Clear();
         }
 
-        public T AddComponent<T>(object obj) where T : class, IEditorEnitiy, new()
+        public T AddComponent<T>(object obj) where T : class, IEditorEntity, new()
         {
             if (m_Components.ContainsKey(typeof(T)))
             {
@@ -76,10 +76,10 @@ namespace GameFrame.Editor
             return acquireT;
         }
 
-        public T GetComponent<T>() where T : class, IEditorEnitiy, new()
+        public T GetComponent<T>() where T : class, IEditorEntity, new()
         {
             Type type = typeof(T);
-            if (!m_Components.TryGetValue(type, out IEditorEnitiy enitity))
+            if (!m_Components.TryGetValue(type, out IEditorEntity enitity))
             {
                 Debug.LogWarning($"组件{type.Name}不存在");
             }
@@ -88,14 +88,14 @@ namespace GameFrame.Editor
         }
         
 
-        public void RemoveComponent<T>() where T : IEditorEnitiy, new()
+        public void RemoveComponent<T>() where T : IEditorEntity, new()
         {
             RemoveComponent(typeof(T));
         }
         
         public void RemoveComponent(Type type)
         {
-            if (!m_Components.TryGetValue(type, out IEditorEnitiy enitity))
+            if (!m_Components.TryGetValue(type, out IEditorEntity enitity))
             {
                 Debug.LogWarning($"组件{type.Name}不存在");
                 return;
@@ -104,7 +104,7 @@ namespace GameFrame.Editor
             m_Components.Remove(type);
         }
         
-        public T AddChild<T>() where T : class, IEditorEnitiy, new()
+        public T AddChild<T>() where T : class, IEditorEntity, new()
         {
             T acquireT = ReferencePool.Acquire<T>();
             acquireT.Parent = this;
@@ -115,7 +115,7 @@ namespace GameFrame.Editor
 
         public void RemoveChild(int id)
         {
-            if (!m_Childs.TryGetValue(id, out IEditorEnitiy enitity))
+            if (!m_Childs.TryGetValue(id, out IEditorEntity enitity))
             {
                 Debug.LogWarning($"组件{id}不存在");
                 return;

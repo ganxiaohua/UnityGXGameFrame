@@ -13,7 +13,7 @@ namespace GameFrame
         /// <summary>
         /// 标记事件和对应的实体
         /// </summary>
-        private Dictionary<Type, QueryList<IEntity>> eventEnitiyDic = new();
+        private Dictionary<Type, QueryList<IEntity>> eventEntityDic = new();
 
         public void AddSourceDic(Type key, Type vale)
         {
@@ -27,7 +27,7 @@ namespace GameFrame
         }
 
         /// <summary>
-        /// 当一个实体加入的时候,找到这个事件,然后加入到eventEnitiyDic字典
+        /// 当一个实体加入的时候,找到这个事件,然后加入到eventEntityDic字典
         /// </summary>
         /// <param name="enitiType"></param>
         /// <param name="entity"></param>
@@ -41,10 +41,10 @@ namespace GameFrame
 
             foreach (Type eventType in eventhashset)
             {
-                if (!eventEnitiyDic.TryGetValue(eventType, out var entities))
+                if (!eventEntityDic.TryGetValue(eventType, out var entities))
                 {
                     entities = new QueryList<IEntity>();
-                    eventEnitiyDic.Add(eventType, entities);
+                    eventEntityDic.Add(eventType, entities);
                 }
 
                 entities.Add(entity);
@@ -65,7 +65,7 @@ namespace GameFrame
 
             foreach (Type eventType in eventhashset)
             {
-                if (!eventEnitiyDic.TryGetValue(eventType, out var entities))
+                if (!eventEntityDic.TryGetValue(eventType, out var entities))
                 {
                     continue;
                 }
@@ -76,7 +76,7 @@ namespace GameFrame
 
         public QueryList<IEntity> GetEntity(Type eventType)
         {
-            return eventEnitiyDic.GetValueOrDefault(eventType);
+            return eventEntityDic.GetValueOrDefault(eventType);
         }
     }
 }

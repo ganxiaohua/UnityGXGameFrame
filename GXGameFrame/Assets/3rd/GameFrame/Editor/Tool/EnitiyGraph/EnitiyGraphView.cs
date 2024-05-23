@@ -6,11 +6,11 @@ using UnityEngine.UIElements;
 
 namespace GameFrame.Editor
 {
-    public class EnitiyGraphView : EditorEnitiy
+    public class EntityGraphView : EditorEntity
     {
         private GeneralGraphView m_GeneralGraphView;
 
-        private EnitiyInfos m_EnitiyInfos;
+        private EntityInfos mEntityInfos;
 
         private EditorWindow m_EditorWindow;
 
@@ -77,23 +77,23 @@ namespace GameFrame.Editor
             RemoveAll();
             if (node == null)
             {
-                m_EnitiyInfos ??= new EnitiyInfos();
-                m_EnitiyInfos.GetRootEnitiy();
-                CreateNodeWithInfo(m_EnitiyInfos.RootNode);
+                mEntityInfos ??= new EntityInfos();
+                mEntityInfos.GetRootEntity();
+                CreateNodeWithInfo(mEntityInfos.RootNode);
             }
-            else if (m_NodeDic.TryGetValue(node, out EntityNode enitiyNode))
+            else if (m_NodeDic.TryGetValue(node, out EntityNode entityNode))
             {
-                CreateNodeWithInfo(enitiyNode);
+                CreateNodeWithInfo(entityNode);
             }
         }
         
         private void RemoveNode(Node node)
         {
-            if (m_NodeDic.TryGetValue(node, out EntityNode enitiyNode))
+            if (m_NodeDic.TryGetValue(node, out EntityNode entityNode))
             {
-                (((ECSEntity)enitiyNode.entity).Parent as Context).RemoveChild((ECSEntity)enitiyNode.entity);
-                m_GeneralGraphView.RemoveElement(enitiyNode.GraphNode);
-                enitiyNode.GraphNode.Clear();
+                (((ECSEntity)entityNode.entity).Parent as Context).RemoveChild((ECSEntity)entityNode.entity);
+                m_GeneralGraphView.RemoveElement(entityNode.GraphNode);
+                entityNode.GraphNode.Clear();
                 m_NodeDic.Remove(node);
             }
         }
@@ -106,7 +106,7 @@ namespace GameFrame.Editor
             }
 
             CreateRoot(rootNode);
-            CreateEnitiyNode(rootNode);
+            CreateEntityNode(rootNode);
         }
 
         private void CreateRoot(EntityNode root)
@@ -127,7 +127,7 @@ namespace GameFrame.Editor
         }
 
 
-        private void CreateEnitiyNode(EntityNode node)
+        private void CreateEntityNode(EntityNode node)
         {
             for (int i = 0; i < node.NextNodes.Count; i++)
             {
@@ -148,7 +148,7 @@ namespace GameFrame.Editor
                 graphNode.RefreshPorts();
                 m_GeneralGraphView.AddElement(graphNode);
                 m_GeneralGraphView.AddEdgeByPorts(node.GraphNode.OutPort, inPort, PickingMode.Ignore);
-                CreateEnitiyNode(enititnode);
+                CreateEntityNode(enititnode);
                 graphNode.SetColor(enititnode.entity is ECSEntity ? new Color(0.5f, 0.2f, 0.1f) : Color.gray);
             }
         }
@@ -172,7 +172,7 @@ namespace GameFrame.Editor
         private void PlayModeStateChange(PlayModeStateChange playModeStateChange)
         {
             m_NodeDic.Clear();
-            m_EnitiyInfos = null;
+            mEntityInfos = null;
             // m_GeneralGraphView.Clear();
             m_Group?.Clear();
         }

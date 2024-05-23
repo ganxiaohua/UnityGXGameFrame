@@ -12,25 +12,25 @@ namespace GameFrame.Editor
         public GeneralGrophNode GraphNode;
     }
 
-    public class EnitiyInfos
+    public class EntityInfos
     {
         public EntityNode RootNode;
         public Dictionary<int, int> FloorGrid;
         public bool Find = false;
 
-        enum EnitiyType
+        enum EntityType
         {
             All,
             UI,
             Ecs,
         }
 
-        public EnitiyInfos()
+        public EntityInfos()
         {
             FloorGrid = new();
         }
 
-        public void GetRootEnitiy(IEntity ientity = null)
+        public void GetRootEntity(IEntity ientity = null)
         {
             FloorGrid.Clear();
             RootNode = new EntityNode();

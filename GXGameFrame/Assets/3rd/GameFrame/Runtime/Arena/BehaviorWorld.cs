@@ -2,10 +2,10 @@
 {
     public abstract class BehaviorWorld : IReference
     {
-        private BehaviorWorldEnitiy m_BehaviorWorldEnitiy;
-        public virtual void Init(BehaviorWorldEnitiy behaviorWorld)
+        private BehaviorWorldEntity m_BehaviorWorldEntity;
+        public virtual void Init(BehaviorWorldEntity behaviorWorld)
         {
-            m_BehaviorWorldEnitiy = behaviorWorld;
+            m_BehaviorWorldEntity = behaviorWorld;
         }
 
         public virtual void Update(float elapseSeconds)
@@ -14,7 +14,7 @@
 
         internal void ChangeBehavior<T>(IBehaviorData behaviorData)where T : Behavior
         {
-            m_BehaviorWorldEnitiy.ChangeBehavior<T>(behaviorData);
+            m_BehaviorWorldEntity.ChangeBehavior<T>(behaviorData);
         }
 
         public void Clear()
