@@ -15,14 +15,14 @@ namespace Eden.Gameplay.Runtime
 @
         public void Fire{0}({1})
         {{
-            var allenitiy = EventData.Instance.GetEnitiy(typeof(I{0}));
-            if (allenitiy == null)
+            var allEntity = EventData.Instance.GetEntity(typeof(I{0}));
+            if (allEntity == null)
             {{
                 return;
             }}
-            foreach (var enitiy in allenitiy)
+            foreach (var entity in allEntity)
             {{
-                ((I{0}) enitiy).{2}({3});
+                ((I{0}) entity).{2}({3});
             }}
         }}
         
