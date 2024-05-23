@@ -1,6 +1,4 @@
-﻿
-
-namespace GameFrame
+﻿namespace GameFrame
 {
     /// <summary>
     /// 引用接口。

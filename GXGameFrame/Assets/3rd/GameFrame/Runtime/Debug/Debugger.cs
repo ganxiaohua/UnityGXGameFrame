@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using System;
-using System.Text;
 
 namespace GameFrame
 {
@@ -133,7 +131,7 @@ namespace GameFrame
                 return;
             Debugger.LogWarning(string.Format(str, param));
         }
-
+        
         public static void LogError(string str)
         {
             // str = Debugger.GetLogFormat(str);

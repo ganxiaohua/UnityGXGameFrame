@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Cysharp.Threading.Tasks;
 using FairyGUI;
 using UnityEngine.Assertions;
@@ -101,7 +100,7 @@ namespace GameFrame
             //有等待加入的UI在队列里的时候有限这个,然后将m_OpenUIList隐藏
             if (m_WaitOpenUIList.Count > 0 && IsAction() == false)
             {
-                OpenUIS(m_WaitOpenUIList.ToArray());
+                OpenUIS(m_WaitOpenUIList);
                 m_WaitOpenUIList.Clear();
             }
             else if (m_OpenUIList.Count > 0 && m_WaitCloseUIDic.Count == 0)
@@ -121,7 +120,7 @@ namespace GameFrame
         /// 打开一系列UI窗口一般用于战斗结束 需要回退到某个特殊UI
         /// </summary>
         /// <param name="types"></param>
-        public void OpenUIS(Type[] types)
+        public void OpenUIS(HashSet<Type> types)
         {
             if (IsAction())
             {
@@ -130,10 +129,10 @@ namespace GameFrame
                 return;
             }
 
-            int count = types.Length;
-            for (int i = 0; i < count - 1; i++)
+            int count = types.Count;
+            Type openPanel = null;
+            foreach (var type in types)
             {
-                Type type = types[i];
                 UINode findNode = FindUINode(type);
                 if (findNode != null)
                 {
@@ -142,11 +141,11 @@ namespace GameFrame
                     continue;
                 }
 
+                openPanel = type;
                 UINode uinode = UINode.CreateEmptyNode(type);
                 AddLastNode(uinode);
             }
-
-            OpenUI(types[count - 1]);
+            OpenUI(openPanel);
         }
 
         /// <summary>
