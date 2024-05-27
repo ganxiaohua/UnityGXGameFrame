@@ -3,3 +3,4 @@
     {{
         ecsEntity.AddComponent(Components.{0});
     }}
+    

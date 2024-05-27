@@ -4,4 +4,4 @@
         var p  =  ({2})ecsEntity.AddComponent(Components.{0});
         p.{3} = param;
     }}
-         
+    
