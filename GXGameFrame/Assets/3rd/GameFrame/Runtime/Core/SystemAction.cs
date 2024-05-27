@@ -1,4 +1,8 @@
-﻿namespace GameFrame
+﻿#if UNITY_EDITOR
+using UnityEngine.Profiling;
+#endif
+
+namespace GameFrame
 {
     public static class SystemAction
     {
@@ -95,7 +99,13 @@
         {
             foreach (var es in ets)
             {
+#if UNITY_EDITOR
+              Profiler.BeginSample(es.SystemObject.System.GetType().Name);
+#endif
                 ((IUpdateSystem) es.SystemObject.System).Update(elapseSeconds, realElapseSeconds);
+#if UNITY_EDITOR
+                Profiler.EndSample();
+#endif
             }
         }
 
@@ -103,7 +113,13 @@
         {
             foreach (var es in ets)
             {
+#if UNITY_EDITOR
+                Profiler.BeginSample(es.SystemObject.System.GetType().Name);
+#endif
                 ((ILateUpdateSystem) es.SystemObject.System).LateUpdate(elapseSeconds, realElapseSeconds);
+#if UNITY_EDITOR
+                Profiler.EndSample();
+#endif
             }
         }
 
@@ -111,9 +127,14 @@
         {
             foreach (var es in ets)
             {
+#if UNITY_EDITOR
+                Profiler.BeginSample(es.SystemObject.System.GetType().Name);
+#endif
                 ((IFixedUpdateSystem) es.SystemObject.System).FixedUpdate(elapseSeconds, realElapseSeconds);
+#if UNITY_EDITOR
+                Profiler.EndSample();
+#endif
             }
         }
-        
     }
 }
