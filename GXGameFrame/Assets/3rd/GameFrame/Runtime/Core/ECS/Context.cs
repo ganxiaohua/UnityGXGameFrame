@@ -2,15 +2,24 @@
 
 namespace GameFrame
 {
-    public class Context : Entity, IStartSystem
+    public class Context : Entity, IStartSystem, IUpdateSystem
     {
         private Dictionary<Matcher, Group> m_Groups = new();
         private List<Group>[] m_GroupsList;
+        public float DeltaTime { get; private set; }
+        public float Multiple { get; private set; }
 
         public virtual void Start()
         {
+            SetMultiple(1);
             m_GroupsList = new List<Group>[GXComponents.ComponentTypes.Length];
         }
+
+        protected virtual void SetMultiple(float mul)
+        {
+            Multiple = mul;
+        }
+
 
         public new T AddChild<T>() where T : ECSEntity
         {
@@ -31,15 +40,6 @@ namespace GameFrame
             {
                 Reactive(cid, ecsEntity);
             }
-
-            // foreach (var group in m_Groups.Values)
-            // {
-            //     Group gourp = group;
-            //     if (silently)
-            //         gourp.HandleEntitySilently(ecsEntity);
-            //     else
-            //         gourp.HandleEntity(ecsEntity);
-            // }
         }
 
         public Group GetGroup(Matcher matcher)
@@ -48,7 +48,7 @@ namespace GameFrame
             grop = Group.CreateGroup(matcher);
             foreach (var item in Children)
             {
-                grop.HandleEntitySilently((ECSEntity)item);
+                grop.HandleEntitySilently((ECSEntity) item);
             }
 
             m_Groups.Add(matcher, grop);
@@ -84,6 +84,11 @@ namespace GameFrame
 
             m_GroupsList = null;
             m_Groups.Clear();
+        }
+
+        public void Update(float elapseSeconds, float realElapseSeconds)
+        {
+            DeltaTime = elapseSeconds*Multiple;
         }
     }
 }

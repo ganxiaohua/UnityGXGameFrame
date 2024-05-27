@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine.Assertions;
 
 namespace GameFrame
 {
@@ -10,12 +9,7 @@ namespace GameFrame
 
         public List<int> Indexs { get; private set; }
 
-        private int m_MaxIndex;
-
-        public T this[int index]
-        {
-            get { return Get(index); }
-        }
+        public T this[int index] => m_Item[index];
 
         public void Init(int arrayMaxCount)
         {
@@ -25,13 +19,11 @@ namespace GameFrame
             }
 
             Indexs = new List<int>(arrayMaxCount);
-            m_MaxIndex = arrayMaxCount;
             Indexs.Clear();
         }
 
         public T Add(int index, Type type)
         {
-            Assert.IsTrue(index < m_MaxIndex, $"Array overreach");
             if (m_Item[index] != null)
             {
                 return default(T);
@@ -43,15 +35,9 @@ namespace GameFrame
             return t;
         }
 
-        public T Get(int index)
-        {
-            // Assert.IsTrue(index < m_MaxIndex, $"Array overreach");
-            return m_Item[index];
-        }
 
         public void Remove(int index)
         {
-            Assert.IsTrue(index < m_MaxIndex, $"Array overreach");
             if (m_Item[index] == null)
             {
                 return;
@@ -68,7 +54,6 @@ namespace GameFrame
                 ReferencePool.Release(m_Item[index]);
                 m_Item[index] = default(T);
             }
-
             Indexs.Clear();
         }
     }
