@@ -34,6 +34,24 @@ public class TestScript
         stopwatch.Stop();
         Debug.Log("toarray"  +(stopwatch.ElapsedMilliseconds));
     }
-    
-    
+    [Test]
+    public void Quest()
+    {
+        QueryList<int> queryList = new QueryList<int>(0,true);
+        queryList.Add(1);
+        queryList.Add(2);
+        queryList.Add(3);
+        queryList.Add(4);
+        queryList.Add(5);
+        queryList.Add(6);
+        foreach (var item in queryList)
+        {
+            if (item == 2)
+            {
+                queryList.Remove(3);
+            }
+            Debug.Log(item);
+        }
+    }
+
 }

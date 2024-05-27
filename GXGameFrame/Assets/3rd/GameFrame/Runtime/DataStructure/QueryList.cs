@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace GameFrame
 {
- public class QueryList<T> : IEnumerator<T>, IEnumerable<T>
+    public class QueryList<T> : IEnumerator<T>, IEnumerable<T>
     {
         private readonly List<T> m_Data;
         private int m_CurrentIndex;
@@ -17,12 +17,15 @@ namespace GameFrame
         object IEnumerator.Current => m_CurrentElement;
 
         public IReadOnlyList<T> Data => m_Data;
-        
-        public QueryList(int capacity = 0)
+
+        private bool m_keepOrder;
+
+        public QueryList(int capacity = 0, bool keepOrder = false)
         {
             m_Data = new List<T>(capacity);
             m_CurrentIndex = -1;
             m_CurrentElement = default;
+            m_keepOrder = keepOrder;
         }
 
         public void Add(T val)
@@ -37,52 +40,76 @@ namespace GameFrame
                 int index = m_Data.IndexOf(val);
                 if (index == -1)
                     return false;
-                if (index > m_CurrentIndex)
+
+                if (index > m_CurrentIndex - 1)
                 {
-                    m_Data.RemoveAtSwapBack(index);
+                    if (!m_keepOrder)
+                        m_Data.RemoveAtSwapBack(index);
+                    else
+                    {
+                        m_Data.RemoveAt(index);
+                    }
                 }
-                else if (index < m_CurrentIndex)
+                else if (index < m_CurrentIndex - 1)
                 {
-                    m_Data[index] = m_Data[m_CurrentIndex];
-                    m_Data.RemoveAtSwapBack(m_CurrentIndex);
+                    m_Data[index] = m_Data[m_CurrentIndex - 1];
+                    if (!m_keepOrder)
+                        m_Data.RemoveAtSwapBack(m_CurrentIndex - 1);
+                    else
+                    {
+                        m_Data.RemoveAt(index);
+                    }
+
                     m_CurrentIndex--;
                 }
                 else
                 {
-                    m_Data.RemoveAtSwapBack(index);
+                    if (!m_keepOrder)
+                        m_Data.RemoveAtSwapBack(index);
+                    else
+                    {
+                        m_Data.RemoveAt(index);
+                    }
+
                     m_CurrentIndex--;
                 }
+
                 return true;
             }
             else
             {
-                return m_Data.RemoveSwapBack(val);     
+                if (!m_keepOrder)
+                    return m_Data.RemoveSwapBack(val);
+                else
+                {
+                    return m_Data.Remove(val);
+                }
             }
         }
-        
+
         public bool Contains(T val)
         {
             return m_Data.Contains(val);
         }
-        
+
         public bool MoveNext()
         {
-            if (m_CurrentIndex == -1)
+            if (m_CurrentIndex == m_Data.Count)
             {
                 m_CurrentElement = default;
                 return false;
             }
             else
             {
-                m_CurrentElement = m_Data[m_CurrentIndex--];
-                return true;    
+                m_CurrentElement = m_Data[m_CurrentIndex++];
+                return true;
             }
         }
 
         public void Reset()
         {
             if (Lock) throw new Exception($"Enumerator locked");
-            m_CurrentIndex = m_Data.Count - 1;
+            m_CurrentIndex = 0;
             m_CurrentElement = default;
         }
 
