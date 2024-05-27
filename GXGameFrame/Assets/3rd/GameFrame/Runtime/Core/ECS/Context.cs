@@ -19,7 +19,7 @@ namespace GameFrame
         {
             Multiple = mul;
         }
-
+        
 
         public new T AddChild<T>() where T : ECSEntity
         {
@@ -81,7 +81,6 @@ namespace GameFrame
                 Matcher.RemoveMatcher(group.Key);
                 Group.RemoveGroup(group.Value);
             }
-
             m_GroupsList = null;
             m_Groups.Clear();
         }
