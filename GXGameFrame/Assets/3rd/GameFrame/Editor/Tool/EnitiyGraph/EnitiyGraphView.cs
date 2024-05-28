@@ -91,7 +91,7 @@ namespace GameFrame.Editor
         {
             if (m_NodeDic.TryGetValue(node, out EntityNode entityNode))
             {
-                (((ECSEntity)entityNode.entity).Parent as Context).RemoveChild((ECSEntity)entityNode.entity);
+                (((ECSEntity)entityNode.entity).Parent as World).RemoveChild((ECSEntity)entityNode.entity);
                 m_GeneralGraphView.RemoveElement(entityNode.GraphNode);
                 entityNode.GraphNode.Clear();
                 m_NodeDic.Remove(node);

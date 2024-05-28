@@ -13,13 +13,13 @@ namespace GameFrame
         private GroupChanged AddChnage;
         private GroupChanged RemoveChnage;
 
-        public static Collector CreateCollector(Context context, params int[] indexs)
+        public static Collector CreateCollector(World world, params int[] indexs)
         {
             Group[] groups = new Group[indexs.Length];
             for (int i = 0; i < indexs.Length; i++)
             {
                 Matcher matcher = Matcher.SetAll(indexs[i]);
-                groups[i] = context.GetGroup(matcher);
+                groups[i] = world.GetGroup(matcher);
             }
 
             Collector collector = ReferencePool.Acquire<Collector>();

@@ -25,7 +25,7 @@ namespace GameFrame
 
         public string Name { get; set; }
 
-        private Context m_Context;
+        private World mWorld;
 
         public GXArray<ECSComponent> ECSComponentArray { get; private set; }
 
@@ -52,7 +52,7 @@ namespace GameFrame
             }
 
             ECSComponent entity = ECSComponentArray.Add(cid, type);
-            m_Context.ChangeAddRomoveChildOrCompone(this);
+            mWorld.ChangeAddRomoveChildOrCompone(this);
             return entity;
         }
 
@@ -70,7 +70,7 @@ namespace GameFrame
             }
 
             ECSComponentArray.Remove(cid);
-            m_Context.ChangeAddRomoveChildOrCompone(this);
+            mWorld.ChangeAddRomoveChildOrCompone(this);
         }
 
         /// <summary>
@@ -102,9 +102,9 @@ namespace GameFrame
             return true;
         }
 
-        public void SetContext(Context context)
+        public void SetContext(World world)
         {
-            m_Context = context;
+            mWorld = world;
         }
 
         public bool HasComponent(int cid)
@@ -141,7 +141,7 @@ namespace GameFrame
         public void ClearAllComponent()
         {
             ReferencePool.Release(ECSComponentArray);
-            ((Context) Parent).ChangeAddRomoveChildOrCompone(this);
+            ((World) Parent).ChangeAddRomoveChildOrCompone(this);
         }
 
         public void Clear()

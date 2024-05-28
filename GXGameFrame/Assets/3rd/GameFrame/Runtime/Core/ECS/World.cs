@@ -2,7 +2,7 @@
 
 namespace GameFrame
 {
-    public class Context : Entity, IStartSystem, IUpdateSystem
+    public class World : Entity, IStartSystem, IUpdateSystem
     {
         private Dictionary<Matcher, Group> m_Groups = new();
         private List<Group>[] m_GroupsList;

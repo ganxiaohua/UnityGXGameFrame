@@ -145,7 +145,7 @@ namespace GameFrame
             m_EverySceneEntity.Remove(sceneType);
         }
 
-        public void AddEcsSystem<T>(Context entity) where T : ISystem
+        public void AddEcsSystem<T>(World entity) where T : ISystem
         {
             AddEcsSystem(entity, typeof(T));
         }
@@ -175,10 +175,10 @@ namespace GameFrame
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="type"></param>
-        private void AddEcsSystem(Context entity, Type type)
+        private void AddEcsSystem(World entity, Type type)
         {
             ISystemObject sysObject = CreateSystem(entity, type);
-            sysObject.System.SystemStart<Context>((Context)entity);
+            sysObject.System.SystemStart<World>((World)entity);
             m_UpdateSystems.AddUpdateSystem(entity, sysObject);
         }
 

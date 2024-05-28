@@ -2,12 +2,12 @@
 
 namespace GameFrame
 {
-    public abstract class ReactiveSystem : IStartSystem<Context>, IUpdateSystem
+    public abstract class ReactiveSystem : IStartSystem<World>, IUpdateSystem
     {
         /// <summary>
         /// 挂载的父实体
         /// </summary>
-        protected Context Context;
+        protected World World;
 
         private List<ECSEntity> m_Buffer;
 
@@ -16,14 +16,14 @@ namespace GameFrame
         /// </summary>
         private Collector m_Collector;
 
-        public virtual void Start(Context entity)
+        public virtual void Start(World entity)
         {
             m_Buffer = new List<ECSEntity>();
-            Context = entity;
+            World = entity;
             m_Collector = this.GetTrigger(entity);
         }
 
-        protected abstract Collector GetTrigger(Context context);
+        protected abstract Collector GetTrigger(World world);
         
         protected abstract bool Filter(ECSEntity entity);
 
