@@ -12,8 +12,7 @@ namespace GameFrame
 
 
         private System.Threading.CancellationToken Token;
-
-        // public T Target{ get; private set; }
+        
 
         private AwaiterTask<ObjectPoolHandle> AwaiterTask;
 

@@ -5,31 +5,34 @@ namespace GameFrame
 {
     public abstract class Entity : IEntity
     {
-        public IEntity.EntityStatus m_EntityStatus { get; set; }
+        public IEntity.EntityState State { get; private set; }
 
-        public IEntity SceneParent { get; set; }
+        public IEntity SceneParent { get; private set; }
 
-        public IEntity Parent { get; set; }
+        public IEntity Parent { get; private set; }
 
-        public int ID { get; set; }
+        public int ID { get; private set; }
         
-        public string Name { get; set; }
+        public string Name { get;  set; }
 
-        private Dictionary<Type, IEntity> m_Components;
+        private Dictionary<Type, IEntity> m_Components = new();
 
         public Dictionary<Type, IEntity> Components => m_Components;
 
-        private HashSet<IEntity> m_Children;
+        private HashSet<IEntity> m_Children = new ();
 
         public HashSet<IEntity> Children => m_Children;
 
         private static int m_SerialId;
-
-        protected Entity()
+        
+        public void Initialize(IEntity sceneParent, IEntity parent, int id)
         {
-            m_Components = new();
-            m_Children = new();
+            State = IEntity.EntityState.IsCreated;
+            Parent = parent;
+            SceneParent = sceneParent;
+            ID = id;
         }
+        
         
         protected virtual IEntity Create<T>(bool isComponent) where T : IEntity
         {
@@ -39,11 +42,8 @@ namespace GameFrame
 
         private IEntity Create(Type type, bool isComponent)
         {
-            IEntity entity = ReferencePool.Acquire(type) as IEntity;
-            entity.m_EntityStatus = IEntity.EntityStatus.IsCreated;
-            entity.Parent = this;
-            entity.SceneParent = this is MainScene ? this : SceneParent;
-            entity.ID = ++m_SerialId;
+            IEntity entity = (IEntity)ReferencePool.Acquire(type);
+            entity.Initialize(this is MainScene ? this : SceneParent,this,++m_SerialId);
             if (isComponent)
             {
                 m_Components.Add(type, entity);
@@ -315,6 +315,7 @@ namespace GameFrame
 
             m_Children.Clear();
         }
+        
 
         /// <summary>
         /// 清理所有的组件
@@ -342,7 +343,7 @@ namespace GameFrame
         /// </summary>
         public virtual void Clear()
         {
-            m_EntityStatus = IEntity.EntityStatus.IsClear;
+            State  = IEntity.EntityState.IsClear;
             Parent = null;
             ClearAllChild();
             ClearAllComponent();

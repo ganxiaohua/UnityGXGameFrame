@@ -52,7 +52,7 @@ namespace GameFrame
         }
 
         /// <summary>
-        /// 刪除一個人偶師
+        /// 刪除一个行为机
         /// </summary>
         /// <param name="self"></param>
         /// <param name="type"></param>
@@ -70,7 +70,7 @@ namespace GameFrame
         }
 
         /// <summary>
-        /// 玩偶转入到其他的人偶师的操作下
+        /// 将实体转到其他行为机下
         /// </summary>
         /// <param name="self"></param>
         /// <param name="jackdollType">人偶师类型</param>
@@ -94,7 +94,7 @@ namespace GameFrame
         }
 
         /// <summary>
-        /// 加入一个人偶到舞台上
+        /// 加入操控数据
         /// </summary>
         public T AddData<T>() where T : class, IBehaviorData, new()
         {
@@ -104,7 +104,7 @@ namespace GameFrame
         }
 
         /// <summary>
-        /// 从舞台上删除一个人偶
+        /// 删除操控数据
         /// </summary>
         public void RemoveData(IBehaviorData behaviorData)
         {

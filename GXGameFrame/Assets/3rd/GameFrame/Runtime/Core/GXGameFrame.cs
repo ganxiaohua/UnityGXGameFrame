@@ -10,6 +10,7 @@ namespace GameFrame
         public async UniTask Start()
         {
             MainScene = ReferencePool.Acquire<MainScene>();
+            MainScene.Initialize(null,null,0);
             MainScene.AddComponent<UIComponent>();
             await MainScene.AddComponent<AssetInitComponent>().WaitLoad();
             Config.Instance.LoadTable();

@@ -13,28 +13,32 @@ namespace GameFrame
     /// <summary>
     /// ECSEntity挂载的一定是Context
     /// </summary>
-    public abstract class ECSEntity : IEntity, IStartSystem
+    public abstract class ECSEntity : IEntity
     {
-        public IEntity.EntityStatus m_EntityStatus { get; set; }
+        public IEntity.EntityState State { get; private set; }
 
-        public IEntity SceneParent { get; set; }
+        public IEntity SceneParent { get; private set; }
 
-        public IEntity Parent { get; set; }
+        public IEntity Parent { get; private set; }
 
-        public int ID { get; set; }
+        public int ID{ get; private set; }
 
-        public string Name { get; set; }
+        public string Name { get;  set; }
 
         private World mWorld;
 
         public GXArray<ECSComponent> ECSComponentArray { get; private set; }
 
         private static int m_SerialId;
-
-        public virtual void Start()
+        
+        public void Initialize(IEntity sceneParent, IEntity parent, int id)
         {
             ECSComponentArray = ReferencePool.Acquire<GXArray<ECSComponent>>();
-            ECSComponentArray.Init(GXComponents.ComponentTypes.Length);
+            ECSComponentArray.Init(GXComponents.ComponentTypes.Length);   
+            State = IEntity.EntityState.IsCreated;
+            Parent = parent;
+            SceneParent = sceneParent;
+            ID = id;
         }
 
         /// <summary>
@@ -134,6 +138,7 @@ namespace GameFrame
 
             return false;
         }
+        
 
         /// <summary>
         /// 清除所有组件
@@ -146,6 +151,7 @@ namespace GameFrame
 
         public void Clear()
         {
+            State = IEntity.EntityState.IsClear;
             ClearAllComponent();
         }
     }

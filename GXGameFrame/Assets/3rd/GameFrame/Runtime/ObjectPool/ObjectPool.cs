@@ -4,7 +4,7 @@ using Cysharp.Threading.Tasks;
 
 namespace GameFrame
 {
-    public class ObjectPool<T> : IObjectPoolBase where T :  ObjectBase
+    public class ObjectPool<T> : IObjectPoolBase where T : ObjectBase
 
     {
         private Dictionary<string, List<T>> m_ActionObject;
@@ -14,7 +14,7 @@ namespace GameFrame
 
         private List<T> NeedClearList;
 
-        
+
         /// <summary>
         /// 是否是激活的
         /// </summary>
@@ -46,8 +46,8 @@ namespace GameFrame
         /// <summary>
         /// 对象池每一帧吐出的最大数量
         /// </summary>
-        private static Dictionary<Type, int> s_MaxSpawnAsynDic = new Dictionary<Type, int>();
-        
+        private int m_MaxSpawnCount;
+
 
         /// <summary>
         /// 对象池当前自动施法时间
@@ -58,7 +58,7 @@ namespace GameFrame
         /// 对象池轮训检查时间
         /// </summary>
         private float m_AutoReleaseInterval;
-        
+
         /// <summary>
         /// 对象池内部对象进入HitObjet列表之后的到期事件
         /// </summary>
@@ -82,6 +82,7 @@ namespace GameFrame
             objectPool.m_AutoReleaseInterval = 5;
             objectPool.m_CurAutoReleaseTime = 0;
             objectPool.m_Activate = true;
+            objectPool.m_MaxSpawnCount = 0;
             return objectPool;
         }
 
@@ -104,12 +105,13 @@ namespace GameFrame
             this.m_UserData = userData;
         }
 
-        public void SetLuck(T obj,bool luck)
+        public void SetLuck(T obj, bool luck)
         {
             if (obj == null)
             {
                 return;
             }
+
             obj.Luck = luck;
         }
 
@@ -120,7 +122,8 @@ namespace GameFrame
         /// <param name="MaxCount"></param>
         public void SetAsyncMaxCount(int maxCount = 20)
         {
-            s_MaxSpawnAsynDic[typeof(T)] = maxCount;
+            if (m_MaxSpawnCount == 0)
+                m_MaxSpawnCount = maxCount;
         }
 
         /// <summary>
@@ -154,14 +157,14 @@ namespace GameFrame
             {
                 return;
             }
+
             int cur = 0;
-            while (m_SpawnAsyncQueue.Count > 0 && cur < s_MaxSpawnAsynDic[typeof(T)])
+            while (m_SpawnAsyncQueue.Count > 0 && cur < m_MaxSpawnCount)
             {
                 cur++;
                 ObjectPoolHandle objectPoolHandle = m_SpawnAsyncQueue.Dequeue();
                 objectPoolHandle.Complete();
             }
-            
         }
 
 
@@ -169,15 +172,12 @@ namespace GameFrame
         /// 异步吐出
         /// </summary>
         /// <returns></returns>
-        public async UniTask<T> SpawnAsync( System.Threading.CancellationToken token = default)
+        public async UniTask<T> SpawnAsync(System.Threading.CancellationToken token = default)
         {
             ObjectPoolHandle objectPoolHandle = ReferencePool.Acquire<ObjectPoolHandle>();
             objectPoolHandle.Init(token);
             m_SpawnAsyncQueue.Enqueue(objectPoolHandle);
-            if (!s_MaxSpawnAsynDic.ContainsKey(typeof(T)))
-            {
-                SetAsyncMaxCount();
-            }
+            SetAsyncMaxCount();
             await objectPoolHandle;
             bool spawn = (objectPoolHandle.TaskState == TaskState.Succ && m_Activate);
             ReferencePool.Release(objectPoolHandle);
@@ -278,7 +278,7 @@ namespace GameFrame
                 List<T> list = item.Value;
                 for (int i = list.Count - 1; i >= 0; i--)
                 {
-                    if(list[i].Luck)
+                    if (list[i].Luck)
                         continue;
                     NeedClearList.Add(list[i]);
                     list.RemoveAt(i);
@@ -348,16 +348,16 @@ namespace GameFrame
                 }
             }
 
-            while (m_SpawnAsyncQueue.Count>0)
+            m_Activate = false;
+            while (m_SpawnAsyncQueue.Count > 0)
             {
                 var spawnaSynce = m_SpawnAsyncQueue.Dequeue();
                 spawnaSynce.Cancel();
             }
-            
-            m_Activate = false;
             m_SpawnAsyncQueue.Clear();
             m_CurCacheNum = 0;
             m_CurAutoReleaseTime = 0;
+            m_MaxSpawnCount = 0;
             ClearDic(m_ActionObject);
             ClearDic(m_HideObject);
             m_ActionObject.Clear();

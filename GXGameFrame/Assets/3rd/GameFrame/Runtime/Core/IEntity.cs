@@ -2,23 +2,24 @@
 {
     public interface IEntity : IReference
     {
-        public enum EntityStatus : byte
+        public enum EntityState : byte
         {
             None = 0,
             IsCreated,
             IsClear
         }
 
-        public IEntity SceneParent { set; }
+        public IEntity SceneParent { get; }
 
-        public IEntity Parent { set; }
+        public IEntity Parent { get; }
 
-        public int ID { get; set; }
+        public int ID { get; }
 
-        public string Name { get; set; }
+        public string Name { get; }
 
-        public EntityStatus m_EntityStatus { set; }
+        public EntityState State { get; }
 
+        public void Initialize(IEntity sceneParent,IEntity parent,int id);
         public void ClearAllComponent();
     }
 }
