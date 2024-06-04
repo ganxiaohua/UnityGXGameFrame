@@ -95,7 +95,7 @@ namespace GameFrame
         }
 
 
-        public static void SystemUpdate(this QueryList<SystemEntity> ets, float elapseSeconds, float realElapseSeconds)
+        public static void SystemUpdate(this StrongList<SystemEntity> ets, float elapseSeconds, float realElapseSeconds)
         {
             foreach (var es in ets)
             {
@@ -109,7 +109,7 @@ namespace GameFrame
             }
         }
 
-        public static void SystemLateUpdate(this QueryList<SystemEntity> ets, float elapseSeconds, float realElapseSeconds)
+        public static void SystemLateUpdate(this StrongList<SystemEntity> ets, float elapseSeconds, float realElapseSeconds)
         {
             foreach (var es in ets)
             {
@@ -123,7 +123,7 @@ namespace GameFrame
             }
         }
 
-        public static void SystemFixedUpdate(this QueryList<SystemEntity> ets, float elapseSeconds, float realElapseSeconds)
+        public static void SystemFixedUpdate(this StrongList<SystemEntity> ets, float elapseSeconds, float realElapseSeconds)
         {
             foreach (var es in ets)
             {

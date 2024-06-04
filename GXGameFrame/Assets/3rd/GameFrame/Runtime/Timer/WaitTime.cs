@@ -17,6 +17,16 @@ namespace GameFrame.Runtime.Timer
                 throw new OperationCanceledException(cancellationToken);
             }
         }
+        
+        public async UniTask WaitFrame(float sec, CancellationToken cancellationToken = default)
+        {
+            int ver = ++versions;
+            await UniTask.Yield();
+            if (ver != versions)
+            {
+                throw new OperationCanceledException(cancellationToken);
+            }
+        }
 
         public void Clear()
         {

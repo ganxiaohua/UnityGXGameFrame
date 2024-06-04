@@ -4,15 +4,15 @@ namespace GameFrame
 {
     public class UpdateSystems
     {
-        private QueryList<SystemEntity>[] m_UpdateSystemEntitys;
+        private StrongList<SystemEntity>[] m_UpdateSystemEntitys;
         
-        public QueryList<SystemEntity>[] UpdateSystemEntitys => m_UpdateSystemEntitys;
+        public StrongList<SystemEntity>[] UpdateSystemEntitys => m_UpdateSystemEntitys;
 
         private DDictionary<IEntity, ISystem, SystemEntity> m_Index = new();
 
         public UpdateSystems()
         {
-            m_UpdateSystemEntitys = new[] {new QueryList<SystemEntity>(256), new QueryList<SystemEntity>(256), new QueryList<SystemEntity>(256)};
+            m_UpdateSystemEntitys = new[] {new StrongList<SystemEntity>(256), new StrongList<SystemEntity>(256), new StrongList<SystemEntity>(256)};
         }
 
         /// <summary>

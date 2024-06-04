@@ -5,10 +5,11 @@ using GameFrame;
 using NUnit.Framework;
 using Debug = UnityEngine.Debug;
 
+
 public class TestScript
 {
     [Test]
-    public void Bytes()
+    public void BytesTest()
     {
         ByteSequenceSegmentPipe pipe = ReferencePool.Acquire<ByteSequenceSegmentPipe>();
         pipe.Write(new byte[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 0, 10);
@@ -38,23 +39,26 @@ public class TestScript
     }
 
     [Test]
-    public void Quest()
+    public void StrongListTest()
     {
-        QueryList<int> queryList = new QueryList<int>(0, true);
-        queryList.Add(1);
-        queryList.Add(2);
-        queryList.Add(3);
-        queryList.Add(4);
-        queryList.Add(5);
-        queryList.Add(6);
-        foreach (var item in queryList)
+        StrongList<int> strongList = new StrongList<int>(0, true);
+        strongList.Add(1);
+        strongList.Add(2);
+        strongList.Add(3);
+        strongList.Add(4);
+        strongList.Add(5);
+        strongList.Add(6);
+        foreach (var item in strongList)
         {
             if (item == 2)
             {
-                queryList.Remove(3);
+                strongList.Remove(3);
+                strongList.Remove(4);
+                strongList.Remove(1);
             }
 
             Debug.Log(item);
         }
     }
+    
 }

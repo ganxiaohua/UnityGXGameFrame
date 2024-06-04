@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace GameFrame
 {
-    public class QueryList<T> : IEnumerator<T>, IEnumerable<T>
+    public class StrongList<T> : IEnumerator<T>, IEnumerable<T>
     {
         private readonly List<T> m_Data;
         private int m_CurrentIndex;
@@ -20,7 +20,7 @@ namespace GameFrame
 
         private bool m_keepOrder;
 
-        public QueryList(int capacity = 0, bool keepOrder = false)
+        public StrongList(int capacity = 0, bool keepOrder = false)
         {
             m_Data = new List<T>(capacity);
             m_CurrentIndex = -1;

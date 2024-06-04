@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 namespace GameFrame
 {
-    public class Matcher : IReference
+    public class Matcher : IReference, IEquatable<Matcher>
     {
         private int m_Hash;
         private bool m_IsHashCached = false;
 
-        
+
         //全部包含
         private int[] m_AllOfIndices;
 
@@ -33,6 +33,7 @@ namespace GameFrame
                 arr[i] = snitiyHasCodes[i];
                 Indices.Add(snitiyHasCodes[i]);
             }
+
             return arr;
         }
 
@@ -42,14 +43,14 @@ namespace GameFrame
             matcher.m_AllOfIndices = matcher.Set(snitiyHasCodes);
             return matcher;
         }
-        
+
         public static Matcher SetAny(params int[] snitiyHasCodes)
         {
             Matcher matcher = ReferencePool.Acquire<Matcher>();
             matcher.m_AnyOfIndices = matcher.Set(snitiyHasCodes);
             return matcher;
         }
-        
+
         public static Matcher SetNoneOf(params int[] snitiyHasCodes)
         {
             Matcher matcher = ReferencePool.Acquire<Matcher>();
@@ -62,19 +63,18 @@ namespace GameFrame
             m_AllOfIndices = Set(snitiyHasCodes);
             return this;
         }
-        
+
         public Matcher Any(params int[] snitiyHasCodes)
         {
             m_AnyOfIndices = Set(snitiyHasCodes);
             return this;
         }
-        
+
         public Matcher NoneOf(params int[] snitiyHasCodes)
         {
             m_NoneOfIndices = Set(snitiyHasCodes);
             return this;
         }
-
 
 
         public static void RemoveMatcher(Matcher matcher)
@@ -108,6 +108,7 @@ namespace GameFrame
                     hash ^= (indices[index] * i1);
                 hash ^= (indices.Length * i2);
             }
+
             return hash;
         }
 
@@ -119,17 +120,20 @@ namespace GameFrame
                     this.m_NoneOfIndices, 647, 683);
                 this.m_IsHashCached = true;
             }
+
             return this.m_Hash;
         }
 
-        public override bool Equals(object obj)
+        public bool Equals(Matcher obj)
         {
             if (obj == null || obj.GetType() != this.GetType() || obj.GetHashCode() != this.GetHashCode())
                 return false;
-            Matcher matcher = (Matcher) obj;
+            Matcher matcher = obj;
             return equalIndices(matcher.m_AllOfIndices, this.m_AllOfIndices) && equalIndices(matcher.m_AnyOfIndices, m_AnyOfIndices) &&
                    equalIndices(matcher.m_NoneOfIndices, this.m_NoneOfIndices);
         }
+        
+        public override bool Equals(object obj) => Equals((Matcher)obj);
 
         private bool equalIndices(int[] i1, int[] i2)
         {
