@@ -17,7 +17,6 @@ namespace GameFrame.Editor
         {
             m_EdgeList = new List<Edge>();
             m_NodeList = new();
-            this.StretchToParentSize();
             SetupZoom(ContentZoomer.DefaultMinScale, ContentZoomer.DefaultMaxScale);
             // 允许拖拽Content
             this.AddManipulator(new ContentDragger());
@@ -25,6 +24,7 @@ namespace GameFrame.Editor
             this.AddManipulator(new SelectionDragger());
             // GraphView允许进行框选
             this.AddManipulator(new RectangleSelector());
+            this.StretchToParentSize();
         }
 
         public void Show()
@@ -35,12 +35,11 @@ namespace GameFrame.Editor
         {
         }
 
-        public new void Clear()
+        public void Update()
         {
-            base.Clear();
-            DeleteAllNode();
+       
         }
-
+        
         public void DeleteAllNode()
         {
             foreach (var item in m_NodeList)
@@ -65,8 +64,14 @@ namespace GameFrame.Editor
             m_NodeList.Add(node);
             return node;
         }
-        
-        
+
+        public void RemoveNode(Node node)
+        {
+            RemoveElement(node);
+            m_NodeList.Remove(node);
+        }
+
+
 
         /// <summary>
         /// 连线

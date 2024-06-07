@@ -33,10 +33,10 @@ namespace GameFrame
         {
             if (m_Collector.CollectedEntities.Count == 0)
                 return;
-            foreach (ECSEntity collectedEntity in m_Collector.CollectedEntities)
+            
+            foreach (ECSEntity ecsentity in m_Collector.CollectedEntities)
             {
-                var ecsentity = collectedEntity;
-                if (this.Filter(ecsentity))
+                if (ecsentity.State != IEntity.EntityState.IsClear && this.Filter(ecsentity))
                 {
                     this.m_Buffer.Add(ecsentity);
                 }

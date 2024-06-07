@@ -8,6 +8,7 @@ namespace GameFrame
         private HashSet<ECSEntity> m_EntitiesMap;
         public event GroupChanged GroupAdd;
         public event GroupChanged GroupRomve;
+        public event GroupChanged GroupUpdate;
         public HashSet<ECSEntity> EntitiesMap => m_EntitiesMap;
 
         public static Group CreateGroup(Matcher matcher)
@@ -23,11 +24,16 @@ namespace GameFrame
             ReferencePool.Release(group);
         }
 
-        private void AddComponent(ECSEntity entity, bool silently)
+        private void AddOrUpdateComponent(ECSEntity entity, bool silently)
         {
-            m_EntitiesMap.Add(entity);
+            bool add = m_EntitiesMap.Add(entity);
             if (!silently)
-                GroupAdd?.Invoke(this, entity);
+                if (add)
+                    GroupAdd?.Invoke(this, entity);
+                else
+                {
+                    GroupUpdate?.Invoke(this, entity);
+                }
         }
 
         private void RemoveComponent(ECSEntity entity, bool silently)
@@ -45,14 +51,15 @@ namespace GameFrame
 
         public int HandleEntity(ECSEntity entity)
         {
+
             return DoEntity(entity, false);
         }
 
-        
+
         private int DoEntity(ECSEntity entity, bool silently)
         {
             if (this.m_Matcher.Match(entity))
-                this.AddComponent(entity, silently);
+                this.AddOrUpdateComponent(entity, silently);
             else
                 this.RemoveComponent(entity, silently);
             return m_EntitiesMap.Count;
@@ -63,6 +70,7 @@ namespace GameFrame
         {
             GroupAdd -= GroupAdd;
             GroupRomve -= GroupRomve;
+            GroupUpdate -= GroupUpdate;
             m_Matcher = null;
             m_EntitiesMap.Clear();
         }

@@ -21,12 +21,12 @@ namespace GameFrame
             await UILoader.Instance.AddPackage(packageName, DefaultAssetReference);
             Window = UIPackage.CreateObject(packageName, windowName);
             var succ = await UILoader.Instance.LoadOver(packageName);
-            if (succ)
+            if (!succ)
             {
-                m_WaitLoadTask.TrySetResult();
+                m_WaitLoadTask.TrySetCanceled();
                 return;
             }
-            m_WaitLoadTask.TrySetCanceled();
+            m_WaitLoadTask.TrySetResult();
         }
         
         public  async UniTask<bool> WaitLoad()

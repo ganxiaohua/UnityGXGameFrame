@@ -48,6 +48,13 @@ namespace GameFrame.Editor
             }
         }
 
+        public void AddChildCount(int count)
+        {
+            Label label = new Label($"子节点数量:{count}");
+
+            this.mainContainer.Add(label);
+        }
+
         public void AddButton(string name, Action<Node> action)
         {
             Button btn = new Button(() => { action(this); });

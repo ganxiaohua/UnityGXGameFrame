@@ -30,13 +30,12 @@ namespace GameFrame
 
         public void RemoveChild(ECSEntity ecsEntity)
         {
-            ChangeAddRomoveChildOrCompone(ecsEntity);
             base.RemoveChild(ecsEntity);
         }
 
-        public void ChangeAddRomoveChildOrCompone(ECSEntity ecsEntity)
+        public void ChangeAddRomoveChildOrCompone(ECSEntity ecsEntity,List<int> indexs)
         {
-            foreach (var cid in ecsEntity.ECSComponentArray.Indexs)
+            foreach (var cid in indexs)
             {
                 Reactive(cid, ecsEntity);
             }

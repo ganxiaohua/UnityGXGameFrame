@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace GameFrame
 {
@@ -31,9 +32,12 @@ namespace GameFrame
 
         private static int m_SerialId;
         
+        private List<int> m_indexs;
+        
         public void Initialize(IEntity sceneParent, IEntity parent, int id)
         {
             ECSComponentArray = ReferencePool.Acquire<GXArray<ECSComponent>>();
+            m_indexs = new List<int>(128);
             ECSComponentArray.Init(GXComponents.ComponentTypes.Length);   
             State = IEntity.EntityState.IsCreated;
             Parent = parent;
@@ -56,7 +60,7 @@ namespace GameFrame
             }
 
             ECSComponent entity = ECSComponentArray.Add(cid, type);
-            mWorld.ChangeAddRomoveChildOrCompone(this);
+            mWorld.ChangeAddRomoveChildOrCompone(this,ECSComponentArray.Indexs);
             return entity;
         }
 
@@ -73,8 +77,10 @@ namespace GameFrame
                 throw new Exception($"entity not already  component: {type.FullName}");
             }
 
+            m_indexs.AddRange(ECSComponentArray.Indexs);
             ECSComponentArray.Remove(cid);
-            mWorld.ChangeAddRomoveChildOrCompone(this);
+            mWorld.ChangeAddRomoveChildOrCompone(this,m_indexs);
+            m_indexs.Clear();
         }
 
         /// <summary>
@@ -145,8 +151,10 @@ namespace GameFrame
         /// </summary>
         public void ClearAllComponent()
         {
+            m_indexs.AddRange(ECSComponentArray.Indexs);
             ReferencePool.Release(ECSComponentArray);
-            ((World) Parent).ChangeAddRomoveChildOrCompone(this);
+            ((World) Parent).ChangeAddRomoveChildOrCompone(this,m_indexs);
+            m_indexs.Clear();
         }
 
         public void Clear()

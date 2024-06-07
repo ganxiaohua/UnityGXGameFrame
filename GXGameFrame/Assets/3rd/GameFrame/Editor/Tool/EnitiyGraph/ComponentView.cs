@@ -24,6 +24,7 @@ namespace GameFrame.Editor
             sWindow = GetWindow<ComponentView>();
             sWindow.m_EcsComponents.Clear();
             sWindow.m_EcsEntity = ecsEntity;
+            sWindow.name = ecsEntity.Name;
             for (int i = 0; i < ecsComponents.Count; i++)
             {
                 PeClass pe = new PeClass();
@@ -33,6 +34,12 @@ namespace GameFrame.Editor
             }
         }
 
+        public static void Destroy()
+        {
+            sWindow?.Close();
+        }
+
+
         protected override void OnBeginDrawEditors()
         {
             base.OnBeginDrawEditors();
@@ -41,6 +48,12 @@ namespace GameFrame.Editor
                 m_EcsComponents[i].Tree.Draw(false);
             }
         }
+        
+        protected override void OnImGUI()
+        {
+            base.OnImGUI();
+            Repaint();
+        }
 
         protected override void OnDestroy()
         {
@@ -48,7 +61,6 @@ namespace GameFrame.Editor
             {
                 t.Tree.Dispose();
             }
-
             sWindow = null;
         }
     }

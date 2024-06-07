@@ -80,8 +80,8 @@ namespace GameFrame
         /// <param name="entity"></param>
         private void Remove(IEntity entity)
         {
-            ReferencePool.Release(entity);
             EnitityHouse.Instance.RemoveEntity(entity);
+            ReferencePool.Release(entity);
         }
 
 

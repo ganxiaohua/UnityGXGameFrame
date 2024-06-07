@@ -33,6 +33,11 @@ namespace GameFrame.Editor
         public virtual void Show()
         {
         }
+        
+        public virtual void Update()
+        {
+        }
+
 
         public virtual void Hide()
         {

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace GameFrame
 {
@@ -10,10 +11,28 @@ namespace GameFrame
 
         private Group[] m_Groups;
 
-        private GroupChanged AddChnage;
-        private GroupChanged RemoveChnage;
+        private GroupChanged GroupChange;
 
-        public static Collector CreateCollector(World world, params int[] indexs)
+        private const ushort AddType = 0;
+        private const ushort RemoveType = 1;
+        private const ushort UpdateType = 2;
+
+        private ChangeEventState State = 0;
+
+        [Flags]
+        public enum ChangeEventState : ushort
+        {
+            Add = 1 << AddType,
+            Remove = 1 << RemoveType,
+            Update = 1 << UpdateType,
+            AddRemove = 1 << AddType | 1 << RemoveType,
+            AddUpdate = 1 << AddType | 1 << UpdateType,
+            RemoveUpdate = 1 << RemoveType | 1 << UpdateType,
+            AddRemoveUpdate = 1 << AddType | 1 << UpdateType | 1 << RemoveType,
+        }
+
+
+        public static Collector CreateCollector(World world, ChangeEventState stateType, params int[] indexs)
         {
             Group[] groups = new Group[indexs.Length];
             for (int i = 0; i < indexs.Length; i++)
@@ -23,6 +42,7 @@ namespace GameFrame
             }
 
             Collector collector = ReferencePool.Acquire<Collector>();
+            collector.State = stateType;
             collector.InitCollector(groups);
             return collector;
         }
@@ -31,44 +51,48 @@ namespace GameFrame
         {
             m_Groups = group;
             m_CollectedEntities ??= new HashSet<ECSEntity>();
-            AddChnage ??= this.EventAdd;
-            RemoveChnage ??= this.EventRemove;
+            GroupChange = AddEvent;
             foreach (var item in m_Groups)
             {
-                item.GroupAdd -= AddChnage;
-                item.GroupAdd += AddChnage;
-                item.GroupRomve -= RemoveChnage;
-                item.GroupRomve += RemoveChnage;
+                if ((State & ChangeEventState.Add) != 0)
+                {
+                    item.GroupAdd += GroupChange;
+                }
+
+                if ((State & ChangeEventState.Remove) != 0)
+                {
+                    item.GroupRomve += GroupChange;
+                }
+
+                if ((State & ChangeEventState.Update) != 0)
+                {
+                    item.GroupUpdate += GroupChange;
+                }
                 Add(item);
             }
         }
 
-        private void Add(Group grop)
+        private void Add(Group group)
         {
-            foreach (var item in grop.EntitiesMap)
+            foreach (var item in group.EntitiesMap)
             {
-                m_CollectedEntities.Add(item);
+                AddEvent(group, item);
             }
         }
-        
-        private void EventAdd(Group group, ECSEntity ecsEntity)
+
+        private void AddEvent(Group group, ECSEntity ecsEntity)
         {
             m_CollectedEntities.Add(ecsEntity);
         }
         
-        private void EventRemove(Group group, ECSEntity ecsEntity)
-        {
-            m_CollectedEntities.Remove(ecsEntity);
-        }
-
-
         public void Clear()
         {
             m_CollectedEntities.Clear();
             foreach (var item in m_Groups)
             {
-                item.GroupAdd -= AddChnage;
-                item.GroupRomve -= RemoveChnage;
+                item.GroupAdd -= GroupChange;
+                item.GroupRomve -= GroupChange;
+                item.GroupUpdate -= GroupChange;
             }
         }
     }
