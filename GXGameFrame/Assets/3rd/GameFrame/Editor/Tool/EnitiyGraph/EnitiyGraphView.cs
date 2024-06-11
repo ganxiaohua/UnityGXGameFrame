@@ -211,14 +211,7 @@ namespace GameFrame.Editor
         {
             if (selectEntityNode.entity is ECSEntity ecs)
             {
-                List<int> comIndexs = ecs.ECSComponentArray.Indexs;
-                List<ECSComponent> ecsComponents = new List<ECSComponent>();
-                foreach (var index in comIndexs)
-                {
-                    ECSComponent ecsComponent = ecs.GetComponent(index);
-                    ecsComponents.Add(ecsComponent);
-                }
-                ComponentView.Init(ecsComponents, ecs);
+                ComponentView.Init(ecs);
             }
         }
 

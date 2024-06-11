@@ -17,14 +17,22 @@ namespace GameFrame.Editor
 
         private static ComponentView sWindow;
 
-        public static void Init(List<ECSComponent> ecsComponents, ECSEntity ecsEntity)
+        public static void Init(ECSEntity ecsEntity)
         {
             if (sWindow != null)
                 sWindow.Close();
             sWindow = GetWindow<ComponentView>();
             sWindow.m_EcsComponents.Clear();
             sWindow.m_EcsEntity = ecsEntity;
-            sWindow.name = ecsEntity.Name;
+            sWindow.titleContent.text = ecsEntity.Name;
+            
+            List<int> comIndexs = ecsEntity.ECSComponentArray.Indexs;
+            List<ECSComponent> ecsComponents = new List<ECSComponent>();
+            foreach (var index in comIndexs)
+            {
+                ECSComponent ecsComponent = ecsEntity.GetComponent(index);
+                ecsComponents.Add(ecsComponent);
+            }
             for (int i = 0; i < ecsComponents.Count; i++)
             {
                 PeClass pe = new PeClass();
