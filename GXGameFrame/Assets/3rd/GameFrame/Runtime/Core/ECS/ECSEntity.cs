@@ -3,7 +3,8 @@ using System.Collections.Generic;
 
 namespace GameFrame
 {
-    public class ECSComponent : IReference
+    [Serializable]
+    public partial class ECSComponent : IReference
     {
         public virtual void Clear()
         {
@@ -60,7 +61,7 @@ namespace GameFrame
             }
 
             ECSComponent entity = ECSComponentArray.Add(cid, type);
-            mWorld.ChangeAddRomoveChildOrCompone(this,ECSComponentArray.Indexs);
+            mWorld.Reactive(cid,this);
             return entity;
         }
 
@@ -79,7 +80,7 @@ namespace GameFrame
 
             m_indexs.AddRange(ECSComponentArray.Indexs);
             ECSComponentArray.Remove(cid);
-            mWorld.ChangeAddRomoveChildOrCompone(this,m_indexs);
+            mWorld.Reactive(cid,this);
             m_indexs.Clear();
         }
 
@@ -119,12 +120,7 @@ namespace GameFrame
 
         public bool HasComponent(int cid)
         {
-            if (ECSComponentArray[cid] == null)
-            {
-                return false;
-            }
-
-            return true;
+            return ECSComponentArray[cid] != null;
         }
 
         /// <summary>

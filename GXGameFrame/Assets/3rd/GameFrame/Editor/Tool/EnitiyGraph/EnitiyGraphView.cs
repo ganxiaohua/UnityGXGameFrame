@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -23,15 +22,12 @@ namespace GameFrame.Editor
         private EntityNode mSelectEntityNode;
 
         private float m_LastTime;
-
-        private float m_CurUpdateTime;
-
+        
         public void Init(EditorWindow editorWindow)
         {
             base.Init(editorWindow);
             m_FlootHeght = 200;
             m_FlootWidth = 200;
-            m_CurUpdateTime = 0;
             m_NodeDic = new();
             m_EditorWindow = editorWindow;
             EditorApplication.playModeStateChanged += PlayModeStateChange;

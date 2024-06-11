@@ -1,45 +1,28 @@
 ﻿using System.Collections.Generic;
 using Sirenix.OdinInspector.Editor;
+using UnityEditor;
+using UnityEngine;
 
 namespace GameFrame.Editor
 {
     public class ComponentView : OdinEditorWindow
     {
-        private class PeClass
-        {
-            public PropertyTree Tree;
-            public ECSComponent EcsComponent;
-        }
-
-        private List<PeClass> m_EcsComponents = new List<PeClass>();
-
-        private ECSEntity m_EcsEntity;
+        private Dictionary<int, PropertyTree> m_EcsComponentsTree = new Dictionary<int, PropertyTree>();
 
         private static ComponentView sWindow;
+
+        private ECSEntity ecsEntity;
+
+        private List<int> waitRemoveList = new List<int>();
 
         public static void Init(ECSEntity ecsEntity)
         {
             if (sWindow != null)
                 sWindow.Close();
             sWindow = GetWindow<ComponentView>();
-            sWindow.m_EcsComponents.Clear();
-            sWindow.m_EcsEntity = ecsEntity;
             sWindow.titleContent.text = ecsEntity.Name;
-            
-            List<int> comIndexs = ecsEntity.ECSComponentArray.Indexs;
-            List<ECSComponent> ecsComponents = new List<ECSComponent>();
-            foreach (var index in comIndexs)
-            {
-                ECSComponent ecsComponent = ecsEntity.GetComponent(index);
-                ecsComponents.Add(ecsComponent);
-            }
-            for (int i = 0; i < ecsComponents.Count; i++)
-            {
-                PeClass pe = new PeClass();
-                pe.EcsComponent = ecsComponents[i];
-                pe.Tree = PropertyTree.Create(ecsComponents[i]);
-                sWindow.m_EcsComponents.Add(pe);
-            }
+            sWindow.ecsEntity = ecsEntity;
+            sWindow.m_EcsComponentsTree.Clear();
         }
 
         public static void Destroy()
@@ -51,12 +34,43 @@ namespace GameFrame.Editor
         protected override void OnBeginDrawEditors()
         {
             base.OnBeginDrawEditors();
-            for (int i = 0; i < m_EcsComponents.Count; i++)
+            List<int> comIndexs = ecsEntity.ECSComponentArray.Indexs;
+            waitRemoveList.Clear();
+            foreach (var key in m_EcsComponentsTree.Keys)
             {
-                m_EcsComponents[i].Tree.Draw(false);
+                if (!comIndexs.Contains(key))
+                {
+                    waitRemoveList.Add(key);
+                }
+            }
+
+            foreach (var key in waitRemoveList)
+            {
+                m_EcsComponentsTree[key].Dispose();
+                m_EcsComponentsTree.Remove(key);
+            }
+
+            for (int i = comIndexs.Count-1; i >=0; i--)
+            {
+                int index = comIndexs[i];
+                ECSComponent ecsComponent = ecsEntity.GetComponent(index);
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.Foldout(true, ecsComponent.GetType().Name, true);
+                if (GUILayout.Button("删除", GUILayout.Width(60)))
+                {
+                    DestroyComponent(index);
+                }
+                
+                EditorGUILayout.EndHorizontal();
+                if (!m_EcsComponentsTree.TryGetValue(index, out var tree))
+                {
+                    tree = PropertyTree.Create(ecsComponent);
+                    m_EcsComponentsTree.Add(index, tree);
+                }
+                tree.Draw(false);
             }
         }
-        
+
         protected override void OnImGUI()
         {
             base.OnImGUI();
@@ -65,11 +79,18 @@ namespace GameFrame.Editor
 
         protected override void OnDestroy()
         {
-            foreach (var t in m_EcsComponents)
+            foreach (var t in m_EcsComponentsTree.Values)
             {
-                t.Tree.Dispose();
+                t.Dispose();
             }
             sWindow = null;
+            waitRemoveList.Clear();
+        }
+
+        public void DestroyComponent(int index)
+        {
+            ecsEntity.RemoveComponent(index);
+            m_EcsComponentsTree.Remove(index);
         }
     }
 }
