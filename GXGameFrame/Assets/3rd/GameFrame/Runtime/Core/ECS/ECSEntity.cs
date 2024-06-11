@@ -149,7 +149,7 @@ namespace GameFrame
         {
             m_indexs.AddRange(ECSComponentArray.Indexs);
             ReferencePool.Release(ECSComponentArray);
-            ((World) Parent).ChangeAddRomoveChildOrCompone(this,m_indexs);
+            ((World) Parent).Reactive(m_indexs,this);
             m_indexs.Clear();
         }
 

@@ -33,7 +33,7 @@ namespace GameFrame
             base.RemoveChild(ecsEntity);
         }
 
-        public void ChangeAddRomoveChildOrCompone(ECSEntity ecsEntity,List<int> indexs)
+        public void Reactive(List<int> indexs,ECSEntity ecsEntity)
         {
             foreach (var cid in indexs)
             {

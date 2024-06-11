@@ -15,6 +15,9 @@ namespace GameFrame.Editor
 
         private List<int> waitRemoveList = new List<int>();
 
+        private Dictionary<int, bool> layoutDic = new();
+
+
         public static void Init(ECSEntity ecsEntity)
         {
             if (sWindow != null)
@@ -50,24 +53,32 @@ namespace GameFrame.Editor
                 m_EcsComponentsTree.Remove(key);
             }
 
-            for (int i = comIndexs.Count-1; i >=0; i--)
+            for (int i = comIndexs.Count - 1; i >= 0; i--)
             {
                 int index = comIndexs[i];
                 ECSComponent ecsComponent = ecsEntity.GetComponent(index);
+                Rect lineRect = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, GUILayout.Height(1));
+                EditorGUI.DrawRect(lineRect, new Color(1,1,1,0.1f));
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.Foldout(true, ecsComponent.GetType().Name, true);
+                layoutDic[index] = EditorGUILayout.Foldout(layoutDic.TryGetValue(index, out var value) == false ? false : value, ecsComponent.GetType().Name,
+                    true);
                 if (GUILayout.Button("删除", GUILayout.Width(60)))
                 {
                     DestroyComponent(index);
                 }
-                
+
                 EditorGUILayout.EndHorizontal();
-                if (!m_EcsComponentsTree.TryGetValue(index, out var tree))
+                if (layoutDic[index])
                 {
-                    tree = PropertyTree.Create(ecsComponent);
-                    m_EcsComponentsTree.Add(index, tree);
+                    if (!m_EcsComponentsTree.TryGetValue(index, out var tree))
+                    {
+                        tree = PropertyTree.Create(ecsComponent);
+                        m_EcsComponentsTree.Add(index, tree);
+                    }
+
+                    tree.Draw(false);
                 }
-                tree.Draw(false);
+                EditorGUILayout.Space(5);
             }
         }
 
@@ -83,6 +94,7 @@ namespace GameFrame.Editor
             {
                 t.Dispose();
             }
+
             sWindow = null;
             waitRemoveList.Clear();
         }
@@ -90,6 +102,7 @@ namespace GameFrame.Editor
         public void DestroyComponent(int index)
         {
             ecsEntity.RemoveComponent(index);
+            m_EcsComponentsTree[index].Dispose();
             m_EcsComponentsTree.Remove(index);
         }
     }
