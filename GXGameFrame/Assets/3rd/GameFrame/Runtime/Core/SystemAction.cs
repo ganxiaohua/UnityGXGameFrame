@@ -100,7 +100,7 @@ namespace GameFrame
             foreach (var es in ets)
             {
 #if UNITY_EDITOR
-              Profiler.BeginSample(es.SystemObject.System.GetType().Name);
+                Profiler.BeginSample(es.SystemObject.System.GetType().Name);
 #endif
                 ((IUpdateSystem) es.SystemObject.System).Update(elapseSeconds, realElapseSeconds);
 #if UNITY_EDITOR

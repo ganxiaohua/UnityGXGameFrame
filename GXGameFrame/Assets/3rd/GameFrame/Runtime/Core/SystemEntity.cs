@@ -2,8 +2,8 @@
 {
     public class SystemEntity : IReference
     {
-        public ISystemObject SystemObject { get; set; }
-        public IEntity Entity { get; set; }
+        public ISystemObject SystemObject { get; private set; }
+        public IEntity Entity { get; private set; }
 
         public void Create(ISystemObject systemobject, IEntity entity)
         {

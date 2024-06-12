@@ -4,7 +4,9 @@ namespace GameFrame
 {
     public class AssetInitComponent : Entity, IStartSystem, IUpdateSystem
     {
+#if (UNITY_EDITOR && RESSEQ) || !UNITY_EDITOR
         public CheckUpdate Check;
+#endif
         public UniTaskCompletionSource Task;
 
         public void Start()
@@ -44,6 +46,7 @@ namespace GameFrame
             {
                 return;
             }
+
             await Task.Task;
             Task = null;
         }
