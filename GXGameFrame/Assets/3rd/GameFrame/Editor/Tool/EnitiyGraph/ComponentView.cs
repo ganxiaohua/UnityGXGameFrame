@@ -1,10 +1,46 @@
-﻿using System.Collections.Generic;
-using Sirenix.OdinInspector.Editor;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using GXGame;
+using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;
+using OdinEditorWindow = Sirenix.OdinInspector.Editor.OdinEditorWindow;
+using PropertyTree = Sirenix.OdinInspector.Editor.PropertyTree;
 
 namespace GameFrame.Editor
 {
+    [Serializable]
+    public struct ComponentInfo : ISearchFilterable
+    {
+        [ShowInInspector] [HorizontalGroup("Component", 0.4f)] [LabelText("")]
+        private string componentName;
+
+        [HideInInspector] private Type ComponentType;
+
+        [HideInInspector] private Action<Type> func;
+
+        public void Init(Type type, Action<Type> func)
+        {
+            ComponentType = type;
+            componentName = type.Name;
+            this.func = func;
+        }
+        
+        [Button]
+        [HorizontalGroup("Component", 0.2f)]
+        public void Add()
+        {
+            func?.Invoke(ComponentType);
+        }
+
+        public bool IsMatch(string searchString)
+        {
+            return ComponentType.Name.ToLower().Contains(searchString.ToLower());
+        }
+    }
+
     public class ComponentView : OdinEditorWindow
     {
         private Dictionary<int, PropertyTree> m_EcsComponentsTree = new Dictionary<int, PropertyTree>();
@@ -17,6 +53,10 @@ namespace GameFrame.Editor
 
         private Dictionary<int, bool> layoutDic = new();
 
+        private bool isShowAllEcsComponents = false;
+
+        [ShowInInspector] [ShowIf("isShowAllEcsComponents")] [Searchable] [ListDrawerSettings(IsReadOnly = true)]
+        private static List<ComponentInfo> allEcsComponents = new List<ComponentInfo>();
 
         public static void Init(ECSEntity ecsEntity)
         {
@@ -26,6 +66,29 @@ namespace GameFrame.Editor
             sWindow.titleContent.text = ecsEntity.Name;
             sWindow.ecsEntity = ecsEntity;
             sWindow.m_EcsComponentsTree.Clear();
+            sWindow.isShowAllEcsComponents = false;
+
+            Action<Type> action = sWindow.AddComponent;
+            Type baseType = typeof(ECSComponent);
+
+            if (allEcsComponents.Count == 0)
+            {
+                List<Type> derivedTypes = typeof(Main).Assembly.GetTypes().Where(type => type.IsSubclassOf(baseType)).ToList();
+                foreach (var item in derivedTypes)
+                {
+                    var componet = new ComponentInfo();
+                    componet.Init(item, action);
+                    allEcsComponents.Add(componet);
+                }
+
+                derivedTypes = typeof(GXGameFrame).Assembly.GetTypes().Where(type => type.IsSubclassOf(baseType)).ToList();
+                foreach (var item in derivedTypes)
+                {
+                    var componet = new ComponentInfo();
+                    componet.Init(item, action);
+                    allEcsComponents.Add(componet);
+                }
+            }
         }
 
         public static void Destroy()
@@ -55,30 +118,34 @@ namespace GameFrame.Editor
 
             for (int i = comIndexs.Count - 1; i >= 0; i--)
             {
-                int index = comIndexs[i];
-                ECSComponent ecsComponent = ecsEntity.GetComponent(index);
+                int cid = comIndexs[i];
+                ECSComponent ecsComponent = ecsEntity.GetComponent(cid);
                 Rect lineRect = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, GUILayout.Height(1));
-                EditorGUI.DrawRect(lineRect, new Color(1,1,1,0.1f));
+                EditorGUI.DrawRect(lineRect, new Color(1, 1, 1, 0.1f));
                 EditorGUILayout.BeginHorizontal();
-                layoutDic[index] = EditorGUILayout.Foldout(layoutDic.TryGetValue(index, out var value) == false ? false : value, ecsComponent.GetType().Name,
-                    true);
+                layoutDic[cid] = EditorGUILayout.Foldout(layoutDic.TryGetValue(cid, out var value) == false ? false : value, ecsComponent.GetType().Name, true);
                 if (GUILayout.Button("删除", GUILayout.Width(60)))
                 {
-                    DestroyComponent(index);
+                    RemoveComponent(cid);
                 }
-
                 EditorGUILayout.EndHorizontal();
-                if (layoutDic[index])
+                if (layoutDic[cid])
                 {
-                    if (!m_EcsComponentsTree.TryGetValue(index, out var tree))
+                    if (!m_EcsComponentsTree.TryGetValue(cid, out var tree))
                     {
                         tree = PropertyTree.Create(ecsComponent);
-                        m_EcsComponentsTree.Add(index, tree);
+                        m_EcsComponentsTree.Add(cid, tree);
                     }
 
                     tree.Draw(false);
                 }
+
                 EditorGUILayout.Space(5);
+            }
+
+            if (GUILayout.Button("Add  Component"))
+            {
+                isShowAllEcsComponents = true;
             }
         }
 
@@ -99,11 +166,18 @@ namespace GameFrame.Editor
             waitRemoveList.Clear();
         }
 
-        public void DestroyComponent(int index)
+        private void RemoveComponent(int index)
         {
             ecsEntity.RemoveComponent(index);
-            m_EcsComponentsTree[index].Dispose();
-            m_EcsComponentsTree.Remove(index);
+        }
+
+        private void AddComponent(Type type)
+        {
+            if (!isShowAllEcsComponents) return;
+            Type comType = typeof(Main).Assembly.GetType($"Auto{type.Name}");
+            MethodInfo methodInfo = comType.GetMethod($"Add{type.Name}", BindingFlags.Static | BindingFlags.Public, null, new Type[] {typeof(ECSEntity)}, null);
+            methodInfo.Invoke(null, new object[] {ecsEntity});
+            isShowAllEcsComponents = false;
         }
     }
 }

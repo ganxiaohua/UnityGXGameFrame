@@ -43,8 +43,8 @@ namespace GameFrame
                 return;
             }
 
-            m_Item[index] = default(T);
-            Indexs.RemoveAtSwapBack(index);
+            m_Item[index] = null;
+            Indexs.RemoveSwapBack(index);
         }
 
         public void Clear()

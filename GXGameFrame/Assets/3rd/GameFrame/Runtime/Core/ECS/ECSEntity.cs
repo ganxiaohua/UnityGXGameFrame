@@ -72,16 +72,13 @@ namespace GameFrame
         /// <exception cref="Exception"></exception>
         public void RemoveComponent(int cid)
         {
-            Type type = GXComponents.ComponentTypes[cid];
             if (ECSComponentArray[cid] == null)
             {
+                Type type = GXComponents.ComponentTypes[cid];
                 throw new Exception($"entity not already  component: {type.FullName}");
             }
-
-            m_indexs.AddRange(ECSComponentArray.Indexs);
             ECSComponentArray.Remove(cid);
             mWorld.Reactive(cid,this);
-            m_indexs.Clear();
         }
 
         /// <summary>
