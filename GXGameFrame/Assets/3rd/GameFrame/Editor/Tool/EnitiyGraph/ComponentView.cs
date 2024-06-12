@@ -27,7 +27,7 @@ namespace GameFrame.Editor
             componentName = type.Name;
             this.func = func;
         }
-        
+
         [Button]
         [HorizontalGroup("Component", 0.2f)]
         public void Add()
@@ -51,8 +51,6 @@ namespace GameFrame.Editor
 
         private List<int> waitRemoveList = new List<int>();
 
-        private Dictionary<int, bool> layoutDic = new();
-
         private bool isShowAllEcsComponents = false;
 
         [ShowInInspector] [ShowIf("isShowAllEcsComponents")] [Searchable] [ListDrawerSettings(IsReadOnly = true)]
@@ -60,10 +58,8 @@ namespace GameFrame.Editor
 
         public static void Init(ECSEntity ecsEntity)
         {
-            if (sWindow != null)
-                sWindow.Close();
-            sWindow = GetWindow<ComponentView>();
-            sWindow.titleContent.text = ecsEntity.Name;
+            sWindow ??= GetWindow<ComponentView>();
+            sWindow.titleContent.text = string.IsNullOrEmpty(ecsEntity.Name) ? "Entity" : ecsEntity.Name;
             sWindow.ecsEntity = ecsEntity;
             sWindow.m_EcsComponentsTree.Clear();
             sWindow.isShowAllEcsComponents = false;
@@ -119,17 +115,21 @@ namespace GameFrame.Editor
             for (int i = comIndexs.Count - 1; i >= 0; i--)
             {
                 int cid = comIndexs[i];
+                string comID = $"Com_{cid}";
+                bool t = EditorPrefs.GetBool(comID, false);
                 ECSComponent ecsComponent = ecsEntity.GetComponent(cid);
                 Rect lineRect = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, GUILayout.Height(1));
                 EditorGUI.DrawRect(lineRect, new Color(1, 1, 1, 0.1f));
                 EditorGUILayout.BeginHorizontal();
-                layoutDic[cid] = EditorGUILayout.Foldout(layoutDic.TryGetValue(cid, out var value) == false ? false : value, ecsComponent.GetType().Name, true);
+                t = EditorGUILayout.Foldout(t, ecsComponent.GetType().Name, true);
+                EditorPrefs.SetBool(comID, t);
                 if (GUILayout.Button("删除", GUILayout.Width(60)))
                 {
                     RemoveComponent(cid);
                 }
+
                 EditorGUILayout.EndHorizontal();
-                if (layoutDic[cid])
+                if (t)
                 {
                     if (!m_EcsComponentsTree.TryGetValue(cid, out var tree))
                     {
