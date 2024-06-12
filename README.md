@@ -52,3 +52,13 @@
 
  8.如果你实在不想用ecs部分的系统,可以使用行为机(内置)
 
+ 编辑器功能 看图识功能:
+![image](https://github.com/ganxiaohua/UnityGXGameFrame/assets/20961017/0f62a9d7-775b-4889-a289-7549f9911910)
+
+![image](https://github.com/ganxiaohua/UnityGXGameFrame/assets/20961017/31555142-6b3d-47f9-b155-1e8f80f5428a)
+
+![image](https://github.com/ganxiaohua/UnityGXGameFrame/assets/20961017/4b1a769b-fb88-4bd9-bc76-ad875bcbd148)
+
+
+ 
+
