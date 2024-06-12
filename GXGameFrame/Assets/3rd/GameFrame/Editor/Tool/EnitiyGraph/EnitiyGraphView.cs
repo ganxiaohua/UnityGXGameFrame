@@ -109,6 +109,7 @@ namespace GameFrame.Editor
                 entityNode.GraphNode.Clear();
                 m_NodeDic.RemoveByKey(node);
             }
+            FollowNode(null);
         }
 
         private void CreateNodeWithInfo(EntityNode rootNode)
