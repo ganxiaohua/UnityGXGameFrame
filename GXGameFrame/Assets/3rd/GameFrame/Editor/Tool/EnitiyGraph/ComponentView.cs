@@ -96,6 +96,12 @@ namespace GameFrame.Editor
         protected override void OnBeginDrawEditors()
         {
             base.OnBeginDrawEditors();
+            if (ecsEntity.State == IEntity.EntityState.IsClear)
+            {
+                Close();
+                return;
+            }
+
             List<int> comIndexs = ecsEntity.ECSComponentArray.Indexs;
             waitRemoveList.Clear();
             foreach (var key in m_EcsComponentsTree.Keys)
