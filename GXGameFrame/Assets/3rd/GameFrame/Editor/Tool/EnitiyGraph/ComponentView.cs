@@ -13,11 +13,12 @@ using PropertyTree = Sirenix.OdinInspector.Editor.PropertyTree;
 namespace GameFrame.Editor
 {
     [Serializable]
-    public class ComponentInfo : ISearchFilterable
+    public struct ComponentInfo : ISearchFilterable
     {
         [ShowInInspector] [HorizontalGroup("Component", 0.4f)] [LabelText("")]
         private string componentName;
 
+        [ReadOnly]
         [HideInInspector] private Type ComponentType;
 
         [HideInInspector] private Action<Type> func;
@@ -54,7 +55,7 @@ namespace GameFrame.Editor
 
         private bool isShowAllEcsComponents = false;
 
-        [ShowInInspector] [ShowIf("isShowAllEcsComponents")] [Searchable] [ListDrawerSettings(IsReadOnly = true)]
+        [ShowInInspector] [ShowIf("isShowAllEcsComponents")] [Searchable]
         private static List<ComponentInfo> allEcsComponents = new List<ComponentInfo>();
 
         public static void Init(ECSEntity ecsEntity)
@@ -67,7 +68,6 @@ namespace GameFrame.Editor
 
             Action<Type> action = sWindow.AddComponent;
             Type baseType = typeof(ECSComponent);
-
             if (allEcsComponents.Count == 0)
             {
                 List<Type> derivedTypes = typeof(Main).Assembly.GetTypes().Where(type => type.IsSubclassOf(baseType)).ToList();
