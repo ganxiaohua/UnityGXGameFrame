@@ -16,9 +16,9 @@ namespace GameFrame.Editor
     public struct ComponentInfo : ISearchFilterable
     {
         [ShowInInspector] [HorizontalGroup("Component", 0.4f)] [LabelText("")]
-        private string componentName;
-
         [ReadOnly]
+        private string componentName;
+        
         [HideInInspector] private Type ComponentType;
 
         [HideInInspector] private Action<Type> func;
