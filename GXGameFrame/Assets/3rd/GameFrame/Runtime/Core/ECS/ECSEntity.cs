@@ -15,7 +15,7 @@ namespace GameFrame
     /// <summary>
     /// ECSEntity挂载的一定是Context
     /// </summary>
-    public abstract class ECSEntity : IEntity
+    public class ECSEntity : IEntity
     {
         public IEntity.EntityState State { get; private set; }
 
@@ -23,23 +23,23 @@ namespace GameFrame
 
         public IEntity Parent { get; private set; }
 
-        public int ID{ get; private set; }
+        public int ID { get; private set; }
 
-        public string Name { get;  set; }
+        public string Name { get; set; }
 
         private World mWorld;
 
         public GXArray<ECSComponent> ECSComponentArray { get; private set; }
 
         private static int m_SerialId;
-        
+
         private List<int> m_indexs;
-        
+
         public void Initialize(IEntity sceneParent, IEntity parent, int id)
         {
             ECSComponentArray = ReferencePool.Acquire<GXArray<ECSComponent>>();
             m_indexs = new List<int>(128);
-            ECSComponentArray.Init(GXComponents.ComponentTypes.Length);   
+            ECSComponentArray.Init(GXComponents.ComponentTypes.Length);
             State = IEntity.EntityState.IsCreated;
             Parent = parent;
             SceneParent = sceneParent;
@@ -61,7 +61,7 @@ namespace GameFrame
             }
 
             ECSComponent entity = ECSComponentArray.Add(cid, type);
-            mWorld.Reactive(cid,this);
+            mWorld.Reactive(cid, this);
             return entity;
         }
 
@@ -77,8 +77,9 @@ namespace GameFrame
                 Type type = GXComponents.ComponentTypes[cid];
                 throw new Exception($"entity not already  component: {type.FullName}");
             }
+
             ECSComponentArray.Remove(cid);
-            mWorld.Reactive(cid,this);
+            mWorld.Reactive(cid, this);
         }
 
         /// <summary>
@@ -137,7 +138,7 @@ namespace GameFrame
 
             return false;
         }
-        
+
 
         /// <summary>
         /// 清除所有组件
@@ -146,7 +147,7 @@ namespace GameFrame
         {
             m_indexs.AddRange(ECSComponentArray.Indexs);
             ReferencePool.Release(ECSComponentArray);
-            ((World) Parent).Reactive(m_indexs,this);
+            ((World) Parent).Reactive(m_indexs, this);
             m_indexs.Clear();
         }
 

@@ -19,11 +19,11 @@ namespace GameFrame
         {
             Multiple = mul;
         }
-        
 
-        public new T AddChild<T>() where T : ECSEntity
+
+        public ECSEntity AddChild()
         {
-            T ecsEntity = base.AddChild<T>();
+            ECSEntity ecsEntity = AddChild<ECSEntity>();
             ecsEntity.SetContext(this);
             return ecsEntity;
         }
@@ -33,7 +33,7 @@ namespace GameFrame
             base.RemoveChild(ecsEntity);
         }
 
-        public void Reactive(List<int> indexs,ECSEntity ecsEntity)
+        public void Reactive(List<int> indexs, ECSEntity ecsEntity)
         {
             foreach (var cid in indexs)
             {
@@ -80,13 +80,14 @@ namespace GameFrame
                 Matcher.RemoveMatcher(group.Key);
                 Group.RemoveGroup(group.Value);
             }
+
             m_GroupsList = null;
             m_Groups.Clear();
         }
 
         public void Update(float elapseSeconds, float realElapseSeconds)
         {
-            DeltaTime = elapseSeconds*Multiple;
+            DeltaTime = elapseSeconds * Multiple;
         }
     }
 }
