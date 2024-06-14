@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using GXGame;
 using Sirenix.OdinInspector;
+using Sirenix.OdinInspector.Editor;
 using UnityEditor;
 using UnityEngine;
 using OdinEditorWindow = Sirenix.OdinInspector.Editor.OdinEditorWindow;
@@ -12,7 +13,7 @@ using PropertyTree = Sirenix.OdinInspector.Editor.PropertyTree;
 namespace GameFrame.Editor
 {
     [Serializable]
-    public struct ComponentInfo : ISearchFilterable
+    public class ComponentInfo : ISearchFilterable
     {
         [ShowInInspector] [HorizontalGroup("Component", 0.4f)] [LabelText("")]
         private string componentName;
@@ -102,7 +103,7 @@ namespace GameFrame.Editor
                 return;
             }
 
-            
+
             List<int> comIndexs = ecsEntity.ECSComponentArray.Indexs;
             waitRemoveList.Clear();
             foreach (var key in m_EcsComponentsTree.Keys)
@@ -141,6 +142,7 @@ namespace GameFrame.Editor
                     if (!m_EcsComponentsTree.TryGetValue(cid, out var tree))
                     {
                         tree = PropertyTree.Create(ecsComponent);
+                        tree.OnPropertyValueChanged += ChangeComponent;
                         m_EcsComponentsTree.Add(cid, tree);
                     }
 
@@ -176,6 +178,16 @@ namespace GameFrame.Editor
         private void RemoveComponent(int index)
         {
             ecsEntity.RemoveComponent(index);
+        }
+
+        private void ChangeComponent(InspectorProperty property, int selectionIndex)
+        {
+            var type = property.Tree.TargetType;
+            var fields = property.Tree.WeakTargets[0].GetType().GetFields();
+            object fieldValue = fields[0].GetValue(property.Tree.WeakTargets[0]);
+            Type comType = typeof(Main).Assembly.GetType($"Auto{type.Name}");
+            MethodInfo methodInfo = comType.GetMethod($"Set{type.Name}", BindingFlags.Static | BindingFlags.Public);
+            methodInfo.Invoke(null, new object[] {ecsEntity, fieldValue});
         }
 
         private void AddComponent(Type type)

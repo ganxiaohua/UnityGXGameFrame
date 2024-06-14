@@ -101,7 +101,7 @@ namespace GameFrame
         }
 
         /// <summary>
-        /// 获得当前引用池子中的对象数量
+        /// 设置当前引用池子中的对象数量
         /// </summary>
         /// <typeparam name="T">引用类型</typeparam>
         /// <returns></returns>
@@ -115,7 +115,6 @@ namespace GameFrame
                     return;
                 }
             }
-
             throw new Exception($"{typeof(T).Name} not have ");
         }
 
