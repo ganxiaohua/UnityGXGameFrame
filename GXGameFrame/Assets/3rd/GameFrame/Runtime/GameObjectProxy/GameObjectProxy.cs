@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
-using UnityEngine;
 using Cysharp.Threading.Tasks;
+using UnityEngine;
 
 namespace Common.Runtime
 {
@@ -63,15 +63,18 @@ namespace Common.Runtime
             version++;
             int prevVersion = version;
             
-            var go = await pool.GetAsync(asset, parent, cancelToken);
-            
-            if (cancelToken.IsCancellationRequested)
+            var go = default(GameObject);
+            try
+            {
+                go = await pool.GetAsync(asset, transform, cancelToken);
+            }
+            catch (Exception e)
             {
                 if (go) pool.Release(asset, go);
-                throw new OperationCanceledException(cancelToken);
+                if (e is not OperationCanceledException)
+                    Debug.LogException(e);
+                return false;
             }
-
-            if (!go) throw new Exception(asset);
             
             if (prevVersion != version)
             {
