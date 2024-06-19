@@ -42,7 +42,8 @@ namespace GameFrame
             {
                 return;
             }
-
+        
+            ReferencePool.Release(m_Item[index]);
             m_Item[index] = null;
             Indexs.RemoveSwapBack(index);
         }

@@ -4,7 +4,6 @@ using Object = UnityEngine.Object;
 namespace GameFrame
 {
     public class PoolObject : ObjectBase
-    
     {
         private Transform mParent;
         private GameObject mPrefab;

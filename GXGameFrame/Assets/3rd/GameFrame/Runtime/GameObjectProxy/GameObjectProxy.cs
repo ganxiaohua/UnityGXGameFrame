@@ -86,6 +86,7 @@ namespace Common.Runtime
             Unbind(pool);
             this.gameObject = go;
             this.transform = go.transform;
+            this.transform.parent = parent;
             this.asset = asset;
             this.binded = true;
             OnAfterBind();
