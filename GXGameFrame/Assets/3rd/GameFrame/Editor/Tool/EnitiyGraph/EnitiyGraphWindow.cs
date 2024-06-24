@@ -14,7 +14,7 @@ namespace GameFrame.Editor
             var window = GetWindow<DialogueGraphWindow>();
             window.titleContent = new GUIContent("实体审查");
         }
-        
+
         protected void OnGUI()
         {
             if (!EditorApplication.isPlaying && GraphView != null)
@@ -22,7 +22,6 @@ namespace GameFrame.Editor
                 GraphView.Clear();
                 rootVisualElement.Clear();
                 GraphView = null;
-                return;
             }
             else if (EditorApplication.isPlaying && GraphView == null)
             {
@@ -31,9 +30,10 @@ namespace GameFrame.Editor
                 GraphView.Show();
                 CreateTools();
             }
-            
+
             GraphView?.Update();
         }
+
 
         private void OnDisable()
         {
@@ -44,9 +44,15 @@ namespace GameFrame.Editor
         private void CreateTools()
         {
             Toolbar toolbar = new Toolbar();
-            Button a = new Button(() => { GraphView.FollowNode(null); });
-            a.text = "刷新";
-            toolbar.Add(a);
+            TextField searchField = new TextField();
+            searchField.style.width = 150;
+            Button refreshBtn = new Button(() => { GraphView.FollowNode(null); });
+            Button serchBtn = new Button(() => { GraphView.FindNode(searchField.text); });
+            serchBtn.text = "搜索";
+            refreshBtn.text = "刷新";
+            toolbar.Add(refreshBtn);
+            toolbar.Add(searchField);
+            toolbar.Add(serchBtn);
             rootVisualElement.Add(toolbar);
         }
     }

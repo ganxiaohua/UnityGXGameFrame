@@ -46,6 +46,7 @@ namespace GameFrame
             collector.InitCollector(groups);
             return collector;
         }
+        
 
         private void InitCollector(Group[] group)
         {

@@ -8,7 +8,7 @@ namespace GameFrame.Editor
         public List<EntityNode> NextNodes = new();
         public int Floor;
         public int Grid;
-        public IEntity entity;
+        public IEntity Entity;
         public GeneralGrophNode GraphNode;
     }
 
@@ -44,7 +44,7 @@ namespace GameFrame.Editor
                 root = ientity;
             }
 
-            RootNode.entity = root;
+            RootNode.Entity = root;
             RootNode.Floor = 0;
             RootNode.Grid = 0;
             FloorGrid.Add(0, 0);
@@ -59,7 +59,7 @@ namespace GameFrame.Editor
                 FloorGrid[floor] = 0;
             }
             
-            if (entityNode.entity is Entity entity)
+            if (entityNode.Entity is Entity entity)
             {
                 foreach (IEntity childEntity in entity.Children)
                 {
@@ -80,7 +80,7 @@ namespace GameFrame.Editor
             entity.PreNode = parentNode;
             entity.Floor = floor;
             entity.Grid = grid;
-            entity.entity = ientity;
+            entity.Entity = ientity;
             StructureNode(entity, entity.Floor);
         }
     }

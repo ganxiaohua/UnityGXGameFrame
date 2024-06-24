@@ -12,7 +12,7 @@ namespace GameFrame
 
         private Dictionary<T, string> m_ActionObjectWithName;
 
-        private List<T> NeedClearList;
+        private List<T> m_NeedClearList;
 
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace GameFrame
         {
             Type objectPoolType = typeof(ObjectPool<>).MakeGenericType(objectType);
             ObjectPool<T> objectPool = ReferencePool.Acquire(objectPoolType) as ObjectPool<T>;
-            objectPool.NeedClearList = new List<T>();
+            objectPool.m_NeedClearList = new List<T>();
             objectPool.m_SpawnAsyncQueue = new();
             objectPool.Initialize(typeName);
             objectPool.m_MaxCacheNum = maxNum;
@@ -270,7 +270,7 @@ namespace GameFrame
         {
             if (m_CurCacheNum <= m_MaxCacheNum)
                 return;
-            NeedClearList.Clear();
+            m_NeedClearList.Clear();
             int clearNum = m_MaxCacheNum / 2;
             int curClearNum = 0;
             foreach (var item in m_HideObject)
@@ -280,13 +280,13 @@ namespace GameFrame
                 {
                     if (list[i].Luck)
                         continue;
-                    NeedClearList.Add(list[i]);
+                    m_NeedClearList.Add(list[i]);
                     list.RemoveAt(i);
                     curClearNum++;
                     if (curClearNum == clearNum)
                     {
                         m_CurCacheNum -= curClearNum;
-                        ClearPasdue(NeedClearList);
+                        ClearPasdue(m_NeedClearList);
                         return;
                     }
                 }
@@ -298,7 +298,7 @@ namespace GameFrame
         /// </summary>
         public void TimeCheck()
         {
-            NeedClearList.Clear();
+            m_NeedClearList.Clear();
             foreach (var item in m_HideObject)
             {
                 List<T> list = item.Value;
@@ -307,14 +307,14 @@ namespace GameFrame
                     DateTime expireTime = DateTime.UtcNow.AddSeconds(-m_ExpireTime);
                     if (expireTime >= list[i].LastUseTime && !list[i].Luck)
                     {
-                        NeedClearList.Add(list[i]);
+                        m_NeedClearList.Add(list[i]);
                         list.RemoveAt(i);
                         m_CurCacheNum--;
                     }
                 }
             }
 
-            ClearPasdue(NeedClearList);
+            ClearPasdue(m_NeedClearList);
         }
 
         /// <summary>

@@ -22,7 +22,7 @@ namespace GameFrame.Editor
         private EntityNode mSelectEntityNode;
 
         private float m_LastTime;
-        
+
         public void Init(EditorWindow editorWindow)
         {
             base.Init(editorWindow);
@@ -64,7 +64,7 @@ namespace GameFrame.Editor
             {
                 CreateNodeWithInfo(mSelectEntityNode);
             }
-            // RemoveEntityNode();
+
             m_GeneralGraphView.Update();
         }
 
@@ -97,6 +97,7 @@ namespace GameFrame.Editor
             {
                 mSelectEntityNode = entityNode;
             }
+
             RemoveAll();
         }
 
@@ -104,17 +105,18 @@ namespace GameFrame.Editor
         {
             if (m_NodeDic.TryGetValueKv(node, out EntityNode entityNode))
             {
-                (((ECSEntity) entityNode.entity).Parent as World).RemoveChild((ECSEntity) entityNode.entity);
+                (((ECSEntity) entityNode.Entity).Parent as World).RemoveChild((ECSEntity) entityNode.Entity);
                 m_GeneralGraphView.RemoveElement(entityNode.GraphNode);
                 entityNode.GraphNode.Clear();
                 m_NodeDic.RemoveByKey(node);
             }
+
             FollowNode(null);
         }
 
         private void CreateNodeWithInfo(EntityNode rootNode)
         {
-            if (rootNode == null || rootNode.entity == null)
+            if (rootNode == null || rootNode.Entity == null)
             {
                 return;
             }
@@ -133,9 +135,9 @@ namespace GameFrame.Editor
             var graphNode = m_GeneralGraphView.AddNode<GeneralGrophNode>();
             graphNode.AddButton("关注", FollowNode);
             graphNode.AddButton("删除", RemoveNode);
-            var graphNodeName = string.IsNullOrEmpty(root.entity.Name)
-                ? root.entity.GetType().Name
-                : $"{root.entity.GetType().Name} ({root.entity.Name})";
+            var graphNodeName = string.IsNullOrEmpty(root.Entity.Name)
+                ? root.Entity.GetType().Name
+                : $"{root.Entity.GetType().Name} ({root.Entity.Name})";
             m_NodeDic.Add(graphNode, root);
             graphNode.Init(this, root, graphNodeName, new Rect(root.Floor * (m_FlootHeght + 50), m_FlootHeght + root.Grid * 100, m_FlootWidth - 50, 100));
             var outPort = graphNode.AddProt("", typeof(bool), Direction.Output);
@@ -143,7 +145,7 @@ namespace GameFrame.Editor
             graphNode.RefreshExpandedState();
             graphNode.RefreshPorts();
             m_NodeDic.Add(graphNode, root);
-            graphNode.SetColor(root.entity is ECSEntity ? new Color(0.5f, 0.2f, 0.1f) : Color.gray);
+            graphNode.SetColor(root.Entity is ECSEntity ? new Color(0.5f, 0.2f, 0.1f) : Color.gray);
         }
 
         private void CreateEntityNode(EntityNode node)
@@ -156,7 +158,7 @@ namespace GameFrame.Editor
                     CreateEntityNode(enititnode);
                     continue;
                 }
-                
+
                 Rect localRect = new Rect(enititnode.Floor * (m_FlootHeght + 50), m_FlootHeght + enititnode.Grid * 100, m_FlootWidth - 50, 100);
                 Rect graphViewRect = m_GeneralGraphView.viewport.worldBound;
                 float scale = m_GeneralGraphView.contentViewContainer.transform.scale.x;
@@ -170,9 +172,9 @@ namespace GameFrame.Editor
                 var graphNode = m_GeneralGraphView.AddNode<GeneralGrophNode>();
                 graphNode.AddButton("关注", FollowNode);
                 graphNode.AddButton("删除", RemoveNode);
-                var graphNodeName = string.IsNullOrEmpty(enititnode.entity.Name)
-                    ? enititnode.entity.GetType().Name
-                    : $"{enititnode.entity.GetType().Name} ({enititnode.entity.Name})";
+                var graphNodeName = string.IsNullOrEmpty(enititnode.Entity.Name)
+                    ? enititnode.Entity.GetType().Name
+                    : $"{enititnode.Entity.GetType().Name} ({enititnode.Entity.Name})";
                 graphNode.Init(this, enititnode, graphNodeName, localRect);
                 var inPort = graphNode.AddProt("", typeof(bool), Direction.Input);
                 var outPort = graphNode.AddProt("", typeof(bool), Direction.Output);
@@ -181,7 +183,7 @@ namespace GameFrame.Editor
                 graphNode.RefreshPorts();
                 m_GeneralGraphView.AddElement(graphNode);
                 m_GeneralGraphView.AddEdgeByPorts(node.GraphNode.OutPort, inPort, PickingMode.Ignore);
-                graphNode.SetColor(enititnode.entity is ECSEntity ? new Color(0.5f, 0.2f, 0.1f) : Color.gray);
+                graphNode.SetColor(enititnode.Entity is ECSEntity ? new Color(0.5f, 0.2f, 0.1f) : Color.gray);
                 m_NodeDic.Add(graphNode, enititnode);
                 CreateEntityNode(enititnode);
             }
@@ -191,7 +193,7 @@ namespace GameFrame.Editor
         {
             Rect graphViewRect = m_GeneralGraphView.viewport.worldBound;
             var list = m_NodeDic.Keys;
-            for (int i =list.Count-1; i >=0; i--)
+            for (int i = list.Count - 1; i >= 0; i--)
             {
                 Vector2 pos = new Vector2(list[i].worldBound.x, list[i].worldBound.y);
                 if (!graphViewRect.Contains(pos))
@@ -202,11 +204,11 @@ namespace GameFrame.Editor
                 }
             }
         }
-        
+
 
         public void ShowComponent(EntityNode selectEntityNode)
         {
-            if (selectEntityNode.entity is ECSEntity ecs)
+            if (selectEntityNode.Entity is ECSEntity ecs)
             {
                 ComponentView.Init(ecs);
             }
@@ -216,6 +218,32 @@ namespace GameFrame.Editor
         {
             m_NodeDic.Clear();
             mEntityInfos = null;
+        }
+
+        public void FindNode(string name)
+        {
+            if(mEntityInfos == null) return;
+            FindNode(mEntityInfos.RootNode, name);
+        }
+
+        private void FindNode(EntityNode node, string name)
+        {
+            if (string.Equals(node.Entity.Name, name, System.StringComparison.OrdinalIgnoreCase))
+            {
+                ShowComponent(node);
+            }
+            else if(node.NextNodes == null || node.NextNodes.Count == 0)
+            {
+                return;
+            }
+            else
+            {
+                foreach (var nextNode in node.NextNodes)
+                {
+                    FindNode(nextNode, name);
+                }
+            }
+
         }
     }
 }
