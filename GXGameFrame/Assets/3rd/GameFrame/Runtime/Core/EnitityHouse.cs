@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace GameFrame
 {
-    using DDictionaryETC = DDictionary<Type, Type, ISystemObject>;
+    using DDictionaryETC = DDictionary<IEntity, Type, ISystemObject>;
 
     public class EnitityHouse : Singleton<EnitityHouse>
     {
@@ -84,7 +84,6 @@ namespace GameFrame
             {
                 return entityList.Count;
             }
-
             return 0;
         }
 
@@ -158,13 +157,12 @@ namespace GameFrame
         /// <returns></returns>
         private ISystemObject CreateSystem(IEntity entity, Type system)
         {
-            Type entityType = entity.GetType();
-            ISystemObject sysObject = m_EntitySystems.GetVValue(entityType, system);
+            ISystemObject sysObject = m_EntitySystems.GetVValue(entity, system);
             if (sysObject == null)
             {
                 sysObject = ReferencePool.Acquire<EcsSystemObject>();
                 ((EcsSystemObject) sysObject).AddSystem(system);
-                m_EntitySystems.Add(entityType, system, sysObject);
+                m_EntitySystems.Add(entity, system, sysObject);
             }
 
             return sysObject;
@@ -200,7 +198,7 @@ namespace GameFrame
             {
                 var sysObject = ReferencePool.Acquire<SystemObject>();
                 sysObject.AddSystem((ISystem) entity);
-                m_EntitySystems.Add(entityType, type, sysObject);
+                m_EntitySystems.Add(entity, type, sysObject);
                 m_UpdateSystems.AddUpdateSystem(entity, sysObject);
             }
 
@@ -249,19 +247,19 @@ namespace GameFrame
             EventData.Instance.AddEventEntity(entity);
             if (!m_UpdateSystems.HasUpdateSystem(entity))
             {
-                ISystemObject updateSystem = m_EntitySystems.GetVValue(entity.GetType(), typeof(IUpdateSystem));
+                ISystemObject updateSystem = m_EntitySystems.GetVValue(entity, typeof(IUpdateSystem));
                 if (updateSystem != null)
                 {
                     m_UpdateSystems.AddUpdateSystem(entity, updateSystem);
                 }
 
-                updateSystem = m_EntitySystems.GetVValue(entity.GetType(), typeof(ILateUpdateSystem));
+                updateSystem = m_EntitySystems.GetVValue(entity, typeof(ILateUpdateSystem));
                 if (updateSystem != null)
                 {
                     m_UpdateSystems.AddUpdateSystem(entity, updateSystem);
                 }
 
-                updateSystem = m_EntitySystems.GetVValue(entity.GetType(), typeof(IFixedUpdateSystem));
+                updateSystem = m_EntitySystems.GetVValue(entity, typeof(IFixedUpdateSystem));
                 if (updateSystem != null)
                 {
                     m_UpdateSystems.AddUpdateSystem(entity, updateSystem);
@@ -310,7 +308,7 @@ namespace GameFrame
         {
             Type type = typeof(T);
             Type entityType = entity.GetType();
-            ISystemObject ecsSystemObject = m_EntitySystems.GetVValue(entityType, type);
+            ISystemObject ecsSystemObject = m_EntitySystems.GetVValue(entity, type);
             if (ecsSystemObject != null)
             {
                 RemoveUpdateSystem(entity, ecsSystemObject.System);
@@ -324,7 +322,7 @@ namespace GameFrame
         private void RemoveAllSystem(IEntity entity)
         {
             Type entityType = entity.GetType();
-            var allSystemDic = m_EntitySystems.GetValue(entityType);
+            var allSystemDic = m_EntitySystems.GetValue(entity);
             if (allSystemDic == null)
             {
                 //这个实体上不存在系统
@@ -334,7 +332,7 @@ namespace GameFrame
             RemoveUpdateSystem(entity);
             if (GetEntityCount(entityType) == 0)
             {
-                var item = m_EntitySystems.RemoveTkey(entityType);
+                var item = m_EntitySystems.RemoveTkey(entity);
                 foreach (KeyValuePair<Type, ISystemObject> typeSystem in item)
                 {
                     ReferencePool.Release(typeSystem.Value);

@@ -15,35 +15,24 @@ namespace GameFrame
                 DDTKV.Add(t, kv);
             }
 
-            if (kv.ContainsKey(k))
+            if (!kv.TryAdd(k, v))
             {
                 Debugger.LogWarning($"kv  have t:{typeof(K)}");
-            }
-            else
-            {
-                kv.Add(k, v);
             }
         }
 
         public Dictionary<K, V> RemoveTkey(T t)
         {
-            if (!DDTKV.TryGetValue(t, out Dictionary<K, V> kv))
-            {
-                return null;
-            }
-
-            DDTKV.Remove(t);
-            return kv;
+            return !DDTKV.Remove(t, out Dictionary<K, V> kv) ? null : kv;
         }
 
         public V RemoveKkey(T t, K k)
         {
-            if (!DDTKV.TryGetValue(t, out Dictionary<K, V> kv) || !kv.TryGetValue(k, out V value))
+            if (!DDTKV.TryGetValue(t, out Dictionary<K, V> kv) || !kv.Remove(k, out V value))
             {
                 return default(V);
             }
 
-            kv.Remove(k);
             return value;
         }
 
