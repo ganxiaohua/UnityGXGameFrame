@@ -41,7 +41,7 @@ public class TestScript
     [Test]
     public void StrongListTest()
     {
-        StrongList<int> strongList = new StrongList<int>(0, true);
+        StrongList<int> strongList = new StrongList<int>(10, true);
         strongList.Add(1);
         strongList.Add(2);
         strongList.Add(3);

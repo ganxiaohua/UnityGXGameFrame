@@ -6,10 +6,12 @@
         public virtual void Init(BehaviorWorldEntity behaviorWorld)
         {
             m_BehaviorWorldEntity = behaviorWorld;
+            
         }
 
         public virtual void Update(float elapseSeconds)
         {
+            
         }
 
         internal void ChangeBehavior<T>(IBehaviorData behaviorData)where T : Behavior

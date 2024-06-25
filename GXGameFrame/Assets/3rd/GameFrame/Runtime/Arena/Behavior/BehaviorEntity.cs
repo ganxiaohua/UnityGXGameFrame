@@ -17,6 +17,7 @@ namespace GameFrame
 
         public void Update(float elapseSeconds, float realElapseSeconds)
         {
+            if (m_Datas.Count == 0) return;
             Behavior.Update(m_Datas, elapseSeconds);
         }
 

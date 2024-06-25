@@ -13,10 +13,10 @@ namespace GameFrame
         public void Start(Type arenatype)
         {
             m_BehaviorWorld = (BehaviorWorld) ReferencePool.Acquire(arenatype);
-            m_BehaviorWorld.Init(this);
             m_DataForBehaviorDic = new();
             m_BehaviorDic = new();
             m_Datas = new();
+            m_BehaviorWorld.Init(this);
         }
 
         public void Update(float elapseSeconds, float realElapseSeconds)
