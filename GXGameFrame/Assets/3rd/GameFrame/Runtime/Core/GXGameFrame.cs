@@ -13,7 +13,6 @@ namespace GameFrame
             MainScene.Initialize(null,null,0);
             MainScene.AddComponent<UIComponent>();
             await MainScene.AddComponent<AssetInitComponent>().WaitLoad();
-            Config.Instance.LoadTable();
         }
 
         public void Update()

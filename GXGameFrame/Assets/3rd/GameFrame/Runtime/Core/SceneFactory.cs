@@ -1,8 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices.ComTypes;
-using UnityEngine;
-
-namespace GameFrame
+﻿namespace GameFrame
 {
     public static class SceneFactory
     {
@@ -11,9 +7,9 @@ namespace GameFrame
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static T ChangePlayerScene<T>() where T : class, IEntity, IScene, new()
+        public static T ChangePlayerScene<T>(FsmState state) where T : class, IEntity, IScene, new()
         {
-            IScene scene =  EnitityHouse.Instance.AddSceneEntity<T>(SceneType.PlayerScene);
+            IScene scene =  EnitityHouse.Instance.AddSceneEntity<T>(SceneType.PlayerScene,state);
             return (T)scene;
         }
         
@@ -32,9 +28,9 @@ namespace GameFrame
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static T ChangeOtherPlayerScene<T>() where T : class, IEntity, IScene, new()
+        public static T ChangeOtherPlayerScene<T>(FsmState state) where T : class, IEntity, IScene, new()
         {
-            IScene scene =  EnitityHouse.Instance.AddSceneEntity<T>(SceneType.OtherPlayerScene);
+            IScene scene =  EnitityHouse.Instance.AddSceneEntity<T>(SceneType.OtherPlayerScene,state);
             return (T)scene;
         }
         
@@ -53,9 +49,9 @@ namespace GameFrame
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static T ChangePlayBackScene<T>() where T : class, IEntity, IScene, new()
+        public static T ChangePlayBackScene<T>(FsmState state) where T : class, IEntity, IScene, new()
         {
-            IScene scene =  EnitityHouse.Instance.AddSceneEntity<T>(SceneType.PlayBackScene);
+            IScene scene =  EnitityHouse.Instance.AddSceneEntity<T>(SceneType.PlayBackScene,state);
             return (T)scene;
         }
         

@@ -17,7 +17,7 @@ namespace GameFrame
         private DDictionaryETC m_EntitySystems = new();
 
         private UpdateSystems m_UpdateSystems = new UpdateSystems();
-        
+
 
         /// <summary>
         /// 增加实体 所有的实体都会加入到这里
@@ -37,6 +37,7 @@ namespace GameFrame
             {
                 throw new Exception($"TypeWithEntitys have entity:{entity.ID}");
             }
+
             EventData.Instance.AddEventEntity(entity);
             entityList.Add(entity);
         }
@@ -70,6 +71,7 @@ namespace GameFrame
             {
                 throw new Exception($"TypeWithEntitys not have entity:{entity.ID}");
             }
+
             EventData.Instance.RemoveEventEntity(entity);
             entityList.Remove(entity);
             RemoveAllSystem(entity);
@@ -84,6 +86,7 @@ namespace GameFrame
             {
                 return entityList.Count;
             }
+
             return 0;
         }
 
@@ -93,7 +96,7 @@ namespace GameFrame
         /// </summary>
         /// <param name="sceneType"></param>
         /// <typeparam name="T"></typeparam>
-        public IScene AddSceneEntity<T>(SceneType sceneType) where T : class, IEntity, IScene, new()
+        public IScene AddSceneEntity<T>(SceneType sceneType, FsmState state) where T : class, IEntity, IScene, new()
         {
             if (m_EverySceneEntity.TryGetValue(sceneType, out IScene IScene))
             {
@@ -106,7 +109,7 @@ namespace GameFrame
                 RemoveSceneEntity(sceneType);
             }
 
-            T scene = GXGameFrame.Instance.MainScene.AddComponent<T>();
+            T scene = state.AddComponent<T>();
             m_EverySceneEntity.Add(sceneType, scene);
             return scene;
         }
@@ -176,7 +179,7 @@ namespace GameFrame
         private void AddEcsSystem(World entity, Type type)
         {
             ISystemObject sysObject = CreateSystem(entity, type);
-            sysObject.System.SystemStart<World>((World)entity);
+            sysObject.System.SystemStart<World>((World) entity);
             m_UpdateSystems.AddUpdateSystem(entity, sysObject);
         }
 

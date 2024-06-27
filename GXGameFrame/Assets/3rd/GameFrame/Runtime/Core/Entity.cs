@@ -132,16 +132,16 @@ namespace GameFrame
         }
 
 
-        public T AddComponent<T, P1>(P1 p1) where T : class, IEntity
+        public T AddComponent<T, TP1>(TP1 p1) where T : class, IEntity
         {
             Type type = typeof(T);
             return (T) AddComponent(type, p1);
         }
 
-        public IEntity AddComponent<P1>(Type type, P1 p1)
+        public IEntity AddComponent<TP1>(Type type, TP1 p1)
         {
             IEntity component = CreateComponent(type);
-            if (component is IStartSystem<P1> system)
+            if (component is IStartSystem<TP1> system)
             {
                 system.SystemStart(p1);
             }
@@ -149,16 +149,16 @@ namespace GameFrame
             return component;
         }
 
-        public T AddComponent<T, P1, P2>(P1 p1, P2 p2) where T : class, IEntity
+        public T AddComponent<T, TP1, TP2>(TP1 p1, TP2 p2) where T : class, IEntity
         {
             Type type = typeof(T);
             return (T) AddComponent(type, p1, p2);
         }
 
-        public IEntity AddComponent<P1, P2>(Type type, P1 p1, P2 p2)
+        public IEntity AddComponent<TP1, TP2>(Type type, TP1 p1, TP2 p2)
         {
             IEntity component = CreateComponent(type);
-            if (component is IStartSystem<P1,P2> system)
+            if (component is IStartSystem<TP1,TP2> system)
             {
                 system.SystemStart(p1,p2);
             }
@@ -247,16 +247,16 @@ namespace GameFrame
             return component;
         }
 
-        public T AddChild<T, P1, P2>(P1 p1, P2 p2) where T : class, IEntity
+        public T AddChild<T, TP1, TP2>(TP1 p1, TP2 p2) where T : class, IEntity
         {
             Type type = typeof(T);
             return (T) AddChild(type, p1, p2);
         }
 
-        public IEntity AddChild<P1, P2>(Type type, P1 p1, P2 p2)
+        public IEntity AddChild<TP1, TP2>(Type type, TP1 p1, TP2 p2)
         {
             IEntity component = Create(type, false);
-            if (component is IStartSystem<P1,P2> system)
+            if (component is IStartSystem<TP1,TP2> system)
             {
                 system.SystemStart(p1,p2);
             }
