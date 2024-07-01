@@ -43,6 +43,8 @@ namespace GameFrame.Editor
         [MenuItem("GX框架工具/远程资源/开启", false, 4)]
         public static void OpenRemoteResource()
         {
+            Menu.SetChecked("GX框架工具/远程资源/开启", true);
+            Menu.SetChecked("GX框架工具/远程资源/关闭", false);
             Debugger.Log("开启这个,并且AA设置成Use Asset Database的话,优先读取本地,没有本地则读取服务器资源.用于项目资源过大,拆分资源");
             string macro = PlayerSettings.GetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup);
             if (macro.Contains(EditorString.RESSEQ))
@@ -54,9 +56,11 @@ namespace GameFrame.Editor
             PlayerSettings.SetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup, macro);
         }
 
-        [MenuItem("GX框架工具/远程资源/关闭", false, 4)]
+        [MenuItem("GX框架工具/远程资源/关闭", false, 5)]
         public static void CloseRemoteResource()
         {
+            Menu.SetChecked("GX框架工具/远程资源/开启", false);
+            Menu.SetChecked("GX框架工具/远程资源/关闭", true);
             string macro = PlayerSettings.GetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup);
             if (!macro.Contains(EditorString.RESSEQ))
             {
@@ -122,11 +126,12 @@ namespace GameFrame.Editor
         public static void OpenAssertBind()
         {
             string macro = PlayerSettings.GetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup);
+            Menu.SetChecked("GX框架工具/断言/开启", true);
+            Menu.SetChecked("GX框架工具/断言/关闭", false);
             if (macro.Contains(EditorString.SHOWASSERT))
             {
                 return;
             }
-
             macro = $"{EditorString.SHOWASSERT};{macro}";
             PlayerSettings.SetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup, macro);
         }
@@ -134,6 +139,8 @@ namespace GameFrame.Editor
         [MenuItem("GX框架工具/断言/关闭", false, 8)]
         public static void CloseAssertBind()
         {
+            Menu.SetChecked("GX框架工具/断言/开启", false);
+            Menu.SetChecked("GX框架工具/断言/关闭", true);
             string macro = PlayerSettings.GetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup);
             if (!macro.Contains(EditorString.SHOWASSERT))
             {

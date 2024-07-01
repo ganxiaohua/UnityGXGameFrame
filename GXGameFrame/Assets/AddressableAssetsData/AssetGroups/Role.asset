@@ -31,6 +31,14 @@ MonoBehaviour:
     - Preload
     - Role
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 80ee4e20519678a469f61de4fc048ee0
+    m_Address: Skill1Effect
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - Role
+    - skilleffect
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 0020e5d0c8443bd4cb3a8bfd7153ae30, type: 2}
   m_SchemaSet:
