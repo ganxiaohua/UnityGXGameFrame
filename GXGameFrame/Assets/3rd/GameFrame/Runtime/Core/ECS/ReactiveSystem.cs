@@ -24,7 +24,7 @@ namespace GameFrame
         }
 
         protected abstract Collector GetTrigger(World world);
-        
+
         protected abstract bool Filter(ECSEntity entity);
 
         protected abstract void Execute(List<ECSEntity> entities);
@@ -33,7 +33,7 @@ namespace GameFrame
         {
             if (m_Collector.CollectedEntities.Count == 0)
                 return;
-            
+
             foreach (ECSEntity ecsentity in m_Collector.CollectedEntities)
             {
                 if (ecsentity.State != IEntity.EntityState.IsClear && this.Filter(ecsentity))

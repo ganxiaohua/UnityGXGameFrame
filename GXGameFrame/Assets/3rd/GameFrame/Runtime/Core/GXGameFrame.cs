@@ -42,8 +42,8 @@ namespace GameFrame
 
         public void OnDisable()
         {
-            UIManager.Instance.Disable();
             ReferencePool.Release(MainScene);
+            UIManager.Instance.Disable();
             EnitityHouse.Instance.Disable();
             ObjectPoolManager.Instance.Disable();
         }

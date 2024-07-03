@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using FairyGUI;
-using UnityEngine.Assertions;
 
 namespace GameFrame
 {
@@ -616,27 +615,7 @@ namespace GameFrame
 
         public void Disable()
         {
-            // if (m_UILinkedLinkedList != null)
-            // {
-            //     LinkedListNode<UINode> Penult = m_UILinkedLinkedList.Last.Previous;
-            //     while (m_UILinkedLinkedList.First != m_UILinkedLinkedList.Last)
-            //     {
-            //         DestroyNode(Penult.Value);
-            //         RemoveNode(Penult.Value);
-            //     }
-            // }
-            //
-            // foreach (UINode uiNode in m_OpenUIList)
-            // {
-            //     DestroyNode(uiNode);
-            // }
-            //
-            // foreach (var node in m_WaitCloseUIDic)
-            // {
-            //     DestroyNode(node.Value);
-            // }
-            //
-            // m_WaitOpenUIList.Clear();
+            
         }
     }
 }
