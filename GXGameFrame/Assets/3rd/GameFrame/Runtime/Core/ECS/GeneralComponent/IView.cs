@@ -1,5 +1,4 @@
 ﻿using FairyGUI;
-using UnityEngine;
 
 namespace GameFrame
 {
@@ -14,7 +13,7 @@ namespace GameFrame
     }
     
     
-    public interface IEceView:IReference
+    public interface IEceView:IReference,IUpdateSystem
     {
         void Link(ECSEntity ecsEntity);
     }

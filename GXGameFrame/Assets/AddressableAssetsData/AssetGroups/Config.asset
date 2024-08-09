@@ -15,7 +15,7 @@ MonoBehaviour:
   m_GroupName: Config
   m_Data:
     m_SerializedData: []
-  m_GUID: cff260c57547dc345a996bd4575d42af
+  m_GUID: 9270b315e8222294fb2458a8b1fb7875
   m_SerializeEntries: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 0020e5d0c8443bd4cb3a8bfd7153ae30, type: 2}

@@ -5,6 +5,21 @@ namespace GameFrame.Editor
 {
     public static class OpFile
     {
+        public static void CreateDiectory(string path)
+        {
+            var directoryName = Path.GetDirectoryName(path);
+            if (!Directory.Exists(directoryName))
+            {
+                Directory.CreateDirectory(directoryName);
+            }
+        }
+
+        public static void DeleteFile(string filePath)
+        {
+            if (File.Exists(filePath))
+                File.Delete(filePath);
+        }
+
         public static void DeleteFilesInDirectory(string directoryPath)
         {
             if (!Directory.Exists(directoryPath))

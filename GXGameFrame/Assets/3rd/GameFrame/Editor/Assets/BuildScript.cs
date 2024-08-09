@@ -174,11 +174,12 @@ namespace GameFrame.Editor
                     {
                         if (IsExcludePath(dir))
                             continue;
-                        //Debug.Log($"packByDir {dir}:{AssetDatabase.AssetPathToGUID(dir)}");
+                        
                         var guid = AssetDatabase.AssetPathToGUID(dir);
                         if (group != null)
                         {
                             var entry = AssetSettings.CreateOrMoveEntry(guid, group, false, false);
+                            
                             entry.SetLabel(AddressablesHelper.PreloadLabel, true, true);
                             entry.SetLabel(assetGroup.groupName, true, true);
                         }

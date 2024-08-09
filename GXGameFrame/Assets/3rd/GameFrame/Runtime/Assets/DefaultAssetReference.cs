@@ -38,20 +38,20 @@ namespace GameFrame
             loaded++;
         }
 
-        public void UnrefAsset(string asset)
+        public void UnrefAsset(string asset,bool immediately =false)
         {
             if (refAssets == null) return;
             if (!refAssets.Remove(asset)) return;
-            AssetManager.Instance.DecrementReferenceCount(asset);
+            AssetManager.Instance.DecrementReferenceCount(asset,immediately);
             --loaded;
         }
 
-        public void UnrefAssets()
+        public void UnrefAssets(bool immediately = false)
         {
             if (refAssets == null) return;
             foreach (var asset in refAssets)
             {
-                AssetManager.Instance.DecrementReferenceCount(asset);
+                AssetManager.Instance.DecrementReferenceCount(asset,immediately);
             }
             loaded = 0;
             refAssets = null;

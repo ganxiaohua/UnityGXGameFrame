@@ -15,29 +15,70 @@ MonoBehaviour:
   m_GroupName: Role
   m_Data:
     m_SerializedData: []
-  m_GUID: d4a8727ee4101ca4d9b4739541ff4e51
+  m_GUID: 467bd58b3033a854fbfb7676fd0e34e5
   m_SerializeEntries:
-  - m_GUID: 947db585f33ffbf47ab7619266c7fb26
-    m_Address: Cube
+  - m_GUID: 85dda3583572bd64385ac88d2c3af102
+    m_Address: Assets/GXGame/Art/Runtime/Role/Player/Prefab
     m_ReadOnly: 0
     m_SerializedLabels:
     - Preload
     - Role
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: cc81e0220f7bb634da5dcebae6f34938
-    m_Address: character
+  - m_GUID: 5672fbce7658e044792bb3cd8bcd8df8
+    m_Address: Assets/GXGame/Art/Runtime/Role/Player/Animation
     m_ReadOnly: 0
     m_SerializedLabels:
     - Preload
     - Role
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 80ee4e20519678a469f61de4fc048ee0
-    m_Address: Skill1Effect
+  - m_GUID: 410077323d6a91543bb0d97c43821377
+    m_Address: Assets/GXGame/Art/Runtime/Role/Player
     m_ReadOnly: 0
     m_SerializedLabels:
     - Preload
     - Role
-    - skilleffect
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 23d1cf3ce86856d4a9d06fe8c973b2af
+    m_Address: Assets/GXGame/Art/Runtime/Role/Monster_001
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - Role
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 42e7e52123860dc43a300e77be36b002
+    m_Address: Assets/GXGame/Art/Runtime/Role/Monster_001/Animation
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - Role
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 85eac80752b1cf34d9dc53fcb4012e8d
+    m_Address: Assets/GXGame/Art/Runtime/Role/Monster_001/Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - Role
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8496c61506de6c047b49bf909317dd0f
+    m_Address: Assets/GXGame/Art/Runtime/Role/Monster_002
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - Role
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b1fbaeaaf49048143b2e476ed0345fb9
+    m_Address: Assets/GXGame/Art/Runtime/Role/Monster_002/Animation
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - Role
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f24c36e50d43fd048b343f57bc1bc5ab
+    m_Address: Assets/GXGame/Art/Runtime/Role/Monster_002/Prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - Role
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 0020e5d0c8443bd4cb3a8bfd7153ae30, type: 2}

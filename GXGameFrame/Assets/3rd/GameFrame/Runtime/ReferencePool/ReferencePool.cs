@@ -257,7 +257,6 @@ namespace GameFrame
                     s_ReferenceCollections.Add(referenceType, referenceCollection);
                 }
             }
-
             return referenceCollection;
         }
         //

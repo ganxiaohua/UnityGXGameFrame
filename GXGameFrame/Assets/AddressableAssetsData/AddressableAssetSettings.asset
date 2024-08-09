@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 468a46d0ae32c3544b7d98094e6448a9, type: 3}
   m_Name: AddressableAssetSettings
   m_EditorClassIdentifier: 
-  m_DefaultGroup: d4a8727ee4101ca4d9b4739541ff4e51
+  m_DefaultGroup: c9eec3187c101014e9e11e30770b7b3f
   m_currentHash:
     serializedVersion: 2
-    Hash: a63685f7acdb9da010ca1a50d428d583
+    Hash: fc05ca93c11ed037dcd0877702488daa
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 1
   m_BundleLocalCatalog: 1
@@ -44,11 +44,13 @@ MonoBehaviour:
   m_BuildAddressablesWithPlayerBuild: 0
   m_overridePlayerVersion: '[UnityEditor.PlayerSettings.bundleVersion]'
   m_GroupAssets:
-  - {fileID: 11400000, guid: d6f05b2d23fdf1d40925a0cf54fb9d35, type: 2}
+  - {fileID: 11400000, guid: a1e85a1f788483342a58d89a688988ef, type: 2}
   - {fileID: 11400000, guid: cd81f42052d97ed449a71187ff4a801c, type: 2}
   - {fileID: 11400000, guid: 7332e52fa35e1674a96269a58e78cc35, type: 2}
   - {fileID: 11400000, guid: c841014617f464b4e94b5d7aafb396ad, type: 2}
   - {fileID: 11400000, guid: 4828471571bce474e9e7cc4add068def, type: 2}
+  - {fileID: 11400000, guid: 373424af7fa90b84884f3c51b5091cf6, type: 2}
+  - {fileID: 11400000, guid: d6f05b2d23fdf1d40925a0cf54fb9d35, type: 2}
   m_BuildSettings:
     m_CompileScriptsInVirtualMode: 0
     m_CleanupStreamingAssetsAfterBuilds: 1
@@ -95,6 +97,10 @@ MonoBehaviour:
     - UI
     - Scene
     - skilleffect
+    - TilesMap
+    - "\u56FE\u96C6"
+    - Textures
+    - Animation
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: bdabc04bd7f9e484eaad12246b0ef066, type: 2}

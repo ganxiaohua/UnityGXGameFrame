@@ -9,9 +9,9 @@ namespace GameFrame
 
         void LoadLater();
 
-        void UnrefAsset(string asset);
+        void UnrefAsset(string asset,bool immediately);
         
-        void UnrefAssets();
+        void UnrefAssets(bool immediately);
 
         bool IsLoadAll { get; }
     }

@@ -3,7 +3,7 @@
     /// <summary>
     /// 引用接口。
     /// </summary>
-    public interface IReference
+    public interface IReference 
     {
         /// <summary>
         /// 清理引用。

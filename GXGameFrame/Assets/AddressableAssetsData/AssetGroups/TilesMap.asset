@@ -10,30 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: Scene
+  m_Name: TilesMap
   m_EditorClassIdentifier: 
-  m_GroupName: Scene
+  m_GroupName: TilesMap
   m_Data:
     m_SerializedData: []
-  m_GUID: d9bf68d85d1bbf04a8fc117997a97ad7
+  m_GUID: ade0bf2e86977814282277c008c8a532
   m_SerializeEntries:
-  - m_GUID: e9e3731c85231b64e98bebf4f9b4f216
-    m_Address: Assets/GXGame/Scenes/Game.unity
+  - m_GUID: dac1b31f6e8fc4f429ff571856510f60
+    m_Address: Map
     m_ReadOnly: 0
     m_SerializedLabels:
     - Preload
-    - Scene
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 0b102afa2443f03499f690165551faec
-    m_Address: Assets/GXGame/Scenes/Main.unity
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Preload
-    - Scene
+    - TilesMap
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 0020e5d0c8443bd4cb3a8bfd7153ae30, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 8533374e699f4ab4997ac1b745e47821, type: 2}
-    - {fileID: 11400000, guid: 0d4523ff3a9179540b62288a262b00d6, type: 2}
+    - {fileID: 11400000, guid: 0fd355c6589a32e4194e21da67e79e27, type: 2}
+    - {fileID: 11400000, guid: d57be8bbab610e249b1a4cc5a24bb87c, type: 2}
