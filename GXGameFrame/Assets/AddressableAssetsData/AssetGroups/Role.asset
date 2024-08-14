@@ -17,8 +17,8 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 467bd58b3033a854fbfb7676fd0e34e5
   m_SerializeEntries:
-  - m_GUID: 85dda3583572bd64385ac88d2c3af102
-    m_Address: Assets/GXGame/Art/Runtime/Role/Player/Prefab
+  - m_GUID: 410077323d6a91543bb0d97c43821377
+    m_Address: Assets/GXGame/Art/Runtime/Role/Player
     m_ReadOnly: 0
     m_SerializedLabels:
     - Preload
@@ -31,8 +31,8 @@ MonoBehaviour:
     - Preload
     - Role
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 410077323d6a91543bb0d97c43821377
-    m_Address: Assets/GXGame/Art/Runtime/Role/Player
+  - m_GUID: 85dda3583572bd64385ac88d2c3af102
+    m_Address: Assets/GXGame/Art/Runtime/Role/Player/Prefab
     m_ReadOnly: 0
     m_SerializedLabels:
     - Preload
