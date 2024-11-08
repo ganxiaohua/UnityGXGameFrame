@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using GXGame;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 using UnityEditor;
@@ -15,10 +14,9 @@ namespace GameFrame.Editor
     [Serializable]
     public struct ComponentInfo : ISearchFilterable
     {
-        [ShowInInspector] [HorizontalGroup("Component", 0.4f)] [LabelText("")]
-        [ReadOnly]
+        [ShowInInspector] [HorizontalGroup("Component", 0.4f)] [LabelText("")] [ReadOnly]
         private string componentName;
-        
+
         [HideInInspector] private Type ComponentType;
 
         [HideInInspector] private Action<Type> func;
@@ -45,18 +43,27 @@ namespace GameFrame.Editor
 
     public class ComponentView : OdinEditorWindow
     {
-        private Dictionary<int, PropertyTree> m_EcsComponentsTree = new Dictionary<int, PropertyTree>();
-
         private static ComponentView sWindow;
+
+        [ShowInInspector] [ShowIf("isShowAllEcsComponents")] [Searchable]
+        private static List<ComponentInfo> allEcsComponents = new();
+
+        private Assembly assembly;
 
         private ECSEntity ecsEntity;
 
-        private List<int> waitRemoveList = new List<int>();
+        private bool isShowAllEcsComponents;
+        private Dictionary<int, PropertyTree> m_EcsComponentsTree = new();
 
-        private bool isShowAllEcsComponents = false;
+        private List<int> waitRemoveList = new();
 
-        [ShowInInspector] [ShowIf("isShowAllEcsComponents")] [Searchable]
-        private static List<ComponentInfo> allEcsComponents = new List<ComponentInfo>();
+        protected override void OnDestroy()
+        {
+            foreach (var t in m_EcsComponentsTree.Values) t.Dispose();
+
+            sWindow = null;
+            waitRemoveList.Clear();
+        }
 
         public static void Init(ECSEntity ecsEntity)
         {
@@ -65,12 +72,13 @@ namespace GameFrame.Editor
             sWindow.ecsEntity = ecsEntity;
             sWindow.m_EcsComponentsTree.Clear();
             sWindow.isShowAllEcsComponents = false;
-
+            if (GXComponents.ComponentTypes.Length == 0)
+                return;
             Action<Type> action = sWindow.AddComponent;
-            Type baseType = typeof(ECSComponent);
+            var baseType = typeof(ECSComponent);
             if (allEcsComponents.Count == 0)
             {
-                List<Type> derivedTypes = typeof(Main).Assembly.GetTypes().Where(type => type.IsSubclassOf(baseType)).ToList();
+                var derivedTypes = GXComponents.ComponentTypes[0].Assembly.GetTypes().Where(type => type.IsSubclassOf(baseType)).ToList();
                 foreach (var item in derivedTypes)
                 {
                     var componet = new ComponentInfo();
@@ -104,15 +112,11 @@ namespace GameFrame.Editor
             }
 
 
-            List<int> comIndexs = ecsEntity.ECSComponentArray.Indexs;
+            var comIndexs = ecsEntity.ECSComponentArray.Indexs;
             waitRemoveList.Clear();
             foreach (var key in m_EcsComponentsTree.Keys)
-            {
                 if (!comIndexs.Contains(key))
-                {
                     waitRemoveList.Add(key);
-                }
-            }
 
             foreach (var key in waitRemoveList)
             {
@@ -120,21 +124,18 @@ namespace GameFrame.Editor
                 m_EcsComponentsTree.Remove(key);
             }
 
-            for (int i = comIndexs.Count - 1; i >= 0; i--)
+            for (var i = comIndexs.Count - 1; i >= 0; i--)
             {
-                int cid = comIndexs[i];
-                string comID = $"Com_{cid}";
-                bool t = EditorPrefs.GetBool(comID, false);
-                ECSComponent ecsComponent = ecsEntity.GetComponent(cid);
-                Rect lineRect = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, GUILayout.Height(1));
+                var cid = comIndexs[i];
+                var comID = $"Com_{cid}";
+                var t = EditorPrefs.GetBool(comID, false);
+                var ecsComponent = ecsEntity.GetComponent(cid);
+                var lineRect = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, GUILayout.Height(1));
                 EditorGUI.DrawRect(lineRect, new Color(1, 1, 1, 0.1f));
                 EditorGUILayout.BeginHorizontal();
                 t = EditorGUILayout.Foldout(t, ecsComponent.GetType().Name, true);
                 EditorPrefs.SetBool(comID, t);
-                if (GUILayout.Button("删除", GUILayout.Width(60)))
-                {
-                    RemoveComponent(cid);
-                }
+                if (GUILayout.Button("删除", GUILayout.Width(60))) RemoveComponent(cid);
 
                 EditorGUILayout.EndHorizontal();
                 if (t)
@@ -152,27 +153,13 @@ namespace GameFrame.Editor
                 EditorGUILayout.Space(5);
             }
 
-            if (GUILayout.Button("Add  Component"))
-            {
-                isShowAllEcsComponents = true;
-            }
+            if (GUILayout.Button("Add  Component")) isShowAllEcsComponents = true;
         }
 
         protected override void OnImGUI()
         {
             base.OnImGUI();
             Repaint();
-        }
-
-        protected override void OnDestroy()
-        {
-            foreach (var t in m_EcsComponentsTree.Values)
-            {
-                t.Dispose();
-            }
-
-            sWindow = null;
-            waitRemoveList.Clear();
         }
 
         private void RemoveComponent(int index)
@@ -184,17 +171,17 @@ namespace GameFrame.Editor
         {
             var type = property.Tree.TargetType;
             var fields = property.Tree.WeakTargets[0].GetType().GetFields();
-            object fieldValue = fields[0].GetValue(property.Tree.WeakTargets[0]);
-            Type comType = typeof(Main).Assembly.GetType($"Auto{type.Name}");
-            MethodInfo methodInfo = comType.GetMethod($"Set{type.Name}", BindingFlags.Static | BindingFlags.Public);
-            methodInfo.Invoke(null, new object[] {ecsEntity, fieldValue});
+            var fieldValue = fields[0].GetValue(property.Tree.WeakTargets[0]);
+            var comType = GXComponents.ComponentTypes[0].Assembly.GetType($"Auto{type.Name}");
+            var methodInfo = comType.GetMethod($"Set{type.Name}", BindingFlags.Static | BindingFlags.Public);
+            methodInfo.Invoke(null, new[] {ecsEntity, fieldValue});
         }
 
         private void AddComponent(Type type)
         {
             if (!isShowAllEcsComponents) return;
-            Type comType = typeof(Main).Assembly.GetType($"Auto{type.Name}");
-            MethodInfo methodInfo = comType.GetMethod($"Add{type.Name}", BindingFlags.Static | BindingFlags.Public, null, new Type[] {typeof(ECSEntity)}, null);
+            var comType = GXComponents.ComponentTypes[0].Assembly.GetType($"Auto{type.Name}");
+            var methodInfo = comType.GetMethod($"Add{type.Name}", BindingFlags.Static | BindingFlags.Public, null, new[] {typeof(ECSEntity)}, null);
             methodInfo.Invoke(null, new object[] {ecsEntity});
             isShowAllEcsComponents = false;
         }
