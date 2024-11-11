@@ -307,7 +307,7 @@ Transform:
   m_GameObject: {fileID: 1172770065}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6.6702127, y: -5, z: 0}
+  m_LocalPosition: {x: 8.896247, y: -5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -364,7 +364,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   packageName: Card
-  componentName: CardListWindow
+  componentName: CardListWindow2
   fitScreen: 0
   sortingOrder: 0
   packagePath: Assets/GXGame/UI/TestUI/Card
@@ -388,7 +388,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.04, y: 0, z: 0}
-  m_LocalScale: {x: 0.0075131473, y: 0.0075131473, z: 0.0075131473}
+  m_LocalScale: {x: 0.007513148, y: 0.007513148, z: 0.007513148}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -405,9 +405,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4cb45a8302c5713449dcf0bec31e3329, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dafaultPath: Assets/GXGame/Scripts/Runtime/UI
-  custom_Path: Assets/GXGame/Scripts/Runtime/UI
-  className: UICardListWindow
+  SavePath: Assets/GXGame/Scripts/Runtime/UI/UICardListWindow2
+  className: UICardListWindow2
   bindList:
   - Path: n43
     FieldName: n43

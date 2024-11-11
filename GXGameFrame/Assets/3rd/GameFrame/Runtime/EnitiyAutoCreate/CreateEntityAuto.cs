@@ -16,7 +16,7 @@ public class CreateEntityAuto
     {
         var txt = File.ReadAllText(UIMainUIText);
         txt = string.Format(txt, componentName, FGUIPakeName, FGUIClassName);
-        File.WriteAllText($"{createPath}/{componentName}Window.cs", txt);
+        File.WriteAllText($"{createPath}/{componentName}.cs", txt);
     }
     
     public static void CreateUIViewText(string createPath, string componentName, string FGUIPakeName, string FGUIClassName)

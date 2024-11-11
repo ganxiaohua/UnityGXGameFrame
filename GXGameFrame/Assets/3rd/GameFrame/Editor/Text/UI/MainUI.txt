@@ -1,49 +1,21 @@
 using Cysharp.Threading.Tasks;
 using GameFrame;
+using System;
+
 
 namespace GXGame
 {{
-    public class {0}Window : UIEntity
+    public class {0} : UIEntity
     {{
-        private {0}View {0}View;
-        public override string PackName => "{1}";
-        public override string WindowName => "{2}";
+        protected override string PackName => "{1}";
         
-        protected override async UniTaskVoid Initialize()
-        {{
-            DependentUI despen = AddComponent<DependentUI, string, string>(PackName, WindowName);
-            {0}View = new {0}View();
-            var succ = await despen.WaitLoad();
-            if (succ)
-            {{
-                {0}View.Link(this, despen.Window, true);
-            }}
-        }}
+        protected override string WindowName => "{2}";
         
-        public override void PreShow(bool isFirstShow)
-        {{
-            
-        }}
-        public override void Show()
-        {{
-            {0}View.OnShow();
-        }}
-
-        public override void Hide()
-        {{
-            {0}View.Hide();
-        }}
-
-        public override void Update(float elapseSeconds, float realElapseSeconds)
-        {{
-           {0}View.Update(elapseSeconds, realElapseSeconds);
-        }}
-
-        public override void Clear()
-        {{
-            {0}View.Clear();
-            base.Clear();
-        }}
+        protected override Type ViewType => typeof({0}View);
         
+        public override async UniTask Initialize()
+        {{
+             await base.Initialize();
+        }}     
     }}
 }}

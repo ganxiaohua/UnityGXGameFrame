@@ -28,14 +28,14 @@ namespace GXGame
             base.DoShowAnimation();
         }}
 
-        public override void DoHideAnimation()
+        protected override void DoHideAnimation()
         {{
             base.DoHideAnimation();
         }}
 
-        public override void Update(float elapseSeconds, float realElapseSeconds)
+        public override void OnUpdate(float elapseSeconds, float realElapseSeconds)
         {{
-            base.Update(elapseSeconds,realElapseSeconds);
+            base.OnUpdate(elapseSeconds,realElapseSeconds);
         }}
 
         public override void Clear()

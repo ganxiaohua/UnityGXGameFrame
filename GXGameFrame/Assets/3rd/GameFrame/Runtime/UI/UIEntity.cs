@@ -1,42 +1,52 @@
-﻿using Cysharp.Threading.Tasks;
+﻿using System;
+using Cysharp.Threading.Tasks;
 
 namespace GameFrame
 {
-    public abstract class UIEntity : Entity, IStartSystem, IPreShowSystem, IShowSystem, IHideSystem, IUpdateSystem
+    public abstract class UIEntity : Entity, IPreShowSystem, IShowSystem, IHideSystem, IUpdateSystem
     {
-        public abstract string PackName { get; }
-        public abstract string WindowName { get; }
+        protected abstract string PackName { get; }
 
-        protected DependentUI Despen;
+        protected abstract string WindowName { get; }
+
+        protected abstract Type ViewType { get; }
 
         public UINode UINode { get; set; }
-
-        public void Start()
+        
+        private UIViewBase uiView;
+        
+        public virtual async UniTask Initialize()
         {
-            Initialize().Forget();
+            var despen = AddComponent<DependentUI, string, string>(PackName, WindowName);
+            uiView = (UIViewBase) Activator.CreateInstance(ViewType);
+            var succ = await despen.WaitLoad();
+            if (succ) uiView.Link(this, despen.Window, true);
         }
-        protected abstract UniTaskVoid Initialize();
         
         public virtual void PreShow(bool isFirstShow)
         {
-          
         }
+
         
         public virtual void Show()
         {
+            uiView.OnShow();
         }
 
         public virtual void Hide()
         {
+            uiView.OnHide();
         }
 
+        
         public virtual void Update(float elapseSeconds, float realElapseSeconds)
         {
+            uiView.OnUpdate(elapseSeconds, realElapseSeconds);
         }
-
+        
         public override void Clear()
         {
-            
+            uiView.Clear();
         }
         
     }

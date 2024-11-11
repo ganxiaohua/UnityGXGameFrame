@@ -68,6 +68,7 @@ namespace GameFrame
             uiNode.Window = (UIEntity) UIComponent.GetComponent(windowType);
             if (uiNode.Window == null)
                 uiNode.Window = (UIEntity) UIComponent.AddComponent(windowType);
+            uiNode.Window.Initialize().Forget();
             return uiNode;
         }
 

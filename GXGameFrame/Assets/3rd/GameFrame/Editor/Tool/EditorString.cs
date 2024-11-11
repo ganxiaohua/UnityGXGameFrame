@@ -9,7 +9,6 @@ namespace GameFrame.Editor
         /// </summary>
         public static string FirstScenePath = "Assets/GXGame/Scenes/Main.unity";
 
-
         /// <summary>
         /// UI创建的脚本路径
         /// </summary>
