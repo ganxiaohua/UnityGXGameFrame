@@ -1,14 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace GameFrame
 {
-    public abstract class Behavior : IReference
+    public abstract class Behavior : IDisposable
     {
-        private BehaviorWorld m_BehaviorWorld;
+        private BehaviorWorld behaviorWorld;
 
         public virtual void Init(BehaviorWorld ar)
         {
-            m_BehaviorWorld = ar;
+            behaviorWorld = ar;
         }
 
         public virtual void DataJoin(IBehaviorData behaviorData)
@@ -25,10 +26,10 @@ namespace GameFrame
 
         protected virtual void ChangeBehavior<T>(IBehaviorData behaviorData) where T : Behavior
         {
-            m_BehaviorWorld.ChangeBehavior<T>(behaviorData);
+            behaviorWorld.ChangeBehavior<T>(behaviorData);
         }
 
-        public void Clear()
+        public void Dispose()
         {
         }
     }

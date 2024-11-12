@@ -68,7 +68,7 @@ namespace GameFrame.Editor
             m_GeneralGraphView.Update();
         }
 
-        public override void Clear()
+        public override void Dispose()
         {
             if (m_GeneralGraphView == null) return;
             m_EditorWindow.rootVisualElement.Remove(m_GeneralGraphView);
@@ -76,7 +76,7 @@ namespace GameFrame.Editor
             m_GeneralGraphView = null;
             EditorApplication.playModeStateChanged -= PlayModeStateChange;
             ComponentView.Destroy();
-            base.Clear();
+            base.Dispose();
         }
 
         private void RemoveAll()

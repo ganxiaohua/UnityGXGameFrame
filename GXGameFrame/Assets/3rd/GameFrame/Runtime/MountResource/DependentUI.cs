@@ -7,12 +7,12 @@ namespace GameFrame
     {
         public DefaultAssetReference DefaultAssetReference;
         public GObject Window;
-        private UniTaskCompletionSource m_WaitLoadTask;
+        private UniTaskCompletionSource waitLoadTask;
 
         public void Start(string packageName,string windowName)
         {
             DefaultAssetReference = new DefaultAssetReference();
-            m_WaitLoadTask = new UniTaskCompletionSource();
+            waitLoadTask = new UniTaskCompletionSource();
             Init(packageName, windowName).Forget();
         }
 
@@ -23,31 +23,31 @@ namespace GameFrame
             var succ = await UILoader.Instance.LoadOver(packageName);
             if (!succ)
             {
-                m_WaitLoadTask.TrySetCanceled();
+                waitLoadTask.TrySetCanceled();
                 return;
             }
-            m_WaitLoadTask.TrySetResult();
+            waitLoadTask.TrySetResult();
         }
         
         public  async UniTask<bool> WaitLoad()
         {
-            if (m_WaitLoadTask == null)
+            if (waitLoadTask == null)
             {
                 return false;
             }
 
-            await m_WaitLoadTask.Task.SuppressCancellationThrow();
-            if (m_WaitLoadTask.GetStatus(0) == UniTaskStatus.Succeeded)
+            await waitLoadTask.Task.SuppressCancellationThrow();
+            if (waitLoadTask.GetStatus(0) == UniTaskStatus.Succeeded)
             {
                 return true;
             }
             return false;
         }
         
-        public override void Clear()
+        public override void Dispose()
         {
-            base.Clear();
-            m_WaitLoadTask?.TrySetCanceled();
+            base.Dispose();
+            waitLoadTask?.TrySetCanceled();
         }
     }
 }

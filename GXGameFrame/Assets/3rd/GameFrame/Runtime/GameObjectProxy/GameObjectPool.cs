@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Common.Runtime;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace GameFrame
 {
-    public  class GameObjectPool : Singleton<GameObjectPool>, IGameObjectPool, IReference
+    public  class GameObjectPool : Singleton<GameObjectPool>, IGameObjectPool, IDisposable
     {
         
         private Dictionary<string, ObjectPool<PoolObject>> mObjectPools = new();
@@ -174,7 +175,7 @@ namespace GameFrame
         /// <summary>
         /// 销毁
         /// </summary>
-        public void Clear()
+        public void Dispose()
         {
             foreach (var objectpool in mObjectPools.Values)
             {

@@ -5,7 +5,7 @@ using FairyGUI;
 
 namespace GameFrame
 {
-    public class UINode : IReference
+    public class UINode : IDisposable
     {
         public enum StateType
         {
@@ -67,8 +67,10 @@ namespace GameFrame
             uiNode.NodeState = StateType.WaitOpen;
             uiNode.Window = (UIEntity) UIComponent.GetComponent(windowType);
             if (uiNode.Window == null)
+            {
                 uiNode.Window = (UIEntity) UIComponent.AddComponent(windowType);
-            uiNode.Window.Initialize().Forget();
+                uiNode.Window.Initialize().Forget();
+            }
             return uiNode;
         }
 
@@ -87,7 +89,7 @@ namespace GameFrame
         {
             if (Window == null)
                 return;
-            EnitityHouse.Instance.RunPreShowSystem((ISystem) Window, isFirstOpen);
+            EnitityHouse.Instance.RunPreShowSystem(Window, isFirstOpen);
             foreach (var child in Childs)
             {
                 child.PreShow(isFirstOpen);
@@ -133,8 +135,7 @@ namespace GameFrame
             {
                 root.AddChild(dependent.Window);
             }
-
-
+            
             NodeState = StateType.LoadEnd;
             return over;
         }
@@ -153,7 +154,7 @@ namespace GameFrame
             return over;
         }
 
-        public void Clear()
+        public void Dispose()
         {
         }
     }

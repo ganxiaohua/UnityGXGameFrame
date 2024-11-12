@@ -2,7 +2,7 @@
 
 namespace GameFrame
 {
-    public class ObjectPoolHandle : IHandle, IReference
+    public class ObjectPoolHandle : IHandle, IDisposable
     {
         public TaskState TaskState { get; set; }
         public bool IsDone => TaskState == TaskState.Succ || TaskState == TaskState.Fail;
@@ -46,7 +46,7 @@ namespace GameFrame
             AsyncStateMoveNext?.Invoke();
         }
 
-        public void Clear()
+        public void Dispose()
         {
             TaskState = TaskState.None;
             AsyncStateMoveNext -= AsyncStateMoveNext;

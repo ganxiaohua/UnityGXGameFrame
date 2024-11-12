@@ -4,15 +4,15 @@ namespace GameFrame
 {
     public class World : Entity, IStartSystem, IUpdateSystem
     {
-        private Dictionary<Matcher, Group> m_Groups = new();
-        private List<Group>[] m_GroupsList;
+        private Dictionary<Matcher, Group> groups = new();
+        private List<Group>[] groupsList;
         public float DeltaTime { get; private set; }
         public float Multiple { get; private set; }
 
         public virtual void Start()
         {
             SetMultiple(1);
-            m_GroupsList = new List<Group>[GXComponents.ComponentTypes.Length];
+            groupsList = new List<Group>[GXComponents.ComponentTypes.Length];
         }
 
         protected virtual void SetMultiple(float mul)
@@ -43,18 +43,18 @@ namespace GameFrame
 
         public Group GetGroup(Matcher matcher)
         {
-            if (m_Groups.TryGetValue(matcher, out Group grop)) return grop;
+            if (groups.TryGetValue(matcher, out Group grop)) return grop;
             grop = Group.CreateGroup(matcher);
             foreach (var item in Children)
             {
                 grop.HandleEntitySilently((ECSEntity) item);
             }
 
-            m_Groups.Add(matcher, grop);
+            groups.Add(matcher, grop);
             foreach (var cid in matcher.Indices)
             {
-                m_GroupsList[cid] ??= new List<Group>(128);
-                m_GroupsList[cid].Add(grop);
+                groupsList[cid] ??= new List<Group>(128);
+                groupsList[cid].Add(grop);
             }
 
             return grop;
@@ -62,7 +62,7 @@ namespace GameFrame
 
         public void Reactive(int comid, ECSEntity entity)
         {
-            var groupList = m_GroupsList[comid];
+            var groupList = groupsList[comid];
             if (groupList != null)
             {
                 foreach (var t in groupList)
@@ -72,17 +72,17 @@ namespace GameFrame
             }
         }
 
-        public override void Clear()
+        public override void Dispose()
         {
-            base.Clear();
-            foreach (var group in m_Groups)
+            base.Dispose();
+            foreach (var group in groups)
             {
                 Matcher.RemoveMatcher(group.Key);
                 Group.RemoveGroup(group.Value);
             }
 
-            m_GroupsList = null;
-            m_Groups.Clear();
+            groupsList = null;
+            groups.Clear();
         }
 
         public void Update(float elapseSeconds, float realElapseSeconds)

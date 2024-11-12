@@ -6,72 +6,72 @@ namespace GameFrame
 {
     public class StrongList<T> : IEnumerator<T>, IEnumerable<T>
     {
-        private readonly List<T> m_Data;
-        private int m_CurrentIndex;
-        private T m_CurrentElement;
+        private readonly List<T> dataList;
+        private int currentIndex;
+        private T currentElement;
 
-        private bool Lock => m_CurrentIndex >= 0;
+        private bool Lock => currentIndex >= 0;
 
-        public T Current => m_CurrentElement;
+        public T Current => currentElement;
 
-        object IEnumerator.Current => m_CurrentElement;
+        object IEnumerator.Current => currentElement;
 
-        public IReadOnlyList<T> Data => m_Data;
+        public IReadOnlyList<T> DataList => dataList;
 
         private bool m_keepOrder;
 
         public StrongList(int capacity = 0, bool keepOrder = false)
         {
-            m_Data = new List<T>(capacity);
-            m_CurrentIndex = -1;
-            m_CurrentElement = default;
+            dataList = new List<T>(capacity);
+            currentIndex = -1;
+            currentElement = default;
             m_keepOrder = keepOrder;
         }
 
         public void Add(T val)
         {
-            m_Data.Add(val);
+            dataList.Add(val);
         }
 
         public bool Remove(T val)
         {
             if (Lock)
             {
-                int index = m_Data.IndexOf(val);
+                int index = dataList.IndexOf(val);
                 if (index == -1)
                     return false;
 
-                if (index > m_CurrentIndex - 1)
+                if (index > currentIndex - 1)
                 {
                     if (!m_keepOrder)
-                        m_Data.RemoveAtSwapBack(index);
+                        dataList.RemoveAtSwapBack(index);
                     else
                     {
-                        m_Data.RemoveAt(index);
+                        dataList.RemoveAt(index);
                     }
                 }
-                else if (index < m_CurrentIndex - 1)
+                else if (index < currentIndex - 1)
                 {
-                    m_Data[index] = m_Data[m_CurrentIndex - 1];
+                    dataList[index] = dataList[currentIndex - 1];
                     if (!m_keepOrder)
-                        m_Data.RemoveAtSwapBack(m_CurrentIndex - 1);
+                        dataList.RemoveAtSwapBack(currentIndex - 1);
                     else
                     {
-                        m_Data.RemoveAt(index);
+                        dataList.RemoveAt(index);
                     }
 
-                    m_CurrentIndex--;
+                    currentIndex--;
                 }
                 else
                 {
                     if (!m_keepOrder)
-                        m_Data.RemoveAtSwapBack(index);
+                        dataList.RemoveAtSwapBack(index);
                     else
                     {
-                        m_Data.RemoveAt(index);
+                        dataList.RemoveAt(index);
                     }
 
-                    m_CurrentIndex--;
+                    currentIndex--;
                 }
 
                 return true;
@@ -79,29 +79,29 @@ namespace GameFrame
             else
             {
                 if (!m_keepOrder)
-                    return m_Data.RemoveSwapBack(val);
+                    return dataList.RemoveSwapBack(val);
                 else
                 {
-                    return m_Data.Remove(val);
+                    return dataList.Remove(val);
                 }
             }
         }
 
         public bool Contains(T val)
         {
-            return m_Data.Contains(val);
+            return dataList.Contains(val);
         }
 
         public bool MoveNext()
         {
-            if (m_CurrentIndex == m_Data.Count)
+            if (currentIndex == dataList.Count)
             {
-                m_CurrentElement = default;
+                currentElement = default;
                 return false;
             }
             else
             {
-                m_CurrentElement = m_Data[m_CurrentIndex++];
+                currentElement = dataList[currentIndex++];
                 return true;
             }
         }
@@ -109,14 +109,14 @@ namespace GameFrame
         public void Reset()
         {
             if (Lock) throw new Exception($"Enumerator locked");
-            m_CurrentIndex = 0;
-            m_CurrentElement = default;
+            currentIndex = 0;
+            currentElement = default;
         }
 
         public void Dispose()
         {
-            m_CurrentIndex = -1;
-            m_CurrentElement = default;
+            currentIndex = -1;
+            currentElement = default;
         }
 
         public IEnumerator<T> GetEnumerator()

@@ -30,9 +30,9 @@ namespace GameFrame.Editor
             group.SetPosition(new Rect(pos.x+pos.width+10, pos.y, group.resolvedStyle.width, group.resolvedStyle.height));
         }
         
-        public override void Clear()
+        public override void Dispose()
         {
-            base.Clear();
+            base.Dispose();
             group?.Clear();
             group = null;
         }

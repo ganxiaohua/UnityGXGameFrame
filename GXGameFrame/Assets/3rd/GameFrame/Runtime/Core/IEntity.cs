@@ -1,6 +1,8 @@
-﻿namespace GameFrame
+﻿using System;
+
+namespace GameFrame
 {
-    public interface IEntity : IReference
+    public interface IEntity : IDisposable
     {
         public enum EntityState : byte
         {

@@ -19,7 +19,7 @@ namespace GameFrame
             CurState?.Update(elapseSeconds, realElapseSeconds);
         }
 
-        public override void Clear()
+        public override void Dispose()
         {
             foreach (var item in states)
             {
@@ -31,7 +31,7 @@ namespace GameFrame
             }
             states = null;
             CurState = null;
-            base.Clear();
+            base.Dispose();
         }
 
         protected T AddState<T>() where T : FsmState

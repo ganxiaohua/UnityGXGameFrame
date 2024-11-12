@@ -1,8 +1,9 @@
-﻿using FairyGUI;
+﻿using System;
+using FairyGUI;
 
 namespace GameFrame
 {
-    public interface IView:IReference
+    public interface IView:IDisposable
     {
         void Link(Entity ecsEntity,string path);
     }
@@ -13,7 +14,7 @@ namespace GameFrame
     }
     
     
-    public interface IEceView:IReference,IUpdateSystem
+    public interface IEceView:IDisposable,IUpdateSystem
     {
         void Link(ECSEntity ecsEntity);
     }

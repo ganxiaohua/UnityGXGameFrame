@@ -5,23 +5,23 @@ using System.Runtime.InteropServices;
 
 namespace GameFrame
 {
-    public class ByteSequenceSegmentPipe : IReference
+    public class ByteSequenceSegmentPipe : IDisposable
     {
-        private ByteSequenceSegment m_Head; // read
-        private ByteSequenceSegment m_Tail; // write
+        private ByteSequenceSegment head; // read
+        private ByteSequenceSegment tail; // write
 
-        private int m_HeadPosition;
-        private int m_TailPosition;
+        private int headPosition;
+        private int tailPosition;
         
-        private int HeadRemain => ByteSequenceSegment.SegmentCapacity - m_HeadPosition;
-        private int TailRemain => ByteSequenceSegment.SegmentCapacity - m_TailPosition;
+        private int HeadRemain => ByteSequenceSegment.SegmentCapacity - headPosition;
+        private int TailRemain => ByteSequenceSegment.SegmentCapacity - tailPosition;
         
         public int Length { get; private set; }
 
         public ByteSequenceSegmentPipe()
         {
-            m_HeadPosition = ByteSequenceSegment.SegmentCapacity;
-            m_TailPosition = ByteSequenceSegment.SegmentCapacity;
+            headPosition = ByteSequenceSegment.SegmentCapacity;
+            tailPosition = ByteSequenceSegment.SegmentCapacity;
             Length = 0;
         }
         
@@ -31,16 +31,16 @@ namespace GameFrame
                 return;
             
             var next = ReferencePool.Acquire<ByteSequenceSegment>();
-            if (m_Tail == null)
+            if (tail == null)
             {
-                m_Head = m_Tail = next;
-                m_HeadPosition = m_TailPosition = 0;
+                head = tail = next;
+                headPosition = tailPosition = 0;
             }
             else
             {
-                m_Tail.SetNext(next);
-                m_Tail = next;
-                m_TailPosition = 0;
+                tail.SetNext(next);
+                tail = next;
+                tailPosition = 0;
             }
         }
 
@@ -49,17 +49,17 @@ namespace GameFrame
             if (HeadRemain > 0 && Length > 0)
                 return;
 
-            var next = m_Head.Next;
-            ReferencePool.Release(m_Head);
+            var next = head.Next;
+            ReferencePool.Release(head);
             if (next == null)
             {
-                m_Head = m_Tail = null;
-                m_HeadPosition = m_TailPosition = ByteSequenceSegment.SegmentCapacity;
+                head = tail = null;
+                headPosition = tailPosition = ByteSequenceSegment.SegmentCapacity;
             }
             else
             {
-                m_Head = (ByteSequenceSegment)next;
-                m_HeadPosition = 0;
+                head = (ByteSequenceSegment)next;
+                headPosition = 0;
             }
         }
         
@@ -73,10 +73,10 @@ namespace GameFrame
             {
                 CheckWrite();
                 int k = TailRemain >= count ? count : TailRemain;
-                Array.Copy(buffer, offset, m_Tail.Buffer, m_TailPosition, k);
+                Array.Copy(buffer, offset, tail.Buffer, tailPosition, k);
                 offset += k;
                 count -= k;
-                m_TailPosition += k;
+                tailPosition += k;
             }
             
             Length += n;
@@ -92,10 +92,10 @@ namespace GameFrame
             {
                 CheckWrite();
                 int k = TailRemain >= count ? count : TailRemain;
-                Marshal.Copy(buffer, m_Tail.Buffer, m_TailPosition, k);
+                Marshal.Copy(buffer, tail.Buffer, tailPosition, k);
                 buffer = IntPtr.Add(buffer, k);
                 count -= k;
-                m_TailPosition += k;
+                tailPosition += k;
             }
             
             Length += n;
@@ -111,9 +111,9 @@ namespace GameFrame
             {
                 CheckWrite();
                 int k = TailRemain >= count ? count : TailRemain;
-                k = stream.Read(m_Tail.Buffer, m_TailPosition, k);
+                k = stream.Read(tail.Buffer, tailPosition, k);
                 count -= k;
-                m_TailPosition += k;
+                tailPosition += k;
             }
             
             Length += n;
@@ -132,10 +132,10 @@ namespace GameFrame
             {
                 CheckRead();
                 int k = HeadRemain >= count ? count : HeadRemain;
-                Array.Copy(m_Head.Buffer, m_HeadPosition, buffer, offset, k);
+                Array.Copy(head.Buffer, headPosition, buffer, offset, k);
                 offset += k;
                 count -= k;
-                m_HeadPosition += k;
+                headPosition += k;
             }
             
             Length -= n;
@@ -157,8 +157,8 @@ namespace GameFrame
             
             int n = count;
 
-            var node = m_Head;
-            var position = m_HeadPosition;
+            var node = head;
+            var position = headPosition;
 
             while (count > 0)
             {
@@ -196,7 +196,7 @@ namespace GameFrame
                 CheckRead();
                 int k = HeadRemain >= count ? count : HeadRemain;
                 count -= k;
-                m_HeadPosition += k;
+                headPosition += k;
             }
             
             Length -= n;
@@ -206,7 +206,7 @@ namespace GameFrame
             return n;
         }
 
-        public void Clear()
+        public void Dispose()
         {
             Advance(Length);
         }
@@ -214,7 +214,7 @@ namespace GameFrame
         public ReadOnlySequence<byte> CreateSequence()
         {
             if (Length == 0) return new ReadOnlySequence<byte>();
-            return new ReadOnlySequence<byte>(m_Head, m_HeadPosition, m_Tail, m_TailPosition);
+            return new ReadOnlySequence<byte>(head, headPosition, tail, tailPosition);
         }
 
         public ReadOnlySequence<byte> CreateSequence(int offset, int count)
@@ -222,7 +222,7 @@ namespace GameFrame
             if (count <= 0) return new ReadOnlySequence<byte>();
             if (Length < offset + count) throw new ArgumentOutOfRangeException(); 
 
-            var sequence = new ReadOnlySequence<byte>(m_Head, m_HeadPosition, m_Tail, m_TailPosition);
+            var sequence = new ReadOnlySequence<byte>(head, headPosition, tail, tailPosition);
             sequence = sequence.Slice(offset, count);
             return sequence;
         }

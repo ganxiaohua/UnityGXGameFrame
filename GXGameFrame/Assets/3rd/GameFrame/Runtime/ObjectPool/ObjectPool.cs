@@ -1,39 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using UnityEngine;
 
 namespace GameFrame
 {
     public class ObjectPool<T> : IObjectPoolBase where T : ObjectBase
 
     {
-        private Dictionary<string, List<T>> m_ActionObject;
-        private Dictionary<string, List<T>> m_HideObject;
+        private Dictionary<string, List<T>> actionObject;
+        private Dictionary<string, List<T>> hideObject;
 
-        private Dictionary<T, string> m_ActionObjectWithName;
+        private Dictionary<T, string> actionObjectWithName;
 
-        private List<T> m_NeedClearList;
+        private List<T> needClearList;
 
 
         /// <summary>
         /// 是否是激活的
         /// </summary>
-        public bool m_Activate;
+        public bool Activate;
 
         /// <summary>
         /// 如果说吐出操作比较耗时们可以使用异步突出
         /// </summary>
-        private Queue<ObjectPoolHandle> m_SpawnAsyncQueue;
+        private Queue<ObjectPoolHandle> spawnAsyncQueue;
 
         /// <summary>
         /// 对象池最大数量
         /// </summary>
-        private int m_MaxCacheNum;
+        private int maxCacheNum;
 
         /// <summary>
         /// 对象池当前数量
         /// </summary>
-        private int m_CurCacheNum;
+        private int curCacheNum;
 
 
         public TypeNamePair TypeName;
@@ -41,31 +42,31 @@ namespace GameFrame
         /// <summary>
         /// 对象池需要携带的内容
         /// </summary>
-        private object m_UserData;
+        private object userData;
 
         /// <summary>
         /// 对象池每一帧吐出的最大数量
         /// </summary>
-        private int m_MaxSpawnCount;
+        private int maxSpawnCount;
 
 
         /// <summary>
         /// 对象池当前自动施法时间
         /// </summary>
-        private float m_CurAutoReleaseTime;
+        private float curAutoReleaseTime;
 
         /// <summary>
         /// 对象池轮训检查时间
         /// </summary>
-        private float m_AutoReleaseInterval;
+        private float autoReleaseInterval;
 
         /// <summary>
         /// 对象池内部对象进入HitObjet列表之后的到期事件
         /// </summary>
-        private float m_ExpireTime;
+        private float expireTime;
 
         // private List<ObjectBase> m_ActionObjects;
-        private Type m_ObjectType;
+        private Type objectType;
 
         private static string sDefaultKey = "";
 
@@ -73,27 +74,27 @@ namespace GameFrame
         {
             Type objectPoolType = typeof(ObjectPool<>).MakeGenericType(objectType);
             ObjectPool<T> objectPool = ReferencePool.Acquire(objectPoolType) as ObjectPool<T>;
-            objectPool.m_NeedClearList = new List<T>();
-            objectPool.m_SpawnAsyncQueue = new();
+            objectPool.needClearList = new List<T>();
+            objectPool.spawnAsyncQueue = new();
             objectPool.Initialize(typeName);
-            objectPool.m_MaxCacheNum = maxNum;
-            objectPool.m_UserData = userData;
-            objectPool.m_ExpireTime = expireTime;
-            objectPool.m_AutoReleaseInterval = 5;
-            objectPool.m_CurAutoReleaseTime = 0;
-            objectPool.m_Activate = true;
-            objectPool.m_MaxSpawnCount = 0;
+            objectPool.maxCacheNum = maxNum;
+            objectPool.userData = userData;
+            objectPool.expireTime = expireTime;
+            objectPool.autoReleaseInterval = 5;
+            objectPool.curAutoReleaseTime = 0;
+            objectPool.Activate = true;
+            objectPool.maxSpawnCount = 0;
             return objectPool;
         }
 
         private void Initialize(TypeNamePair typeName)
         {
-            m_CurCacheNum = 0;
+            curCacheNum = 0;
             TypeName = typeName;
-            m_ObjectType = typeof(T);
-            m_ActionObjectWithName = new();
-            m_ActionObject = new();
-            m_HideObject = new();
+            objectType = typeof(T);
+            actionObjectWithName = new();
+            actionObject = new();
+            hideObject = new();
         }
 
         /// <summary>
@@ -102,7 +103,7 @@ namespace GameFrame
         /// <param name="userData"></param>
         public void SetUserData(object userData)
         {
-            this.m_UserData = userData;
+            this.userData = userData;
         }
 
         public void SetLuck(T obj, bool luck)
@@ -122,8 +123,8 @@ namespace GameFrame
         /// <param name="MaxCount"></param>
         public void SetAsyncMaxCount(int maxCount = 20)
         {
-            if (m_MaxSpawnCount == 0)
-                m_MaxSpawnCount = maxCount;
+            if (maxSpawnCount == 0)
+                maxSpawnCount = maxCount;
         }
 
         /// <summary>
@@ -133,14 +134,14 @@ namespace GameFrame
         /// <param name="expireTime">进入不活跃对象池之后的到期时间</param>
         public void SetExamineTime(float autoReleaseInterval, float expireTime)
         {
-            m_AutoReleaseInterval = autoReleaseInterval;
-            m_ExpireTime = expireTime;
+            this.autoReleaseInterval = autoReleaseInterval;
+            this.expireTime = expireTime;
         }
 
         public void Update(float elapseSeconds, float realElapseSeconds)
         {
-            m_CurAutoReleaseTime += realElapseSeconds;
-            if (m_CurAutoReleaseTime > m_AutoReleaseInterval)
+            curAutoReleaseTime += realElapseSeconds;
+            if (curAutoReleaseTime > autoReleaseInterval)
             {
                 TimeCheck();
             }
@@ -153,16 +154,16 @@ namespace GameFrame
         /// </summary>
         private void FrameSpawn()
         {
-            if (m_SpawnAsyncQueue.Count == 0)
+            if (spawnAsyncQueue.Count == 0)
             {
                 return;
             }
 
             int cur = 0;
-            while (m_SpawnAsyncQueue.Count > 0 && cur < m_MaxSpawnCount)
+            while (spawnAsyncQueue.Count > 0 && cur < maxSpawnCount)
             {
                 cur++;
-                ObjectPoolHandle objectPoolHandle = m_SpawnAsyncQueue.Dequeue();
+                ObjectPoolHandle objectPoolHandle = spawnAsyncQueue.Dequeue();
                 objectPoolHandle.Complete();
             }
         }
@@ -176,10 +177,10 @@ namespace GameFrame
         {
             ObjectPoolHandle objectPoolHandle = ReferencePool.Acquire<ObjectPoolHandle>();
             objectPoolHandle.Init(token);
-            m_SpawnAsyncQueue.Enqueue(objectPoolHandle);
+            spawnAsyncQueue.Enqueue(objectPoolHandle);
             SetAsyncMaxCount();
             await objectPoolHandle;
-            bool spawn = (objectPoolHandle.TaskState == TaskState.Succ && m_Activate);
+            bool spawn = (objectPoolHandle.TaskState == TaskState.Succ && Activate);
             ReferencePool.Release(objectPoolHandle);
             if (!spawn)
                 return null;
@@ -209,7 +210,7 @@ namespace GameFrame
             }
 
             T poolobject = null;
-            if (m_HideObject.TryGetValue(key, out List<T> poolobjectlist))
+            if (hideObject.TryGetValue(key, out List<T> poolobjectlist))
             {
                 if (poolobjectlist.Count > 0)
                 {
@@ -220,18 +221,18 @@ namespace GameFrame
 
             if (poolobject == null)
             {
-                poolobject = ReferencePool.Acquire(m_ObjectType) as T;
-                poolobject.Initialize(m_UserData);
+                poolobject = ReferencePool.Acquire(objectType) as T;
+                poolobject.Initialize(userData);
             }
 
-            if (!m_ActionObject.TryGetValue(key, out List<T> objectList))
+            if (!actionObject.TryGetValue(key, out List<T> objectList))
             {
                 objectList = new List<T>();
-                m_ActionObject.Add(key, objectList);
+                actionObject.Add(key, objectList);
             }
 
             objectList.Add(poolobject);
-            m_ActionObjectWithName.Add(poolobject, key);
+            actionObjectWithName.Add(poolobject, key);
             poolobject.OnSpawn();
             return poolobject;
         }
@@ -243,22 +244,22 @@ namespace GameFrame
         /// <exception cref="Exception"></exception>
         public void UnSpawn(T t)
         {
-            if (!m_ActionObjectWithName.TryGetValue(t, out string key))
+            if (!actionObjectWithName.TryGetValue(t, out string key))
             {
-                throw new Exception($"{m_ObjectType.Name} not has");
+                throw new Exception($"{objectType.Name} not has");
             }
 
-            m_ActionObject[key].Remove(t);
-            m_ActionObjectWithName.Remove(t);
-            if (!m_HideObject.TryGetValue(key, out List<T> objectList))
+            actionObject[key].Remove(t);
+            actionObjectWithName.Remove(t);
+            if (!hideObject.TryGetValue(key, out List<T> objectList))
             {
                 objectList = new List<T>();
-                m_HideObject.Add(key, objectList);
+                hideObject.Add(key, objectList);
             }
 
-            m_CurCacheNum++;
+            curCacheNum++;
             objectList.Add(t);
-            t.LastUseTime = DateTime.UtcNow;
+            t.ExpiredTime = Time.realtimeSinceStartup + expireTime;
             t.OnUnspawn();
             AmountCheck();
         }
@@ -268,25 +269,25 @@ namespace GameFrame
         /// </summary>
         public void AmountCheck()
         {
-            if (m_CurCacheNum <= m_MaxCacheNum)
+            if (curCacheNum <= maxCacheNum)
                 return;
-            m_NeedClearList.Clear();
-            int clearNum = m_MaxCacheNum / 2;
+            needClearList.Clear();
+            int clearNum = maxCacheNum / 2;
             int curClearNum = 0;
-            foreach (var item in m_HideObject)
+            foreach (var item in hideObject)
             {
                 List<T> list = item.Value;
                 for (int i = list.Count - 1; i >= 0; i--)
                 {
                     if (list[i].Luck)
                         continue;
-                    m_NeedClearList.Add(list[i]);
+                    needClearList.Add(list[i]);
                     list.RemoveAt(i);
                     curClearNum++;
                     if (curClearNum == clearNum)
                     {
-                        m_CurCacheNum -= curClearNum;
-                        ClearPasdue(m_NeedClearList);
+                        curCacheNum -= curClearNum;
+                        ClearPasdue(needClearList);
                         return;
                     }
                 }
@@ -298,23 +299,22 @@ namespace GameFrame
         /// </summary>
         public void TimeCheck()
         {
-            m_NeedClearList.Clear();
-            foreach (var item in m_HideObject)
+            needClearList.Clear();
+            foreach (var item in hideObject)
             {
                 List<T> list = item.Value;
                 for (int i = list.Count - 1; i >= 0; i--)
                 {
-                    DateTime expireTime = DateTime.UtcNow.AddSeconds(-m_ExpireTime);
-                    if (expireTime >= list[i].LastUseTime && !list[i].Luck)
+                    if (Time.realtimeSinceStartup >= list[i].ExpiredTime && !list[i].Luck)
                     {
-                        m_NeedClearList.Add(list[i]);
+                        needClearList.Add(list[i]);
                         list.RemoveAt(i);
-                        m_CurCacheNum--;
+                        curCacheNum--;
                     }
                 }
             }
 
-            ClearPasdue(m_NeedClearList);
+            ClearPasdue(needClearList);
         }
 
         /// <summary>
@@ -333,11 +333,11 @@ namespace GameFrame
                 ReferencePool.Release(item);
             }
 
-            m_CurAutoReleaseTime = 0;
+            curAutoReleaseTime = 0;
         }
 
 
-        public void Clear()
+        public void Dispose()
         {
             void ClearDic(Dictionary<string, List<T>> dic)
             {
@@ -348,21 +348,22 @@ namespace GameFrame
                 }
             }
 
-            m_Activate = false;
-            while (m_SpawnAsyncQueue.Count > 0)
+            Activate = false;
+            while (spawnAsyncQueue.Count > 0)
             {
-                var spawnaSynce = m_SpawnAsyncQueue.Dequeue();
+                var spawnaSynce = spawnAsyncQueue.Dequeue();
                 spawnaSynce.Cancel();
             }
-            m_SpawnAsyncQueue.Clear();
-            m_CurCacheNum = 0;
-            m_CurAutoReleaseTime = 0;
-            m_MaxSpawnCount = 0;
-            ClearDic(m_ActionObject);
-            ClearDic(m_HideObject);
-            m_ActionObject.Clear();
-            m_ActionObjectWithName.Clear();
-            m_HideObject.Clear();
+
+            spawnAsyncQueue.Clear();
+            curCacheNum = 0;
+            curAutoReleaseTime = 0;
+            maxSpawnCount = 0;
+            ClearDic(actionObject);
+            ClearDic(hideObject);
+            actionObject.Clear();
+            actionObjectWithName.Clear();
+            hideObject.Clear();
         }
     }
 }

@@ -8,209 +8,211 @@ namespace GameFrame
     {
         private sealed class ReferenceCollection
         {
-            private readonly Queue<IReference> m_References;
-            private readonly Type m_ReferenceType;
-            private int m_MaxAcquireReferenceCount;
-            private int m_UsingReferenceCount;
-            private int m_AcquireReferenceCount;
-            private int m_ReleaseReferenceCount;
-            private int m_AddReferenceCount;
-            private int m_RemoveReferenceCount;
+            private readonly Queue<IDisposable> references;
+            private readonly Type referenceType;
+            private int maxAcquireReferenceCount;
+            private int usingReferenceCount;
+            private int acquireReferenceCount;
+            private int releaseReferenceCount;
+            private int addReferenceCount;
+            private int removeReferenceCount;
 
 
             /// <summary>
             /// 引用池内部对象进入HitObjet列表之后的到期事件
             /// </summary>
-            private float m_ExpireTime;
+            private float expireTime;
 
             /// <summary>
             /// 最后一次使用对象池的事件
             /// </summary>
-            public DateTime m_LastUseTime;
+            public float ExpiredTime;
 
             public ReferenceCollection(Type referenceType)
             {
-                m_References = new Queue<IReference>();
-                m_ReferenceType = referenceType;
-                m_MaxAcquireReferenceCount = 10;
-                m_UsingReferenceCount = 0;
-                m_AcquireReferenceCount = 0;
-                m_ReleaseReferenceCount = 0;
-                m_AddReferenceCount = 0;
-                m_RemoveReferenceCount = 0;
-                m_ExpireTime = 60; //如果这个池子超过一分钟没有使用则释放所有的引用
+                references = new Queue<IDisposable>();
+                this.referenceType = referenceType;
+                maxAcquireReferenceCount = 10;
+                usingReferenceCount = 0;
+                acquireReferenceCount = 0;
+                releaseReferenceCount = 0;
+                addReferenceCount = 0;
+                removeReferenceCount = 0;
+                expireTime = 60; //如果这个池子超过一分钟没有使用则释放所有的引用
             }
 
             public Type ReferenceType
             {
-                get { return m_ReferenceType; }
+                get { return referenceType; }
             }
 
             public int UnusedReferenceCount
             {
-                get { return m_References.Count; }
+                get { return references.Count; }
             }
 
             public int UsingReferenceCount
             {
-                get { return m_UsingReferenceCount; }
+                get { return usingReferenceCount; }
             }
 
             public int AcquireReferenceCount
             {
-                get { return m_AcquireReferenceCount; }
+                get { return acquireReferenceCount; }
             }
 
             public int ReleaseReferenceCount
             {
-                get { return m_ReleaseReferenceCount; }
+                get { return releaseReferenceCount; }
             }
 
             public int AddReferenceCount
             {
-                get { return m_AddReferenceCount; }
+                get { return addReferenceCount; }
             }
 
             public int RemoveReferenceCount
             {
-                get { return m_RemoveReferenceCount; }
+                get { return removeReferenceCount; }
             }
 
             public int MaxAcquireReferenceCount
             {
-                get { return m_MaxAcquireReferenceCount; }
+                get { return maxAcquireReferenceCount; }
             }
 
             public void SetMaxAcquireReferenceCount(int count)
             {
-                m_MaxAcquireReferenceCount = count;
+                maxAcquireReferenceCount = count;
             }
 
-            public T Acquire<T>() where T : class, IReference, new()
+            public T Acquire<T>() where T : class, IDisposable, new()
             {
-                if (typeof(T) != m_ReferenceType)
+                if (typeof(T) != referenceType)
                 {
                     throw new Exception("Type is invalid.");
                 }
 
-                m_UsingReferenceCount++;
-                m_AcquireReferenceCount++;
-                lock (m_References)
+                usingReferenceCount++;
+                acquireReferenceCount++;
+                lock (references)
                 {
-                    if (m_References.Count > 0)
+                    if (references.Count > 0)
                     {
-                        return (T) m_References.Dequeue();
+                        return (T) references.Dequeue();
                     }
                 }
-                m_AddReferenceCount++;
+
+                addReferenceCount++;
                 return new T();
             }
 
-            public IReference Acquire()
+            public IDisposable Acquire()
             {
-                m_UsingReferenceCount++;
-                m_AcquireReferenceCount++;
-                lock (m_References)
+                usingReferenceCount++;
+                acquireReferenceCount++;
+                lock (references)
                 {
-                    if (m_References.Count > 0)
+                    if (references.Count > 0)
                     {
-                        return m_References.Dequeue();
+                        return references.Dequeue();
                     }
                 }
-                
-                m_AddReferenceCount++;
-                return (IReference) Activator.CreateInstance(m_ReferenceType);
+
+                addReferenceCount++;
+                return (IDisposable) Activator.CreateInstance(referenceType);
             }
 
 
-            public void Release(IReference reference)
+            public void Release(IDisposable disposable)
             {
-                reference.Clear();
-                lock (m_References)
+                disposable.Dispose();
+                lock (references)
                 {
-                    if (m_EnableStrictCheck && m_References.Contains(reference))
+#if UNITY_EDITOR
+                    if (references.Contains(disposable))
                     {
                         throw new Exception("The reference has been released.");
                     }
-
-                    m_References.Enqueue(reference);
+#endif
+                    references.Enqueue(disposable);
                 }
 
-                m_ReleaseReferenceCount++;
-                m_UsingReferenceCount--;
-                if (m_ReleaseReferenceCount >= m_MaxAcquireReferenceCount)
+                releaseReferenceCount++;
+                usingReferenceCount--;
+                if (releaseReferenceCount >= maxAcquireReferenceCount)
                 {
-                    Remove(m_ReleaseReferenceCount / 2);
+                    Remove(releaseReferenceCount / 2);
                 }
-                m_LastUseTime = DateTime.UtcNow;
+
+                ExpiredTime = Time.realtimeSinceStartup + expireTime;
             }
 
-            public void Add<T>(int count) where T : class, IReference, new()
+            public void Add<T>(int count) where T : class, IDisposable, new()
             {
-                if (typeof(T) != m_ReferenceType)
+                if (typeof(T) != referenceType)
                 {
                     throw new Exception("Type is invalid.");
                 }
 
-                lock (m_References)
+                lock (references)
                 {
-                    m_AddReferenceCount += count;
+                    addReferenceCount += count;
                     while (count-- > 0)
                     {
-                        m_References.Enqueue(new T());
+                        references.Enqueue(new T());
                     }
                 }
             }
 
             public void Add(int count)
             {
-                lock (m_References)
+                lock (references)
                 {
-                    m_AddReferenceCount += count;
+                    addReferenceCount += count;
                     while (count-- > 0)
                     {
-                        m_References.Enqueue((IReference) Activator.CreateInstance(m_ReferenceType));
+                        references.Enqueue((IDisposable) Activator.CreateInstance(referenceType));
                     }
                 }
-                
             }
 
             public void Remove(int count)
             {
-                lock (m_References)
+                lock (references)
                 {
-                    if (count > m_References.Count)
+                    if (count > references.Count)
                     {
-                        count = m_References.Count;
+                        count = references.Count;
                     }
 
-                    m_RemoveReferenceCount += count;
+                    removeReferenceCount += count;
                     while (count-- > 0)
                     {
-                        m_References.Dequeue();
+                        references.Dequeue();
                     }
                 }
             }
 
             public void RemoveAll()
             {
-                lock (m_References)
+                lock (references)
                 {
-                    m_RemoveReferenceCount += m_References.Count;
-                    m_References.Clear();
+                    removeReferenceCount += references.Count;
+                    references.Clear();
                 }
             }
 
             public bool UnusedCheck()
             {
-                if (m_UsingReferenceCount == 0)
+                if (usingReferenceCount == 0)
                 {
-                    DateTime expireTime = DateTime.UtcNow.AddSeconds(-m_ExpireTime);
-                    if (expireTime >= m_LastUseTime)
+                    if (Time.realtimeSinceStartup >= ExpiredTime)
                     {
                         return true;
                     }
                 }
+
                 return false;
             }
         }

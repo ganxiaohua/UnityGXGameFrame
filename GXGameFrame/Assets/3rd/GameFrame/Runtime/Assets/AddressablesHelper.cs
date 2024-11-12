@@ -65,7 +65,7 @@ public static class AddressablesHelper
             {
                 Addressables.InternalIdTransformFunc = InternalIdTransformFunc;
                 PlayerAssets = LoadFromJson<PlayerAssets>(playerAssetRequest.downloadHandler.text);
-                AssetVersion = PlayerAssets.version;
+                AssetVersion = PlayerAssets.Version;
             }
         }
         catch (Exception e)
@@ -94,8 +94,8 @@ public static class AddressablesHelper
             if (updateInfoRequest.result == UnityWebRequest.Result.Success)
             {
                 UpdateInfo = LoadFromJson<UpdateInfo>(updateInfoRequest.downloadHandler.text);
-                AssetVersion = UpdateInfo.version;
-                Debugger.Log($"Bundle version:{UpdateInfo.version}, Build time:{GetDateTime(UpdateInfo.timestamp)}");
+                AssetVersion = UpdateInfo.Version;
+                Debugger.Log($"Bundle version:{UpdateInfo.Version}, Build time:{GetDateTime(UpdateInfo.Timestamp)}");
             }
             else
             {

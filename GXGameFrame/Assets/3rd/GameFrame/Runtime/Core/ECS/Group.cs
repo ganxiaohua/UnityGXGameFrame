@@ -1,21 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace GameFrame
 {
-    public class Group : IReference
+    public class Group : IDisposable
     {
-        private Matcher m_Matcher;
-        private HashSet<ECSEntity> m_EntitiesMap;
+        private Matcher matcher;
+        private HashSet<ECSEntity> entitiesMap;
         public event GroupChanged GroupAdd;
         public event GroupChanged GroupRomve;
         public event GroupChanged GroupUpdate;
-        public HashSet<ECSEntity> EntitiesMap => m_EntitiesMap;
+        public HashSet<ECSEntity> EntitiesMap => entitiesMap;
 
         public static Group CreateGroup(Matcher matcher)
         {
             Group Group = ReferencePool.Acquire<Group>();
-            Group.m_Matcher = matcher;
-            Group.m_EntitiesMap = new();
+            Group.matcher = matcher;
+            Group.entitiesMap = new();
             return Group;
         }
 
@@ -26,7 +27,7 @@ namespace GameFrame
 
         private void AddOrUpdateComponent(ECSEntity entity, bool silently)
         {
-            bool add = m_EntitiesMap.Add(entity);
+            bool add = entitiesMap.Add(entity);
             if (!silently)
                 if (add)
                     GroupAdd?.Invoke(this, entity);
@@ -38,7 +39,7 @@ namespace GameFrame
 
         private void RemoveComponent(ECSEntity entity, bool silently)
         {
-            bool b = m_EntitiesMap.Remove(entity);
+            bool b = entitiesMap.Remove(entity);
             if (!silently && b)
                 GroupRomve?.Invoke(this, entity);
         }
@@ -58,21 +59,21 @@ namespace GameFrame
 
         private int DoEntity(ECSEntity entity, bool silently)
         {
-            if (this.m_Matcher.Match(entity))
+            if (this.matcher.Match(entity))
                 this.AddOrUpdateComponent(entity, silently);
             else
                 this.RemoveComponent(entity, silently);
-            return m_EntitiesMap.Count;
+            return entitiesMap.Count;
         }
 
 
-        public void Clear()
+        public void Dispose()
         {
             GroupAdd -= GroupAdd;
             GroupRomve -= GroupRomve;
             GroupUpdate -= GroupUpdate;
-            m_Matcher = null;
-            m_EntitiesMap.Clear();
+            matcher = null;
+            entitiesMap.Clear();
         }
 
         public IEnumerable<ECSEntity> AsEnumerable() => (IEnumerable<ECSEntity>) this.EntitiesMap;

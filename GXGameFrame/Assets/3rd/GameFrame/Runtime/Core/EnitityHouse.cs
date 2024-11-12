@@ -10,13 +10,13 @@ namespace GameFrame
         /// <summary>
         /// 不会包含EcsEntity的实体集合
         /// </summary>
-        private Dictionary<Type, List<IEntity>> m_TypeWithEntitys = new();
+        private Dictionary<Type, List<IEntity>> typeWithEntityDic = new();
 
-        private Dictionary<SceneType, IScene> m_EverySceneEntity = new(4);
+        private Dictionary<SceneType, IScene> sceneEntityDic = new(4);
 
-        private DDictionaryETC m_EntitySystems = new();
+        private DDictionaryETC entitySystemsDDic = new();
 
-        private UpdateSystems m_UpdateSystems = new UpdateSystems();
+        private UpdateSystems updateSystems = new UpdateSystems();
 
 
         /// <summary>
@@ -27,10 +27,10 @@ namespace GameFrame
         public void AddEntity(IEntity entity)
         {
             Type type = entity.GetType();
-            if (!m_TypeWithEntitys.TryGetValue(type, out var entityList))
+            if (!typeWithEntityDic.TryGetValue(type, out var entityList))
             {
                 entityList = new List<IEntity>();
-                m_TypeWithEntitys.Add(type, entityList);
+                typeWithEntityDic.Add(type, entityList);
             }
 
             if (entityList.Contains(entity))
@@ -51,7 +51,7 @@ namespace GameFrame
 
         public List<IEntity> GetEntity(Type type)
         {
-            if (!m_TypeWithEntitys.TryGetValue(type, out var entityList))
+            if (!typeWithEntityDic.TryGetValue(type, out var entityList))
             {
                 throw new Exception($"TypeWithEntitys not have {type}");
             }
@@ -67,7 +67,7 @@ namespace GameFrame
         public void RemoveEntity(IEntity entity)
         {
             Type type = entity.GetType();
-            if (!m_TypeWithEntitys.TryGetValue(type, out var entityList) || !entityList.Contains(entity))
+            if (!typeWithEntityDic.TryGetValue(type, out var entityList) || !entityList.Contains(entity))
             {
                 throw new Exception($"TypeWithEntitys not have entity:{entity.ID}");
             }
@@ -82,7 +82,7 @@ namespace GameFrame
         /// </summary>
         public int GetEntityCount(Type entityType)
         {
-            if (m_TypeWithEntitys.TryGetValue(entityType, out var entityList))
+            if (typeWithEntityDic.TryGetValue(entityType, out var entityList))
             {
                 return entityList.Count;
             }
@@ -98,7 +98,7 @@ namespace GameFrame
         /// <typeparam name="T"></typeparam>
         public IScene AddSceneEntity<T>(SceneType sceneType, FsmState state) where T : class, IEntity, IScene, new()
         {
-            if (m_EverySceneEntity.TryGetValue(sceneType, out IScene IScene))
+            if (sceneEntityDic.TryGetValue(sceneType, out IScene IScene))
             {
                 Type type = typeof(T);
                 if (IScene.GetType() == type)
@@ -110,7 +110,7 @@ namespace GameFrame
             }
 
             T scene = state.AddComponent<T>();
-            m_EverySceneEntity.Add(sceneType, scene);
+            sceneEntityDic.Add(sceneType, scene);
             return scene;
         }
 
@@ -122,7 +122,7 @@ namespace GameFrame
         /// <exception cref="Exception"></exception>
         public IScene GetScene(SceneType sceneType)
         {
-            if (!m_EverySceneEntity.TryGetValue(sceneType, out IScene IScene))
+            if (!sceneEntityDic.TryGetValue(sceneType, out IScene IScene))
             {
                 throw new Exception($"EverySceneEntity not have entity:{sceneType}");
             }
@@ -138,13 +138,13 @@ namespace GameFrame
         /// <exception cref="Exception"></exception>
         public void RemoveSceneEntity(SceneType sceneType)
         {
-            if (!m_EverySceneEntity.TryGetValue(sceneType, out IScene scene))
+            if (!sceneEntityDic.TryGetValue(sceneType, out IScene scene))
             {
                 throw new Exception($"EverySceneEntity not have entity:{sceneType}");
             }
 
             GXGameFrame.Instance.MainScene.RemoveComponent(scene.GetType());
-            m_EverySceneEntity.Remove(sceneType);
+            sceneEntityDic.Remove(sceneType);
         }
 
         public void AddEcsSystem<T>(World entity) where T : ISystem
@@ -160,12 +160,12 @@ namespace GameFrame
         /// <returns></returns>
         private ISystemObject CreateSystem(IEntity entity, Type system)
         {
-            ISystemObject sysObject = m_EntitySystems.GetVValue(entity, system);
+            ISystemObject sysObject = entitySystemsDDic.GetVValue(entity, system);
             if (sysObject == null)
             {
                 sysObject = ReferencePool.Acquire<EcsSystemObject>();
                 ((EcsSystemObject) sysObject).AddSystem(system);
-                m_EntitySystems.Add(entity, system, sysObject);
+                entitySystemsDDic.Add(entity, system, sysObject);
             }
 
             return sysObject;
@@ -180,7 +180,7 @@ namespace GameFrame
         {
             ISystemObject sysObject = CreateSystem(entity, type);
             sysObject.System.SystemStart( entity);
-            m_UpdateSystems.AddUpdateSystem(entity, sysObject);
+            updateSystems.AddUpdateSystem(entity, sysObject);
         }
 
         /// <summary>
@@ -200,8 +200,8 @@ namespace GameFrame
             {
                 var sysObject = ReferencePool.Acquire<SystemObject>();
                 sysObject.AddSystem((ISystem) entity);
-                m_EntitySystems.Add(entity, type, sysObject);
-                m_UpdateSystems.AddUpdateSystem(entity, sysObject);
+                entitySystemsDDic.Add(entity, type, sysObject);
+                updateSystems.AddUpdateSystem(entity, sysObject);
             }
 
             if (system is IUpdateSystem)
@@ -226,7 +226,7 @@ namespace GameFrame
         /// <param name="entity"></param>
         private void RemoveUpdateSystem(IEntity entity, ISystem system = null)
         {
-            m_UpdateSystems.RemoveUpdateSystem(entity, system);
+            updateSystems.RemoveUpdateSystem(entity, system);
         }
 
         /// <summary>
@@ -247,24 +247,24 @@ namespace GameFrame
             ISystem system = (ISystem) entity;
             system?.SystemShow();
             EventData.Instance.AddEventEntity(entity);
-            if (!m_UpdateSystems.HasUpdateSystem(entity))
+            if (!updateSystems.HasUpdateSystem(entity))
             {
-                ISystemObject updateSystem = m_EntitySystems.GetVValue(entity, typeof(IUpdateSystem));
+                ISystemObject updateSystem = entitySystemsDDic.GetVValue(entity, typeof(IUpdateSystem));
                 if (updateSystem != null)
                 {
-                    m_UpdateSystems.AddUpdateSystem(entity, updateSystem);
+                    updateSystems.AddUpdateSystem(entity, updateSystem);
                 }
 
-                updateSystem = m_EntitySystems.GetVValue(entity, typeof(ILateUpdateSystem));
+                updateSystem = entitySystemsDDic.GetVValue(entity, typeof(ILateUpdateSystem));
                 if (updateSystem != null)
                 {
-                    m_UpdateSystems.AddUpdateSystem(entity, updateSystem);
+                    updateSystems.AddUpdateSystem(entity, updateSystem);
                 }
 
-                updateSystem = m_EntitySystems.GetVValue(entity, typeof(IFixedUpdateSystem));
+                updateSystem = entitySystemsDDic.GetVValue(entity, typeof(IFixedUpdateSystem));
                 if (updateSystem != null)
                 {
-                    m_UpdateSystems.AddUpdateSystem(entity, updateSystem);
+                    updateSystems.AddUpdateSystem(entity, updateSystem);
                 }
             }
 
@@ -288,7 +288,7 @@ namespace GameFrame
             ISystem system = (ISystem) entity;
             system?.SystemHide();
             EventData.Instance.RemoveEventEntity(entity);
-            m_UpdateSystems.RemoveUpdateSystem(entity);
+            updateSystems.RemoveUpdateSystem(entity);
             foreach (IEntity entity1 in entity.Children)
             {
                 RunHideSystem((Entity) entity1);
@@ -309,7 +309,7 @@ namespace GameFrame
         public void RemoveSystem<T>(IEntity entity)
         {
             Type type = typeof(T);
-            ISystemObject ecsSystemObject = m_EntitySystems.GetVValue(entity, type);
+            ISystemObject ecsSystemObject = entitySystemsDDic.GetVValue(entity, type);
             if (ecsSystemObject != null)
             {
                 RemoveUpdateSystem(entity, ecsSystemObject.System);
@@ -323,7 +323,7 @@ namespace GameFrame
         private void RemoveAllSystem(IEntity entity)
         {
             Type entityType = entity.GetType();
-            var allSystemDic = m_EntitySystems.GetValue(entity);
+            var allSystemDic = entitySystemsDDic.GetValue(entity);
             if (allSystemDic == null)
             {
                 //这个实体上不存在系统
@@ -334,7 +334,7 @@ namespace GameFrame
             RemoveUpdateSystem(entity);
             if (GetEntityCount(entityType) == 0)
             {
-                var item = m_EntitySystems.RemoveTkey(entity);
+                var item = entitySystemsDDic.RemoveTkey(entity);
                 foreach (KeyValuePair<Type, ISystemObject> typeSystem in item)
                 {
                     ReferencePool.Release(typeSystem.Value);
@@ -344,17 +344,17 @@ namespace GameFrame
 
         public void Update(float elapseSeconds, float realElapseSeconds)
         {
-            m_UpdateSystems.UpdateSystemEntitys[(int) UpdateType.Update].SystemUpdate(elapseSeconds, realElapseSeconds);
+            updateSystems.UpdateSystemEntityArr[(int) UpdateType.Update].SystemUpdate(elapseSeconds, realElapseSeconds);
         }
 
         public void LateUpdate(float elapseSeconds, float realElapseSeconds)
         {
-            m_UpdateSystems.UpdateSystemEntitys[(int) UpdateType.LateUpdate].SystemLateUpdate(elapseSeconds, realElapseSeconds);
+            updateSystems.UpdateSystemEntityArr[(int) UpdateType.LateUpdate].SystemLateUpdate(elapseSeconds, realElapseSeconds);
         }
 
         public void FixedUpdate(float elapseSeconds, float realElapseSeconds)
         {
-            m_UpdateSystems.UpdateSystemEntitys[(int) UpdateType.FixedUpdate].SystemFixedUpdate(elapseSeconds, realElapseSeconds);
+            updateSystems.UpdateSystemEntityArr[(int) UpdateType.FixedUpdate].SystemFixedUpdate(elapseSeconds, realElapseSeconds);
         }
 
 

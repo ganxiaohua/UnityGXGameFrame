@@ -5,32 +5,32 @@ namespace GameFrame
 {
     public class BehaviorWorldEntity : Entity, IStartSystem<Type>, IUpdateSystem
     {
-        private BehaviorWorld m_BehaviorWorld;
-        private Dictionary<Type, BehaviorEntity> m_BehaviorDic;
-        private Dictionary<IBehaviorData, BehaviorEntity> m_DataForBehaviorDic;
-        private List<IBehaviorData> m_Datas;
+        private BehaviorWorld behaviorWorld;
+        private Dictionary<Type, BehaviorEntity> behaviorDic;
+        private Dictionary<IBehaviorData, BehaviorEntity> dataForBehaviorDic;
+        private List<IBehaviorData> dataList;
 
         public void Start(Type arenatype)
         {
-            m_DataForBehaviorDic = new();
-            m_BehaviorDic = new();
-            m_Datas = new();
-            m_BehaviorWorld = (BehaviorWorld) ReferencePool.Acquire(arenatype);
-            m_BehaviorWorld.Init(this);
+            dataForBehaviorDic = new();
+            behaviorDic = new();
+            dataList = new();
+            behaviorWorld = (BehaviorWorld) ReferencePool.Acquire(arenatype);
+            behaviorWorld.Init(this);
         }
 
         public void Update(float elapseSeconds, float realElapseSeconds)
         {
-            m_BehaviorWorld.Update(elapseSeconds);
+            behaviorWorld.Update(elapseSeconds);
         }
 
-        public override void Clear()
+        public override void Dispose()
         {
-            base.Clear();
-            ReferencePool.Release(m_BehaviorWorld);
-            m_BehaviorDic.Clear();
-            m_DataForBehaviorDic.Clear();
-            foreach (var doll in m_Datas)
+            base.Dispose();
+            ReferencePool.Release(behaviorWorld);
+            behaviorDic.Clear();
+            dataForBehaviorDic.Clear();
+            foreach (var doll in dataList)
             {
                 ReferencePool.Release(doll);
             }
@@ -46,8 +46,8 @@ namespace GameFrame
         public Behavior AddBehavior<T>() where T : Behavior
         {
             Type type = typeof(T);
-            var jackdollComponent = AddChild<BehaviorEntity, Type, BehaviorWorld>(type, m_BehaviorWorld);
-            m_BehaviorDic.Add(type, jackdollComponent);
+            var jackdollComponent = AddChild<BehaviorEntity, Type, BehaviorWorld>(type, behaviorWorld);
+            behaviorDic.Add(type, jackdollComponent);
             return jackdollComponent.Behavior;
         }
 
@@ -60,13 +60,13 @@ namespace GameFrame
         public void RemoveBehavior<T>() where T : Behavior
         {
             Type type = typeof(T);
-            if (!m_BehaviorDic.TryGetValue(type, out BehaviorEntity jackdoll))
+            if (!behaviorDic.TryGetValue(type, out BehaviorEntity jackdoll))
             {
                 return;
             }
 
             RemoveChild(jackdoll);
-            m_BehaviorDic.Remove(type);
+            behaviorDic.Remove(type);
         }
 
         /// <summary>
@@ -77,20 +77,20 @@ namespace GameFrame
         /// <param name="behaviorData">玩偶本身</param>
         public void ChangeBehavior<T>(IBehaviorData behaviorData) where T : Behavior
         {
-            if (m_DataForBehaviorDic.TryGetValue(behaviorData, out BehaviorEntity  behavior))
+            if (dataForBehaviorDic.TryGetValue(behaviorData, out BehaviorEntity  behavior))
             {
-                m_DataForBehaviorDic.Remove(behaviorData);
+                dataForBehaviorDic.Remove(behaviorData);
                 behavior.DataLeave(behaviorData);
             }
             Type behaviorType = typeof(T);
-            if (!m_BehaviorDic.TryGetValue(behaviorType, out behavior))
+            if (!behaviorDic.TryGetValue(behaviorType, out behavior))
             {
                 Debugger.LogError($"不存在这个{behaviorType}的状态机");
                 return;
             }
 
             behavior.DataJoin(behaviorData);
-            m_DataForBehaviorDic.Add(behaviorData, behavior);
+            dataForBehaviorDic.Add(behaviorData, behavior);
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace GameFrame
         public T AddData<T>() where T : class, IBehaviorData, new()
         {
             T doll = ReferencePool.Acquire<T>();
-            m_Datas.Add(doll);
+            dataList.Add(doll);
             return doll;
         }
 
@@ -108,15 +108,15 @@ namespace GameFrame
         /// </summary>
         public void RemoveData(IBehaviorData behaviorData)
         {
-            if (!m_Datas.Contains(behaviorData))
+            if (!dataList.Contains(behaviorData))
             {
                 return;
             }
 
-            m_Datas.Remove(behaviorData);
-            if (m_DataForBehaviorDic.TryGetValue(behaviorData, out BehaviorEntity jackdoll))
+            dataList.Remove(behaviorData);
+            if (dataForBehaviorDic.TryGetValue(behaviorData, out BehaviorEntity jackdoll))
             {
-                m_DataForBehaviorDic.Remove(behaviorData);
+                dataForBehaviorDic.Remove(behaviorData);
                 jackdoll.DataLeave(behaviorData);
             }
         }

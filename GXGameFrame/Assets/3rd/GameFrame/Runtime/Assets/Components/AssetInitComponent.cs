@@ -25,9 +25,9 @@ namespace GameFrame
         {
         }
 
-        public override void Clear()
+        public override void Dispose()
         {
-            base.Clear();
+            base.Dispose();
         }
 
         public async UniTask CheckUpdate()

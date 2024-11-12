@@ -1,6 +1,8 @@
-﻿namespace GameFrame
+﻿using System;
+
+namespace GameFrame
 {
-    public interface IBehaviorData : IReference
+    public interface IBehaviorData : IDisposable
     {
         
     }

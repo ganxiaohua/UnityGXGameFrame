@@ -19,7 +19,7 @@ namespace GameFrame.Editor
         {
             if (!EditorApplication.isPlaying && GraphView != null)
             {
-                GraphView.Clear();
+                GraphView.Dispose();
                 rootVisualElement.Clear();
                 GraphView = null;
             }
@@ -37,7 +37,7 @@ namespace GameFrame.Editor
 
         private void OnDisable()
         {
-            GraphView?.Clear();
+            GraphView?.Dispose();
             GraphView = null;
         }
 

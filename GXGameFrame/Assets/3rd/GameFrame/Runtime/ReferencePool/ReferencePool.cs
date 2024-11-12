@@ -11,30 +11,29 @@ namespace GameFrame
         /// <summary>
         /// 引用池当前轮训的时间
         /// </summary>
-        private static float m_CurAutoReleaseTime;
+        private static float sCurAutoReleaseTime;
 
         /// <summary>
         /// 引用池轮训检查时间
         /// </summary>
-        private static float m_AutoReleaseInterval = 10;
-        private static readonly Dictionary<Type, ReferenceCollection> s_ReferenceCollections = new Dictionary<Type, ReferenceCollection>();
-        private static bool m_EnableStrictCheck = false;
-        private static List<Type> m_WaitDesroyList = new();
-        /// <summary>
-        /// 获取或设置是否开启强制检查。
-        /// </summary>
-        public static bool EnableStrictCheck
-        {
-            get { return m_EnableStrictCheck; }
-            set { m_EnableStrictCheck = value; }
-        }
+        private const float AutoReleaseInterval = 10;
+
+        private static readonly Dictionary<Type, ReferenceCollection> sReferenceCollections = new Dictionary<Type, ReferenceCollection>();
+        private static List<Type> sWaitDestroyList = new();
+
 
         /// <summary>
         /// 获取引用池的数量。
         /// </summary>
         public static int Count
         {
-            get { return s_ReferenceCollections.Count; }
+            get
+            {
+                lock (sReferenceCollections)
+                {
+                    return sReferenceCollections.Count;
+                }
+            }
         }
 
         /// <summary>
@@ -46,10 +45,10 @@ namespace GameFrame
             int index = 0;
             ReferencePoolInfo[] results = null;
 
-            lock (s_ReferenceCollections)
+            lock (sReferenceCollections)
             {
-                results = new ReferencePoolInfo[s_ReferenceCollections.Count];
-                foreach (KeyValuePair<Type, ReferenceCollection> referenceCollection in s_ReferenceCollections)
+                results = new ReferencePoolInfo[sReferenceCollections.Count];
+                foreach (KeyValuePair<Type, ReferenceCollection> referenceCollection in sReferenceCollections)
                 {
                     results[index++] = new ReferencePoolInfo(referenceCollection.Key, referenceCollection.Value.UnusedReferenceCount,
                         referenceCollection.Value.UsingReferenceCount, referenceCollection.Value.AcquireReferenceCount,
@@ -63,20 +62,20 @@ namespace GameFrame
 
         public static void Update(float elapseSeconds, float realElapseSeconds)
         {
-            m_CurAutoReleaseTime += realElapseSeconds;
-            if (m_CurAutoReleaseTime >= m_AutoReleaseInterval)
+            sCurAutoReleaseTime += realElapseSeconds;
+            if (sCurAutoReleaseTime >= AutoReleaseInterval)
             {
-                m_WaitDesroyList.Clear();
-                m_CurAutoReleaseTime = 0;
-                foreach (ReferenceCollection referencepool in s_ReferenceCollections.Values)
+                sWaitDestroyList.Clear();
+                sCurAutoReleaseTime = 0;
+                foreach (ReferenceCollection referencepool in sReferenceCollections.Values)
                 {
                     if (referencepool.UnusedCheck())
                     {
-                        m_WaitDesroyList.Add(referencepool.ReferenceType);
+                        sWaitDestroyList.Add(referencepool.ReferenceType);
                     }
                 }
 
-                foreach (Type type  in m_WaitDesroyList)
+                foreach (Type type  in sWaitDestroyList)
                 {
                     Debugger.Log($"clear {type.Name} ReleasePool");
                     RemoveAll(type);
@@ -89,14 +88,14 @@ namespace GameFrame
         /// </summary>
         public static void ClearAll()
         {
-            lock (s_ReferenceCollections)
+            lock (sReferenceCollections)
             {
-                foreach (KeyValuePair<Type, ReferenceCollection> referenceCollection in s_ReferenceCollections)
+                foreach (KeyValuePair<Type, ReferenceCollection> referenceCollection in sReferenceCollections)
                 {
                     referenceCollection.Value.RemoveAll();
                 }
 
-                s_ReferenceCollections.Clear();
+                sReferenceCollections.Clear();
             }
         }
 
@@ -105,11 +104,11 @@ namespace GameFrame
         /// </summary>
         /// <typeparam name="T">引用类型</typeparam>
         /// <returns></returns>
-        public static void SetMaxReferenceCount<T>(int count) where T : class, IReference, new()
+        public static void SetMaxReferenceCount<T>(int count) where T : class, IDisposable, new()
         {
-            lock (s_ReferenceCollections)
+            lock (sReferenceCollections)
             {
-                if (s_ReferenceCollections.TryGetValue(typeof(T), out ReferenceCollection referenceCollection))
+                if (sReferenceCollections.TryGetValue(typeof(T), out ReferenceCollection referenceCollection))
                 {
                     referenceCollection.SetMaxAcquireReferenceCount(count);
                     return;
@@ -123,7 +122,7 @@ namespace GameFrame
         /// </summary>
         /// <typeparam name="T">引用类型。</typeparam>
         /// <returns>引用。</returns>
-        public static T Acquire<T>() where T : class, IReference, new()
+        public static T Acquire<T>() where T : class, IDisposable, new()
         {
             return GetReferenceCollection(typeof(T)).Acquire<T>();
         }
@@ -133,7 +132,7 @@ namespace GameFrame
         /// </summary>
         /// <param name="referenceType">引用类型。</param>
         /// <returns>引用。</returns>
-        public static IReference Acquire(Type referenceType)
+        public static IDisposable Acquire(Type referenceType)
         {
             InternalCheckReferenceType(referenceType);
             return GetReferenceCollection(referenceType).Acquire();
@@ -143,17 +142,17 @@ namespace GameFrame
         /// <summary>
         /// 将引用归还引用池。
         /// </summary>
-        /// <param name="reference">引用。</param>
-        public static void Release(IReference reference)
+        /// <param name="disposable">引用。</param>
+        public static void Release(IDisposable disposable)
         {
-            if (reference == null)
+            if (disposable == null)
             {
                 throw new Exception("Reference is invalid.");
             }
 
-            Type referenceType = reference.GetType();
+            Type referenceType = disposable.GetType();
             InternalCheckReferenceType(referenceType);
-            GetReferenceCollection(referenceType).Release(reference);
+            GetReferenceCollection(referenceType).Release(disposable);
         }
 
         /// <summary>
@@ -161,7 +160,7 @@ namespace GameFrame
         /// </summary>
         /// <typeparam name="T">引用类型。</typeparam>
         /// <param name="count">追加数量。</param>
-        public static void Add<T>(int count) where T : class, IReference, new()
+        public static void Add<T>(int count) where T : class, IDisposable, new()
         {
             GetReferenceCollection(typeof(T)).Add<T>(count);
         }
@@ -182,7 +181,7 @@ namespace GameFrame
         /// </summary>
         /// <typeparam name="T">引用类型。</typeparam>
         /// <param name="count">移除数量。</param>
-        public static void Remove<T>(int count) where T : class, IReference
+        public static void Remove<T>(int count) where T : class, IDisposable
         {
             GetReferenceCollection(typeof(T)).Remove(count);
         }
@@ -202,7 +201,7 @@ namespace GameFrame
         /// 从引用池中移除所有的引用。
         /// </summary>
         /// <typeparam name="T">引用类型。</typeparam>
-        public static void RemoveAll<T>() where T : class, IReference
+        public static void RemoveAll<T>() where T : class, IDisposable
         {
             GetReferenceCollection(typeof(T)).RemoveAll();
         }
@@ -215,16 +214,12 @@ namespace GameFrame
         {
             InternalCheckReferenceType(referenceType);
             GetReferenceCollection(referenceType).RemoveAll();
-            s_ReferenceCollections.Remove(referenceType);
+            sReferenceCollections.Remove(referenceType);
         }
 
         private static void InternalCheckReferenceType(Type referenceType)
         {
-            if (!m_EnableStrictCheck)
-            {
-                return;
-            }
-
+#if  UNITY_EDITOR
             if (referenceType == null)
             {
                 throw new Exception("Reference type is invalid.");
@@ -235,10 +230,11 @@ namespace GameFrame
                 throw new Exception("Reference type is not a non-abstract class type.");
             }
 
-            if (!typeof(IReference).IsAssignableFrom(referenceType))
+            if (!typeof(IDisposable).IsAssignableFrom(referenceType))
             {
                 throw new Exception($"Reference type '{referenceType.FullName}' is invalid");
             }
+#endif
         }
 
         private static ReferenceCollection GetReferenceCollection(Type referenceType)
@@ -249,12 +245,12 @@ namespace GameFrame
             }
 
             ReferenceCollection referenceCollection = null;
-            lock (s_ReferenceCollections)
+            lock (sReferenceCollections)
             {
-                if (!s_ReferenceCollections.TryGetValue(referenceType, out referenceCollection))
+                if (!sReferenceCollections.TryGetValue(referenceType, out referenceCollection))
                 {
                     referenceCollection = new ReferenceCollection(referenceType);
-                    s_ReferenceCollections.Add(referenceType, referenceCollection);
+                    sReferenceCollections.Add(referenceType, referenceCollection);
                 }
             }
             return referenceCollection;

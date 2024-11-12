@@ -1,11 +1,13 @@
-﻿namespace GameFrame
+﻿using System;
+
+namespace GameFrame
 {
-    public abstract class BehaviorWorld : IReference
+    public abstract class BehaviorWorld : IDisposable
     {
-        private BehaviorWorldEntity m_BehaviorWorldEntity;
+        private BehaviorWorldEntity behaviorWorldEntity;
         public virtual void Init(BehaviorWorldEntity behaviorWorld)
         {
-            m_BehaviorWorldEntity = behaviorWorld;
+            behaviorWorldEntity = behaviorWorld;
             
         }
 
@@ -16,10 +18,10 @@
 
         internal void ChangeBehavior<T>(IBehaviorData behaviorData)where T : Behavior
         {
-            m_BehaviorWorldEntity.ChangeBehavior<T>(behaviorData);
+            behaviorWorldEntity.ChangeBehavior<T>(behaviorData);
         }
 
-        public void Clear()
+        public void Dispose()
         {
             
         }

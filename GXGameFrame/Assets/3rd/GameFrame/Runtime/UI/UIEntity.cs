@@ -44,7 +44,7 @@ namespace GameFrame
             uiView.OnUpdate(elapseSeconds, realElapseSeconds);
         }
         
-        public override void Clear()
+        public override void Dispose()
         {
             uiView.Clear();
         }

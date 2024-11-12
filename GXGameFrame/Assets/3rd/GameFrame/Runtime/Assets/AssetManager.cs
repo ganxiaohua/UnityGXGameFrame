@@ -14,17 +14,17 @@ namespace GameFrame
 
         private class AssetHandleCache
         {
-            public readonly string path;
-            public AsyncOperationHandle handle;
-            public Action<object> unloadHandle;
-            public object unloadHandleParameter;
-            public int referenceCount;
-            public float lifeTime;
-            public bool isScene;
+            public readonly string Path;
+            public AsyncOperationHandle Handle;
+            public Action<object> UnloadHandle;
+            public object UnloadHandleParameter;
+            public int ReferenceCount;
+            public float LifeTime;
+            public bool IsScene;
 
             public AssetHandleCache(string _path)
             {
-                path = _path;
+                Path = _path;
             }
         }
 
@@ -42,7 +42,7 @@ namespace GameFrame
                 assetHandleCaches.Add(path, cache);
             }
 
-            cache.lifeTime = InfinityLifeTime;
+            cache.LifeTime = InfinityLifeTime;
 
             tempRef?.RefAsset(path);
             if (tempRef == null)
@@ -50,17 +50,17 @@ namespace GameFrame
                 IncrementReferenceCount(path);
             }
 
-            if (!cache.handle.IsValid())
-                cache.handle = Addressables.LoadAssetAsync<T>(path);
+            if (!cache.Handle.IsValid())
+                cache.Handle = Addressables.LoadAssetAsync<T>(path);
 
-            var tHandle = cache.handle.Convert<T>();
+            var tHandle = cache.Handle.Convert<T>();
             if (tHandle.IsDone)
                 return tHandle.Result;
 
             var result = await tHandle.ToUniTask(cancellationToken: cancellationToken).SuppressCancellationThrow();
             if (result.IsCanceled)
             {
-                cache.handle = default;
+                cache.Handle = default;
                 return default(T);
             }
 
@@ -79,8 +79,8 @@ namespace GameFrame
         {
             if (assetHandleCaches.TryGetValue(path, out var cache))
             {
-                cache.unloadHandle = action;
-                cache.unloadHandleParameter = param;
+                cache.UnloadHandle = action;
+                cache.UnloadHandleParameter = param;
                 return true;
             }
 
@@ -93,11 +93,11 @@ namespace GameFrame
             if (!assetHandleCaches.TryGetValue(path, out var cache))
             {
                 cache = new AssetHandleCache(path);
-                cache.isScene = true;
+                cache.IsScene = true;
                 assetHandleCaches.Add(path, cache);
             }
 
-            cache.lifeTime = InfinityLifeTime;
+            cache.LifeTime = InfinityLifeTime;
 
             reference?.RefAsset(path);
             if (reference == null)
@@ -107,11 +107,11 @@ namespace GameFrame
 
             // if (!cache.handle.IsValid())
             var handle = Addressables.LoadSceneAsync(path, LoadSceneMode.Additive);
-            cache.handle = handle;
+            cache.Handle = handle;
             var result = await handle.ToUniTask(cancellationToken: token).SuppressCancellationThrow();
             if (result.IsCanceled)
             {
-                cache.handle = default;
+                cache.Handle = default;
                 return default(Scene);
             }
 
@@ -122,7 +122,7 @@ namespace GameFrame
         {
             if (assetHandleCaches.TryGetValue(path, out var cache))
             {
-                cache.referenceCount++;
+                cache.ReferenceCount++;
             }
         }
 
@@ -130,10 +130,10 @@ namespace GameFrame
         {
             if (assetHandleCaches.TryGetValue(path, out var cache))
             {
-                Assert.AreNotEqual(0, cache.referenceCount, "Bad Asset Reference Count " + path);
-                if (--cache.referenceCount == 0)
+                Assert.AreNotEqual(0, cache.ReferenceCount, "Bad Asset Reference Count " + path);
+                if (--cache.ReferenceCount == 0)
                 {
-                    cache.lifeTime = immediately ? 0 : ReleaseDelayTime;
+                    cache.LifeTime = immediately ? 0 : ReleaseDelayTime;
                     dyingAssetHandles.Add(cache);
                 }
             }
@@ -144,23 +144,23 @@ namespace GameFrame
             for (int i = dyingAssetHandles.Count - 1; i >= 0; i--)
             {
                 var cache = dyingAssetHandles[i];
-                if (float.IsPositiveInfinity(cache.lifeTime))
+                if (float.IsPositiveInfinity(cache.LifeTime))
                 {
                     dyingAssetHandles.RemoveAt(i);
                 }
                 else
                 {
-                    cache.lifeTime -= deltaTime;
-                    if (cache.lifeTime <= 0f)
+                    cache.LifeTime -= deltaTime;
+                    if (cache.LifeTime <= 0f)
                     {
                         dyingAssetHandles.RemoveAt(i);
-                        assetHandleCaches.Remove(cache.path);
-                        cache.unloadHandle?.Invoke(cache.unloadHandleParameter);
-                        if (cache.handle.IsValid())
-                            if (!cache.isScene)
-                                Addressables.Release(cache.handle);
+                        assetHandleCaches.Remove(cache.Path);
+                        cache.UnloadHandle?.Invoke(cache.UnloadHandleParameter);
+                        if (cache.Handle.IsValid())
+                            if (!cache.IsScene)
+                                Addressables.Release(cache.Handle);
                             else
-                                Addressables.UnloadSceneAsync(cache.handle);
+                                Addressables.UnloadSceneAsync(cache.Handle);
                     }
                 }
             }

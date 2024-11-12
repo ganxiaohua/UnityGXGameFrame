@@ -4,15 +4,15 @@ namespace GameFrame
 {
     public class UpdateSystems
     {
-        private StrongList<SystemEntity>[] m_UpdateSystemEntitys;
+        private StrongList<SystemEntity>[] updateSystemEntityArr;
         
-        public StrongList<SystemEntity>[] UpdateSystemEntitys => m_UpdateSystemEntitys;
+        public StrongList<SystemEntity>[] UpdateSystemEntityArr => updateSystemEntityArr;
 
-        private DDictionary<IEntity, ISystem, SystemEntity> m_Index = new();
+        private DDictionary<IEntity, ISystem, SystemEntity> IndexDDc = new();
 
         public UpdateSystems()
         {
-            m_UpdateSystemEntitys = new[] {new StrongList<SystemEntity>(256), new StrongList<SystemEntity>(256), new StrongList<SystemEntity>(256)};
+            updateSystemEntityArr = new[] {new StrongList<SystemEntity>(256), new StrongList<SystemEntity>(256), new StrongList<SystemEntity>(256)};
         }
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace GameFrame
             UpdateType updateType = ecsSystemObject.System.IsUpdateSystem();
             if (updateType != UpdateType.Node && !HasUpdateSystem(entity, ecsSystemObject.System))
             {
-                if (m_Index.ContainsTk(entity, ecsSystemObject.System))
+                if (IndexDDc.ContainsTk(entity, ecsSystemObject.System))
                 {
                     Debugger.LogWarning("entity has add in the Index");
                     return;
@@ -34,9 +34,9 @@ namespace GameFrame
                 SystemEntity systemEntity = ReferencePool.Acquire<SystemEntity>();
                 systemEntity.Create(ecsSystemObject, entity);
 
-                m_UpdateSystemEntitys[(int)updateType].Add(systemEntity);
+                updateSystemEntityArr[(int)updateType].Add(systemEntity);
 
-                m_Index.Add(entity, ecsSystemObject.System, systemEntity);
+                IndexDDc.Add(entity, ecsSystemObject.System, systemEntity);
             }
         }
 
@@ -50,14 +50,14 @@ namespace GameFrame
         {
             if (system == null)
             {
-                if (m_Index.ContainsT(entity))
+                if (IndexDDc.ContainsT(entity))
                 {
                     return true;
                 }
             }
             else
             {
-                if (m_Index.ContainsTk(entity, system))
+                if (IndexDDc.ContainsTk(entity, system))
                 {
                     return true;
                 }
@@ -75,28 +75,28 @@ namespace GameFrame
         {
             if (system == null)
             {
-                Dictionary<ISystem, SystemEntity> systemdic = m_Index.GetValue(enitity);
+                Dictionary<ISystem, SystemEntity> systemdic = IndexDDc.GetValue(enitity);
                 if (systemdic != null)
                 {
                     foreach (var systemObject in systemdic)
                     {
                         UpdateType updateType = systemObject.Key.IsUpdateSystem();
-                        m_UpdateSystemEntitys[(int)updateType].Remove(systemObject.Value);
+                        updateSystemEntityArr[(int)updateType].Remove(systemObject.Value);
                     }
 
-                    m_Index.RemoveTkey(enitity);
+                    IndexDDc.RemoveTkey(enitity);
                 }
             }
             else
             {
-                SystemEntity systemobejct = m_Index.GetVValue(enitity, system);
+                SystemEntity systemobejct = IndexDDc.GetVValue(enitity, system);
                 if (systemobejct != null)
                 {
                     UpdateType updateType = system.IsUpdateSystem();
                     if (updateType != UpdateType.Node)
                     {
-                        m_UpdateSystemEntitys[(int) updateType].Remove(systemobejct);
-                        m_Index.RemoveKkey(enitity, system);
+                        updateSystemEntityArr[(int) updateType].Remove(systemobejct);
+                        IndexDDc.RemoveKkey(enitity, system);
                     }
                 }
             }

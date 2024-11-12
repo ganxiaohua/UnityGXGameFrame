@@ -41,8 +41,8 @@ public class CreateUIScriptOdin : MonoBehaviour
     }
 
     private static string CodePath;
-    private int Index;
-    private int NamingLength;
+    private int index;
+    private int namingLength;
 
     private UIPanel UIPanel;
 
@@ -111,8 +111,8 @@ public class CreateUIScriptOdin : MonoBehaviour
     /// </summary>
     private void BindInit()
     {
-        NamingLength = 0;
-        Index = 0;
+        namingLength = 0;
+        index = 0;
         bindList.Clear();
         var panel = this.gameObject.GetComponent<UIPanel>();
         var ui = panel.ui;
@@ -145,13 +145,13 @@ public class CreateUIScriptOdin : MonoBehaviour
                 luaName = luaNamePattern.Replace(luaName, "_");
                 if (removeDuplicate.Contains(luaName))
                 {
-                    Index++;
-                    luaName += Index.ToString();
+                    index++;
+                    luaName += index.ToString();
                 }
 
-                if (NamingLength < luaName.Length)
+                if (namingLength < luaName.Length)
                 {
-                    NamingLength = luaName.Length;
+                    namingLength = luaName.Length;
                 }
 
                 removeDuplicate.Add(luaName);

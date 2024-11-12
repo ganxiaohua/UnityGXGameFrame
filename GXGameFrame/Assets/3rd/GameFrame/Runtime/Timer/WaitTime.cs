@@ -4,7 +4,7 @@ using Cysharp.Threading.Tasks;
 
 namespace GameFrame.Runtime.Timer
 {
-    public class WaitTime : IReference
+    public class WaitTime : IDisposable
     {
         private int versions;
 
@@ -28,7 +28,7 @@ namespace GameFrame.Runtime.Timer
             }
         }
 
-        public void Clear()
+        public void Dispose()
         {
             versions++;
         }

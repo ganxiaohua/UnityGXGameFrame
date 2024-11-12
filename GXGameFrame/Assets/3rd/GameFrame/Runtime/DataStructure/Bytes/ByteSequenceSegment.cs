@@ -3,7 +3,7 @@ using System.Buffers;
 
 namespace GameFrame
 {
-    public class ByteSequenceSegment : ReadOnlySequenceSegment<byte>,IReference
+    public class ByteSequenceSegment : ReadOnlySequenceSegment<byte>,IDisposable
     {
         public const int SegmentCapacity = 512;
 
@@ -21,7 +21,7 @@ namespace GameFrame
             Next = next;
         }
 
-        public void Clear()
+        public void Dispose()
         {
             Next = null;
             RunningIndex = 0;

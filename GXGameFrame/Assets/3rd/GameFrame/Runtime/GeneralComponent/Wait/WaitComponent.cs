@@ -11,10 +11,10 @@ namespace GameFrame
             UniTaskCompletionSource = new UniTaskCompletionSource();
         }
 
-        public override void Clear()
+        public override void Dispose()
         {
             UniTaskCompletionSource.TrySetCanceled();
-            base.Clear();
+            base.Dispose();
         }
 
         public void WaitOver()

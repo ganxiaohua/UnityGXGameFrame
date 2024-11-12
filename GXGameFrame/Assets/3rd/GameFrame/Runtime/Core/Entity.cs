@@ -15,15 +15,15 @@ namespace GameFrame
         
         public string Name { get;  set; }
 
-        private Dictionary<Type, IEntity> m_Components = new();
+        private Dictionary<Type, IEntity> components = new();
 
-        public Dictionary<Type, IEntity> Components => m_Components;
+        public Dictionary<Type, IEntity> Components => components;
 
-        private HashSet<IEntity> m_Children = new ();
+        private HashSet<IEntity> children = new ();
 
-        public HashSet<IEntity> Children => m_Children;
+        public HashSet<IEntity> Children => children;
 
-        private static int m_SerialId;
+        private static int sSerialId;
         
         public void Initialize(IEntity sceneParent, IEntity parent, int id)
         {
@@ -43,14 +43,14 @@ namespace GameFrame
         private IEntity Create(Type type, bool isComponent)
         {
             IEntity entity = (IEntity)ReferencePool.Acquire(type);
-            entity.Initialize(this is MainScene ? this : SceneParent,this,++m_SerialId);
+            entity.Initialize(this is MainScene ? this : SceneParent,this,++sSerialId);
             if (isComponent)
             {
-                m_Components.Add(type, entity);
+                components.Add(type, entity);
             }
             else
             {
-                m_Children.Add(entity);
+                children.Add(entity);
             }
             EnitityHouse.Instance.AddEntity(entity);
             return entity;
@@ -64,12 +64,12 @@ namespace GameFrame
 
         private void Remove(Type type)
         {
-            if (!m_Components.TryGetValue(type, out IEntity entity))
+            if (!components.TryGetValue(type, out IEntity entity))
             {
                 throw new Exception($"entity not already  component: {type.FullName}");
             }
 
-            m_Components.Remove(type);
+            components.Remove(type);
             Remove(entity);
         }
 
@@ -99,7 +99,7 @@ namespace GameFrame
 
         private IEntity CreateComponent(Type type)
         {
-            if (this.m_Components != null && this.m_Components.ContainsKey(type))
+            if (this.components != null && this.components.ContainsKey(type))
             {
                 throw new Exception($"entity already has component: {type.FullName}");
             }
@@ -185,7 +185,7 @@ namespace GameFrame
         public IEntity GetComponent(Type type)
         {
             IEntity value = null;
-            if (this.m_Components != null && !this.m_Components.TryGetValue(type, out value))
+            if (this.components != null && !this.components.TryGetValue(type, out value))
             {
                 return null;
             }
@@ -290,7 +290,7 @@ namespace GameFrame
         /// <returns></returns>
         public void RemoveChild(IEntity entity)
         {
-            if (!m_Children.Remove(entity))
+            if (!children.Remove(entity))
             {
                 throw new Exception($"entity already not child: {entity.GetType().FullName}");
             }
@@ -302,7 +302,7 @@ namespace GameFrame
         /// </summary>
         public void ClearAllChild()
         {
-            foreach (var item in m_Children)
+            foreach (var item in children)
             {
                 if (item is Entity entity)
                 {
@@ -313,7 +313,7 @@ namespace GameFrame
                 item.ClearAllComponent();
             }
 
-            m_Children.Clear();
+            children.Clear();
         }
         
 
@@ -322,7 +322,7 @@ namespace GameFrame
         /// </summary>
         public void ClearAllComponent()
         {
-            foreach (var item in m_Components)
+            foreach (var item in components)
             {
                 if (item.Value is Entity entity)
                 {
@@ -334,14 +334,14 @@ namespace GameFrame
                 }
             }
 
-            m_Components.Clear();
+            components.Clear();
         }
 
 
         /// <summary>
         /// 清除
         /// </summary>
-        public virtual void Clear()
+        public virtual void Dispose()
         {
             State  = IEntity.EntityState.IsClear;
             Parent = null;

@@ -1,6 +1,8 @@
-﻿namespace GameFrame
+﻿using System;
+
+namespace GameFrame
 {
-    public class SystemEntity : IReference
+    public class SystemEntity : IDisposable
     {
         public ISystemObject SystemObject { get; private set; }
         public IEntity Entity { get; private set; }
@@ -11,7 +13,7 @@
             Entity = entity;
         }
 
-        public void Clear()
+        public void Dispose()
         {
             SystemObject = null;
             Entity = null;

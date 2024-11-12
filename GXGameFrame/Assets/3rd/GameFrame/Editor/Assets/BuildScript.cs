@@ -301,7 +301,7 @@ namespace GameFrame.Editor
                 lastVersions = AddressablesHelper.LoadFromJson<PlayerAssets>(versionJson);
             }
 
-            var patchFolder = $"Patch_{lastVersions.version + 1}";
+            var patchFolder = $"Patch_{lastVersions.Version + 1}";
             var toPath = $"ServerData/{BuildTarget}/{patchFolder}";
             CreateDirectory(toPath);
             foreach (var item in buildResult.FileRegistry.GetFilePaths())
@@ -312,10 +312,10 @@ namespace GameFrame.Editor
                 if (filePath.EndsWith(".bundle"))
                 {
                     //保留当前资源版本信息,不包含旧的版本信息
-                    newVersions.data.Add(filePath);
+                    newVersions.dataList.Add(filePath);
                 }
 
-                if (lastVersions.data.Contains(filePath))
+                if (lastVersions.dataList.Contains(filePath))
                 {
                     //未修改资源不用复制到补丁目录
                     continue;
@@ -344,11 +344,11 @@ namespace GameFrame.Editor
                 totalSize += fileInfo.Length;
             }
 
-            newVersions.version = lastVersions.version + 1;
+            newVersions.Version = lastVersions.Version + 1;
             File.WriteAllText(versionPath, JsonUtility.ToJson(newVersions));
             var updateInfo = ScriptableObject.CreateInstance<UpdateInfo>();
-            updateInfo.version = newVersions.version;
-            updateInfo.timestamp = GetTimestamp();
+            updateInfo.Version = newVersions.Version;
+            updateInfo.Timestamp = GetTimestamp();
             var updateFilePath = $"{toPath}/{UpdateInfo.Filename}";
             File.WriteAllText(updateFilePath, JsonUtility.ToJson(updateInfo));
             // CopyToLocalServer(updateFilePath, UpdateInfo.Filename);
@@ -379,17 +379,17 @@ namespace GameFrame.Editor
             var json = File.ReadAllText(versionPath);
             var versions = AddressablesHelper.LoadFromJson<PlayerAssets>(json);
             var playerAssets = ScriptableObject.CreateInstance<PlayerAssets>();
-            playerAssets.version = versions.version;
+            playerAssets.Version = versions.Version;
             if (copyFile)
             {
-                foreach (var fileName in versions.data)
+                foreach (var fileName in versions.dataList)
                 {
                     if (fileName.EndsWith(".bundle"))
                     {
                         var from = Path.Combine($"ServerData/{BuildTarget}", fileName);
                         if (File.Exists(from))
                         {
-                            playerAssets.data.Add(fileName);
+                            playerAssets.dataList.Add(fileName);
                             var to = AddressablesHelper.GetPlayerDataPath(fileName);
                             CreateDirectory(to);
                             File.Copy(from, to, true);

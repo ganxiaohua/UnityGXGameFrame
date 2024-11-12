@@ -3,35 +3,35 @@ using System.Runtime.CompilerServices;
 
 namespace GameFrame
 {
-    public class AwaiterTask<T> : INotifyCompletion,IReference where T : IHandle
+    public class AwaiterTask<T> : INotifyCompletion,IDisposable where T : IHandle
     {
-        private  T m_Task;
+        private  T task;
         
-        public bool IsCompleted => m_Task?.IsDone ?? false;
+        public bool IsCompleted => task?.IsDone ?? false;
         
 
         public void SetTask(T task)
         {
-            this.m_Task = task;
+            this.task = task;
         }
 
         public T GetResult()
         {
-            return m_Task;
+            return task;
         }
         
         public void OnCompleted(Action continuation)
         {
-            if (m_Task != null)
+            if (task != null)
             {
-                m_Task.AsyncStateMoveNext += continuation;
+                task.AsyncStateMoveNext += continuation;
             }
            
         }
 
-        public void Clear()
+        public void Dispose()
         {
-            m_Task = default;
+            task = default;
         }
     }
 }

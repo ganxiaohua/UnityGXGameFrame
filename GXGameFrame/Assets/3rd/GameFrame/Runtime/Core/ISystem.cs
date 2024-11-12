@@ -1,6 +1,8 @@
-﻿namespace GameFrame
+﻿using System;
+
+namespace GameFrame
 {
-    public interface ISystem:IReference
+    public interface ISystem:IDisposable
     {
         
     }

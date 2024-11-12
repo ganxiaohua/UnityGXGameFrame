@@ -2,7 +2,7 @@
 
 namespace GameFrame
 {
-    public interface ISystemObject : IReference
+    public interface ISystemObject : IDisposable
     {
         public ISystem System { get;}
     }
@@ -16,7 +16,7 @@ namespace GameFrame
             System = system;
         }
 
-        public void Clear()
+        public void Dispose()
         {
            
         }
@@ -40,7 +40,7 @@ namespace GameFrame
             System = system;
         }
 
-        public void Clear()
+        public void Dispose()
         {
             ReferencePool.Release(System);
         }

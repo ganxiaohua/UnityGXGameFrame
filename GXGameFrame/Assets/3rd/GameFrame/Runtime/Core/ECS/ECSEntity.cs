@@ -4,9 +4,9 @@ using System.Collections.Generic;
 namespace GameFrame
 {
     [Serializable]
-    public partial class ECSComponent : IReference
+    public partial class ECSComponent : IDisposable
     {
-        public virtual void Clear()
+        public virtual void Dispose()
         {
         }
     }
@@ -27,19 +27,19 @@ namespace GameFrame
 
         public string Name { get; set; }
 
-        private World mWorld;
+        private World world;
 
-        public GXArray<ECSComponent> ECSComponentArray { get; private set; }
+        public GXArray<ECSComponent> EcsComponentArray { get; private set; }
 
         private static int m_SerialId;
 
-        private List<int> m_indexs;
+        private List<int> indexList;
 
         public void Initialize(IEntity sceneParent, IEntity parent, int id)
         {
-            ECSComponentArray = ReferencePool.Acquire<GXArray<ECSComponent>>();
-            m_indexs = new List<int>(128);
-            ECSComponentArray.Init(GXComponents.ComponentTypes.Length);
+            EcsComponentArray = ReferencePool.Acquire<GXArray<ECSComponent>>();
+            indexList = new List<int>(128);
+            EcsComponentArray.Init(GXComponents.ComponentTypes.Length);
             State = IEntity.EntityState.IsCreated;
             Parent = parent;
             SceneParent = sceneParent;
@@ -55,13 +55,13 @@ namespace GameFrame
         public ECSComponent AddComponent(int cid)
         {
             Type type = GXComponents.ComponentTypes[cid];
-            if (ECSComponentArray[cid] != null)
+            if (EcsComponentArray[cid] != null)
             {
                 throw new Exception($"entity already has component: {type.FullName}");
             }
 
-            ECSComponent entity = ECSComponentArray.Add(cid, type);
-            mWorld.Reactive(cid, this);
+            ECSComponent entity = EcsComponentArray.Add(cid, type);
+            world.Reactive(cid, this);
             return entity;
         }
 
@@ -72,14 +72,14 @@ namespace GameFrame
         /// <exception cref="Exception"></exception>
         public void RemoveComponent(int cid)
         {
-            if (ECSComponentArray[cid] == null)
+            if (EcsComponentArray[cid] == null)
             {
                 Type type = GXComponents.ComponentTypes[cid];
                 throw new Exception($"entity not already  component: {type.FullName}");
             }
 
-            ECSComponentArray.Remove(cid);
-            mWorld.Reactive(cid, this);
+            EcsComponentArray.Remove(cid);
+            world.Reactive(cid, this);
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace GameFrame
         /// <returns></returns>
         public ECSComponent GetComponent(int cid)
         {
-            var component = ECSComponentArray[cid];
+            var component = EcsComponentArray[cid];
             return component;
         }
 
@@ -102,7 +102,7 @@ namespace GameFrame
         {
             for (int index = 0; index < cids.Length; ++index)
             {
-                if (ECSComponentArray[cids[index]] == null)
+                if (EcsComponentArray[cids[index]] == null)
                 {
                     return false;
                 }
@@ -113,12 +113,12 @@ namespace GameFrame
 
         public void SetContext(World world)
         {
-            mWorld = world;
+            this.world = world;
         }
 
         public bool HasComponent(int cid)
         {
-            return ECSComponentArray[cid] != null;
+            return EcsComponentArray[cid] != null;
         }
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace GameFrame
         {
             for (int index = 0; index < cids.Length; ++index)
             {
-                if (ECSComponentArray[cids[index]] != null)
+                if (EcsComponentArray[cids[index]] != null)
                 {
                     return true;
                 }
@@ -145,13 +145,13 @@ namespace GameFrame
         /// </summary>
         public void ClearAllComponent()
         {
-            m_indexs.AddRange(ECSComponentArray.Indexs);
-            ReferencePool.Release(ECSComponentArray);
-            ((World) Parent).Reactive(m_indexs, this);
-            m_indexs.Clear();
+            indexList.AddRange(EcsComponentArray.indexList);
+            ReferencePool.Release(EcsComponentArray);
+            ((World) Parent).Reactive(indexList, this);
+            indexList.Clear();
         }
 
-        public void Clear()
+        public void Dispose()
         {
             State = IEntity.EntityState.IsClear;
             ClearAllComponent();

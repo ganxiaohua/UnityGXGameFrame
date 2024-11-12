@@ -6,38 +6,38 @@ namespace GameFrame
     public class BehaviorEntity : Entity, IStartSystem<Type, BehaviorWorld>, IUpdateSystem
     {
         public Behavior Behavior;
-        private List<IBehaviorData> m_Datas;
+        private List<IBehaviorData> dataList;
 
         public void Start(Type behaviorType, BehaviorWorld behaviorWorld)
         {
             Behavior = (Behavior) ReferencePool.Acquire(behaviorType);
             Behavior.Init(behaviorWorld);
-            m_Datas = new List<IBehaviorData>(16);
+            dataList = new List<IBehaviorData>(16);
         }
 
         public void Update(float elapseSeconds, float realElapseSeconds)
         {
-            if (m_Datas.Count == 0) return;
-            Behavior.Update(m_Datas, elapseSeconds);
+            if (dataList.Count == 0) return;
+            Behavior.Update(dataList, elapseSeconds);
         }
 
-        public override void Clear()
+        public override void Dispose()
         {
-            base.Clear();
-            m_Datas.Clear();
+            base.Dispose();
+            dataList.Clear();
             ReferencePool.Release(Behavior);
         }
 
         public void DataJoin(IBehaviorData behaviorData)
         {
             Behavior.DataJoin(behaviorData);
-            m_Datas.Add(behaviorData);
+            dataList.Add(behaviorData);
         }
 
         public void DataLeave(IBehaviorData behaviorData)
         {
             Behavior.DataLeave(behaviorData);
-            m_Datas.Remove(behaviorData);
+            dataList.Remove(behaviorData);
         }
     }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace GameFrame.Editor
 {
-    public interface IEditorEntity: IReference
+    public interface IEditorEntity: IDisposable
     {
         public int ID { get; set; }
         public IEditorEntity Parent { get; set; }
@@ -52,7 +52,7 @@ namespace GameFrame.Editor
             }
         }
 
-        public virtual void Clear()
+        public virtual void Dispose()
         {
             foreach (IEditorEntity component in m_Components.Values)
             {

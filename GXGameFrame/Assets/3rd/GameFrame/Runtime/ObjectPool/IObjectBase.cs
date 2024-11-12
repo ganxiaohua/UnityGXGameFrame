@@ -1,6 +1,8 @@
-﻿namespace GameFrame
+﻿using System;
+
+namespace GameFrame
 {
-    public interface IObjectBase:IReference
+    public interface IObjectBase:IDisposable
     {
         public void Initialize();
 

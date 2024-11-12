@@ -3,59 +3,59 @@ using System.Collections.Generic;
 
 namespace GameFrame
 {
-    public class GXArray<T> : IReference where T : class, IReference, new()
+    public class GXArray<T> : IDisposable where T : class, IDisposable, new()
     {
-        private T[] m_Item;
+        private T[] items;
 
-        public List<int> Indexs { get; private set; }
+        public List<int> indexList { get; private set; }
 
-        public T this[int index] => m_Item[index];
+        public T this[int index] => items[index];
 
         public void Init(int arrayMaxCount)
         {
-            if (m_Item == null || m_Item.Length != arrayMaxCount)
+            if (items == null || items.Length != arrayMaxCount)
             {
-                m_Item = new T[arrayMaxCount];
+                items = new T[arrayMaxCount];
             }
 
-            Indexs = new List<int>(arrayMaxCount);
-            Indexs.Clear();
+            indexList = new List<int>(arrayMaxCount);
+            indexList.Clear();
         }
 
         public T Add(int index, Type type)
         {
-            if (m_Item[index] != null)
+            if (items[index] != null)
             {
                 return default(T);
             }
 
             var t = (T) ReferencePool.Acquire(type);
-            Indexs.Add(index);
-            m_Item[index] = t;
+            indexList.Add(index);
+            items[index] = t;
             return t;
         }
 
 
         public void Remove(int index)
         {
-            if (m_Item[index] == null)
+            if (items[index] == null)
             {
                 return;
             }
         
-            ReferencePool.Release(m_Item[index]);
-            m_Item[index] = null;
-            Indexs.RemoveSwapBack(index);
+            ReferencePool.Release(items[index]);
+            items[index] = null;
+            indexList.RemoveSwapBack(index);
         }
 
-        public void Clear()
+        public void Dispose()
         {
-            foreach (var index in Indexs)
+            foreach (var index in indexList)
             {
-                ReferencePool.Release(m_Item[index]);
-                m_Item[index] = default(T);
+                ReferencePool.Release(items[index]);
+                items[index] = default(T);
             }
-            Indexs.Clear();
+            indexList.Clear();
         }
     }
 }

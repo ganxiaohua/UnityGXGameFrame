@@ -1,6 +1,8 @@
-﻿namespace GameFrame
+﻿using System;
+
+namespace GameFrame
 {
-    public abstract class VersionsReference : IReference
+    public abstract class VersionsDisposable : IDisposable
     {
         protected int Versions;
 
@@ -9,13 +11,13 @@
             Versions++;
         }
 
-        public virtual void Clear()
+        public virtual void Dispose()
         {
             Versions++;
         }
     }
     
-    public abstract class VersionsReference<T> : IReference
+    public abstract class VersionsDisposable<T> : IDisposable
     {
         protected int Versions;
 
@@ -24,7 +26,7 @@
             Versions++;
         }
 
-        public virtual void Clear()
+        public virtual void Dispose()
         {
             Versions++;
         }

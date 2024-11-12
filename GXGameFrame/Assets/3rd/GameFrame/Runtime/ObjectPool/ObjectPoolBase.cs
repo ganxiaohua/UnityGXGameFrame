@@ -1,6 +1,8 @@
-﻿namespace GameFrame
+﻿using System;
+
+namespace GameFrame
 {
-    public interface IObjectPoolBase:IReference
+    public interface IObjectPoolBase:IDisposable
     {
         void Update(float elapseSeconds, float realElapseSeconds);
     }

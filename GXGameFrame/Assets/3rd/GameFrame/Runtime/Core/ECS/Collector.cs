@@ -3,21 +3,21 @@ using System.Collections.Generic;
 
 namespace GameFrame
 {
-    public class Collector : IReference
+    public class Collector : IDisposable
     {
-        private HashSet<ECSEntity> m_CollectedEntities;
+        private HashSet<ECSEntity> collectedEntities;
 
-        public HashSet<ECSEntity> CollectedEntities => m_CollectedEntities;
+        public HashSet<ECSEntity> CollectedEntities => collectedEntities;
 
-        private Group[] m_Groups;
+        private Group[] groups;
 
-        private GroupChanged GroupChange;
+        private GroupChanged groupChange;
 
         private const ushort AddType = 0;
         private const ushort RemoveType = 1;
         private const ushort UpdateType = 2;
 
-        private ChangeEventState State = 0;
+        private ChangeEventState state = 0;
 
         [Flags]
         public enum ChangeEventState : ushort
@@ -42,7 +42,7 @@ namespace GameFrame
             }
 
             Collector collector = ReferencePool.Acquire<Collector>();
-            collector.State = stateType;
+            collector.state = stateType;
             collector.InitCollector(groups);
             return collector;
         }
@@ -50,24 +50,24 @@ namespace GameFrame
 
         private void InitCollector(Group[] group)
         {
-            m_Groups = group;
-            m_CollectedEntities ??= new HashSet<ECSEntity>();
-            GroupChange = AddEvent;
-            foreach (var item in m_Groups)
+            groups = group;
+            collectedEntities ??= new HashSet<ECSEntity>();
+            groupChange = AddEvent;
+            foreach (var item in groups)
             {
-                if ((State & ChangeEventState.Add) != 0)
+                if ((state & ChangeEventState.Add) != 0)
                 {
-                    item.GroupAdd += GroupChange;
+                    item.GroupAdd += groupChange;
                 }
 
-                if ((State & ChangeEventState.Remove) != 0)
+                if ((state & ChangeEventState.Remove) != 0)
                 {
-                    item.GroupRomve += GroupChange;
+                    item.GroupRomve += groupChange;
                 }
 
-                if ((State & ChangeEventState.Update) != 0)
+                if ((state & ChangeEventState.Update) != 0)
                 {
-                    item.GroupUpdate += GroupChange;
+                    item.GroupUpdate += groupChange;
                 }
                 Add(item);
             }
@@ -83,17 +83,17 @@ namespace GameFrame
 
         private void AddEvent(Group group, ECSEntity ecsEntity)
         {
-            m_CollectedEntities.Add(ecsEntity);
+            collectedEntities.Add(ecsEntity);
         }
         
-        public void Clear()
+        public void Dispose()
         {
-            m_CollectedEntities.Clear();
-            foreach (var item in m_Groups)
+            collectedEntities.Clear();
+            foreach (var item in groups)
             {
-                item.GroupAdd -= GroupChange;
-                item.GroupRomve -= GroupChange;
-                item.GroupUpdate -= GroupChange;
+                item.GroupAdd -= groupChange;
+                item.GroupRomve -= groupChange;
+                item.GroupUpdate -= groupChange;
             }
         }
     }

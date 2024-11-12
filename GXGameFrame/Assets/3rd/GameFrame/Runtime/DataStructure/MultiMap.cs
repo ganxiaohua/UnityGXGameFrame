@@ -5,7 +5,7 @@ namespace GameFrame.Timer
 {
     public class MultiMap<T, K>: SortedDictionary<T, List<K>>
     {
-        private readonly List<K> m_Empty = new List<K>();
+        private readonly List<K> emptyList = new List<K>();
 
         public void Add(T t, K k)
         {
@@ -61,7 +61,7 @@ namespace GameFrame.Timer
             get
             {
                 TryGetValue(t, out List<K> list);
-                return list ?? m_Empty;
+                return list ?? emptyList;
             }
         }
 

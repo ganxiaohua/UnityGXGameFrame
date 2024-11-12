@@ -3,25 +3,25 @@ using System.Collections.Generic;
 
 namespace GameFrame
 {
-    public class Matcher : IReference, IEquatable<Matcher>
+    public class Matcher : IDisposable, IEquatable<Matcher>
     {
-        private int m_Hash;
-        private bool m_IsHashCached = false;
+        private int hash;
+        private bool isHashCached = false;
 
 
         //全部包含
-        private int[] m_AllOfIndices;
+        private int[] allOfIndices;
 
         //任意一个
-        private int[] m_AnyOfIndices;
+        private int[] anyOfIndices;
 
         //除了这个之外
-        private int[] m_NoneOfIndices;
+        private int[] noneOfIndices;
 
         public HashSet<int> Indices { get; } = new HashSet<int>();
 
         //用于查看
-        private string[] m_IndicesName;
+        private string[] indicesName;
 
         private int[] Set(params int[] snitiyHasCodes)
         {
@@ -40,39 +40,39 @@ namespace GameFrame
         public static Matcher SetAll(params int[] snitiyHasCodes)
         {
             Matcher matcher = ReferencePool.Acquire<Matcher>();
-            matcher.m_AllOfIndices = matcher.Set(snitiyHasCodes);
+            matcher.allOfIndices = matcher.Set(snitiyHasCodes);
             return matcher;
         }
 
         public static Matcher SetAny(params int[] snitiyHasCodes)
         {
             Matcher matcher = ReferencePool.Acquire<Matcher>();
-            matcher.m_AnyOfIndices = matcher.Set(snitiyHasCodes);
+            matcher.anyOfIndices = matcher.Set(snitiyHasCodes);
             return matcher;
         }
 
         public static Matcher SetNoneOf(params int[] snitiyHasCodes)
         {
             Matcher matcher = ReferencePool.Acquire<Matcher>();
-            matcher.m_NoneOfIndices = matcher.Set(snitiyHasCodes);
+            matcher.noneOfIndices = matcher.Set(snitiyHasCodes);
             return matcher;
         }
 
         public Matcher All(params int[] snitiyHasCodes)
         {
-            m_AllOfIndices = Set(snitiyHasCodes);
+            allOfIndices = Set(snitiyHasCodes);
             return this;
         }
 
         public Matcher Any(params int[] snitiyHasCodes)
         {
-            m_AnyOfIndices = Set(snitiyHasCodes);
+            anyOfIndices = Set(snitiyHasCodes);
             return this;
         }
 
         public Matcher NoneOf(params int[] snitiyHasCodes)
         {
-            m_NoneOfIndices = Set(snitiyHasCodes);
+            noneOfIndices = Set(snitiyHasCodes);
             return this;
         }
 
@@ -84,20 +84,20 @@ namespace GameFrame
 
         public bool Match(ECSEntity entity)
         {
-            if (this.m_AllOfIndices != null && !entity.HasComponents(this.m_AllOfIndices) ||
-                this.m_AnyOfIndices != null && !entity.HasAnyComponent(this.m_AnyOfIndices))
+            if (this.allOfIndices != null && !entity.HasComponents(this.allOfIndices) ||
+                this.anyOfIndices != null && !entity.HasAnyComponent(this.anyOfIndices))
                 return false;
-            return this.m_NoneOfIndices == null || !entity.HasAnyComponent(this.m_NoneOfIndices);
+            return this.noneOfIndices == null || !entity.HasAnyComponent(this.noneOfIndices);
         }
 
 
-        public void Clear()
+        public void Dispose()
         {
-            m_NoneOfIndices = null;
-            m_AllOfIndices = null;
-            m_NoneOfIndices = null;
+            noneOfIndices = null;
+            allOfIndices = null;
+            noneOfIndices = null;
             Indices.Clear();
-            m_IsHashCached = false;
+            isHashCached = false;
         }
 
         private int ApplyHash(int hash, int[] indices, int i1, int i2)
@@ -114,14 +114,14 @@ namespace GameFrame
 
         public override int GetHashCode()
         {
-            if (!this.m_IsHashCached)
+            if (!this.isHashCached)
             {
-                this.m_Hash = ApplyHash(ApplyHash(ApplyHash(this.GetType().GetHashCode(), this.m_AllOfIndices, 3, 53), this.m_AnyOfIndices, 307, 367),
-                    this.m_NoneOfIndices, 647, 683);
-                this.m_IsHashCached = true;
+                this.hash = ApplyHash(ApplyHash(ApplyHash(this.GetType().GetHashCode(), this.allOfIndices, 3, 53), this.anyOfIndices, 307, 367),
+                    this.noneOfIndices, 647, 683);
+                this.isHashCached = true;
             }
 
-            return this.m_Hash;
+            return this.hash;
         }
 
         public bool Equals(Matcher obj)
@@ -129,8 +129,8 @@ namespace GameFrame
             if (obj == null || obj.GetType() != this.GetType() || obj.GetHashCode() != this.GetHashCode())
                 return false;
             Matcher matcher = obj;
-            return equalIndices(matcher.m_AllOfIndices, this.m_AllOfIndices) && equalIndices(matcher.m_AnyOfIndices, m_AnyOfIndices) &&
-                   equalIndices(matcher.m_NoneOfIndices, this.m_NoneOfIndices);
+            return equalIndices(matcher.allOfIndices, this.allOfIndices) && equalIndices(matcher.anyOfIndices, anyOfIndices) &&
+                   equalIndices(matcher.noneOfIndices, this.noneOfIndices);
         }
         
         public override bool Equals(object obj) => Equals((Matcher)obj);

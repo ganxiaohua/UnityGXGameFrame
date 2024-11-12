@@ -64,9 +64,9 @@ namespace GameFrame
         /// <summary>
         /// 清理对象基类。
         /// </summary>
-        public override void Clear()
+        public override void Dispose()
         {
-            base.Clear();
+            base.Dispose();
             if (mObj == null)
             {
                 return;

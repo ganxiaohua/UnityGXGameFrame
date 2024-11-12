@@ -7,16 +7,16 @@ namespace GameFrame
 {
     public sealed class GameFrameworkLinkedList<T> : ICollection<T>, IEnumerable<T>, ICollection, IEnumerable
     {
-        private readonly LinkedList<T> m_LinkedList;
-        private readonly Queue<LinkedListNode<T>> m_CachedNodes;
+        private readonly LinkedList<T> linkedList;
+        private readonly Queue<LinkedListNode<T>> cachedNodes;
 
         /// <summary>
         /// 初始化游戏框架链表类的新实例。
         /// </summary>
         public GameFrameworkLinkedList()
         {
-            m_LinkedList = new LinkedList<T>();
-            m_CachedNodes = new Queue<LinkedListNode<T>>();
+            linkedList = new LinkedList<T>();
+            cachedNodes = new Queue<LinkedListNode<T>>();
         }
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace GameFrame
         /// </summary>
         public int Count
         {
-            get { return m_LinkedList.Count; }
+            get { return linkedList.Count; }
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace GameFrame
         /// </summary>
         public int CachedNodeCount
         {
-            get { return m_CachedNodes.Count; }
+            get { return cachedNodes.Count; }
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace GameFrame
         /// </summary>
         public LinkedListNode<T> First
         {
-            get { return m_LinkedList.First; }
+            get { return linkedList.First; }
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace GameFrame
         /// </summary>
         public LinkedListNode<T> Last
         {
-            get { return m_LinkedList.Last; }
+            get { return linkedList.Last; }
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace GameFrame
         /// </summary>
         public bool IsReadOnly
         {
-            get { return ((ICollection<T>) m_LinkedList).IsReadOnly; }
+            get { return ((ICollection<T>) linkedList).IsReadOnly; }
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace GameFrame
         /// </summary>
         public object SyncRoot
         {
-            get { return ((ICollection) m_LinkedList).SyncRoot; }
+            get { return ((ICollection) linkedList).SyncRoot; }
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace GameFrame
         /// </summary>
         public bool IsSynchronized
         {
-            get { return ((ICollection) m_LinkedList).IsSynchronized; }
+            get { return ((ICollection) linkedList).IsSynchronized; }
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace GameFrame
         public LinkedListNode<T> AddAfter(LinkedListNode<T> node, T value)
         {
             LinkedListNode<T> newNode = AcquireNode(value);
-            m_LinkedList.AddAfter(node, newNode);
+            linkedList.AddAfter(node, newNode);
             return newNode;
         }
 
@@ -95,7 +95,7 @@ namespace GameFrame
         /// <param name="newNode">指定的新结点。</param>
         public void AddAfter(LinkedListNode<T> node, LinkedListNode<T> newNode)
         {
-            m_LinkedList.AddAfter(node, newNode);
+            linkedList.AddAfter(node, newNode);
         }
 
         /// <summary>
@@ -107,7 +107,7 @@ namespace GameFrame
         public LinkedListNode<T> AddBefore(LinkedListNode<T> node, T value)
         {
             LinkedListNode<T> newNode = AcquireNode(value);
-            m_LinkedList.AddBefore(node, newNode);
+            linkedList.AddBefore(node, newNode);
             return newNode;
         }
 
@@ -118,7 +118,7 @@ namespace GameFrame
         /// <param name="newNode">指定的新结点。</param>
         public void AddBefore(LinkedListNode<T> node, LinkedListNode<T> newNode)
         {
-            m_LinkedList.AddBefore(node, newNode);
+            linkedList.AddBefore(node, newNode);
         }
 
         /// <summary>
@@ -129,7 +129,7 @@ namespace GameFrame
         public LinkedListNode<T> AddFirst(T value)
         {
             LinkedListNode<T> node = AcquireNode(value);
-            m_LinkedList.AddFirst(node);
+            linkedList.AddFirst(node);
             return node;
         }
 
@@ -139,7 +139,7 @@ namespace GameFrame
         /// <param name="node">指定的新结点。</param>
         public void AddFirst(LinkedListNode<T> node)
         {
-            m_LinkedList.AddFirst(node);
+            linkedList.AddFirst(node);
         }
 
         /// <summary>
@@ -150,7 +150,7 @@ namespace GameFrame
         public LinkedListNode<T> AddLast(T value)
         {
             LinkedListNode<T> node = AcquireNode(value);
-            m_LinkedList.AddLast(node);
+            linkedList.AddLast(node);
             return node;
         }
 
@@ -160,7 +160,7 @@ namespace GameFrame
         /// <param name="node">指定的新结点。</param>
         public void AddLast(LinkedListNode<T> node)
         {
-            m_LinkedList.AddLast(node);
+            linkedList.AddLast(node);
         }
 
         /// <summary>
@@ -168,14 +168,14 @@ namespace GameFrame
         /// </summary>
         public void Clear()
         {
-            LinkedListNode<T> current = m_LinkedList.First;
+            LinkedListNode<T> current = linkedList.First;
             while (current != null)
             {
                 ReleaseNode(current);
                 current = current.Next;
             }
 
-            m_LinkedList.Clear();
+            linkedList.Clear();
         }
 
         /// <summary>
@@ -183,7 +183,7 @@ namespace GameFrame
         /// </summary>
         public void ClearCachedNodes()
         {
-            m_CachedNodes.Clear();
+            cachedNodes.Clear();
         }
 
         /// <summary>
@@ -193,7 +193,7 @@ namespace GameFrame
         /// <returns>某值是否在链表中。</returns>
         public bool Contains(T value)
         {
-            return m_LinkedList.Contains(value);
+            return linkedList.Contains(value);
         }
 
         /// <summary>
@@ -203,7 +203,7 @@ namespace GameFrame
         /// <param name="index">array 中从零开始的索引，从此处开始复制。</param>
         public void CopyTo(T[] array, int index)
         {
-            m_LinkedList.CopyTo(array, index);
+            linkedList.CopyTo(array, index);
         }
 
         /// <summary>
@@ -213,7 +213,7 @@ namespace GameFrame
         /// <param name="index">array 中从零开始的索引，从此处开始复制。</param>
         public void CopyTo(Array array, int index)
         {
-            ((ICollection) m_LinkedList).CopyTo(array, index);
+            ((ICollection) linkedList).CopyTo(array, index);
         }
 
         /// <summary>
@@ -223,7 +223,7 @@ namespace GameFrame
         /// <returns>包含指定值的第一个结点。</returns>
         public LinkedListNode<T> Find(T value)
         {
-            return m_LinkedList.Find(value);
+            return linkedList.Find(value);
         }
 
         /// <summary>
@@ -233,7 +233,7 @@ namespace GameFrame
         /// <returns>包含指定值的最后一个结点。</returns>
         public LinkedListNode<T> FindLast(T value)
         {
-            return m_LinkedList.FindLast(value);
+            return linkedList.FindLast(value);
         }
 
         /// <summary>
@@ -243,10 +243,10 @@ namespace GameFrame
         /// <returns>是否移除成功。</returns>
         public bool Remove(T value)
         {
-            LinkedListNode<T> node = m_LinkedList.Find(value);
+            LinkedListNode<T> node = linkedList.Find(value);
             if (node != null)
             {
-                m_LinkedList.Remove(node);
+                linkedList.Remove(node);
                 ReleaseNode(node);
                 return true;
             }
@@ -260,7 +260,7 @@ namespace GameFrame
         /// <param name="node">指定的结点。</param>
         public void Remove(LinkedListNode<T> node)
         {
-            m_LinkedList.Remove(node);
+            linkedList.Remove(node);
             ReleaseNode(node);
         }
 
@@ -269,13 +269,13 @@ namespace GameFrame
         /// </summary>
         public void RemoveFirst()
         {
-            LinkedListNode<T> first = m_LinkedList.First;
+            LinkedListNode<T> first = linkedList.First;
             if (first == null)
             {
                 throw new Exception("First is invalid.");
             }
 
-            m_LinkedList.RemoveFirst();
+            linkedList.RemoveFirst();
             ReleaseNode(first);
         }
 
@@ -284,13 +284,13 @@ namespace GameFrame
         /// </summary>
         public void RemoveLast()
         {
-            LinkedListNode<T> last = m_LinkedList.Last;
+            LinkedListNode<T> last = linkedList.Last;
             if (last == null)
             {
                 throw new Exception("Last is invalid.");
             }
 
-            m_LinkedList.RemoveLast();
+            linkedList.RemoveLast();
             ReleaseNode(last);
         }
 
@@ -300,15 +300,15 @@ namespace GameFrame
         /// <returns>循环访问集合的枚举数。</returns>
         public Enumerator GetEnumerator()
         {
-            return new Enumerator(m_LinkedList);
+            return new Enumerator(linkedList);
         }
 
         private LinkedListNode<T> AcquireNode(T value)
         {
             LinkedListNode<T> node = null;
-            if (m_CachedNodes.Count > 0)
+            if (cachedNodes.Count > 0)
             {
-                node = m_CachedNodes.Dequeue();
+                node = cachedNodes.Dequeue();
                 node.Value = value;
             }
             else
@@ -322,7 +322,7 @@ namespace GameFrame
         private void ReleaseNode(LinkedListNode<T> node)
         {
             node.Value = default(T);
-            m_CachedNodes.Enqueue(node);
+            cachedNodes.Enqueue(node);
         }
 
         /// <summary>

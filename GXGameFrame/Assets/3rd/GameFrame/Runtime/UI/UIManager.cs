@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using FairyGUI;
+using Time = UnityEngine.Time;
 
 namespace GameFrame
 {
@@ -10,7 +11,7 @@ namespace GameFrame
         /// <summary>
         /// 回收UI主题
         /// </summary>
-        public class RecycleWindow : IReference
+        public class RecycleWindow : IDisposable
         {
             /// <summary>
             /// 回收UI类型
@@ -18,16 +19,11 @@ namespace GameFrame
             public Type RecycleWindowType;
 
             /// <summary>
-            /// 回收UI当前时间
-            /// </summary>
-            public DateTime ExpireTime;
-
-            /// <summary>
             /// 回收UI最大缓存时间
             /// </summary>
-            public int DelayTime;
+            public float DelayTime;
 
-            public void Clear()
+            public void Dispose()
             {
             }
         }
@@ -35,47 +31,47 @@ namespace GameFrame
         /// <summary>
         /// UI的队列
         /// </summary>
-        private GameFrameworkLinkedList<UINode> m_UILinkedLinkedList;
+        private GameFrameworkLinkedList<UINode> mUILinkedLinkedList;
 
         /// <summary>
         /// 正在打开的窗口
         /// </summary>
-        private Stack<UINode> m_OpenUIList;
+        private Stack<UINode> mOpenUIList;
 
         /// <summary>
         /// 等待打开的窗口
         /// </summary>
-        private HashSet<Type> m_WaitOpenUIList;
+        private HashSet<Type> mWaitOpenUIList;
 
         /// <summary>
         /// 等待关闭的窗口
         /// </summary>
-        private Dictionary<Type, UINode> m_WaitCloseUIDic;
+        private Dictionary<Type, UINode> mWaitCloseUIDic;
 
         /// <summary>
         /// 缓存的窗口类型
         /// </summary>
-        private Dictionary<Type, RecycleWindow> m_RecycleWindowDic;
+        private Dictionary<Type, RecycleWindow> mRecycleWindowDic;
 
         /// <summary>
         /// 需要在RecycleWindowDic进行删除操作的临时存储
         /// </summary>
-        private List<Type> m_TempRecycleWindow;
+        private List<Type> mTempRecycleWindow;
 
         /// <summary>
         /// 当前回收UI检查时间
         /// </summary>
-        private float m_CurAutoReleaseTime;
+        private float mCurAutoReleaseTime;
 
         /// <summary>
         /// 回收UI检查间隔
         /// </summary>
-        private float m_AutoReleaseInterval;
+        private float mAutoReleaseInterval;
 
         /// <summary>
         /// 回收UI保存时间,超过时间就销毁
         /// </summary>
-        private int m_ReleaseTime;
+        private int mReleaseTime;
 
         /// <summary>
         /// 最大暂存数
@@ -84,39 +80,39 @@ namespace GameFrame
 
         public UIManager()
         {
-            m_WaitOpenUIList = new(16);
-            m_UILinkedLinkedList = new();
-            m_OpenUIList = new(16);
-            m_WaitCloseUIDic = new(16);
-            m_RecycleWindowDic = new(16);
-            m_TempRecycleWindow = new(16);
-            m_AutoReleaseInterval = 10;
-            m_ReleaseTime = 10;
+            mWaitOpenUIList = new(16);
+            mUILinkedLinkedList = new();
+            mOpenUIList = new(16);
+            mWaitCloseUIDic = new(16);
+            mRecycleWindowDic = new(16);
+            mTempRecycleWindow = new(16);
+            mAutoReleaseInterval = 10;
+            mReleaseTime = 10;
         }
 
         public void Update(float elapseSeconds, float realElapseSeconds)
         {
             //有等待加入的UI在队列里的时候有限这个,然后将m_OpenUIList隐藏
-            if (m_WaitOpenUIList.Count > 0 && IsAction() == false)
+            if (mWaitOpenUIList.Count > 0 && IsAction() == false)
             {
-                OpenUIS(m_WaitOpenUIList);
-                m_WaitOpenUIList.Clear();
+                OpenUIS(mWaitOpenUIList);
+                mWaitOpenUIList.Clear();
             }
-            else if (m_OpenUIList.Count > 0 && m_WaitCloseUIDic.Count == 0)
+            else if (mOpenUIList.Count > 0 && mWaitCloseUIDic.Count == 0)
             {
-                for (int i = 0; i < m_OpenUIList.Count; i++)
+                for (int i = 0; i < mOpenUIList.Count; i++)
                 {
-                    m_OpenUIList.Pop().Show();
+                    mOpenUIList.Pop().Show();
                 }
 
-                m_OpenUIList.Clear();
+                mOpenUIList.Clear();
             }
-
             TimeoutDeletion(elapseSeconds);
         }
 
         /// <summary>
         /// 打开一系列UI窗口一般用于战斗结束 需要回退到某个特殊UI
+        /// 只会打开最后一个窗口,其他的都是以空节点的形态保存.
         /// </summary>
         /// <param name="types"></param>
         public void OpenUIS(HashSet<Type> types)
@@ -124,11 +120,10 @@ namespace GameFrame
             if (IsAction())
             {
                 foreach (Type obj in types)
-                    m_WaitOpenUIList.Add(obj);
+                    mWaitOpenUIList.Add(obj);
                 return;
             }
-
-            int count = types.Count;
+            
             Type openPanel = null;
             foreach (var type in types)
             {
@@ -139,10 +134,9 @@ namespace GameFrame
                     AddLastNode(findNode);
                     continue;
                 }
-
                 openPanel = type;
-                UINode uinode = UINode.CreateEmptyNode(type);
-                AddLastNode(uinode);
+                UINode node = UINode.CreateEmptyNode(type);
+                AddLastNode(node);
             }
             OpenUI(openPanel);
         }
@@ -167,7 +161,7 @@ namespace GameFrame
 
             if (IsAction())
             {
-                m_WaitOpenUIList.Add(type);
+                mWaitOpenUIList.Add(type);
                 return;
             }
 
@@ -178,7 +172,7 @@ namespace GameFrame
             {
                 RemoveNode(findUINode);
                 AddLastNode(findUINode);
-                m_OpenUIList.Push(findUINode);
+                mOpenUIList.Push(findUINode);
                 UIHideOrDisposeWithNextUIType(curUINode);
                 return;
             }
@@ -187,6 +181,40 @@ namespace GameFrame
             Open(type).Forget();
         }
 
+        
+        /// <summary>
+        /// 打开一个UI
+        /// </summary>
+        /// <param name="type"></param>
+        private async UniTaskVoid Open(Type type)
+        {
+            RemoveRecycleWindowDic(type);
+            UINode curUINode = GetCurUINode();
+            UINode uiNode = UINode.CreateNode(type);
+            AddLastNode(uiNode);
+            bool loadover = await uiNode.LoadMustDependentOver();
+            if (!loadover)
+            {
+                RemoveNode(uiNode);
+                return;
+            }
+
+            uiNode.PreShow(true);
+            bool wait = await uiNode.UIWait();
+            if (!wait)
+            {
+                return;
+            }
+
+            //加入等待打开的UI列表
+            mOpenUIList.Push(uiNode);
+            if (curUINode != null)
+            {
+                UIHideOrDisposeWithNextUIType(curUINode);
+            }
+        }
+        
+        
         /// <summary>
         /// 添加子节点
         /// </summary>
@@ -221,39 +249,6 @@ namespace GameFrame
             AddWaitDestroyWindowList(uiNode);
         }
 
-
-        /// <summary>
-        /// 打开一个UI
-        /// </summary>
-        /// <param name="type"></param>
-        private async UniTaskVoid Open(Type type)
-        {
-            RemoveRecycleWindowDic(type);
-            UINode curUINode = GetCurUINode();
-            UINode uinode = UINode.CreateNode(type);
-            AddLastNode(uinode);
-            bool loadover = await uinode.LoadMustDependentOver();
-            if (!loadover)
-            {
-                RemoveNode(uinode);
-                return;
-            }
-
-            uinode.PreShow(true);
-            bool wait = await uinode.UIWait();
-            if (!wait)
-            {
-                return;
-            }
-
-            //加入等待打开的UI列表
-            m_OpenUIList.Push(uinode);
-            if (curUINode != null)
-            {
-                UIHideOrDisposeWithNextUIType(curUINode);
-            }
-        }
-
         /// <summary>
         /// 从当前界面返回到上一层界面
         /// </summary>
@@ -274,14 +269,14 @@ namespace GameFrame
         /// </summary>
         public void Back2Frist()
         {
-            if (m_UILinkedLinkedList.Count <= 1)
+            if (mUILinkedLinkedList.Count <= 1)
             {
                 return;
             }
 
             //倒数第二个
-            LinkedListNode<UINode> Penult = m_UILinkedLinkedList.Last.Previous;
-            while (m_UILinkedLinkedList.First != m_UILinkedLinkedList.Last)
+            LinkedListNode<UINode> Penult = mUILinkedLinkedList.Last.Previous;
+            while (mUILinkedLinkedList.First != mUILinkedLinkedList.Last)
             {
                 DestroyNode(Penult.Value);
                 RemoveNode(Penult.Value);
@@ -304,11 +299,11 @@ namespace GameFrame
                 uiNode.PreShow(false);
                 await uiNode.UIWait();
                 AddWaitDestroyWindowList(GetCurUINode());
-                m_OpenUIList.Push(uiNode);
+                mOpenUIList.Push(uiNode);
             }
             else
             {
-                FIXNextUIType(GetCurUINode(), WindowState.Destroy);
+                FixNextUIType(GetCurUINode(), WindowState.Destroy);
                 RemoveNode(uiNode);
                 DestroyNode(uiNode);
                 OpenUI(uiNode.WindowType);
@@ -349,9 +344,8 @@ namespace GameFrame
         {
             RecycleWindow recycleWindow = ReferencePool.Acquire<RecycleWindow>();
             recycleWindow.RecycleWindowType = uiNode.WindowType;
-            recycleWindow.ExpireTime = DateTime.UtcNow;
-            recycleWindow.DelayTime = m_ReleaseTime;
-            m_RecycleWindowDic.Add(uiNode.WindowType, recycleWindow);
+            recycleWindow.DelayTime = Time.realtimeSinceStartup + mReleaseTime;
+            mRecycleWindowDic.Add(uiNode.WindowType, recycleWindow);
             RemoveNode(uiNode);
             AddWaitCloseWindowList(uiNode);
             DestroyNode(uiNode);
@@ -364,7 +358,7 @@ namespace GameFrame
         private void AddWaitCloseWindowList(UINode uiNode)
         {
             uiNode.NodeState = UINode.StateType.WaitDestroy;
-            m_WaitCloseUIDic.Add(uiNode.WindowType, uiNode);
+            mWaitCloseUIDic.Add(uiNode.WindowType, uiNode);
         }
 
         /// <summary>
@@ -382,10 +376,10 @@ namespace GameFrame
         /// </summary>
         public void UIClose(Type type)
         {
-            if (m_WaitCloseUIDic.ContainsKey(type))
+            if (mWaitCloseUIDic.ContainsKey(type))
             {
-                m_WaitCloseUIDic[type].NodeState = UINode.StateType.Destroy;
-                m_WaitCloseUIDic.Remove(type);
+                mWaitCloseUIDic[type].NodeState = UINode.StateType.Destroy;
+                mWaitCloseUIDic.Remove(type);
                 RecycleWindowMaxClear();
             }
             else
@@ -414,12 +408,12 @@ namespace GameFrame
         /// <returns></returns>
         private UINode GetFirstUINode()
         {
-            if (m_UILinkedLinkedList.First == null)
+            if (mUILinkedLinkedList.First == null)
             {
                 return null;
             }
 
-            return m_UILinkedLinkedList.First.Value;
+            return mUILinkedLinkedList.First.Value;
         }
 
         /// <summary>
@@ -428,7 +422,7 @@ namespace GameFrame
         /// <returns></returns>
         private UINode GetCurUINode()
         {
-            return GetWindowNotNullNode(m_UILinkedLinkedList.Last);
+            return GetWindowNotNullNode(mUILinkedLinkedList.Last);
         }
 
         //找到上一个非空节点
@@ -455,12 +449,12 @@ namespace GameFrame
         /// <returns></returns>
         private UINode GetCurBeforeNode()
         {
-            if (m_UILinkedLinkedList.Last.Previous == null)
+            if (mUILinkedLinkedList.Last.Previous == null)
             {
                 return null;
             }
 
-            return m_UILinkedLinkedList.Last.Previous.Value;
+            return mUILinkedLinkedList.Last.Previous.Value;
         }
 
         /// <summary>
@@ -471,7 +465,7 @@ namespace GameFrame
         private UINode FindUINode(Type type)
         {
             // var enumerator = m_UILinkedList.GetEnumerator();
-            foreach (UINode node in m_UILinkedLinkedList)
+            foreach (UINode node in mUILinkedLinkedList)
             {
                 if (node.WindowType == type)
                 {
@@ -488,7 +482,7 @@ namespace GameFrame
         /// <param name="uinode"></param>
         private void RemoveNode(UINode uinode)
         {
-            m_UILinkedLinkedList.Remove(uinode);
+            mUILinkedLinkedList.Remove(uinode);
         }
 
         /// <summary>
@@ -497,14 +491,14 @@ namespace GameFrame
         /// <param name="uinode"></param>
         private void AddLastNode(UINode uinode)
         {
-            m_UILinkedLinkedList.AddLast(uinode);
+            mUILinkedLinkedList.AddLast(uinode);
         }
 
         /// <summary>
         /// 修改当有上一届窗口打开的时候,自身该如何处理
         /// </summary>
         /// <param name="uiNode"></param>
-        public void FIXNextUIType(UINode uiNode, WindowState windowstate)
+        public void FixNextUIType(UINode uiNode, WindowState windowstate)
         {
             if (uiNode == null)
             {
@@ -545,15 +539,15 @@ namespace GameFrame
         /// </summary>
         private void RecycleWindowMaxClear()
         {
-            int recycleCount = m_RecycleWindowDic.Count;
+            int recycleCount = mRecycleWindowDic.Count;
             if (recycleCount >= MaxRecycleCount)
             {
                 //删除一半
                 int needClearNum = MaxRecycleCount / 2;
-                var current = m_RecycleWindowDic.GetEnumerator();
+                var current = mRecycleWindowDic.GetEnumerator();
                 while (needClearNum != 0 && current.MoveNext())
                 {
-                    m_TempRecycleWindow.Add(current.Current.Key);
+                    mTempRecycleWindow.Add(current.Current.Key);
                     --needClearNum;
                 }
 
@@ -568,19 +562,17 @@ namespace GameFrame
         /// <param name="realElapseSeconds"></param>
         private void TimeoutDeletion(float elapseSeconds)
         {
-            m_CurAutoReleaseTime += elapseSeconds;
-            if (m_CurAutoReleaseTime > m_AutoReleaseInterval)
+            mCurAutoReleaseTime += elapseSeconds;
+            if (mCurAutoReleaseTime > mAutoReleaseInterval)
             {
-                m_CurAutoReleaseTime = 0;
-                foreach (var item in m_RecycleWindowDic)
+                mCurAutoReleaseTime = 0;
+                foreach (var item in mRecycleWindowDic)
                 {
-                    DateTime expireTime = DateTime.UtcNow.AddSeconds(-item.Value.DelayTime);
-                    if (expireTime > item.Value.ExpireTime)
+                    if (Time.realtimeSinceStartup > item.Value.DelayTime)
                     {
-                        m_TempRecycleWindow.Add(item.Key);
+                        mTempRecycleWindow.Add(item.Key);
                     }
                 }
-
                 RecycleWindowClear();
             }
         }
@@ -591,13 +583,13 @@ namespace GameFrame
         /// </summary>
         private void RecycleWindowClear()
         {
-            foreach (Type recycleWindow in m_TempRecycleWindow)
+            foreach (Type recycleWindow in mTempRecycleWindow)
             {
                 RemoveRecycleWindowDic(recycleWindow);
                 GXGameFrame.Instance.MainScene.GetComponent<UIComponent>().RemoveComponent(recycleWindow);
             }
 
-            m_TempRecycleWindow.Clear();
+            mTempRecycleWindow.Clear();
         }
 
         /// <summary>
@@ -606,10 +598,10 @@ namespace GameFrame
         /// <param name="type"></param>
         private void RemoveRecycleWindowDic(Type type)
         {
-            if (m_RecycleWindowDic.TryGetValue(type, out RecycleWindow recyclewindow))
+            if (mRecycleWindowDic.TryGetValue(type, out RecycleWindow recyclewindow))
             {
                 ReferencePool.Release(recyclewindow);
-                m_RecycleWindowDic.Remove(type);
+                mRecycleWindowDic.Remove(type);
             }
         }
 
