@@ -6,7 +6,6 @@ using UnityEngine;
 namespace GameFrame
 {
     public class ObjectPool<T> : IObjectPoolBase where T : ObjectBase
-
     {
         private Dictionary<string, List<T>> actionObject;
         private Dictionary<string, List<T>> hideObject;
@@ -29,7 +28,7 @@ namespace GameFrame
         /// <summary>
         /// 对象池最大数量
         /// </summary>
-        private int maxCacheNum;
+        private int maxCacheCount;
 
         /// <summary>
         /// 对象池当前数量
@@ -77,7 +76,7 @@ namespace GameFrame
             objectPool.needClearList = new List<T>();
             objectPool.spawnAsyncQueue = new();
             objectPool.Initialize(typeName);
-            objectPool.maxCacheNum = maxNum;
+            objectPool.maxCacheCount = maxNum;
             objectPool.userData = userData;
             objectPool.expireTime = expireTime;
             objectPool.autoReleaseInterval = 5;
@@ -132,10 +131,14 @@ namespace GameFrame
         /// </summary>
         /// <param name="autoReleaseInterval">定期检查时间</param>
         /// <param name="expireTime">进入不活跃对象池之后的到期时间</param>
-        public void SetExamineTime(float autoReleaseInterval, float expireTime)
+        public void SetExamineTime(float expireTime)
         {
-            this.autoReleaseInterval = autoReleaseInterval;
             this.expireTime = expireTime;
+        }
+
+        public void SetMaxCount(int maxCount)
+        {
+            this.maxCacheCount = maxCount;
         }
 
         public void Update(float elapseSeconds, float realElapseSeconds)
@@ -214,8 +217,8 @@ namespace GameFrame
             {
                 if (poolobjectlist.Count > 0)
                 {
-                    poolobject = poolobjectlist[0];
-                    poolobjectlist.RemoveAt(0);
+                    poolobject = poolobjectlist[poolobjectlist.Count-1];
+                    poolobjectlist.RemoveAt(poolobjectlist.Count-1);
                 }
             }
 
@@ -269,10 +272,10 @@ namespace GameFrame
         /// </summary>
         public void AmountCheck()
         {
-            if (curCacheNum <= maxCacheNum)
+            if (curCacheNum <= maxCacheCount)
                 return;
             needClearList.Clear();
-            int clearNum = maxCacheNum / 2;
+            int clearNum = maxCacheCount / 2;
             int curClearNum = 0;
             foreach (var item in hideObject)
             {

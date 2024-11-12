@@ -7,31 +7,31 @@ namespace GameFrame
         public TaskState TaskState { get; set; }
         public bool IsDone => TaskState == TaskState.Succ || TaskState == TaskState.Fail;
 
-        public bool IsCancell => Token.IsCancellationRequested;
+        public bool IsCancel => token.IsCancellationRequested;
         public Action AsyncStateMoveNext { get; set; }
 
 
-        private System.Threading.CancellationToken Token;
+        private System.Threading.CancellationToken token;
         
 
-        private AwaiterTask<ObjectPoolHandle> AwaiterTask;
+        private AwaiterTask<ObjectPoolHandle> awaiterTask;
 
         public AwaiterTask<ObjectPoolHandle> GetAwaiter()
         {
-            AwaiterTask = ReferencePool.Acquire<AwaiterTask<ObjectPoolHandle>>();
-            AwaiterTask.SetTask(this);
-            return AwaiterTask;
+            awaiterTask = ReferencePool.Acquire<AwaiterTask<ObjectPoolHandle>>();
+            awaiterTask.SetTask(this);
+            return awaiterTask;
         }
 
         public void Init(System.Threading.CancellationToken token)
         {
             TaskState = TaskState.Ing;
-            Token = token;
+            this.token = token;
         }
 
         public void Complete()
         {
-            if (Token != default && IsCancell)
+            if (token != default && IsCancel)
             {
                 Cancel();
                 return;
@@ -50,9 +50,9 @@ namespace GameFrame
         {
             TaskState = TaskState.None;
             AsyncStateMoveNext -= AsyncStateMoveNext;
-            Token = default;
-            if (AwaiterTask != null)
-                ReferencePool.Release(AwaiterTask);
+            token = default;
+            if (awaiterTask != null)
+                ReferencePool.Release(awaiterTask);
         }
     }
 }

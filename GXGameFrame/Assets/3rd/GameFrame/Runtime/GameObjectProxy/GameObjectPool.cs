@@ -6,26 +6,25 @@ using UnityEngine;
 
 namespace GameFrame
 {
-    public  class GameObjectPool : Singleton<GameObjectPool>, IGameObjectPool, IDisposable
+    public class GameObjectPool : Singleton<GameObjectPool>, IGameObjectPool, IDisposable
     {
-        
-        private Dictionary<string, ObjectPool<PoolObject>> mObjectPools = new();
-        private Dictionary<GameObject, PoolObject> mGoPoolDic = new Dictionary<GameObject, PoolObject>();
+        private Dictionary<object, ObjectPool<GameObjectPoolBaes>> objectPools = new();
+        private Dictionary<GameObject, GameObjectPoolBaes> gameObjectPoolDic = new Dictionary<GameObject, GameObjectPoolBaes>();
 
         /// <summary>
         /// PoolObject类型吐出的最大数量,作用于所有的PoolObject的对象池
         /// </summary>
-        private int mFrameMaxInstanceCount = 20;
+        private const int FrameMaxInstanceCount = 8;
 
         /// <summary>
         /// 对象池大小
         /// </summary>
-        private int defaultSize = 16;
+        private const int DefaultSize = 64;
 
         /// <summary>
         /// 对象池检查时间间隔
         /// </summary>
-        private int expireTime = 60;
+        private const int ExpireTime = 30;
 
         /// <summary>
         /// 基础数据初始化
@@ -33,11 +32,17 @@ namespace GameFrame
         /// <param name="defaultSize"></param>
         /// <param name="expireTime"></param>
         /// <param name="frameMaxInstanceCount"></param>
-        public void InitData(int defaultSize, int expireTime, int frameMaxInstanceCount)
+        public void SetPool(string assetName, int defaultSize, int expireTime, int frameMaxInstanceCount)
         {
-            mFrameMaxInstanceCount = frameMaxInstanceCount;
-            this.defaultSize = defaultSize;
-            this.expireTime = expireTime;
+            if (!objectPools.TryGetValue(assetName, out var objectPool))
+            {
+                objectPool = ObjectPoolManager.Instance.CreateObjectPool<GameObjectPoolBaes>(assetName, defaultSize, expireTime);
+                objectPools.Add(assetName, objectPool);
+            }
+
+            objectPool.SetAsyncMaxCount(frameMaxInstanceCount);
+            objectPool.SetExamineTime(expireTime);
+            objectPool.SetMaxCount(defaultSize);
         }
 
         /// <summary>
@@ -49,26 +54,28 @@ namespace GameFrame
         /// <returns></returns>
         public async UniTask<GameObject> GetAsync(string assetName, Transform parent = null, System.Threading.CancellationToken token = default)
         {
-            if (!mObjectPools.TryGetValue(assetName,out var objectPool))
+            if (!objectPools.TryGetValue(assetName, out var objectPool))
             {
-                objectPool = ObjectPoolManager.Instance.CreateObjectPool<PoolObject>(assetName, defaultSize, expireTime);
-                objectPool.SetAsyncMaxCount(mFrameMaxInstanceCount);
-                mObjectPools.Add(assetName,objectPool);
+                objectPool = ObjectPoolManager.Instance.CreateObjectPool<GameObjectPoolBaes>(assetName, DefaultSize, ExpireTime);
+                objectPool.SetAsyncMaxCount(FrameMaxInstanceCount);
+                objectPools.Add(assetName, objectPool);
             }
 
-            var prefab = await AssetManager.Instance.LoadAsync<GameObject>(assetName,null, token);//AssetManager.Instance.LoadAsyncTask<GameObject>(assetName, token);
+            DefaultAssetReference defaultAssetReference = new DefaultAssetReference();
+            var prefab = await AssetManager.Instance.LoadAsync<GameObject>(assetName, defaultAssetReference,
+                token);
             if (prefab == null)
             {
+                defaultAssetReference.UnrefAsset(assetName);
                 return null;
             }
-            GameObject go = await GoAsync(objectPool, prefab, parent, token);
+
+            GameObject go = await InstantiateGameObjectAsync(objectPool, assetName, prefab, defaultAssetReference, parent, token);
             //如果这个阶段发现被取消了,那就unload资源.
             if (go == null)
             {
-                AssetManager.Instance.DecrementReferenceCount(assetName);
-                return null;
+                defaultAssetReference.UnrefAsset(assetName);
             }
-
             return go;
         }
 
@@ -81,15 +88,16 @@ namespace GameFrame
         /// <returns></returns>
         public async UniTask<GameObject> GetAsync(GameObject prefab, Transform parent = null, System.Threading.CancellationToken token = default)
         {
-            string prefabCode = prefab.GetHashCode().ToString();
-            if (!mObjectPools.TryGetValue(prefabCode,out var objectPool))
+            DefaultAssetReference defaultAssetReference = null;
+            ObjectPool<GameObjectPoolBaes> objectPool = null;
+            string assetPath = null;
+            SetPrefabMsg(prefab, ref defaultAssetReference, ref objectPool, ref assetPath);
+            GameObject go = await InstantiateGameObjectAsync(objectPool, assetPath, prefab, defaultAssetReference, parent, token);
+            if (go == null)
             {
-                objectPool = ObjectPoolManager.Instance.CreateObjectPool<PoolObject>(prefabCode, defaultSize, expireTime);
-                objectPool.SetAsyncMaxCount(mFrameMaxInstanceCount);
-                mObjectPools.Add(prefabCode,objectPool);
+                defaultAssetReference?.UnrefAsset(assetPath);
             }
-
-            return await GoAsync(objectPool, prefab, parent, token);
+            return go;
         }
 
         /// <summary>
@@ -97,22 +105,26 @@ namespace GameFrame
         /// </summary>
         /// <param name="pool"></param>
         /// <param name="prefab"></param>
+        /// <param name="assetReference"></param>
         /// <param name="parent"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public async UniTask<GameObject> GoAsync(ObjectPool<PoolObject> pool, GameObject prefab, Transform parent = null,
+        private async UniTask<GameObject> InstantiateGameObjectAsync(ObjectPool<GameObjectPoolBaes> pool, string assetName, GameObject prefab,
+            DefaultAssetReference assetReference,
+            Transform parent = null,
             System.Threading.CancellationToken token = default)
         {
             pool.SetUserData(prefab);
-            PoolObject poolObject = await pool.SpawnAsync(token);
-            if (poolObject == null)
+            GameObjectPoolBaes gameObjectPoolBaes = await pool.SpawnAsync(token);
+            if (gameObjectPoolBaes == null)
             {
                 return null;
             }
-
-            mGoPoolDic[poolObject.Obj] = poolObject;
-            poolObject.SetParent(parent);
-            return poolObject.Obj;
+            gameObjectPoolDic[gameObjectPoolBaes.Obj] = gameObjectPoolBaes;
+            gameObjectPoolBaes.SetParent(parent);
+            gameObjectPoolBaes.SetAssetPath(assetName);
+            gameObjectPoolBaes.SetAssetReference(assetReference);
+            return gameObjectPoolBaes.Obj;
         }
 
         /// <summary>
@@ -123,19 +135,43 @@ namespace GameFrame
         /// <returns></returns>
         public GameObject Get(GameObject prefab, Transform parent = null)
         {
-            string prefabCode = prefab.GetHashCode().ToString();
-            if (!mObjectPools.TryGetValue(prefabCode,out var objectPool))
+            DefaultAssetReference defaultAssetReference = null;
+            ObjectPool<GameObjectPoolBaes> objectPool = null;
+            string assetPath = null;
+            SetPrefabMsg(prefab, ref defaultAssetReference, ref objectPool, ref assetPath);
+            GameObjectPoolBaes gameObjectPoolBaes = objectPool.Spawn();
+            gameObjectPoolBaes.SetParent(parent);
+            gameObjectPoolBaes.SetAssetPath(assetPath);
+            gameObjectPoolBaes.SetAssetReference(defaultAssetReference);
+            gameObjectPoolDic[gameObjectPoolBaes.Obj] = gameObjectPoolBaes;
+            return gameObjectPoolBaes.Obj;
+        }
+
+        
+        private void SetPrefabMsg(GameObject prefab,ref DefaultAssetReference defaultAssetReference,ref ObjectPool<GameObjectPoolBaes> objectPool, ref string assetPath)
+        {
+            if (gameObjectPoolDic.TryGetValue(prefab, out GameObjectPoolBaes poolObject))
             {
-                objectPool = ObjectPoolManager.Instance.CreateObjectPool<PoolObject>(prefabCode, defaultSize, expireTime);
-                objectPool.SetAsyncMaxCount(mFrameMaxInstanceCount);
-                mObjectPools.Add(prefabCode,objectPool);
+                defaultAssetReference = new DefaultAssetReference();
+                if (!string.IsNullOrEmpty(poolObject.assetName))
+                {
+                    objectPool = objectPools[poolObject.assetName];
+                    assetPath = poolObject.assetName;
+                    defaultAssetReference.RefAsset(assetPath);
+                }
             }
 
-            PoolObject poolObject = objectPool.Spawn();
-            mGoPoolDic[poolObject.Obj] = poolObject;
-            return poolObject.Obj;
+            if (objectPool == null)
+            {
+                string prefabCode = prefab.GetHashCode().ToString();
+                if (!objectPools.TryGetValue(prefabCode, out objectPool))
+                {
+                    objectPool = ObjectPoolManager.Instance.CreateObjectPool<GameObjectPoolBaes>(prefabCode, DefaultSize, ExpireTime);
+                    objectPool.SetAsyncMaxCount(FrameMaxInstanceCount);
+                    objectPools.Add(prefabCode, objectPool);
+                }
+            }
         }
-        
 
         /// <summary>
         /// 清理Gameobejct
@@ -144,13 +180,14 @@ namespace GameFrame
         /// <param name="go"></param>
         public void Release(string assetName, GameObject go)
         {
-            if (mGoPoolDic == null || !mGoPoolDic.TryGetValue(go, out PoolObject poolObject) || !mObjectPools.TryGetValue(assetName,out var objectPool))
+            if (gameObjectPoolDic == null || !gameObjectPoolDic.TryGetValue(go, out GameObjectPoolBaes poolObject) ||
+                !objectPools.TryGetValue(assetName, out var objectPool))
             {
                 Debugger.LogError($"{assetName}GameObjectPool is null");
                 return;
             }
-            mGoPoolDic.Remove(go);
-            AssetManager.Instance.DecrementReferenceCount(assetName);
+
+            gameObjectPoolDic.Remove(go);
             objectPool.UnSpawn(poolObject);
         }
 
@@ -162,12 +199,14 @@ namespace GameFrame
         public void Release(GameObject prefab, GameObject go)
         {
             string prefabCode = prefab.GetHashCode().ToString();
-            if (mGoPoolDic == null || !mGoPoolDic.TryGetValue(go, out PoolObject poolObject) ||  !mObjectPools.TryGetValue(prefabCode,out var objectPool))
+            if (gameObjectPoolDic == null || !gameObjectPoolDic.TryGetValue(go, out GameObjectPoolBaes poolObject) ||
+                !objectPools.TryGetValue(prefabCode, out var objectPool))
             {
                 Debugger.LogError($"{prefab.name}GameObjectPool is null");
                 return;
             }
-            mGoPoolDic.Remove(go);
+
+            gameObjectPoolDic.Remove(go);
             objectPool.UnSpawn(poolObject);
         }
 
@@ -177,12 +216,13 @@ namespace GameFrame
         /// </summary>
         public void Dispose()
         {
-            foreach (var objectpool in mObjectPools.Values)
+            foreach (var objectpool in objectPools.Values)
             {
                 ObjectPoolManager.Instance.DeleteObjectPool(objectpool);
             }
-            mObjectPools.Clear();
-            mGoPoolDic.Clear();
+
+            objectPools.Clear();
+            gameObjectPoolDic.Clear();
         }
     }
 }

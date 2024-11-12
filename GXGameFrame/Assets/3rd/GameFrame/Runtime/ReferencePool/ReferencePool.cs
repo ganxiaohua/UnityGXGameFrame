@@ -44,7 +44,6 @@ namespace GameFrame
         {
             int index = 0;
             ReferencePoolInfo[] results = null;
-
             lock (sReferenceCollections)
             {
                 results = new ReferencePoolInfo[sReferenceCollections.Count];
@@ -56,7 +55,6 @@ namespace GameFrame
                         referenceCollection.Value.RemoveReferenceCount);
                 }
             }
-
             return results;
         }
 
