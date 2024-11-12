@@ -47,7 +47,7 @@ namespace Common.Runtime
         {
             version++;
             Unbind(pool);
-            var go = pool.Get(prefab, parent);
+            var go = pool.InstantiateGameObject(prefab, parent);
             go.hideFlags = HideFlags.None;
             this.gameObject = go;
             this.transform = go.transform;

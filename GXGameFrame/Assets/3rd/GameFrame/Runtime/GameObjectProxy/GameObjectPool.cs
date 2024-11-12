@@ -133,7 +133,7 @@ namespace GameFrame
         /// <param name="prefab"></param>
         /// <param name="parent"></param>
         /// <returns></returns>
-        public GameObject Get(GameObject prefab, Transform parent = null)
+        public GameObject InstantiateGameObject(GameObject prefab, Transform parent = null)
         {
             DefaultAssetReference defaultAssetReference = null;
             ObjectPool<GameObjectPoolBaes> objectPool = null;

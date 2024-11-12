@@ -10,7 +10,7 @@ namespace Common.Runtime
 
         UniTask<GameObject> GetAsync(GameObject prefab, Transform parent = null, CancellationToken cancelToken = default);
 
-        GameObject Get(GameObject prefab, Transform parent = null);
+        GameObject InstantiateGameObject(GameObject prefab, Transform parent = null);
 
         void Release(string asset, GameObject go);
 
