@@ -29,7 +29,7 @@ namespace GameFrame
 
         protected abstract void Execute(List<ECSEntity> entities);
 
-        public void Update(float elapseSeconds, float realElapseSeconds)
+        public void OnUpdate(float elapseSeconds, float realElapseSeconds)
         {
             if (collector.CollectedEntities.Count == 0)
                 return;

@@ -107,6 +107,7 @@ namespace GameFrame
 
                 mOpenUIList.Clear();
             }
+
             TimeoutDeletion(elapseSeconds);
         }
 
@@ -123,7 +124,7 @@ namespace GameFrame
                     mWaitOpenUIList.Add(obj);
                 return;
             }
-            
+
             Type openPanel = null;
             foreach (var type in types)
             {
@@ -134,10 +135,12 @@ namespace GameFrame
                     AddLastNode(findNode);
                     continue;
                 }
+
                 openPanel = type;
                 UINode node = UINode.CreateEmptyNode(type);
                 AddLastNode(node);
             }
+
             OpenUI(openPanel);
         }
 
@@ -145,7 +148,7 @@ namespace GameFrame
         /// 打开一个UI
         /// </summary>
         /// <param name="type"></param>
-        public void OpenUI(Type type)
+        public void OpenUI(Type type, object data = null)
         {
             //如果打开的UI就是最上层的UI
             UINode curUINode = GetCurUINode();
@@ -178,19 +181,19 @@ namespace GameFrame
             }
 
             //打开新窗口
-            Open(type).Forget();
+            Open(type, data).Forget();
         }
 
-        
+
         /// <summary>
         /// 打开一个UI
         /// </summary>
         /// <param name="type"></param>
-        private async UniTaskVoid Open(Type type)
+        private async UniTaskVoid Open(Type type, object data)
         {
             RemoveRecycleWindowDic(type);
             UINode curUINode = GetCurUINode();
-            UINode uiNode = UINode.CreateNode(type);
+            UINode uiNode = UINode.CreateNode(type, data);
             AddLastNode(uiNode);
             bool loadover = await uiNode.LoadMustDependentOver();
             if (!loadover)
@@ -213,17 +216,17 @@ namespace GameFrame
                 UIHideOrDisposeWithNextUIType(curUINode);
             }
         }
-        
-        
+
+
         /// <summary>
         /// 添加子节点
         /// </summary>
         /// <param name="type"></param>
         /// <param name="parent"></param>
-        public async UniTaskVoid AddChildUI(Type type, UINode parent, GComponent root)
+        public async UniTaskVoid AddChildUI(Type type, UINode parent, GComponent root, object obj = null)
         {
             Assert.IsTrue(parent != null, $"找不到父节点{parent.Name}");
-            UINode uinode = UINode.CreateNode(type);
+            UINode uinode = UINode.CreateNode(type, obj);
             bool loadover = await uinode.LoadMustDependentOver(root);
             if (!loadover)
             {
@@ -384,7 +387,7 @@ namespace GameFrame
             }
             else
             {
-                Debugger.LogError($"{type.Name} not in m_WaitCloseUIDic");
+                Debugger.LogError($"{type.Name} not in WaitCloseUIDic");
             }
 
             if (!IsAction())
@@ -528,9 +531,6 @@ namespace GameFrame
                 AddWaitCloseWindowList(uiNode);
                 uiNode.Hide();
             }
-            else if (uiNode.NextActionState == WindowState.Exist)
-            {
-            }
         }
 
 
@@ -573,6 +573,7 @@ namespace GameFrame
                         mTempRecycleWindow.Add(item.Key);
                     }
                 }
+
                 RecycleWindowClear();
             }
         }
@@ -607,7 +608,6 @@ namespace GameFrame
 
         public void Disable()
         {
-            
         }
     }
 }

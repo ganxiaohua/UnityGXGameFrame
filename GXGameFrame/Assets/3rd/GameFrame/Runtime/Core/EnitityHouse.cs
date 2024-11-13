@@ -244,6 +244,8 @@ namespace GameFrame
         /// <param name="entity"></param>
         public void RunShowSystem(Entity entity)
         {
+            if(entity is not  ISystem)
+                return;
             ISystem system = (ISystem) entity;
             system?.SystemShow();
             EventData.Instance.AddEventEntity(entity);

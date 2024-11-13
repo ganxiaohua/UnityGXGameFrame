@@ -48,6 +48,8 @@ namespace GameFrame
         {
             base.Dispose();
             waitLoadTask?.TrySetCanceled();
+            Window = null;
+            DefaultAssetReference = null;
         }
     }
 }

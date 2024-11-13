@@ -2,7 +2,7 @@
 {
     public interface IShowSystem : ISystem
     {
-        void Show();
+        void OnShow();
     }
 
     public interface IShowSystem<P1> : ISystem

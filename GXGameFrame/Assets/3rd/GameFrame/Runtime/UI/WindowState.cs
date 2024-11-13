@@ -5,6 +5,7 @@
     /// </summary>
     public enum WindowState
     {
+        None,
         /// <summary>
         ///隐藏窗口
         /// </summary>

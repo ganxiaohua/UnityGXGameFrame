@@ -15,7 +15,7 @@ namespace GameFrame
         
         private UIViewBase uiView;
         
-        public virtual async UniTask Initialize()
+        public virtual async UniTask OnInitialize()
         {
             var despen = AddComponent<DependentUI, string, string>(PackName, WindowName);
             uiView = (UIViewBase) Activator.CreateInstance(ViewType);
@@ -23,23 +23,24 @@ namespace GameFrame
             if (succ) uiView.Link(this, despen.Window, true);
         }
         
-        public virtual void PreShow(bool isFirstShow)
+        public virtual void OnPreShow(bool isFirstShow)
         {
+            
         }
 
         
-        public virtual void Show()
+        public virtual void OnShow()
         {
             uiView.OnShow();
         }
 
-        public virtual void Hide()
+        public virtual void OnHide()
         {
             uiView.OnHide();
         }
 
         
-        public virtual void Update(float elapseSeconds, float realElapseSeconds)
+        public virtual void OnUpdate(float elapseSeconds, float realElapseSeconds)
         {
             uiView.OnUpdate(elapseSeconds, realElapseSeconds);
         }

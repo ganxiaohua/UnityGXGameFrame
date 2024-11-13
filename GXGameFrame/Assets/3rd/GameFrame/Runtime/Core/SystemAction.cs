@@ -44,7 +44,7 @@ namespace GameFrame
         {
             if (system is IPreShowSystem showsystem)
             {
-                showsystem.PreShow(p1);
+                showsystem.OnPreShow(p1);
                 return true;
             }
 
@@ -56,7 +56,7 @@ namespace GameFrame
         {
             if (system is IShowSystem showsystem)
             {
-                showsystem.Show();
+                showsystem.OnShow();
                 return true;
             }
 
@@ -68,7 +68,7 @@ namespace GameFrame
         {
             if (system is IHideSystem showsystem)
             {
-                showsystem.Hide();
+                showsystem.OnHide();
                 return true;
             }
 
@@ -102,7 +102,7 @@ namespace GameFrame
 #if UNITY_EDITOR
                 Profiler.BeginSample(es.SystemObject.System.GetType().Name);
 #endif
-                ((IUpdateSystem) es.SystemObject.System).Update(elapseSeconds, realElapseSeconds);
+                ((IUpdateSystem) es.SystemObject.System).OnUpdate(elapseSeconds, realElapseSeconds);
 #if UNITY_EDITOR
                 Profiler.EndSample();
 #endif

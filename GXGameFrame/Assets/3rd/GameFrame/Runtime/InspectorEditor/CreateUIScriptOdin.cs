@@ -91,6 +91,7 @@ public class CreateUIScriptOdin : MonoBehaviour
     [ListDrawerSettings(NumberOfItemsPerPage = 20)] [PropertyOrder(1)]
     // [TableList, Searchable]
     public List<FairyData> bindList = new List<FairyData>();
+    
 
     [OnInspectorInit("EditorInit")]
     private void EditorInit()

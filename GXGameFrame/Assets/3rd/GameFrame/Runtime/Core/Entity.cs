@@ -192,13 +192,21 @@ namespace GameFrame
 
             return value;
         }
+        
+        public void TryRemoveComponent<T>() where T : class,IEntity
+        {
+            if (HasComponent<T>())
+            {
+                RemoveComponent<T>();
+            }
+        }
 
 
         /// <summary>
         /// 删除组件
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        public void RemoveComponent<T>() where T : IEntity
+        public void RemoveComponent<T>() where T : class,IEntity
         {
             Remove<T>();
         }

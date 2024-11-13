@@ -2,6 +2,6 @@
 {
     public interface IUpdateSystem:ISystem
     {
-        void Update( float elapseSeconds, float realElapseSeconds);
+        void OnUpdate( float elapseSeconds, float realElapseSeconds);
     }
 }

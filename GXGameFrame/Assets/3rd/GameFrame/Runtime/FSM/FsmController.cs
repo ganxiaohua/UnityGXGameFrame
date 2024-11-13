@@ -14,7 +14,7 @@ namespace GameFrame
             states = new();
         }
 
-        public void Update(float elapseSeconds, float realElapseSeconds)
+        public void OnUpdate(float elapseSeconds, float realElapseSeconds)
         {
             CurState?.Update(elapseSeconds, realElapseSeconds);
         }

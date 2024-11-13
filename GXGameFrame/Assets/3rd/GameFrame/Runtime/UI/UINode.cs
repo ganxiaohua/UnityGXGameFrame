@@ -9,6 +9,7 @@ namespace GameFrame
     {
         public enum StateType
         {
+            None,
             WaitOpen,
             Loading,
             LoadEnd,
@@ -57,7 +58,7 @@ namespace GameFrame
             return uiNode;
         }
 
-        public static UINode CreateNode(Type windowType)
+        public static UINode CreateNode(Type windowType, object data)
         {
             UIComponent UIComponent = GXGameFrame.Instance.MainScene.GetComponent<UIComponent>();
             UINode uiNode = ReferencePool.Acquire<UINode>();
@@ -69,8 +70,12 @@ namespace GameFrame
             if (uiNode.Window == null)
             {
                 uiNode.Window = (UIEntity) UIComponent.AddComponent(windowType);
-                uiNode.Window.Initialize().Forget();
+                uiNode.Window.OnInitialize().Forget();
             }
+
+            if (data != null)
+                uiNode.Window.AddComponent<UIObjectData>().Data = data;
+
             return uiNode;
         }
 
@@ -81,7 +86,7 @@ namespace GameFrame
             {
                 DestroyNode(child);
             }
-
+            uinode.Window.TryRemoveComponent<UIObjectData>();
             ReferencePool.Release(uinode);
         }
 
@@ -135,7 +140,7 @@ namespace GameFrame
             {
                 root.AddChild(dependent.Window);
             }
-            
+
             NodeState = StateType.LoadEnd;
             return over;
         }
@@ -156,6 +161,12 @@ namespace GameFrame
 
         public void Dispose()
         {
+            NextActionState = WindowState.None;
+            Name = String.Empty;
+            WindowType = null;
+            NodeState = StateType.None;
+            Childs.Clear();
+            Parent = null;
         }
     }
 }

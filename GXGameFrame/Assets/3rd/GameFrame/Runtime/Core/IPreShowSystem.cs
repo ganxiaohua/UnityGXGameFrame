@@ -6,6 +6,6 @@
     }
     public interface IPreShowSystem:ISystem
     {
-        void PreShow(bool isFirstShow);
+        void OnPreShow(bool isFirstShow);
     }
 }

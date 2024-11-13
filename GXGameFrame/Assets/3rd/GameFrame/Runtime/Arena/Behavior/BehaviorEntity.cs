@@ -15,7 +15,7 @@ namespace GameFrame
             dataList = new List<IBehaviorData>(16);
         }
 
-        public void Update(float elapseSeconds, float realElapseSeconds)
+        public void OnUpdate(float elapseSeconds, float realElapseSeconds)
         {
             if (dataList.Count == 0) return;
             Behavior.Update(dataList, elapseSeconds);

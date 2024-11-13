@@ -2,7 +2,7 @@
 {
     public interface IHideSystem:ISystem
     {
-        void Hide();
+        void OnHide();
     }
     
 }

@@ -7,11 +7,11 @@ namespace GXGame
 {{
     public partial class {0}View : UIViewBase
     {{
-        private {0} m_{0};
-        public override void OnInit()
+        private {0} {0};
+        public override void OnInitialize()
         {{
-            base.OnInit();
-            m_{0} = ({0})UIBase;
+            base.OnInitialize();
+            {0} = ({0})UIBase;
         }}
 
         public override void OnShow()
@@ -23,16 +23,6 @@ namespace GXGame
         {{
             base.OnHide();
         }}
-        protected override void DoShowAnimation()
-        {{
-            base.DoShowAnimation();
-        }}
-
-        protected override void DoHideAnimation()
-        {{
-            base.DoHideAnimation();
-        }}
-
         public override void OnUpdate(float elapseSeconds, float realElapseSeconds)
         {{
             base.OnUpdate(elapseSeconds,realElapseSeconds);

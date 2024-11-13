@@ -34,10 +34,10 @@ namespace GameFrame
                 GRoot.inst.AddChild(Root);
             }
 
-            OnInit();
+            OnInitialize();
         }
 
-        public virtual void OnInit()
+        public virtual void OnInitialize()
         {
             Root.visible = false;
             m_PlayCompleteCallbackIn = AnimatoinInComplete;
