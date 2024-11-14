@@ -3,20 +3,20 @@ using System.Collections.Generic;
 
 namespace GameFrame
 {
-    public abstract class FsmController : Entity, IStartSystem, IUpdateSystem
+    public abstract class FsmController : Entity, IInitializeSystem, IUpdateSystem
     {
         public FsmState CurState { get; private set; }
 
         private Dictionary<Type, FsmState> states;
 
-        public virtual void Start()
+        public virtual void Initialize()
         {
             states = new();
         }
 
         public void OnUpdate(float elapseSeconds, float realElapseSeconds)
         {
-            CurState?.Update(elapseSeconds, realElapseSeconds);
+            CurState?.OnUpdate(elapseSeconds, realElapseSeconds);
         }
 
         public override void Dispose()
@@ -25,7 +25,7 @@ namespace GameFrame
             {
                 if (item.Value == CurState)
                 {
-                    item.Value.Leave();
+                    item.Value.OnExit();
                 }
                 RemoveChild(item.Value);
             }
@@ -59,9 +59,9 @@ namespace GameFrame
         {
             bool b = states.TryGetValue(typeof(T), out var state);
             Assert.IsTrue(b,$"不包含这个stateP{typeof(T)}");
-            CurState?.Leave();
+            CurState?.OnExit();
             CurState = state;
-            CurState.Enter(this);
+            CurState.OnEnter(this);
         }
 
         protected void RemoveState(FsmState state)
@@ -71,7 +71,7 @@ namespace GameFrame
             Assert.IsTrue(b,$"不包含这个stateP{type.Name}");
             if (CurState == state)
             {
-                state.Leave();
+                state.OnExit();
             }
             RemoveChild(state);
         }

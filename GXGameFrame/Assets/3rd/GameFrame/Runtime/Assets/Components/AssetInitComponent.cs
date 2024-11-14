@@ -2,14 +2,14 @@ using Cysharp.Threading.Tasks;
 
 namespace GameFrame
 {
-    public class AssetInitComponent : Entity, IStartSystem, IUpdateSystem
+    public class AssetInitComponent : Entity, IInitializeSystem, IUpdateSystem
     {
 #if (UNITY_EDITOR && RESSEQ) || !UNITY_EDITOR
         public CheckUpdate Check;
 #endif
         public UniTaskCompletionSource Task;
 
-        public void Start()
+        public void Initialize()
         {
             Init().Forget();
         }

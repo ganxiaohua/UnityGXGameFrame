@@ -6,33 +6,33 @@ namespace GameFrame
 {
     public static class SystemAction
     {
-        public static bool SystemStart(this ISystem system)
+        public static bool SystemInitialize(this ISystem system)
         {
-            if (system is IStartSystem ecsinitsystem)
+            if (system is IInitializeSystem ecsinitsystem)
             {
-                ecsinitsystem.Start();
+                ecsinitsystem.Initialize();
                 return true;
             }
 
             return false;
         }
 
-        public static bool SystemStart<P1>(this ISystem system, P1 p1)
+        public static bool SystemInitialize<P1>(this ISystem system, P1 p1)
         {
-            if (system is IStartSystem<P1> ecsinitsystem)
+            if (system is IInitializeSystem<P1> ecsinitsystem)
             {
-                ecsinitsystem.Start(p1);
+                ecsinitsystem.Initialize(p1);
                 return true;
             }
 
             return false;
         }
 
-        public static bool SystemStart<P1, P2>(this ISystem system, P1 p1, P2 p2)
+        public static bool SystemInitialize<P1, P2>(this ISystem system, P1 p1, P2 p2)
         {
-            if (system is IStartSystem<P1, P2> ecsinitsystem)
+            if (system is IInitializeSystem<P1, P2> ecsinitsystem)
             {
-                ecsinitsystem.Start(p1, p2);
+                ecsinitsystem.Initialize(p1, p2);
                 return true;
             }
 

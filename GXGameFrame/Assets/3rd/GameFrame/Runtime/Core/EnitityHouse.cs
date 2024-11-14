@@ -179,7 +179,7 @@ namespace GameFrame
         private void AddEcsSystem(World entity, Type type)
         {
             ISystemObject sysObject = CreateSystem(entity, type);
-            sysObject.System.SystemStart( entity);
+            sysObject.System.SystemInitialize( entity);
             updateSystems.AddUpdateSystem(entity, sysObject);
         }
 

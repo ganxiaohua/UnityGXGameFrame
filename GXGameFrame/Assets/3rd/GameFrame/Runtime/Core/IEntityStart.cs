@@ -1,17 +1,17 @@
 ﻿namespace GameFrame
 {
-    public interface IStartSystem : ISystem
+    public interface IInitializeSystem : ISystem
     {
-        void Start();
+        void Initialize();
     }
 
-    public interface IStartSystem<in TP1> : ISystem
+    public interface IInitializeSystem<in TP1> : ISystem
     {
-        void Start(TP1 p1);
+        void Initialize(TP1 p1);
     }
 
-    public interface IStartSystem<in TP1, in TP2> : ISystem
+    public interface IInitializeSystem<in TP1, in TP2> : ISystem
     {
-        void Start(TP1 p1, TP2 p2);
+        void Initialize(TP1 p1, TP2 p2);
     }
 }

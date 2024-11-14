@@ -2,16 +2,16 @@
 {
     public abstract class FsmState : Entity
     {
-        public virtual void Enter(FsmController fsmController)
+        public virtual void OnEnter(FsmController fsmController)
         {
             
         }
 
-        public virtual void Leave()
+        public virtual void OnExit()
         {
         }
 
-        public virtual void Update(float elapseSeconds, float realElapseSeconds)
+        public virtual void OnUpdate(float elapseSeconds, float realElapseSeconds)
         {
         }
 

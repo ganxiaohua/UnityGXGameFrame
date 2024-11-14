@@ -1,8 +1,8 @@
 ﻿namespace GameFrame
 {
-    public class MainScene : Entity, IStartSystem,IUpdateSystem
+    public class MainScene : Entity, IInitializeSystem,IUpdateSystem
     {
-        public void Start()
+        public void Initialize()
         {
           
         }

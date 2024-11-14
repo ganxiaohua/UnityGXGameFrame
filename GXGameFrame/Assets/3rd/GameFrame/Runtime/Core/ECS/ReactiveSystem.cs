@@ -2,7 +2,7 @@
 
 namespace GameFrame
 {
-    public abstract class ReactiveSystem : IStartSystem<World>, IUpdateSystem
+    public abstract class ReactiveSystem : IInitializeSystem<World>, IUpdateSystem
     {
         /// <summary>
         /// 挂载的父实体
@@ -16,7 +16,7 @@ namespace GameFrame
         /// </summary>
         private Collector collector;
 
-        public virtual void Start(World entity)
+        public virtual void Initialize(World entity)
         {
             buffer = new List<ECSEntity>();
             World = entity;

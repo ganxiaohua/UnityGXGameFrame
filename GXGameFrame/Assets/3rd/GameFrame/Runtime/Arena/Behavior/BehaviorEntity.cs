@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 namespace GameFrame
 {
-    public class BehaviorEntity : Entity, IStartSystem<Type, BehaviorWorld>, IUpdateSystem
+    public class BehaviorEntity : Entity, IInitializeSystem<Type, BehaviorWorld>, IUpdateSystem
     {
         public Behavior Behavior;
         private List<IBehaviorData> dataList;
 
-        public void Start(Type behaviorType, BehaviorWorld behaviorWorld)
+        public void Initialize(Type behaviorType, BehaviorWorld behaviorWorld)
         {
             Behavior = (Behavior) ReferencePool.Acquire(behaviorType);
             Behavior.Init(behaviorWorld);

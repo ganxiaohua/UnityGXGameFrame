@@ -3,14 +3,14 @@ using System.Collections.Generic;
 
 namespace GameFrame
 {
-    public class BehaviorWorldEntity : Entity, IStartSystem<Type>, IUpdateSystem
+    public class BehaviorWorldEntity : Entity, IInitializeSystem<Type>, IUpdateSystem
     {
         private BehaviorWorld behaviorWorld;
         private Dictionary<Type, BehaviorEntity> behaviorDic;
         private Dictionary<IBehaviorData, BehaviorEntity> dataForBehaviorDic;
         private List<IBehaviorData> dataList;
 
-        public void Start(Type arenatype)
+        public void Initialize(Type arenatype)
         {
             dataForBehaviorDic = new();
             behaviorDic = new();

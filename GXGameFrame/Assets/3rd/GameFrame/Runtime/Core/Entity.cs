@@ -123,9 +123,9 @@ namespace GameFrame
         public IEntity AddComponent(Type type)
         {
             IEntity component = CreateComponent(type);
-            if (component is IStartSystem system)
+            if (component is IInitializeSystem system)
             {
-                system.SystemStart();
+                system.SystemInitialize();
             }
             EnitityHouse.Instance.AddSlefUpdateSystem(component);
             return component;
@@ -141,9 +141,9 @@ namespace GameFrame
         public IEntity AddComponent<TP1>(Type type, TP1 p1)
         {
             IEntity component = CreateComponent(type);
-            if (component is IStartSystem<TP1> system)
+            if (component is IInitializeSystem<TP1> system)
             {
-                system.SystemStart(p1);
+                system.SystemInitialize(p1);
             }
             EnitityHouse.Instance.AddSlefUpdateSystem(component);
             return component;
@@ -158,9 +158,9 @@ namespace GameFrame
         public IEntity AddComponent<TP1, TP2>(Type type, TP1 p1, TP2 p2)
         {
             IEntity component = CreateComponent(type);
-            if (component is IStartSystem<TP1,TP2> system)
+            if (component is IInitializeSystem<TP1,TP2> system)
             {
-                system.SystemStart(p1,p2);
+                system.SystemInitialize(p1,p2);
             }
             EnitityHouse.Instance.AddSlefUpdateSystem(component);
             return component;
@@ -230,9 +230,9 @@ namespace GameFrame
         public IEntity AddChild(Type type)
         {
             IEntity component = Create(type, false);
-            if (component is IStartSystem system)
+            if (component is IInitializeSystem system)
             {
-                system.SystemStart();
+                system.SystemInitialize();
             }
             EnitityHouse.Instance.AddSlefUpdateSystem(component);
             return component;
@@ -247,9 +247,9 @@ namespace GameFrame
         public IEntity AddChild<P1>(Type type, P1 p1)
         {
             IEntity component = Create(type, false);
-            if (component is IStartSystem<P1> system)
+            if (component is IInitializeSystem<P1> system)
             {
-                system.SystemStart(p1);
+                system.SystemInitialize(p1);
             }
             EnitityHouse.Instance.AddSlefUpdateSystem(component);
             return component;
@@ -264,9 +264,9 @@ namespace GameFrame
         public IEntity AddChild<TP1, TP2>(Type type, TP1 p1, TP2 p2)
         {
             IEntity component = Create(type, false);
-            if (component is IStartSystem<TP1,TP2> system)
+            if (component is IInitializeSystem<TP1,TP2> system)
             {
-                system.SystemStart(p1,p2);
+                system.SystemInitialize(p1,p2);
             }
             EnitityHouse.Instance.AddSlefUpdateSystem(component);
             return component;

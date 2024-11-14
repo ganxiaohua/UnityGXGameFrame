@@ -2,11 +2,11 @@ using Cysharp.Threading.Tasks;
 
 namespace GameFrame
 {
-    public class WaitComponent : Entity, IStartSystem
+    public class WaitComponent : Entity, IInitializeSystem
     {
         public UniTaskCompletionSource UniTaskCompletionSource;
 
-        public void Start()
+        public void Initialize()
         {
             UniTaskCompletionSource = new UniTaskCompletionSource();
         }

@@ -2,14 +2,14 @@
 
 namespace GameFrame
 {
-    public class World : Entity, IStartSystem, IUpdateSystem
+    public class World : Entity, IInitializeSystem, IUpdateSystem
     {
         private Dictionary<Matcher, Group> groups = new();
         private List<Group>[] groupsList;
         public float DeltaTime { get; private set; }
         public float Multiple { get; private set; }
 
-        public virtual void Start()
+        public virtual void Initialize()
         {
             SetMultiple(1);
             groupsList = new List<Group>[GXComponents.ComponentTypes.Length];

@@ -3,13 +3,13 @@ using FairyGUI;
 
 namespace GameFrame
 {
-    public class DependentUI : Entity, IStartSystem<string,string>
+    public class DependentUI : Entity, IInitializeSystem<string,string>
     {
         public DefaultAssetReference DefaultAssetReference;
         public GObject Window;
         private UniTaskCompletionSource waitLoadTask;
 
-        public void Start(string packageName,string windowName)
+        public void Initialize(string packageName,string windowName)
         {
             DefaultAssetReference = new DefaultAssetReference();
             waitLoadTask = new UniTaskCompletionSource();
