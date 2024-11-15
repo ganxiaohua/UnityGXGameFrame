@@ -18,14 +18,14 @@ namespace GameFrame
 
         public IReadOnlyList<T> DataList => dataList;
 
-        private bool m_keepOrder;
+        private bool keepOrder;
 
         public StrongList(int capacity = 0, bool keepOrder = false)
         {
             dataList = new List<T>(capacity);
             currentIndex = -1;
             currentElement = default;
-            m_keepOrder = keepOrder;
+            this.keepOrder = keepOrder;
         }
 
         public void Add(T val)
@@ -43,7 +43,7 @@ namespace GameFrame
 
                 if (index > currentIndex - 1)
                 {
-                    if (!m_keepOrder)
+                    if (!keepOrder)
                         dataList.RemoveAtSwapBack(index);
                     else
                     {
@@ -53,7 +53,7 @@ namespace GameFrame
                 else if (index < currentIndex - 1)
                 {
                     dataList[index] = dataList[currentIndex - 1];
-                    if (!m_keepOrder)
+                    if (!keepOrder)
                         dataList.RemoveAtSwapBack(currentIndex - 1);
                     else
                     {
@@ -64,7 +64,7 @@ namespace GameFrame
                 }
                 else
                 {
-                    if (!m_keepOrder)
+                    if (!keepOrder)
                         dataList.RemoveAtSwapBack(index);
                     else
                     {
@@ -78,7 +78,7 @@ namespace GameFrame
             }
             else
             {
-                if (!m_keepOrder)
+                if (!keepOrder)
                     return dataList.RemoveSwapBack(val);
                 else
                 {
