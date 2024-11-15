@@ -7,7 +7,7 @@ namespace GameFrame.Editor
 {
     public class DialogueGraphWindow : EditorWindow
     {
-        private EntityGraphView GraphView;
+        private EntityGraphView graphView;
 
         public static void OpenDialogueGraphWindow()
         {
@@ -17,28 +17,28 @@ namespace GameFrame.Editor
 
         protected void OnGUI()
         {
-            if (!EditorApplication.isPlaying && GraphView != null)
+            if (!EditorApplication.isPlaying && graphView != null)
             {
-                GraphView.Dispose();
+                graphView.Dispose();
                 rootVisualElement.Clear();
-                GraphView = null;
+                graphView = null;
             }
-            else if (EditorApplication.isPlaying && GraphView == null)
+            else if (EditorApplication.isPlaying && graphView == null)
             {
-                GraphView = new EntityGraphView();
-                GraphView.Init(this);
-                GraphView.Show();
+                graphView = new EntityGraphView();
+                graphView.Init(this);
+                graphView.Show();
                 CreateTools();
             }
 
-            GraphView?.Update();
+            graphView?.Update();
         }
 
 
         private void OnDisable()
         {
-            GraphView?.Dispose();
-            GraphView = null;
+            graphView?.Dispose();
+            graphView = null;
         }
 
         private void CreateTools()
@@ -46,8 +46,8 @@ namespace GameFrame.Editor
             Toolbar toolbar = new Toolbar();
             TextField searchField = new TextField();
             searchField.style.width = 150;
-            Button refreshBtn = new Button(() => { GraphView.FollowNode(null); });
-            Button serchBtn = new Button(() => { GraphView.FindNode(searchField.text); });
+            Button refreshBtn = new Button(() => { graphView.FollowNode(null); });
+            Button serchBtn = new Button(() => { graphView.FindNode(searchField.text); });
             serchBtn.text = "搜索";
             refreshBtn.text = "刷新";
             toolbar.Add(refreshBtn);

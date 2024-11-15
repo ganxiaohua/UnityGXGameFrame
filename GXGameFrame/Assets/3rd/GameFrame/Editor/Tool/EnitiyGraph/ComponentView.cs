@@ -17,13 +17,13 @@ namespace GameFrame.Editor
         [ShowInInspector] [HorizontalGroup("Component", 0.4f)] [LabelText("")] [ReadOnly]
         private string componentName;
 
-        [HideInInspector] private Type ComponentType;
+        [HideInInspector] private Type componentType;
 
         [HideInInspector] private Action<Type> func;
 
         public void Init(Type type, Action<Type> func)
         {
-            ComponentType = type;
+            componentType = type;
             componentName = type.Name;
             this.func = func;
         }
@@ -32,12 +32,12 @@ namespace GameFrame.Editor
         [HorizontalGroup("Component", 0.2f)]
         public void Add()
         {
-            func?.Invoke(ComponentType);
+            func?.Invoke(componentType);
         }
 
         public bool IsMatch(string searchString)
         {
-            return ComponentType.Name.ToLower().Contains(searchString.ToLower());
+            return componentType.Name.ToLower().Contains(searchString.ToLower());
         }
     }
 
@@ -53,13 +53,13 @@ namespace GameFrame.Editor
         private ECSEntity ecsEntity;
 
         private bool isShowAllEcsComponents;
-        private Dictionary<int, PropertyTree> m_EcsComponentsTree = new();
+        private Dictionary<int, PropertyTree> ecsComponentsTree = new();
 
         private List<int> waitRemoveList = new();
 
         protected override void OnDestroy()
         {
-            foreach (var t in m_EcsComponentsTree.Values) t.Dispose();
+            foreach (var t in ecsComponentsTree.Values) t.Dispose();
 
             sWindow = null;
             waitRemoveList.Clear();
@@ -70,7 +70,7 @@ namespace GameFrame.Editor
             sWindow ??= GetWindow<ComponentView>();
             sWindow.titleContent.text = string.IsNullOrEmpty(ecsEntity.Name) ? "Entity" : ecsEntity.Name;
             sWindow.ecsEntity = ecsEntity;
-            sWindow.m_EcsComponentsTree.Clear();
+            sWindow.ecsComponentsTree.Clear();
             sWindow.isShowAllEcsComponents = false;
             if (GXComponents.ComponentTypes.Length == 0)
                 return;
@@ -114,14 +114,14 @@ namespace GameFrame.Editor
 
             var comIndexs = ecsEntity.EcsComponentArray.indexList;
             waitRemoveList.Clear();
-            foreach (var key in m_EcsComponentsTree.Keys)
+            foreach (var key in ecsComponentsTree.Keys)
                 if (!comIndexs.Contains(key))
                     waitRemoveList.Add(key);
 
             foreach (var key in waitRemoveList)
             {
-                m_EcsComponentsTree[key].Dispose();
-                m_EcsComponentsTree.Remove(key);
+                ecsComponentsTree[key].Dispose();
+                ecsComponentsTree.Remove(key);
             }
 
             for (var i = comIndexs.Count - 1; i >= 0; i--)
@@ -140,11 +140,11 @@ namespace GameFrame.Editor
                 EditorGUILayout.EndHorizontal();
                 if (t)
                 {
-                    if (!m_EcsComponentsTree.TryGetValue(cid, out var tree))
+                    if (!ecsComponentsTree.TryGetValue(cid, out var tree))
                     {
                         tree = PropertyTree.Create(ecsComponent);
                         tree.OnPropertyValueChanged += ChangeComponent;
-                        m_EcsComponentsTree.Add(cid, tree);
+                        ecsComponentsTree.Add(cid, tree);
                     }
 
                     tree.Draw(false);

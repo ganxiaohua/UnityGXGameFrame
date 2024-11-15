@@ -6,17 +6,16 @@ namespace GameFrame.Editor
 {
     public class GeneralGraphView : GraphView
     {
-        
-        private List<Edge> m_EdgeList;
+        private List<Edge> edgeList;
 
-        private List<Node> m_NodeList;
+        private List<Node> nodeList;
 
-        private float m_LastTime;
+        private float lastTime;
 
         public void Init()
         {
-            m_EdgeList = new List<Edge>();
-            m_NodeList = new();
+            edgeList = new List<Edge>();
+            nodeList = new();
             SetupZoom(ContentZoomer.DefaultMinScale, ContentZoomer.DefaultMaxScale);
             // 允许拖拽Content
             this.AddManipulator(new ContentDragger());
@@ -37,40 +36,38 @@ namespace GameFrame.Editor
 
         public void Update()
         {
-       
         }
-        
+
         public void DeleteAllNode()
         {
-            foreach (var item in m_NodeList)
+            foreach (var item in nodeList)
             {
                 item.Clear();
                 RemoveElement(item);
             }
 
-            foreach (var item in m_EdgeList)
+            foreach (var item in edgeList)
             {
                 RemoveElement(item);
             }
 
-            m_NodeList.Clear();
-            m_EdgeList.Clear();
+            nodeList.Clear();
+            edgeList.Clear();
         }
 
         public T AddNode<T>() where T : Node, new()
         {
             T node = new T();
             AddElement(node);
-            m_NodeList.Add(node);
+            nodeList.Add(node);
             return node;
         }
 
         public void RemoveNode(Node node)
         {
             RemoveElement(node);
-            m_NodeList.Remove(node);
+            nodeList.Remove(node);
         }
-
 
 
         /// <summary>
@@ -87,7 +84,7 @@ namespace GameFrame.Editor
             };
             tempEdge.input.Connect(tempEdge);
             tempEdge.output.Connect(tempEdge);
-            m_EdgeList.Add(tempEdge);
+            edgeList.Add(tempEdge);
             AddElement(tempEdge);
             tempEdge.pickingMode = picking;
         }

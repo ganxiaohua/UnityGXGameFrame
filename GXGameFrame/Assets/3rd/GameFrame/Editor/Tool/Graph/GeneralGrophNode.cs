@@ -11,13 +11,13 @@ namespace GameFrame.Editor
         public bool Entry = false;
         public Port InPort;
         public Port OutPort;
-        private EntityGraphView m_Parent;
-        private EntityNode m_Data;
+        private EntityGraphView mParent;
+        private EntityNode mData;
 
         public void Init(EntityGraphView parent, EntityNode data, string text, Rect rect)
         {
-            m_Parent = parent;
-            m_Data = data;
+            mParent = parent;
+            mData = data;
             UseDefaultStyling();
             GUID = Guid.NewGuid().ToString();
             title = text;
@@ -89,7 +89,7 @@ namespace GameFrame.Editor
         {
             if (e.button == 0)
             {
-                m_Parent.ShowComponent( m_Data);
+                mParent.ShowComponent(mData);
             }
         }
     }

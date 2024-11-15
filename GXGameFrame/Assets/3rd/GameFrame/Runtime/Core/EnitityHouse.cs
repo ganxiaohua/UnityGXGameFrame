@@ -179,7 +179,7 @@ namespace GameFrame
         private void AddEcsSystem(World entity, Type type)
         {
             ISystemObject sysObject = CreateSystem(entity, type);
-            sysObject.System.SystemInitialize( entity);
+            sysObject.System.SystemInitialize(entity);
             updateSystems.AddUpdateSystem(entity, sysObject);
         }
 
@@ -194,7 +194,7 @@ namespace GameFrame
             {
                 return;
             }
-            
+
 
             void Add(Type type)
             {
@@ -244,7 +244,7 @@ namespace GameFrame
         /// <param name="entity"></param>
         public void RunShowSystem(Entity entity)
         {
-            if(entity is not  ISystem)
+            if (entity is not ISystem)
                 return;
             ISystem system = (ISystem) entity;
             system?.SystemShow();
@@ -329,7 +329,6 @@ namespace GameFrame
             if (allSystemDic == null)
             {
                 //这个实体上不存在系统
-                
                 return;
             }
 
