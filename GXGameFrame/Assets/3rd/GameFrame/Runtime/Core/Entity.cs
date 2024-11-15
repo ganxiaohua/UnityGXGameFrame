@@ -27,7 +27,7 @@ namespace GameFrame
 
         public void Initialize(IEntity sceneParent, IEntity parent, int id)
         {
-            State = IEntity.EntityState.IsCreated;
+            State = IEntity.EntityState.IsRunning;
             Parent = parent;
             SceneParent = sceneParent;
             ID = id;

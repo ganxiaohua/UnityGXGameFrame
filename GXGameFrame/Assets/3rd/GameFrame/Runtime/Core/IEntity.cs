@@ -7,7 +7,7 @@ namespace GameFrame
         public enum EntityState : byte
         {
             None = 0,
-            IsCreated,
+            IsRunning,
             IsClear
         }
 
@@ -21,7 +21,7 @@ namespace GameFrame
 
         public EntityState State { get; }
 
-        public void Initialize(IEntity sceneParent,IEntity parent,int id);
+        public void Initialize(IEntity sceneParent, IEntity parent, int id);
         public void ClearAllComponent();
     }
 }

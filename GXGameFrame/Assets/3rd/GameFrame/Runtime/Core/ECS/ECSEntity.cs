@@ -40,7 +40,7 @@ namespace GameFrame
             EcsComponentArray = ReferencePool.Acquire<GXArray<ECSComponent>>();
             indexList = new List<int>(128);
             EcsComponentArray.Init(GXComponents.ComponentTypes.Length);
-            State = IEntity.EntityState.IsCreated;
+            State = IEntity.EntityState.IsRunning;
             Parent = parent;
             SceneParent = sceneParent;
             ID = id;
