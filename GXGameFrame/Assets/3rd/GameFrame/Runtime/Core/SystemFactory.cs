@@ -2,15 +2,15 @@
 {
     public static class SystemFactory
     {
-        public static void AddEcsSystem<T>(this World entity) where T : class,ISystem
+        public static void AddSystem<T>(this World entity) where T : class, ISystem
         {
-            EnitityHouse.Instance.AddEcsSystem<T>(entity);
+            EntityHouse.Instance.AddSystem<T>(entity);
         }
-        
-        
-        public static void RemoveSystem<T>(this World entity) where T : class,ISystem
+
+
+        public static void RemoveSystem<T>(this World entity) where T : class, ISystem
         {
-            EnitityHouse.Instance.RemoveSystem<T>(entity);
+            EntityHouse.Instance.RemoveSystem<T>(entity);
         }
     }
 }

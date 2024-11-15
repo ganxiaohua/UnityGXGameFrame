@@ -4,15 +4,15 @@ namespace GameFrame
 {
     public class UpdateSystems
     {
-        private StrongList<SystemEntity>[] updateSystemEntityArr;
-        
-        public StrongList<SystemEntity>[] UpdateSystemEntityArr => updateSystemEntityArr;
+        private StrongList<ISystem>[] updateSystemEntityArr;
 
-        private DDictionary<IEntity, ISystem, SystemEntity> IndexDDc = new();
+        public StrongList<ISystem>[] UpdateSystemEntityArr => updateSystemEntityArr;
+
+        private Dictionary<IEntity, StrongList<ISystem>> entityUpdateMap = new();
 
         public UpdateSystems()
         {
-            updateSystemEntityArr = new[] {new StrongList<SystemEntity>(256), new StrongList<SystemEntity>(256), new StrongList<SystemEntity>(256)};
+            updateSystemEntityArr = new[] {new StrongList<ISystem>(256, true), new StrongList<ISystem>(256, true), new StrongList<ISystem>(256, true)};
         }
 
         /// <summary>
@@ -22,21 +22,21 @@ namespace GameFrame
         /// <param name="ecsSystemObject"></param>
         public void AddUpdateSystem(IEntity entity, ISystemObject ecsSystemObject)
         {
-            UpdateType updateType = ecsSystemObject.System.IsUpdateSystem();
-            if (updateType != UpdateType.Node && !HasUpdateSystem(entity, ecsSystemObject.System))
+            UpdateType updateType = ecsSystemObject.System.GetUpdateSystemType();
+            if (updateType != UpdateType.Node && !InUpdateMap(entity, ecsSystemObject.System))
             {
-                if (IndexDDc.ContainsTk(entity, ecsSystemObject.System))
+                if (!entityUpdateMap.TryGetValue(entity, out var updateSystem))
                 {
-                    Debugger.LogWarning("entity has add in the Index");
-                    return;
+                    updateSystem = new StrongList<ISystem>();
+                    entityUpdateMap.Add(entity, updateSystem);
                 }
 
-                SystemEntity systemEntity = ReferencePool.Acquire<SystemEntity>();
-                systemEntity.Create(ecsSystemObject, entity);
-
-                updateSystemEntityArr[(int)updateType].Add(systemEntity);
-
-                IndexDDc.Add(entity, ecsSystemObject.System, systemEntity);
+                int index = (int) updateType;
+                if (!updateSystem.Contains(ecsSystemObject.System))
+                {
+                    updateSystem.Add(ecsSystemObject.System);
+                    updateSystemEntityArr[index].Add(ecsSystemObject.System);
+                }
             }
         }
 
@@ -46,20 +46,21 @@ namespace GameFrame
         /// <param name="entity"></param>
         /// <param name="system"></param>
         /// <returns></returns>
-        public bool HasUpdateSystem(IEntity entity, ISystem system = null)
+        public bool InUpdateMap(IEntity entity, ISystem system = null)
         {
             if (system == null)
             {
-                if (IndexDDc.ContainsT(entity))
+                if (entityUpdateMap.ContainsKey(entity))
                 {
                     return true;
                 }
             }
             else
             {
-                if (IndexDDc.ContainsTk(entity, system))
+                if (entityUpdateMap.TryGetValue(entity, out var systems))
                 {
-                    return true;
+                    if (systems.Contains(system))
+                        return true;
                 }
             }
 
@@ -73,30 +74,25 @@ namespace GameFrame
         /// <param name="system"></param>
         public void RemoveUpdateSystem(IEntity enitity, ISystem system = null)
         {
-            if (system == null)
+            if (entityUpdateMap.TryGetValue(enitity, out var systems))
             {
-                Dictionary<ISystem, SystemEntity> systemdic = IndexDDc.GetValue(enitity);
-                if (systemdic != null)
+                if (system != null)
                 {
-                    foreach (var systemObject in systemdic)
-                    {
-                        UpdateType updateType = systemObject.Key.IsUpdateSystem();
-                        updateSystemEntityArr[(int)updateType].Remove(systemObject.Value);
-                    }
-
-                    IndexDDc.RemoveTkey(enitity);
+                    var updateType = system.GetUpdateSystemType();
+                    if (updateType == UpdateType.Node)
+                        return;
+                    int index = (int) updateType;
+                    systems.Remove(system);
+                    updateSystemEntityArr[index].Remove(system);
                 }
-            }
-            else
-            {
-                SystemEntity systemobejct = IndexDDc.GetVValue(enitity, system);
-                if (systemobejct != null)
+                else
                 {
-                    UpdateType updateType = system.IsUpdateSystem();
-                    if (updateType != UpdateType.Node)
+                    foreach (var sys in systems)
                     {
-                        updateSystemEntityArr[(int) updateType].Remove(systemobejct);
-                        IndexDDc.RemoveKkey(enitity, system);
+                        var updateType = sys.GetUpdateSystemType();
+                        int index = (int) updateType;
+                        updateSystemEntityArr[index].Remove(sys);
+                        systems.Remove(sys);
                     }
                 }
             }

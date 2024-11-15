@@ -76,7 +76,7 @@ namespace GameFrame
         }
 
 
-        public static UpdateType IsUpdateSystem(this ISystem system)
+        public static UpdateType GetUpdateSystemType(this ISystem system)
         {
             if (system is IUpdateSystem)
             {
@@ -95,42 +95,42 @@ namespace GameFrame
         }
 
 
-        public static void SystemUpdate(this StrongList<SystemEntity> ets, float elapseSeconds, float realElapseSeconds)
+        public static void SystemUpdate(this StrongList<ISystem> systems, float elapseSeconds, float realElapseSeconds)
         {
-            foreach (var es in ets)
+            foreach (var system in systems)
             {
 #if UNITY_EDITOR
-                Profiler.BeginSample(es.SystemObject.System.GetType().Name);
+                Profiler.BeginSample(system.GetType().Name);
 #endif
-                ((IUpdateSystem) es.SystemObject.System).OnUpdate(elapseSeconds, realElapseSeconds);
+                ((IUpdateSystem) system).OnUpdate(elapseSeconds, realElapseSeconds);
 #if UNITY_EDITOR
                 Profiler.EndSample();
 #endif
             }
         }
 
-        public static void SystemLateUpdate(this StrongList<SystemEntity> ets, float elapseSeconds, float realElapseSeconds)
+        public static void SystemLateUpdate(this StrongList<ISystem> systems, float elapseSeconds, float realElapseSeconds)
         {
-            foreach (var es in ets)
+            foreach (var system in systems)
             {
 #if UNITY_EDITOR
-                Profiler.BeginSample(es.SystemObject.System.GetType().Name);
+                Profiler.BeginSample(system.GetType().Name);
 #endif
-                ((ILateUpdateSystem) es.SystemObject.System).LateUpdate(elapseSeconds, realElapseSeconds);
+                ((ILateUpdateSystem) system).LateUpdate(elapseSeconds, realElapseSeconds);
 #if UNITY_EDITOR
                 Profiler.EndSample();
 #endif
             }
         }
 
-        public static void SystemFixedUpdate(this StrongList<SystemEntity> ets, float elapseSeconds, float realElapseSeconds)
+        public static void SystemFixedUpdate(this StrongList<ISystem> systems, float elapseSeconds, float realElapseSeconds)
         {
-            foreach (var es in ets)
+            foreach (var system in systems)
             {
 #if UNITY_EDITOR
-                Profiler.BeginSample(es.SystemObject.System.GetType().Name);
+                Profiler.BeginSample(system.GetType().Name);
 #endif
-                ((IFixedUpdateSystem) es.SystemObject.System).FixedUpdate(elapseSeconds, realElapseSeconds);
+                ((IFixedUpdateSystem) system).FixedUpdate(elapseSeconds, realElapseSeconds);
 #if UNITY_EDITOR
                 Profiler.EndSample();
 #endif

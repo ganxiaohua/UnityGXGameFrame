@@ -4,13 +4,13 @@ namespace GameFrame
 {
     public interface ISystemObject : IDisposable
     {
-        public ISystem System { get;}
+        public ISystem System { get; }
     }
 
-    public class SystemObject : ISystemObject
+    public class EntitySystem : ISystemObject
     {
         public ISystem System { get; private set; }
-        
+
         public void AddSystem(ISystem system)
         {
             System = system;
@@ -18,14 +18,11 @@ namespace GameFrame
 
         public void Dispose()
         {
-           
         }
     }
 
-    public class EcsSystemObject :ISystemObject 
+    public class IndependentSystem : ISystemObject
     {
-
-        // private ISystemType m_ISystemType;
         public ISystem System { get; private set; }
 
         public void AddSystem<T>() where T : ISystem

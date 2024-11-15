@@ -5,7 +5,7 @@ namespace GameFrame
 {
     using DDictionaryETC = DDictionary<IEntity, Type, ISystemObject>;
 
-    public class EnitityHouse : Singleton<EnitityHouse>
+    public class EntityHouse : Singleton<EntityHouse>
     {
         /// <summary>
         /// 不会包含EcsEntity的实体集合
@@ -147,9 +147,9 @@ namespace GameFrame
             sceneEntityDic.Remove(sceneType);
         }
 
-        public void AddEcsSystem<T>(World entity) where T : ISystem
+        public void AddSystem<T>(World entity) where T : ISystem
         {
-            AddEcsSystem(entity, typeof(T));
+            AddSystem(entity, typeof(T));
         }
 
         /// <summary>
@@ -163,8 +163,8 @@ namespace GameFrame
             ISystemObject sysObject = entitySystemsDDic.GetVValue(entity, system);
             if (sysObject == null)
             {
-                sysObject = ReferencePool.Acquire<EcsSystemObject>();
-                ((EcsSystemObject) sysObject).AddSystem(system);
+                sysObject = ReferencePool.Acquire<IndependentSystem>();
+                ((IndependentSystem) sysObject).AddSystem(system);
                 entitySystemsDDic.Add(entity, system, sysObject);
             }
 
@@ -176,7 +176,7 @@ namespace GameFrame
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="type"></param>
-        private void AddEcsSystem(World entity, Type type)
+        public void AddSystem(World entity, Type type)
         {
             ISystemObject sysObject = CreateSystem(entity, type);
             sysObject.System.SystemInitialize(entity);
@@ -188,7 +188,7 @@ namespace GameFrame
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="type"></param>
-        public void AddSlefUpdateSystem(IEntity entity)
+        public void AddUpdateSystem(IEntity entity)
         {
             if (entity is not ISystem system)
             {
@@ -198,7 +198,7 @@ namespace GameFrame
 
             void Add(Type type)
             {
-                var sysObject = ReferencePool.Acquire<SystemObject>();
+                var sysObject = ReferencePool.Acquire<EntitySystem>();
                 sysObject.AddSystem((ISystem) entity);
                 entitySystemsDDic.Add(entity, type, sysObject);
                 updateSystems.AddUpdateSystem(entity, sysObject);
@@ -249,7 +249,7 @@ namespace GameFrame
             ISystem system = (ISystem) entity;
             system?.SystemShow();
             EventData.Instance.AddEventEntity(entity);
-            if (!updateSystems.HasUpdateSystem(entity))
+            if (!updateSystems.InUpdateMap(entity))
             {
                 ISystemObject updateSystem = entitySystemsDDic.GetVValue(entity, typeof(IUpdateSystem));
                 if (updateSystem != null)
@@ -315,6 +315,7 @@ namespace GameFrame
             if (ecsSystemObject != null)
             {
                 RemoveUpdateSystem(entity, ecsSystemObject.System);
+                ReferencePool.Release(ecsSystemObject);
             }
         }
 

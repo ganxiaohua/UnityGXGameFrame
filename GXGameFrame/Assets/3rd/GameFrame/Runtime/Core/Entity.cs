@@ -12,19 +12,19 @@ namespace GameFrame
         public IEntity Parent { get; private set; }
 
         public int ID { get; private set; }
-        
-        public string Name { get;  set; }
+
+        public string Name { get; set; }
 
         private Dictionary<Type, IEntity> components = new();
 
         public Dictionary<Type, IEntity> Components => components;
 
-        private HashSet<IEntity> children = new ();
+        private HashSet<IEntity> children = new();
 
         public HashSet<IEntity> Children => children;
 
         private static int sSerialId;
-        
+
         public void Initialize(IEntity sceneParent, IEntity parent, int id)
         {
             State = IEntity.EntityState.IsCreated;
@@ -32,8 +32,8 @@ namespace GameFrame
             SceneParent = sceneParent;
             ID = id;
         }
-        
-        
+
+
         protected virtual IEntity Create<T>(bool isComponent) where T : IEntity
         {
             Type type = typeof(T);
@@ -42,8 +42,8 @@ namespace GameFrame
 
         private IEntity Create(Type type, bool isComponent)
         {
-            IEntity entity = (IEntity)ReferencePool.Acquire(type);
-            entity.Initialize(this is MainScene ? this : SceneParent,this,++sSerialId);
+            IEntity entity = (IEntity) ReferencePool.Acquire(type);
+            entity.Initialize(this is MainScene ? this : SceneParent, this, ++sSerialId);
             if (isComponent)
             {
                 components.Add(type, entity);
@@ -52,7 +52,8 @@ namespace GameFrame
             {
                 children.Add(entity);
             }
-            EnitityHouse.Instance.AddEntity(entity);
+
+            EntityHouse.Instance.AddEntity(entity);
             return entity;
         }
 
@@ -80,7 +81,7 @@ namespace GameFrame
         /// <param name="entity"></param>
         private void Remove(IEntity entity)
         {
-            EnitityHouse.Instance.RemoveEntity(entity);
+            EntityHouse.Instance.RemoveEntity(entity);
             ReferencePool.Release(entity);
         }
 
@@ -127,7 +128,8 @@ namespace GameFrame
             {
                 system.SystemInitialize();
             }
-            EnitityHouse.Instance.AddSlefUpdateSystem(component);
+
+            EntityHouse.Instance.AddUpdateSystem(component);
             return component;
         }
 
@@ -145,7 +147,8 @@ namespace GameFrame
             {
                 system.SystemInitialize(p1);
             }
-            EnitityHouse.Instance.AddSlefUpdateSystem(component);
+
+            EntityHouse.Instance.AddUpdateSystem(component);
             return component;
         }
 
@@ -158,14 +161,15 @@ namespace GameFrame
         public IEntity AddComponent<TP1, TP2>(Type type, TP1 p1, TP2 p2)
         {
             IEntity component = CreateComponent(type);
-            if (component is IInitializeSystem<TP1,TP2> system)
+            if (component is IInitializeSystem<TP1, TP2> system)
             {
-                system.SystemInitialize(p1,p2);
+                system.SystemInitialize(p1, p2);
             }
-            EnitityHouse.Instance.AddSlefUpdateSystem(component);
+
+            EntityHouse.Instance.AddUpdateSystem(component);
             return component;
         }
-        
+
         public bool HasComponent<T>() where T : class, IEntity
         {
             if (GetComponent<T>() != null)
@@ -192,8 +196,8 @@ namespace GameFrame
 
             return value;
         }
-        
-        public void TryRemoveComponent<T>() where T : class,IEntity
+
+        public void TryRemoveComponent<T>() where T : class, IEntity
         {
             if (HasComponent<T>())
             {
@@ -206,7 +210,7 @@ namespace GameFrame
         /// 删除组件
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        public void RemoveComponent<T>() where T : class,IEntity
+        public void RemoveComponent<T>() where T : class, IEntity
         {
             Remove<T>();
         }
@@ -234,7 +238,8 @@ namespace GameFrame
             {
                 system.SystemInitialize();
             }
-            EnitityHouse.Instance.AddSlefUpdateSystem(component);
+
+            EntityHouse.Instance.AddUpdateSystem(component);
             return component;
         }
 
@@ -251,7 +256,8 @@ namespace GameFrame
             {
                 system.SystemInitialize(p1);
             }
-            EnitityHouse.Instance.AddSlefUpdateSystem(component);
+
+            EntityHouse.Instance.AddUpdateSystem(component);
             return component;
         }
 
@@ -264,11 +270,12 @@ namespace GameFrame
         public IEntity AddChild<TP1, TP2>(Type type, TP1 p1, TP2 p2)
         {
             IEntity component = Create(type, false);
-            if (component is IInitializeSystem<TP1,TP2> system)
+            if (component is IInitializeSystem<TP1, TP2> system)
             {
-                system.SystemInitialize(p1,p2);
+                system.SystemInitialize(p1, p2);
             }
-            EnitityHouse.Instance.AddSlefUpdateSystem(component);
+
+            EntityHouse.Instance.AddUpdateSystem(component);
             return component;
         }
 
@@ -302,6 +309,7 @@ namespace GameFrame
             {
                 throw new Exception($"entity already not child: {entity.GetType().FullName}");
             }
+
             Remove(entity);
         }
 
@@ -323,7 +331,7 @@ namespace GameFrame
 
             children.Clear();
         }
-        
+
 
         /// <summary>
         /// 清理所有的组件
@@ -351,7 +359,7 @@ namespace GameFrame
         /// </summary>
         public virtual void Dispose()
         {
-            State  = IEntity.EntityState.IsClear;
+            State = IEntity.EntityState.IsClear;
             Parent = null;
             ClearAllChild();
             ClearAllComponent();

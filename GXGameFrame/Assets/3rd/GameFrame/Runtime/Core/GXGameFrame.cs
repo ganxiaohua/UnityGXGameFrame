@@ -10,7 +10,7 @@ namespace GameFrame
         public async UniTask Start()
         {
             MainScene = ReferencePool.Acquire<MainScene>();
-            MainScene.Initialize(null,null,0);
+            MainScene.Initialize(null, null, 0);
             MainScene.AddComponent<UIComponent>();
             await MainScene.AddComponent<AssetInitComponent>().WaitLoad();
         }
@@ -20,7 +20,7 @@ namespace GameFrame
             float datetime = Time.deltaTime;
             float realtimeSinceStartup = Time.realtimeSinceStartup;
             AssetManager.Instance.Update(datetime);
-            EnitityHouse.Instance.Update(datetime, realtimeSinceStartup);
+            EntityHouse.Instance.Update(datetime, realtimeSinceStartup);
             ObjectPoolManager.Instance.Update(datetime, realtimeSinceStartup);
             UIManager.Instance.Update(datetime, realtimeSinceStartup);
             ReferencePool.Update(datetime, realtimeSinceStartup);
@@ -30,21 +30,21 @@ namespace GameFrame
         {
             float datetime = Time.deltaTime;
             float realtimeSinceStartup = Time.realtimeSinceStartup;
-            EnitityHouse.Instance.LateUpdate(datetime, realtimeSinceStartup);
+            EntityHouse.Instance.LateUpdate(datetime, realtimeSinceStartup);
         }
 
         public void FixedUpdate()
         {
             float datetime = Time.deltaTime;
             float realtimeSinceStartup = Time.realtimeSinceStartup;
-            EnitityHouse.Instance.FixedUpdate(datetime, realtimeSinceStartup);
+            EntityHouse.Instance.FixedUpdate(datetime, realtimeSinceStartup);
         }
 
         public void OnDisable()
         {
             ReferencePool.Release(MainScene);
             UIManager.Instance.Disable();
-            EnitityHouse.Instance.Disable();
+            EntityHouse.Instance.Disable();
             ObjectPoolManager.Instance.Disable();
         }
     }

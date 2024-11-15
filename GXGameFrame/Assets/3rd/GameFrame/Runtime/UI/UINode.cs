@@ -86,6 +86,7 @@ namespace GameFrame
             {
                 DestroyNode(child);
             }
+
             uinode.Window.TryRemoveComponent<UIObjectData>();
             ReferencePool.Release(uinode);
         }
@@ -94,7 +95,7 @@ namespace GameFrame
         {
             if (Window == null)
                 return;
-            EnitityHouse.Instance.RunPreShowSystem(Window, isFirstOpen);
+            EntityHouse.Instance.RunPreShowSystem(Window, isFirstOpen);
             foreach (var child in Childs)
             {
                 child.PreShow(isFirstOpen);
@@ -105,7 +106,7 @@ namespace GameFrame
         {
             if (Window == null)
                 return;
-            EnitityHouse.Instance.RunShowSystem(Window);
+            EntityHouse.Instance.RunShowSystem(Window);
             foreach (var child in Childs)
             {
                 child.Show();
@@ -116,7 +117,7 @@ namespace GameFrame
         {
             if (Window == null)
                 return;
-            EnitityHouse.Instance.RunHideSystem(Window);
+            EntityHouse.Instance.RunHideSystem(Window);
             foreach (var child in Childs)
             {
                 child.Hide();
