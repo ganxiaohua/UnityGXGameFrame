@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using GameFrame.DataStructureRef;
 
 namespace GameFrame
 {
@@ -33,12 +33,10 @@ namespace GameFrame
 
         private static int m_SerialId;
 
-        private List<int> indexList;
 
         public void Initialize(IEntity sceneParent, IEntity parent, int id)
         {
             EcsComponentArray = ReferencePool.Acquire<GXArray<ECSComponent>>();
-            indexList = new List<int>(128);
             EcsComponentArray.Init(GXComponents.ComponentTypes.Length);
             State = IEntity.EntityState.IsRunning;
             Parent = parent;
@@ -145,10 +143,11 @@ namespace GameFrame
         /// </summary>
         public void ClearAllComponent()
         {
-            indexList.AddRange(EcsComponentArray.indexList);
+            var indexList = ReferencePool.Acquire<RefList<int>>();
+            indexList.List.AddRange(EcsComponentArray.indexList);
             ReferencePool.Release(EcsComponentArray);
-            ((World) Parent).Reactive(indexList, this);
-            indexList.Clear();
+            ((World) Parent).Reactive(indexList.List, this);
+            ReferencePool.Release(indexList);
         }
 
         public void Dispose()

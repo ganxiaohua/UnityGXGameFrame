@@ -24,7 +24,7 @@ namespace GameFrame.Editor
             if (propertyTree == null)
             {
                 propertyTree = PropertyTree.Create(target);
-                this.propertyTree.AttributeProcessorLocator = new CustomMinionAttributeProcessorLocator();
+                this.propertyTree.AttributeProcessorLocator = new CustomEnitiyAttributeProcessorLocator();
             }
 
             propertyTree.Draw(false);
@@ -43,7 +43,7 @@ namespace GameFrame.Editor
         }
 
         [OdinDontRegister]
-        private class CustomMinionAttributeProcessor : OdinAttributeProcessor<IEntity>
+        private class CustomEntityAttributeProcessor : OdinAttributeProcessor<IEntity>
         {
             public override void ProcessChildMemberAttributes(InspectorProperty parentProperty, MemberInfo member, List<Attribute> attributes)
             {
@@ -58,9 +58,9 @@ namespace GameFrame.Editor
             }
         }
 
-        private class CustomMinionAttributeProcessorLocator : OdinAttributeProcessorLocator
+        private class CustomEnitiyAttributeProcessorLocator : OdinAttributeProcessorLocator
         {
-            private static readonly CustomMinionAttributeProcessor Processor = new CustomMinionAttributeProcessor();
+            private static readonly CustomEntityAttributeProcessor Processor = new CustomEntityAttributeProcessor();
 
             public override List<OdinAttributeProcessor> GetChildProcessors(InspectorProperty parentProperty, MemberInfo member)
             {

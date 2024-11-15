@@ -55,6 +55,7 @@ namespace GameFrame
                         referenceCollection.Value.RemoveReferenceCount);
                 }
             }
+
             return results;
         }
 
@@ -70,10 +71,14 @@ namespace GameFrame
                     if (referencepool.UnusedCheck())
                     {
                         sWaitDestroyList.Add(referencepool.ReferenceType);
+                        if (sWaitDestroyList.Count == 10)
+                        {
+                            break;
+                        }
                     }
                 }
 
-                foreach (Type type  in sWaitDestroyList)
+                foreach (Type type in sWaitDestroyList)
                 {
                     Debugger.Log($"clear {type.Name} ReleasePool");
                     RemoveAll(type);
@@ -112,6 +117,7 @@ namespace GameFrame
                     return;
                 }
             }
+
             throw new Exception($"{typeof(T).Name} not have ");
         }
 
@@ -217,7 +223,7 @@ namespace GameFrame
 
         private static void InternalCheckReferenceType(Type referenceType)
         {
-#if  UNITY_EDITOR
+#if UNITY_EDITOR
             if (referenceType == null)
             {
                 throw new Exception("Reference type is invalid.");
@@ -251,6 +257,7 @@ namespace GameFrame
                     sReferenceCollections.Add(referenceType, referenceCollection);
                 }
             }
+
             return referenceCollection;
         }
         //
