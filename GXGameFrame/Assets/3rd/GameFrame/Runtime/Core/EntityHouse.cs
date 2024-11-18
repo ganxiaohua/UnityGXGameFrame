@@ -184,7 +184,7 @@ namespace GameFrame
         }
 
         /// <summary>
-        /// 自身又是实体又是系统
+        /// 自身又是实体又是Updtae系统
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="type"></param>

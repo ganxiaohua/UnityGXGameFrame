@@ -13,9 +13,9 @@ namespace GXGame
         
         protected override Type ViewType => typeof({0}View);
         
-        public override async UniTask Initialize()
+        public override async UniTask OnInitialize()
         {{
-             await base.Initialize();
+             await base.OnInitialize();
         }}     
     }}
 }}
