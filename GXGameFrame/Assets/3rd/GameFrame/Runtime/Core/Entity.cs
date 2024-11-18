@@ -15,12 +15,10 @@ namespace GameFrame
 
         public string Name { get; set; }
 
-
         public Dictionary<Type, IEntity> Components { get; private set; } = new();
 
-        private HashSet<IEntity> children = new();
 
-        public HashSet<IEntity> Children => children;
+        public HashSet<IEntity> Children { get; private set; } = new();
 
         private static int sSerialId;
 
@@ -49,7 +47,7 @@ namespace GameFrame
             }
             else
             {
-                children.Add(entity);
+                Children.Add(entity);
             }
 
             EntityHouse.Instance.AddEntity(entity);
@@ -279,24 +277,6 @@ namespace GameFrame
         }
 
 
-        // private void AddOtherSystem(IEntity entity)
-        // {
-        //     if (entity is IShowSystem)
-        //     {
-        //         entity.AddSlefSystem((typeof(IShowSystem)));
-        //     }
-        //
-        //     if (entity is IPreShowSystem)
-        //     {
-        //         entity.AddSlefSystem((typeof(IPreShowSystem)));
-        //     }
-        //
-        //     if (entity is IHideSystem)
-        //     {
-        //         entity.AddSlefSystem((typeof(IHideSystem)));
-        //     }
-        // }
-
         /// <summary>
         /// 删除实体
         /// </summary>
@@ -304,7 +284,7 @@ namespace GameFrame
         /// <returns></returns>
         public void RemoveChild(IEntity entity)
         {
-            if (!children.Remove(entity))
+            if (!Children.Remove(entity))
             {
                 throw new Exception($"entity already not child: {entity.GetType().FullName}");
             }
@@ -317,7 +297,7 @@ namespace GameFrame
         /// </summary>
         public void ClearAllChild()
         {
-            foreach (var item in children)
+            foreach (var item in Children)
             {
                 if (item is Entity entity)
                 {
@@ -328,7 +308,7 @@ namespace GameFrame
                 item.ClearAllComponent();
             }
 
-            children.Clear();
+            Children.Clear();
         }
 
 

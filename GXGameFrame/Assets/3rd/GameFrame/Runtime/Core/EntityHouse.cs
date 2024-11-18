@@ -287,6 +287,8 @@ namespace GameFrame
         /// <param name="entity"></param>
         public void RunHideSystem(Entity entity)
         {
+            if (entity is not ISystem)
+                return;
             ISystem system = (ISystem) entity;
             system?.SystemHide();
             EventData.Instance.RemoveEventEntity(entity);
