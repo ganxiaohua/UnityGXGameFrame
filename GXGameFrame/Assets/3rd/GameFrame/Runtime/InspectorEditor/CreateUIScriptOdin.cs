@@ -91,17 +91,13 @@ public class CreateUIScriptOdin : MonoBehaviour
     [ListDrawerSettings(NumberOfItemsPerPage = 20)] [PropertyOrder(1)]
     // [TableList, Searchable]
     public List<FairyData> bindList = new List<FairyData>();
-    
+
 
     [OnInspectorInit("EditorInit")]
     private void EditorInit()
     {
         string componentName = this.gameObject.GetComponent<UIPanel>().componentName;
-        if (string.IsNullOrEmpty(className))
-        {
-            className = "UI" + componentName; //默认类名
-        }
-
+        className = "UI" + componentName;
         SavePath = EditorCSharp.GetEditorString_UIScriptsPath() + "/" + className;
         BindInit(); //默认进行绑定
     }

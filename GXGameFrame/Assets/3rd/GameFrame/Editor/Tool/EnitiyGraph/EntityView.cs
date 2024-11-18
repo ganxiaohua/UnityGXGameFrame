@@ -14,7 +14,7 @@ namespace GameFrame.Editor
 
         public static void Init(IEntity entity)
         {
-            sEntityPanel ??= GetWindow<EntityView>();
+            sEntityPanel = GetWindow<EntityView>();
             sEntityPanel.titleContent.text = string.IsNullOrEmpty(entity.Name) ? "Entity" : entity.Name;
             sEntityPanel.target = entity;
         }
@@ -49,7 +49,7 @@ namespace GameFrame.Editor
             {
                 if (member is FieldInfo or PropertyInfo)
                 {
-                    if (member.DeclaringType != typeof(Entity) || member.DeclaringType != typeof(FsmController))
+                    if (member.DeclaringType != typeof(Entity) && member.DeclaringType != typeof(FsmController))
                     {
                         attributes.Add<ShowInInspectorAttribute>();
                         attributes.Add<ReadOnlyAttribute>();
