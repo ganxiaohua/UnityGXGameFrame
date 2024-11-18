@@ -15,9 +15,8 @@ namespace GameFrame
 
         public string Name { get; set; }
 
-        private Dictionary<Type, IEntity> components = new();
 
-        public Dictionary<Type, IEntity> Components => components;
+        public Dictionary<Type, IEntity> Components { get; private set; } = new();
 
         private HashSet<IEntity> children = new();
 
@@ -46,7 +45,7 @@ namespace GameFrame
             entity.Initialize(this is MainScene ? this : SceneParent, this, ++sSerialId);
             if (isComponent)
             {
-                components.Add(type, entity);
+                Components.Add(type, entity);
             }
             else
             {
@@ -65,12 +64,12 @@ namespace GameFrame
 
         private void Remove(Type type)
         {
-            if (!components.TryGetValue(type, out IEntity entity))
+            if (!Components.TryGetValue(type, out IEntity entity))
             {
                 throw new Exception($"entity not already  component: {type.FullName}");
             }
 
-            components.Remove(type);
+            Components.Remove(type);
             Remove(entity);
         }
 
@@ -100,7 +99,7 @@ namespace GameFrame
 
         private IEntity CreateComponent(Type type)
         {
-            if (this.components != null && this.components.ContainsKey(type))
+            if (this.Components != null && this.Components.ContainsKey(type))
             {
                 throw new Exception($"entity already has component: {type.FullName}");
             }
@@ -189,7 +188,7 @@ namespace GameFrame
         public IEntity GetComponent(Type type)
         {
             IEntity value = null;
-            if (this.components != null && !this.components.TryGetValue(type, out value))
+            if (this.Components != null && !this.Components.TryGetValue(type, out value))
             {
                 return null;
             }
@@ -338,7 +337,7 @@ namespace GameFrame
         /// </summary>
         public void ClearAllComponent()
         {
-            foreach (var item in components)
+            foreach (var item in Components)
             {
                 if (item.Value is Entity entity)
                 {
@@ -350,7 +349,7 @@ namespace GameFrame
                 }
             }
 
-            components.Clear();
+            Components.Clear();
         }
 
 
