@@ -15,22 +15,25 @@
 
 1.可以做到逻辑和渲染完全分离,逻辑端只需要关注数据即可,即便是像是位移这种需求,也不需要等待模型加载完成,直接设置位置即可,模型创建完成会自动修改为你设置的位置.
   ```
-            //比如你想要创建一个实体
-            var cubeHero = entity.AddChild<Cube>();
-            cubeHero.Name = "Hero";
-            cubeHero.AddViewType(typeof(CubeView));
-            cubeHero.AddWorldPos(new Vector3(1.5f, 0, -5));
-            cubeHero.AddWorldRotate(Quaternion.identity);
-            cubeHero.AddInputDirection();
-            cubeHero.AddLocalScale(Vector3.one * 1.5f);
-            cubeHero.AddMeshRendererColor(Color.black);
-            cubeHero.AddMoveDirection();
-            cubeHero.AddMoveSpeed(10);
-            cubeHero.AddDirectionSpeed(360);
-            cubeHero.AddDirection(Vector3.forward);
-            cubeHero.AddAssetPath("Cube");
-            cubeHero.AddCampComponent(Camp.SELF);
-            cubeHero.AddUnitTypeComponent(UnitTypeEnum.HERO);
+            var map = AddChild();
+            map.AddViewType(typeof(GoBaseView));
+            map.AddAssetPath("Map");
+            map.AddWorldPos(Vector3.zero);
+
+            var palyer = AddChild();
+            palyer.AddViewType(typeof(Go2DView));
+            palyer.AddAssetPath("Assets/GXGame/Art/Runtime/Role/Player/Prefab/Player.prefab");
+            palyer.AddWorldPos(new Vector3(-0.5f,0,0));
+            palyer.AddMoveDirection();
+            palyer.AddMoveSpeed(1);
+            palyer.AddInputDirection();
+
+            var monster = AddChild();
+            monster.AddViewType(typeof(Go2DView));
+            monster.AddAssetPath("Assets/GXGame/Art/Runtime/Role/Monster_002/Prefab/Monster_002.prefab");
+            monster.AddWorldPos(new Vector3(5,0,-1));
+            monster.AddMoveDirection();
+            monster.AddMoveSpeed(1);
   ```
 
 2.全游戏只有一份的GameObject数据类,WorldPos ,LocalPos ,LocalScale,WorldScale,WorldRot,localRot 等等只有一个源头.
@@ -60,6 +63,7 @@
 
 ![image](https://github.com/ganxiaohua/UnityGXGameFrame/assets/20961017/4b1a769b-fb88-4bd9-bc76-ad875bcbd148)
 
+![image](https://github.com/user-attachments/assets/66ab3099-f3fc-4ca1-8c9e-b89b213bf31e)
 
  
 
