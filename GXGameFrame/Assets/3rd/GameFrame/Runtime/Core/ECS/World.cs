@@ -33,11 +33,12 @@ namespace GameFrame
             base.RemoveChild(ecsEntity);
         }
 
-        public void Reactive(List<int> indexs, ECSEntity ecsEntity)
+        public void Reactive(List<int> indexs, ECSEntity ecsEntity, ushort changeType)
         {
-            foreach (var cid in indexs)
+            int count = indexs.Count;
+            for (int i = 0; i < count; i++)
             {
-                Reactive(cid, ecsEntity);
+                Reactive(indexs[i], ecsEntity, changeType);
             }
         }
 
@@ -47,7 +48,7 @@ namespace GameFrame
             grop = Group.CreateGroup(matcher);
             foreach (var item in Children)
             {
-                grop.HandleEntitySilently((ECSEntity) item);
+                grop.HandleEntitySilently((ECSEntity) item, EcsChangeEventState.AddType);
             }
 
             groups.Add(matcher, grop);
@@ -60,14 +61,15 @@ namespace GameFrame
             return grop;
         }
 
-        public void Reactive(int comid, ECSEntity entity)
+        public void Reactive(int comid, ECSEntity entity, ushort changeType)
         {
             var groupList = groupsList[comid];
             if (groupList != null)
             {
-                foreach (var t in groupList)
+                int count = groupList.Count;
+                for (int i = 0; i < count; i++)
                 {
-                    t.HandleEntity(entity);
+                    groupList[i].HandleEntity(entity, changeType);
                 }
             }
         }

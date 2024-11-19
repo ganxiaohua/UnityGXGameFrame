@@ -3,7 +3,7 @@ using System.IO;
 
 namespace GameFrame.Editor
 {
-    public class CreateEntityAuto
+    public class CreateFiles
     {
         public static string UIMainUIText = "Assets/3rd/GameFrame/Editor/Text/UI/MainUI.txt";
         public static string UIViewText = "Assets/3rd/GameFrame/Editor/Text/UI/UIViewText.txt";

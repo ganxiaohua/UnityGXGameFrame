@@ -57,15 +57,19 @@ namespace GameFrame
             if (tHandle.IsDone)
                 return tHandle.Result;
 
-            var result = await tHandle.ToUniTask(cancellationToken: cancellationToken).SuppressCancellationThrow();
-            if (result.IsCanceled)
+
+            try
+            {
+                await tHandle.ToUniTask(cancellationToken: cancellationToken);
+            }
+            catch (OperationCanceledException)
             {
                 cache.Handle = default;
                 return default(T);
             }
 
             tempRef?.LoadLater();
-            return result.Result;
+            return tHandle.Result;
         }
 
         /// <summary>

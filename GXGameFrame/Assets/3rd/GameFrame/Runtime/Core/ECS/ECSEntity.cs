@@ -53,13 +53,13 @@ namespace GameFrame
         public ECSComponent AddComponent(int cid)
         {
             Type type = GXComponents.ComponentTypes[cid];
-            if (EcsComponentArray[cid] != null)
+            if (EcsComponentArray.Items[cid] != null)
             {
                 throw new Exception($"entity already has component: {type.FullName}");
             }
 
             ECSComponent entity = EcsComponentArray.Add(cid, type);
-            world.Reactive(cid, this);
+            world.Reactive(cid, this, EcsChangeEventState.AddType);
             return entity;
         }
 
@@ -70,14 +70,14 @@ namespace GameFrame
         /// <exception cref="Exception"></exception>
         public void RemoveComponent(int cid)
         {
-            if (EcsComponentArray[cid] == null)
+            if (EcsComponentArray.Items[cid] == null)
             {
                 Type type = GXComponents.ComponentTypes[cid];
                 throw new Exception($"entity not already  component: {type.FullName}");
             }
 
             EcsComponentArray.Remove(cid);
-            world.Reactive(cid, this);
+            world.Reactive(cid, this, EcsChangeEventState.RemoveType);
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace GameFrame
         /// <returns></returns>
         public ECSComponent GetComponent(int cid)
         {
-            var component = EcsComponentArray[cid];
+            var component = EcsComponentArray.Items[cid];
             return component;
         }
 
@@ -100,7 +100,7 @@ namespace GameFrame
         {
             for (int index = 0; index < cids.Length; ++index)
             {
-                if (EcsComponentArray[cids[index]] == null)
+                if (EcsComponentArray.Items[cids[index]] == null)
                 {
                     return false;
                 }
@@ -116,7 +116,7 @@ namespace GameFrame
 
         public bool HasComponent(int cid)
         {
-            return EcsComponentArray[cid] != null;
+            return EcsComponentArray.Items[cid] != null;
         }
 
         /// <summary>
@@ -128,7 +128,7 @@ namespace GameFrame
         {
             for (int index = 0; index < cids.Length; ++index)
             {
-                if (EcsComponentArray[cids[index]] != null)
+                if (EcsComponentArray.Items[cids[index]] != null)
                 {
                     return true;
                 }
@@ -146,7 +146,7 @@ namespace GameFrame
             var indexList = ReferencePool.Acquire<RefList<int>>();
             indexList.List.AddRange(EcsComponentArray.indexList);
             ReferencePool.Release(EcsComponentArray);
-            ((World) Parent).Reactive(indexList.List, this);
+            ((World) Parent).Reactive(indexList.List, this, EcsChangeEventState.RemoveType);
             ReferencePool.Release(indexList);
         }
 

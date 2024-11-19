@@ -16,7 +16,7 @@ namespace GameFrame
         {
             Group Group = ReferencePool.Acquire<Group>();
             Group.matcher = matcher;
-            Group.entitiesMap = new();
+            Group.entitiesMap = new(128);
             return Group;
         }
 
@@ -25,17 +25,21 @@ namespace GameFrame
             ReferencePool.Release(group);
         }
 
-        private void AddOrUpdateComponent(ECSEntity entity, bool silently)
+        private void AddOrUpdateComponent(ECSEntity entity, bool silently, ushort changeType)
         {
-            bool add = entitiesMap.Add(entity);
-            if (!silently)
-                if (add)
-                    GroupAdd?.Invoke(this, entity);
-                else
-                {
+            if (changeType == EcsChangeEventState.UpdateType)
+            {
+                if (!silently)
                     GroupUpdate?.Invoke(this, entity);
-                }
+            }
+            else if (changeType == EcsChangeEventState.AddType)
+            {
+                var addSucc = entitiesMap.Add(entity);
+                if (addSucc && !silently)
+                    GroupAdd?.Invoke(this, entity);
+            }
         }
+
 
         private void RemoveComponent(ECSEntity entity, bool silently)
         {
@@ -44,23 +48,22 @@ namespace GameFrame
                 GroupRomve?.Invoke(this, entity);
         }
 
-        public int HandleEntitySilently(ECSEntity entity)
+        public int HandleEntitySilently(ECSEntity entity, ushort changeType)
         {
-            return DoEntity(entity, true);
+            return DoEntity(entity, true, changeType);
         }
 
 
-        public int HandleEntity(ECSEntity entity)
+        public int HandleEntity(ECSEntity entity, ushort changeType)
         {
-
-            return DoEntity(entity, false);
+            return DoEntity(entity, false, changeType);
         }
 
 
-        private int DoEntity(ECSEntity entity, bool silently)
+        private int DoEntity(ECSEntity entity, bool silently, ushort changeType)
         {
             if (this.matcher.Match(entity))
-                this.AddOrUpdateComponent(entity, silently);
+                this.AddOrUpdateComponent(entity, silently, changeType);
             else
                 this.RemoveComponent(entity, silently);
             return entitiesMap.Count;

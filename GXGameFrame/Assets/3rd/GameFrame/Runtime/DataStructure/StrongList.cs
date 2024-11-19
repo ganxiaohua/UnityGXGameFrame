@@ -18,6 +18,8 @@ namespace GameFrame
 
         public IReadOnlyList<T> DataList => dataList;
 
+        public int Count => dataList.Count;
+
         private bool keepOrder;
 
         public StrongList(int capacity = 0, bool keepOrder = false)

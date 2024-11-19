@@ -13,26 +13,11 @@ namespace GameFrame
 
         private GroupChanged groupChange;
 
-        private const ushort AddType = 0;
-        private const ushort RemoveType = 1;
-        private const ushort UpdateType = 2;
 
-        private ChangeEventState state = 0;
-
-        [Flags]
-        public enum ChangeEventState : ushort
-        {
-            Add = 1 << AddType,
-            Remove = 1 << RemoveType,
-            Update = 1 << UpdateType,
-            AddRemove = 1 << AddType | 1 << RemoveType,
-            AddUpdate = 1 << AddType | 1 << UpdateType,
-            RemoveUpdate = 1 << RemoveType | 1 << UpdateType,
-            AddRemoveUpdate = 1 << AddType | 1 << UpdateType | 1 << RemoveType,
-        }
+        private EcsChangeEventState.ChangeEventState state = 0;
 
 
-        public static Collector CreateCollector(World world, ChangeEventState stateType, params int[] indexs)
+        public static Collector CreateCollector(World world, EcsChangeEventState.ChangeEventState stateType, params int[] indexs)
         {
             Group[] groups = new Group[indexs.Length];
             for (int i = 0; i < indexs.Length; i++)
@@ -46,7 +31,7 @@ namespace GameFrame
             collector.InitCollector(groups);
             return collector;
         }
-        
+
 
         private void InitCollector(Group[] group)
         {
@@ -55,20 +40,21 @@ namespace GameFrame
             groupChange = AddEvent;
             foreach (var item in groups)
             {
-                if ((state & ChangeEventState.Add) != 0)
+                if ((state & EcsChangeEventState.ChangeEventState.Add) != 0)
                 {
                     item.GroupAdd += groupChange;
                 }
 
-                if ((state & ChangeEventState.Remove) != 0)
+                if ((state & EcsChangeEventState.ChangeEventState.Remove) != 0)
                 {
                     item.GroupRomve += groupChange;
                 }
 
-                if ((state & ChangeEventState.Update) != 0)
+                if ((state & EcsChangeEventState.ChangeEventState.Update) != 0)
                 {
                     item.GroupUpdate += groupChange;
                 }
+
                 Add(item);
             }
         }
@@ -85,7 +71,7 @@ namespace GameFrame
         {
             collectedEntities.Add(ecsEntity);
         }
-        
+
         public void Dispose()
         {
             collectedEntities.Clear();

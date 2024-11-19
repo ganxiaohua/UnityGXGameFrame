@@ -135,16 +135,16 @@ public class CreateUICode
             for (int i = 0; i < bindList.Count; i++)
             {
                 var v = bindList[i];
-                text += CreateEntityAuto.CreateUIAutoComText(v.TypeName, v.FieldName, v.Path, v.ParentName);
+                text += CreateFiles.CreateUIAutoComText(v.TypeName, v.FieldName, v.Path, v.ParentName);
             }
 
-            CreateEntityAuto.CreateUIViewAutoText(codepath, classname, text);
+            CreateFiles.CreateUIViewAutoText(codepath, classname, text);
         }
 
         void LogicFunc(string codepath, string classname)
         {
-            CreateEntityAuto.CreateUIMain(codepath, classname, uiPanel.packageName, uiPanel.componentName);
-            CreateEntityAuto.CreateUIViewText(codepath, classname, uiPanel.packageName, uiPanel.componentName);
+            CreateFiles.CreateUIMain(codepath, classname, uiPanel.packageName, uiPanel.componentName);
+            CreateFiles.CreateUIViewText(codepath, classname, uiPanel.packageName, uiPanel.componentName);
         }
 
         AssetDatabase.Refresh();
