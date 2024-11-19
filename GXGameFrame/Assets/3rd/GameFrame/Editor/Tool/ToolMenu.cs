@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using GameFrame.Editor.UI;
+using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
@@ -11,20 +12,20 @@ namespace GameFrame.Editor
         {
             DialogueGraphWindow.OpenDialogueGraphWindow();
         }
-        
+
         [MenuItem("GX框架工具/打开图片处理工具")]
         public static void OpenPictureDispose()
         {
             TextureEditor.TextureEditorWindow.OpenWindow();
         }
-        
+
 
         [MenuItem("GX框架工具/生成ECS绑定脚本", false, 2)]
         public static void AutoCreateScript()
         {
             AutoCreate.AutoCreateScript();
         }
-        
+
         [MenuItem("GX框架工具/事件绑定", false, 3)]
         public static void AutoEventBind()
         {
@@ -32,13 +33,19 @@ namespace GameFrame.Editor
         }
 
 
-        [MenuItem("GX框架工具/UI创建", false, 3)]
+        [MenuItem("GX框架工具/UI/UI创建", false, 3)]
         public static void CreateUI()
         {
             EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
             EditorSceneManager.OpenScene(EditorString.UIScenePath);
         }
 
+
+        [MenuItem("GX框架工具/UI/FGUI检查")]
+        public static void CheckUI()
+        {
+            FGUIChecker.OpenWindow();
+        }
 
         [MenuItem("GX框架工具/远程资源/开启", false, 4)]
         public static void OpenRemoteResource()
@@ -70,7 +77,7 @@ namespace GameFrame.Editor
             macro = macro.Replace($"{EditorString.RESSEQ};", "");
             PlayerSettings.SetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup, macro);
         }
-        
+
         // [MenuItem("GX框架工具/SystemBind/开启", false, 5)]
         // public static void OpenSystemBind()
         // {
@@ -97,7 +104,7 @@ namespace GameFrame.Editor
         //     macro = macro.Replace($"SYSTEMBIND", "");
         //     PlayerSettings.SetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup, macro);
         // }
-        
+
         [MenuItem("GX框架工具/路径/Open PersistentDataPath")]
         public static void OpenPersistentDataPath()
         {
@@ -121,7 +128,7 @@ namespace GameFrame.Editor
         {
             Application.OpenURL($"{Application.dataPath + "/../"}ServerData/{BuildScript.BuildTarget}");
         }
-        
+
         [MenuItem("GX框架工具/断言/开启", false, 7)]
         public static void OpenAssertBind()
         {
@@ -132,10 +139,11 @@ namespace GameFrame.Editor
             {
                 return;
             }
+
             macro = $"{EditorString.SHOWASSERT};{macro}";
             PlayerSettings.SetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup, macro);
         }
-        
+
         [MenuItem("GX框架工具/断言/关闭", false, 8)]
         public static void CloseAssertBind()
         {
@@ -146,10 +154,9 @@ namespace GameFrame.Editor
             {
                 return;
             }
-            
+
             macro = macro.Replace(EditorString.SHOWASSERT, "");
             PlayerSettings.SetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup, macro);
         }
-
     }
 }

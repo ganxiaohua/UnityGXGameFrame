@@ -12,5 +12,5 @@ namespace GXGame
     }}
 }}
 #
-        private {0} m{1};
-        public {0} {1} {{ get {{ return m{1} ??= Root.GetChildByPath("{2}") as {0}; }} }}     
+        private {0} _{1};
+        public {0} {1} {{ get {{ return _{1} ??= Root.GetChildByPath("{2}") as {0}; }} }}     

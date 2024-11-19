@@ -433,7 +433,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1450152506}
   - component: {fileID: 1450152505}
-  - component: {fileID: 1450152507}
   m_Layer: 5
   m_Name: UIPanel
   m_TagString: Untagged
@@ -454,7 +453,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   packageName: Card
-  componentName: CardListWindow2
+  componentName: CardListWindow
   fitScreen: 0
   sortingOrder: 0
   packagePath: Assets/GXGame/UI/TestUI/Card
@@ -483,45 +482,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1450152507
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1450152504}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4cb45a8302c5713449dcf0bec31e3329, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SavePath: Assets/GXGame/Scripts/Runtime/UI/UICardListWindow2
-  className: UICardListWindow2
-  bindList:
-  - Path: n43
-    FieldName: n43
-    TypeName: GButton
-    Com: {fileID: 0}
-  - Path: n43.n0
-    FieldName: n43_n0
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: n44
-    FieldName: n44
-    TypeName: GButton
-    Com: {fileID: 0}
-  - Path: n44.n0
-    FieldName: n44_n0
-    TypeName: GImage
-    Com: {fileID: 0}
-  - Path: n45
-    FieldName: n45
-    TypeName: GButton
-    Com: {fileID: 0}
-  - Path: n45.n0
-    FieldName: n45_n0
-    TypeName: GImage
-    Com: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

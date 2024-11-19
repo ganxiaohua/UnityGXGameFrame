@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using FairyGUI;
+using GameFrame.Editor;
 using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -25,7 +26,7 @@ public class FairyData
     public GameObject Com;
 }
 
-public class CreateUIScriptOdin : MonoBehaviour
+public class CreateUIScriptOdin
 {
     private class Parent
     {
@@ -37,68 +38,42 @@ public class CreateUIScriptOdin : MonoBehaviour
 
         public string Path;
         public GComponent Go;
-        public UIPanel UIPanel;
     }
 
     private static string CodePath;
     private int index;
     private int namingLength;
 
-    private UIPanel UIPanel;
+    private UIPanel uiPanel;
 
     private Regex luaNamePattern = new Regex("[^a-zA-Z0-9]");
 
     private string[] exportTypes = {"GButton", "GList", "GRichTextField", "GTextField", "GComponent", "GLoader", "GTextInput", "GProgressBar"};
 
-    public string SavePath;
+    private string className;
 
-    [Button("绑定组件"), ButtonGroup]
-    public void ButtonBind()
-    {
-        BindInit();
-    }
+    private List<FairyData> bindList = new List<FairyData>();
 
-    [Button("清空绑定"), ButtonGroup, PropertyOrder(0)]
-    public void ButtonBindClean()
-    {
-        bindList.Clear();
-    }
+    private string savePath;
 
-    [Button("生成脚本"), ButtonGroup]
-    public void ButtonCreateScript()
+    public void ButtonCreateScript(UIPanel panel)
     {
+        EditorInit(panel);
         CreateScript();
     }
 
-    [Button("返回主场景", ButtonSizes.Medium), GUIColor(1, 0.6f, 0.4f), PropertyOrder(20)]
     public void ButtonBackMain()
     {
         EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
-        EditorSceneManager.OpenScene(EditorCSharp.GetEditorString_FirstScenePath());
+        EditorSceneManager.OpenScene(EditorString.FirstScenePath);
     }
 
-    [HorizontalGroup] [LabelText("类名:"), LabelWidth(40)]
-    public string className;
-
-    [HorizontalGroup]
-    [Button("使用包体名作为脚本名", ButtonSizes.Medium)]
-    public void DefaultClassName()
+    private void EditorInit(UIPanel panel)
     {
-        className = "UI" + this.gameObject.GetComponent<UIPanel>().componentName; //默认类名
-    }
-
-
-    [ListDrawerSettings(NumberOfItemsPerPage = 20)] [PropertyOrder(1)]
-    // [TableList, Searchable]
-    public List<FairyData> bindList = new List<FairyData>();
-
-
-    [OnInspectorInit("EditorInit")]
-    private void EditorInit()
-    {
-        string componentName = this.gameObject.GetComponent<UIPanel>().componentName;
+        uiPanel = panel;
+        string componentName = panel.componentName;
         className = "UI" + componentName;
-        SavePath = EditorCSharp.GetEditorString_UIScriptsPath() + "/" + className;
+        savePath = EditorString.UIScriptsPath + "/" + className;
         BindInit(); //默认进行绑定
     }
 
@@ -111,11 +86,10 @@ public class CreateUIScriptOdin : MonoBehaviour
         namingLength = 0;
         index = 0;
         bindList.Clear();
-        var panel = this.gameObject.GetComponent<UIPanel>();
+        var panel = uiPanel;
         var ui = panel.ui;
         Parent p = new Parent(null, ui);
-        p.UIPanel = panel;
-        UIPanel = panel;
+        uiPanel = panel;
         AutoBindComponent(p);
     }
 
@@ -188,22 +162,22 @@ public class CreateUIScriptOdin : MonoBehaviour
             return;
         }
 
-        if (!Directory.Exists(SavePath))
+        if (!Directory.Exists(savePath))
         {
-            Directory.CreateDirectory(SavePath);
+            Directory.CreateDirectory(savePath);
         }
 
-        if (File.Exists($"{SavePath}/{className}.cs"))
+        if (File.Exists($"{savePath}/{className}.cs"))
         {
             if (EditorUtility.DisplayDialog("警告！", className + "已经存在是否覆盖View组件获取脚本.(逻辑脚本会保留)", "覆盖", "取消"))
             {
-                ViewFunc(SavePath, className);
+                ViewFunc(savePath, className);
             }
         }
         else
         {
-            LogicFunc(SavePath, className);
-            ViewFunc(SavePath, className);
+            LogicFunc(savePath, className);
+            ViewFunc(savePath, className);
         }
 
 
@@ -221,8 +195,8 @@ public class CreateUIScriptOdin : MonoBehaviour
 
         void LogicFunc(string codepath, string classname)
         {
-            CreateEntityAuto.CreateUIMain(codepath, classname, UIPanel.packageName, UIPanel.componentName);
-            CreateEntityAuto.CreateUIViewText(codepath, classname, UIPanel.packageName, UIPanel.componentName);
+            CreateEntityAuto.CreateUIMain(codepath, classname, uiPanel.packageName, uiPanel.componentName);
+            CreateEntityAuto.CreateUIViewText(codepath, classname, uiPanel.packageName, uiPanel.componentName);
         }
 
         AssetDatabase.Refresh();

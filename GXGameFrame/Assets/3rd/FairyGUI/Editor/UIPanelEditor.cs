@@ -1,16 +1,16 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UnityEditor;
+using UnityEngine;
 #if UNITY_5_3_OR_NEWER
 using UnityEditor.SceneManagement;
 #endif
-using UnityEditor;
 
 namespace FairyGUIEditor
 {
     /// <summary>
     /// 
     /// </summary>
-    [CustomEditor(typeof(FairyGUI.UIPanel))]
+    // [CustomEditor(typeof(FairyGUI.UIPanel))]
     public class UIPanelEditor : Editor
     {
         SerializedProperty packageName;
@@ -52,9 +52,11 @@ namespace FairyGUIEditor
             setNativeChildrenOrder = serializedObject.FindProperty("setNativeChildrenOrder");
 
 
-            propertyToExclude = new string[] { "m_Script", "packageName", "componentName", "packagePath", "renderMode",
-                "renderCamera", "sortingOrder", "position", "scale", "rotation", "fairyBatching", "fitScreen","touchDisabled",
-                "hitTestMode","cachedUISize","setNativeChildrenOrder"
+            propertyToExclude = new string[]
+            {
+                "m_Script", "packageName", "componentName", "packagePath", "renderMode",
+                "renderCamera", "sortingOrder", "position", "scale", "rotation", "fairyBatching", "fitScreen", "touchDisabled",
+                "hitTestMode", "cachedUISize", "setNativeChildrenOrder"
             };
         }
 
@@ -78,7 +80,7 @@ namespace FairyGUIEditor
 #else
                 bool isPrefab = PrefabUtility.GetPrefabType(panel) == PrefabType.Prefab;
 #endif
-                panel.SendMessage("OnUpdateSource", new object[] { null, null, null, !isPrefab });
+                panel.SendMessage("OnUpdateSource", new object[] {null, null, null, !isPrefab});
 
 #if UNITY_5_3_OR_NEWER
                 EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
@@ -88,6 +90,7 @@ namespace FairyGUIEditor
                 EditorUtility.SetDirty(panel);
 #endif
             }
+
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.BeginHorizontal();
@@ -98,14 +101,14 @@ namespace FairyGUIEditor
 
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.PrefixLabel("Package Path");
-            EditorGUILayout.LabelField(packagePath.stringValue, (GUIStyle)"helpbox");
+            EditorGUILayout.LabelField(packagePath.stringValue, (GUIStyle) "helpbox");
             EditorGUILayout.EndHorizontal();
 
             if (Application.isPlaying)
                 EditorGUILayout.EnumPopup("Render Mode", panel.container.renderMode);
             else
                 EditorGUILayout.PropertyField(renderMode);
-            if ((RenderMode)renderMode.enumValueIndex != RenderMode.ScreenSpaceOverlay)
+            if ((RenderMode) renderMode.enumValueIndex != RenderMode.ScreenSpaceOverlay)
                 EditorGUILayout.PropertyField(renderCamera);
 
             int oldSortingOrder = panel.sortingOrder;
@@ -115,7 +118,7 @@ namespace FairyGUIEditor
             EditorGUILayout.PropertyField(touchDisabled);
             EditorGUILayout.PropertyField(setNativeChildrenOrder);
             EditorGUILayout.Separator();
-            EditorGUILayout.LabelField("UI Transform", (GUIStyle)"OL Title");
+            EditorGUILayout.LabelField("UI Transform", (GUIStyle) "OL Title");
             EditorGUILayout.Separator();
             EditorGUI.BeginChangeCheck();
             EditorGUILayout.PropertyField(position);
@@ -123,7 +126,7 @@ namespace FairyGUIEditor
             EditorGUILayout.PropertyField(scale);
             EditorGUILayout.Space();
 
-            FairyGUI.FitScreen oldFitScreen = (FairyGUI.FitScreen)fitScreen.enumValueIndex;
+            FairyGUI.FitScreen oldFitScreen = (FairyGUI.FitScreen) fitScreen.enumValueIndex;
             EditorGUILayout.PropertyField(fitScreen);
 
             if (serializedObject.ApplyModifiedProperties())
@@ -135,9 +138,10 @@ namespace FairyGUIEditor
 #endif
                 if (!isPrefab)
                 {
-                    panel.ApplyModifiedProperties(sortingOrder.intValue != oldSortingOrder, (FairyGUI.FitScreen)fitScreen.enumValueIndex != oldFitScreen);
+                    panel.ApplyModifiedProperties(sortingOrder.intValue != oldSortingOrder, (FairyGUI.FitScreen) fitScreen.enumValueIndex != oldFitScreen);
                 }
             }
+
             if (panel != null && panel.ui != null && panel.ui.Controllers.Count > 0)
             {
                 controllers.Clear();
@@ -147,6 +151,7 @@ namespace FairyGUIEditor
                     controllers.Add(panel.ui.Controllers[i].name);
                     selectedIndex.Add(panel.ui.Controllers[i].selectedIndex);
                 }
+
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.PrefixLabel("Controllers");
                 if (selectedControll >= controllers.Count)
@@ -158,6 +163,7 @@ namespace FairyGUIEditor
                 {
                     ctrl.selectedIndex = selectedIndex[selectedControll];
                 }
+
                 EditorGUILayout.EndHorizontal();
             }
         }
@@ -171,7 +177,8 @@ namespace FairyGUIEditor
             Vector3 pos = panel.GetUIWorldPosition();
             float sizeFactor = HandleUtility.GetHandleSize(pos);
 #if UNITY_2017_1_OR_NEWER
-            var fmh_174_58_638404980184025508 = Quaternion.identity; Vector3 newPos = Handles.FreeMoveHandle(pos, sizeFactor, Vector3.one, Handles.ArrowHandleCap);
+            var fmh_174_58_638404980184025508 = Quaternion.identity;
+            Vector3 newPos = Handles.FreeMoveHandle(pos, sizeFactor, Vector3.one, Handles.ArrowHandleCap);
 #else
             Vector3 newPos = Handles.FreeMoveHandle(pos, Quaternion.identity, sizeFactor, Vector3.one, Handles.ArrowCap);
 #endif
@@ -180,8 +187,8 @@ namespace FairyGUIEditor
                 Vector2 v1 = HandleUtility.WorldToGUIPoint(pos);
                 Vector2 v2 = HandleUtility.WorldToGUIPoint(newPos);
                 Vector3 delta = v2 - v1;
-                delta.x = (int)delta.x;
-                delta.y = (int)delta.y;
+                delta.x = (int) delta.x;
+                delta.y = (int) delta.y;
 
                 panel.MoveUI(delta);
             }

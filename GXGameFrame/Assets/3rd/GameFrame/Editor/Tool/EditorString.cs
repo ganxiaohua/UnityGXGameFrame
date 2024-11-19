@@ -10,6 +10,11 @@ namespace GameFrame.Editor
         public static string FirstScenePath = "Assets/GXGame/Scenes/Main.unity";
 
         /// <summary>
+        /// fgui文件目录
+        /// </summary>
+        public static string FguiConfigAssetPath = "../../Fgui/asset";
+
+        /// <summary>
         /// UI创建的脚本路径
         /// </summary>
         public static string UIScriptsPath = "Assets/GXGame/Scripts/Runtime/UI";
@@ -23,6 +28,7 @@ namespace GameFrame.Editor
         /// 配表数据
         /// </summary>
         public static string ConfigAssetPath = "Assets/GXGame/Config/ConfigData";
+
 
         /// <summary>
         /// ecs绑定路径
@@ -38,11 +44,11 @@ namespace GameFrame.Editor
         public static string GameFramePath = "Assets/3rd/GameFrame/";
 
         // public static string SystemBindOutPutPath = "Assets/GXGame/Scripts/Runtime/Auto/SystemBindAuto.cs";
-        
-        public static string UIScenePath = "Assets/3rd/GameFrame/Runtime/InspectorEditor/CreateUIScene.unity";
+
+        public static string UIScenePath = "Assets/3rd/GameFrame/Editor/Tool/Fgui/CreateUIScene.unity";
 
         public static string RESSEQ = "RESSEQ";
-        
+
         public static string SHOWASSERT = "SHOWASSERT";
 
         public static string[] AssemblyNames = new string[] {"GamePlay.Runtime", "GameFrame.Runtime"};

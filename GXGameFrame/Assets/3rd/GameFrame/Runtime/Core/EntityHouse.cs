@@ -16,7 +16,7 @@ namespace GameFrame
 
         private DDictionaryETC entitySystemsDDic = new();
 
-        private UpdateSystems updateSystems = new UpdateSystems();
+        private UpdateSystems updateSystems = new();
 
 
         /// <summary>
