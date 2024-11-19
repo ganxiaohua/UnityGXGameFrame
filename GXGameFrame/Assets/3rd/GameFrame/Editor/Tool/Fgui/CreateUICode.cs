@@ -121,7 +121,11 @@ public class CreateUICode
             Directory.CreateDirectory(savePath);
         }
 
-        LogicFunc(savePath, className);
+        if (!File.Exists(savePath + "/" + className + ".cs"))
+        {
+            LogicFunc(savePath, className);
+        }
+
         ViewFunc(savePath, className);
 
 
