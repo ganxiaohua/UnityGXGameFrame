@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using FairyGUI;
 using GameFrame.Editor;
 using UnityEditor;
@@ -35,7 +36,8 @@ public class CreateUICode
 
     private UIPanel uiPanel;
 
-    private string[] exportTypes = {"GButton", "GList", "GRichTextField", "GTextField", "GComponent", "GLoader", "GTextInput", "GProgressBar"};
+    private string[] exportTypes =
+        {"GButton", "GList", "GRichTextField", "GTextField", "GComponent", "GLoader", "GTextInput", "GProgressBar", "GLabel", "GGroup"};
 
     private string className;
 
@@ -90,7 +92,7 @@ public class CreateUICode
         GObject[] childs = parent.Go.GetChildren();
         foreach (GObject child in childs)
         {
-            if (string.IsNullOrEmpty(child.name))
+            if (string.IsNullOrEmpty(child.name) || !exportTypes.Contains(child.GetType().Name))
                 continue;
             if (child.displayObject != null)
             {
