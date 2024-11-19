@@ -2,51 +2,38 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text.RegularExpressions;
 using FairyGUI;
 using GameFrame.Editor;
-using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEditor.SceneManagement;
-using UnityEngine;
 
 [Serializable]
 public class FairyData
 {
-    [ReadOnly] public string Path;
+    public string ParentName;
+
+    public string Path;
 
     public string FieldName;
 
-    public Stack<int> Index;
-
-    [ReadOnly] [HideLabel] [VerticalGroup("Type")]
     public string TypeName;
-
-    [ReadOnly] [HideLabel] [VerticalGroup("Type")]
-    public GameObject Com;
 }
 
-public class CreateUIScriptOdin
+public class CreateUICode
 {
     private class Parent
     {
-        public Parent(string path, GComponent go)
+        public Parent(string parentFiled, GComponent go)
         {
-            Path = path;
+            ParentFiled = parentFiled;
             Go = go;
         }
 
-        public string Path;
+        public string ParentFiled;
         public GComponent Go;
     }
 
-    private static string CodePath;
-    private int index;
-    private int namingLength;
-
     private UIPanel uiPanel;
-
-    private Regex luaNamePattern = new Regex("[^a-zA-Z0-9]");
 
     private string[] exportTypes = {"GButton", "GList", "GRichTextField", "GTextField", "GComponent", "GLoader", "GTextInput", "GProgressBar"};
 
@@ -83,12 +70,10 @@ public class CreateUIScriptOdin
     /// </summary>
     private void BindInit()
     {
-        namingLength = 0;
-        index = 0;
         bindList.Clear();
         var panel = uiPanel;
         var ui = panel.ui;
-        Parent p = new Parent(null, ui);
+        Parent p = new Parent("Root", ui);
         uiPanel = panel;
         AutoBindComponent(p);
     }
@@ -102,49 +87,21 @@ public class CreateUIScriptOdin
     {
         if (parent == null || parent.Go == null)
             return;
-        // parent.Go.name
         GObject[] childs = parent.Go.GetChildren();
-        List<string> removeDuplicate = new List<string>();
         foreach (GObject child in childs)
         {
             if (string.IsNullOrEmpty(child.name))
                 continue;
             if (child.displayObject != null)
             {
-                string path = (string.IsNullOrEmpty(parent.Path) ? "" : parent.Path + ".") + child.name;
-                string luaName = path.Replace("_", "");
-                luaName = luaNamePattern.Replace(luaName, "_");
-                if (removeDuplicate.Contains(luaName))
-                {
-                    index++;
-                    luaName += index.ToString();
-                }
-
-                if (namingLength < luaName.Length)
-                {
-                    namingLength = luaName.Length;
-                }
-
-                removeDuplicate.Add(luaName);
-
+                string path = parent.ParentFiled + "_" + child.name;
+                path = path.Replace("Root_", "");
                 FairyData item = new FairyData();
-                item.Path = path;
-                item.FieldName = luaName;
-                item.TypeName = child.GetType().ToString().Replace("FairyGUI.", "");
-                item.Com = child.displayObject.gameObject;
-                item.Index = new Stack<int>();
-                GComponent thisParent = child.parent;
-                GObject thisChild = child;
-                while (thisParent != null)
-                {
-                    int x = thisParent.GetChildIndex(thisChild);
-                    thisChild = thisParent;
-                    thisParent = thisParent.parent;
-                    item.Index.Push(x);
-                }
-
+                item.Path = child.name;
+                item.FieldName = path;
+                item.TypeName = child.GetType().Name;
+                item.ParentName = parent.ParentFiled;
                 bindList.Add(item);
-
                 if (child is GComponent)
                 {
                     Parent parents = new Parent(path, child as GComponent);
@@ -154,31 +111,16 @@ public class CreateUIScriptOdin
         }
     }
 
+
     private void CreateScript()
     {
-        if (bindList.Count <= 0)
-        {
-            EditorUtility.DisplayDialog("提示", "绑定控件列表为空，请绑定！！！", "OK");
-            return;
-        }
-
         if (!Directory.Exists(savePath))
         {
             Directory.CreateDirectory(savePath);
         }
 
-        if (File.Exists($"{savePath}/{className}.cs"))
-        {
-            if (EditorUtility.DisplayDialog("警告！", className + "已经存在是否覆盖View组件获取脚本.(逻辑脚本会保留)", "覆盖", "取消"))
-            {
-                ViewFunc(savePath, className);
-            }
-        }
-        else
-        {
-            LogicFunc(savePath, className);
-            ViewFunc(savePath, className);
-        }
+        LogicFunc(savePath, className);
+        ViewFunc(savePath, className);
 
 
         void ViewFunc(string codepath, string classname)
@@ -187,7 +129,7 @@ public class CreateUIScriptOdin
             for (int i = 0; i < bindList.Count; i++)
             {
                 var v = bindList[i];
-                Text += CreateEntityAuto.CreateUIAutoComText(v.TypeName, v.FieldName, v.Path);
+                Text += CreateEntityAuto.CreateUIAutoComText(v.TypeName, v.FieldName, v.Path, v.ParentName);
             }
 
             CreateEntityAuto.CreateUIViewAutoText(codepath, classname, Text);

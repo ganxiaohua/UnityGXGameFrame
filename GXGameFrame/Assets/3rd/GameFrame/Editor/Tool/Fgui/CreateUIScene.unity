@@ -453,7 +453,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   packageName: Card
-  componentName: CardListWindow
+  componentName: CardListWindow2
   fitScreen: 0
   sortingOrder: 0
   packagePath: Assets/GXGame/UI/TestUI/Card
