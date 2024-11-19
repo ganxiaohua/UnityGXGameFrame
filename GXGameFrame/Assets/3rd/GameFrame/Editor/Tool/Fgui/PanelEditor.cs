@@ -5,9 +5,6 @@ using UnityEngine;
 
 namespace FairyGUIEditor
 {
-    /// <summary>
-    /// 
-    /// </summary>
     [CustomEditor(typeof(FairyGUI.UIPanel))]
     public class CostomUIPanelEditor : UIPanelEditor
     {
@@ -25,7 +22,6 @@ namespace FairyGUIEditor
 
             if (GUILayout.Button($"回到主场景"))
             {
-                FairyGUI.UIPanel panel = target as FairyGUI.UIPanel;
                 createUICode.ButtonBackMain();
             }
         }
