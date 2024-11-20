@@ -42,11 +42,11 @@ namespace GameFrame
                 }
             }
 
+            collector.CollectedEntities.Clear();
             if (this.buffer.Count == 0)
                 return;
             Execute(this.buffer);
             this.buffer.Clear();
-            collector.CollectedEntities.Clear();
         }
 
         public abstract void Dispose();

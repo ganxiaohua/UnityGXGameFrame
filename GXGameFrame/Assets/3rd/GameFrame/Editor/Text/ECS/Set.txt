@@ -3,8 +3,8 @@
     {{
         var p = ({2})ecsEntity.GetComponent(Components.{0});
         p.{3} = param;
-        {4}
         ((World)ecsEntity.Parent).Reactive(Components.{0}, ecsEntity,EcsChangeEventState.UpdateType);
+        {4}
         return ecsEntity;
     }}
     
