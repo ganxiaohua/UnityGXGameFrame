@@ -27,8 +27,8 @@ namespace GameFrame
                 {
                     item.Value.OnExit();
                 }
-                RemoveChild(item.Value);
             }
+
             states = null;
             CurState = null;
             base.Dispose();
@@ -40,17 +40,17 @@ namespace GameFrame
             states.Add(typeof(T), state);
             return state;
         }
-        
-        protected T AddState<T,TP1>(TP1 p1) where T : FsmState
+
+        protected T AddState<T, TP1>(TP1 p1) where T : FsmState
         {
-            var state = AddChild<T,TP1>(p1);
+            var state = AddChild<T, TP1>(p1);
             states.Add(typeof(T), state);
             return state;
         }
-        
-        protected T AddState<T,TP1,TP2>(TP1 p1,TP2 p2) where T : FsmState
+
+        protected T AddState<T, TP1, TP2>(TP1 p1, TP2 p2) where T : FsmState
         {
-            var state = AddChild<T,TP1,TP2>(p1,p2);
+            var state = AddChild<T, TP1, TP2>(p1, p2);
             states.Add(typeof(T), state);
             return state;
         }
@@ -58,7 +58,7 @@ namespace GameFrame
         public void SwitchState<T>() where T : FsmState
         {
             bool b = states.TryGetValue(typeof(T), out var state);
-            Assert.IsTrue(b,$"不包含这个stateP{typeof(T)}");
+            Assert.IsTrue(b, $"不包含这个stateP{typeof(T)}");
             CurState?.OnExit();
             CurState = state;
             CurState.OnEnter(this);
@@ -68,11 +68,12 @@ namespace GameFrame
         {
             Type type = state.GetType();
             bool b = states.Remove(type);
-            Assert.IsTrue(b,$"不包含这个stateP{type.Name}");
+            Assert.IsTrue(b, $"不包含这个stateP{type.Name}");
             if (CurState == state)
             {
                 state.OnExit();
             }
+
             RemoveChild(state);
         }
     }

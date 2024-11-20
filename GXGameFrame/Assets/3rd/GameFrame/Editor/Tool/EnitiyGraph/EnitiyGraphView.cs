@@ -106,7 +106,23 @@ namespace GameFrame.Editor
         {
             if (nodeDic.TryGetValueKv(node, out EntityNode entityNode))
             {
-                (((ECSEntity) entityNode.Entity).Parent as World).RemoveChild((ECSEntity) entityNode.Entity);
+                if (entityNode.Entity.Parent is World)
+                {
+                    (((ECSEntity) entityNode.Entity).Parent as World).RemoveChild((ECSEntity) entityNode.Entity);
+                }
+                else
+                {
+                    var parent = (Entity) entityNode.Entity.Parent;
+                    if (parent.Children.Contains(entityNode.Entity))
+                    {
+                        parent.RemoveChild(entityNode.Entity);
+                    }
+                    else
+                    {
+                        parent.RemoveComponent(entityNode.Entity.GetType());
+                    }
+                }
+
                 generalGraphView.RemoveElement(entityNode.GraphNode);
                 entityNode.GraphNode.Clear();
                 nodeDic.RemoveByKey(node);

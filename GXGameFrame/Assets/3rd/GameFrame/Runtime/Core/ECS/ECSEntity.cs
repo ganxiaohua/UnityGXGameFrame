@@ -19,8 +19,6 @@ namespace GameFrame
     {
         public IEntity.EntityState State { get; private set; }
 
-        public IEntity SceneParent { get; private set; }
-
         public IEntity Parent { get; private set; }
 
         public int ID { get; private set; }
@@ -34,13 +32,12 @@ namespace GameFrame
         private static int m_SerialId;
 
 
-        public void Initialize(IEntity sceneParent, IEntity parent, int id)
+        public void Initialize(IEntity parent, int id)
         {
             EcsComponentArray = ReferencePool.Acquire<GXArray<ECSComponent>>();
             EcsComponentArray.Init(GXComponents.ComponentTypes.Length);
             State = IEntity.EntityState.IsRunning;
             Parent = parent;
-            SceneParent = sceneParent;
             ID = id;
         }
 

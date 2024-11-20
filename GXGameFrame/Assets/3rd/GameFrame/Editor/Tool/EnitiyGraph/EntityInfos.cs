@@ -58,7 +58,7 @@ namespace GameFrame.Editor
             {
                 FloorGrid[floor] = 0;
             }
-            
+
             if (entityNode.Entity is Entity entity)
             {
                 foreach (IEntity childEntity in entity.Children)
@@ -69,6 +69,14 @@ namespace GameFrame.Editor
                 foreach (IEntity EntityComponent in entity.Components.Values)
                 {
                     CreateNode(entityNode, EntityComponent, floor + 1, FloorGrid[floor]++);
+                }
+            }
+
+            if (entityNode.Entity is World world)
+            {
+                foreach (IEntity childEntity in world.Children)
+                {
+                    CreateNode(entityNode, childEntity, floor + 1, FloorGrid[floor]++);
                 }
             }
         }

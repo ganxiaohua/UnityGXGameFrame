@@ -126,7 +126,6 @@ namespace GameFrame
 
             public void Release(IDisposable disposable)
             {
-                disposable.Dispose();
                 lock (references)
                 {
 #if UNITY_EDITOR
@@ -138,6 +137,7 @@ namespace GameFrame
                     references.Enqueue(disposable);
                 }
 
+                disposable.Dispose();
                 releaseReferenceCount++;
                 usingReferenceCount--;
                 if (releaseReferenceCount >= maxAcquireReferenceCount)

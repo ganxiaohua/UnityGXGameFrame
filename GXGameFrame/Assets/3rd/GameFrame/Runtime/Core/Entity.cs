@@ -7,8 +7,6 @@ namespace GameFrame
     {
         public IEntity.EntityState State { get; private set; }
 
-        public IEntity SceneParent { get; private set; }
-
         public IEntity Parent { get; private set; }
 
         public int ID { get; private set; }
@@ -22,11 +20,10 @@ namespace GameFrame
 
         private static int sSerialId;
 
-        public void Initialize(IEntity sceneParent, IEntity parent, int id)
+        public void Initialize(IEntity parent, int id)
         {
             State = IEntity.EntityState.IsRunning;
             Parent = parent;
-            SceneParent = sceneParent;
             ID = id;
         }
 
@@ -40,7 +37,7 @@ namespace GameFrame
         private IEntity Create(Type type, bool isComponent)
         {
             IEntity entity = (IEntity) ReferencePool.Acquire(type);
-            entity.Initialize(this is MainScene ? this : SceneParent, this, ++sSerialId);
+            entity.Initialize(this, ++sSerialId);
             if (isComponent)
             {
                 Components.Add(type, entity);
@@ -302,10 +299,10 @@ namespace GameFrame
                 if (item is Entity entity)
                 {
                     entity.ClearAllChild();
+                    entity.ClearAllComponent();
                 }
 
                 Remove(item);
-                item.ClearAllComponent();
             }
 
             Children.Clear();
@@ -323,9 +320,9 @@ namespace GameFrame
                 {
                     entity.Remove(item.Value);
                 }
-                else if (item.Value is ECSEntity ecsEntity)
+                else if (item.Value is World world)
                 {
-                    ReferencePool.Release(ecsEntity);
+                    ReferencePool.Release(world);
                 }
             }
 

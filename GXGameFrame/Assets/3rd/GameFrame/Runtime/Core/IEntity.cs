@@ -11,8 +11,6 @@ namespace GameFrame
             IsClear
         }
 
-        public IEntity SceneParent { get; }
-
         public IEntity Parent { get; }
 
         public int ID { get; }
@@ -21,7 +19,6 @@ namespace GameFrame
 
         public EntityState State { get; }
 
-        public void Initialize(IEntity sceneParent, IEntity parent, int id);
-        public void ClearAllComponent();
+        public void Initialize(IEntity parent, int id);
     }
 }

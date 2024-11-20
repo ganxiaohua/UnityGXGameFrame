@@ -2,12 +2,13 @@
 
 namespace GameFrame
 {
-    public class World : Entity, IInitializeSystem, IUpdateSystem
+    public partial class World : IInitializeSystem, IUpdateSystem
     {
         private Dictionary<Matcher, Group> groups = new();
         private List<Group>[] groupsList;
         public float DeltaTime { get; private set; }
         public float Multiple { get; private set; }
+
 
         public virtual void Initialize()
         {
@@ -21,30 +22,14 @@ namespace GameFrame
         }
 
 
-        public ECSEntity AddChild()
-        {
-            ECSEntity ecsEntity = AddChild<ECSEntity>();
-            ecsEntity.SetContext(this);
-            return ecsEntity;
-        }
-
-        public void RemoveChild(ECSEntity ecsEntity)
-        {
-            base.RemoveChild(ecsEntity);
-        }
-
-        public void Reactive(List<int> indexs, ECSEntity ecsEntity, ushort changeType)
-        {
-            int count = indexs.Count;
-            for (int i = 0; i < count; i++)
-            {
-                Reactive(indexs[i], ecsEntity, changeType);
-            }
-        }
-
         public Group GetGroup(Matcher matcher)
         {
-            if (groups.TryGetValue(matcher, out Group grop)) return grop;
+            if (groups.TryGetValue(matcher, out Group grop))
+            {
+                Matcher.ClearMatcher(matcher);
+                return grop;
+            }
+
             grop = Group.CreateGroup(matcher);
             foreach (var item in Children)
             {
@@ -61,6 +46,17 @@ namespace GameFrame
             return grop;
         }
 
+
+        public void Reactive(List<int> indexs, ECSEntity ecsEntity, ushort changeType)
+        {
+            int count = indexs.Count;
+            for (int i = 0; i < count; i++)
+            {
+                Reactive(indexs[i], ecsEntity, changeType);
+            }
+        }
+
+
         public void Reactive(int comid, ECSEntity entity, ushort changeType)
         {
             var groupList = groupsList[comid];
@@ -74,15 +70,16 @@ namespace GameFrame
             }
         }
 
-        public override void Dispose()
+        public virtual void Dispose()
         {
-            base.Dispose();
+            ClearAllChild();
             foreach (var group in groups)
             {
-                Matcher.RemoveMatcher(group.Key);
+                Matcher.ClearMatcher(group.Key);
                 Group.RemoveGroup(group.Value);
             }
 
+            ecsSerialId = 0;
             groupsList = null;
             groups.Clear();
         }

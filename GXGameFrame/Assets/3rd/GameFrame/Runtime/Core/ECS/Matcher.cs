@@ -77,7 +77,7 @@ namespace GameFrame
         }
 
 
-        public static void RemoveMatcher(Matcher matcher)
+        public static void ClearMatcher(Matcher matcher)
         {
             ReferencePool.Release(matcher);
         }
@@ -98,6 +98,7 @@ namespace GameFrame
             noneOfIndices = null;
             Indices.Clear();
             isHashCached = false;
+            hash = 0;
         }
 
         private int ApplyHash(int hash, int[] indices, int i1, int i2)
@@ -132,8 +133,8 @@ namespace GameFrame
             return equalIndices(matcher.allOfIndices, this.allOfIndices) && equalIndices(matcher.anyOfIndices, anyOfIndices) &&
                    equalIndices(matcher.noneOfIndices, this.noneOfIndices);
         }
-        
-        public override bool Equals(object obj) => Equals((Matcher)obj);
+
+        public override bool Equals(object obj) => Equals((Matcher) obj);
 
         private bool equalIndices(int[] i1, int[] i2)
         {
