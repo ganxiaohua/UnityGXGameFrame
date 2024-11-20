@@ -29,9 +29,6 @@ namespace GameFrame
 
         public GXArray<ECSComponent> EcsComponentArray { get; private set; }
 
-        private static int m_SerialId;
-
-
         public void Initialize(IEntity parent, int id)
         {
             EcsComponentArray = ReferencePool.Acquire<GXArray<ECSComponent>>();

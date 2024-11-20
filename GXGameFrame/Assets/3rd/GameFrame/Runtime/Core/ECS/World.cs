@@ -30,7 +30,7 @@ namespace GameFrame
                 return grop;
             }
 
-            grop = Group.CreateGroup(matcher);
+            grop = Group.CreateGroup(ChildsCount, matcher);
             foreach (var item in Children)
             {
                 grop.HandleEntitySilently((ECSEntity) item, EcsChangeEventState.AddType);

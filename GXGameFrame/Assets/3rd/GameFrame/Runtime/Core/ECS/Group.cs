@@ -6,17 +6,16 @@ namespace GameFrame
     public class Group : IDisposable
     {
         private Matcher matcher;
-        private HashSet<ECSEntity> entitiesMap;
         public event GroupChanged GroupAdd;
         public event GroupChanged GroupRomve;
         public event GroupChanged GroupUpdate;
-        public HashSet<ECSEntity> EntitiesMap => entitiesMap;
+        public FastSoleList<ECSEntity> EntitiesMap { get; private set; }
 
-        public static Group CreateGroup(Matcher matcher)
+        public static Group CreateGroup(int childsCount, Matcher matcher)
         {
             Group Group = ReferencePool.Acquire<Group>();
             Group.matcher = matcher;
-            Group.entitiesMap = new(128);
+            Group.EntitiesMap = new(childsCount);
             return Group;
         }
 
@@ -34,7 +33,7 @@ namespace GameFrame
             }
             else if (changeType == EcsChangeEventState.AddType)
             {
-                var addSucc = entitiesMap.Add(entity);
+                var addSucc = EntitiesMap.Add(entity);
                 if (addSucc && !silently)
                     GroupAdd?.Invoke(this, entity);
             }
@@ -43,7 +42,7 @@ namespace GameFrame
 
         private void RemoveComponent(ECSEntity entity, bool silently)
         {
-            bool b = entitiesMap.Remove(entity);
+            bool b = EntitiesMap.Remove(entity);
             if (!silently && b)
                 GroupRomve?.Invoke(this, entity);
         }
@@ -62,11 +61,12 @@ namespace GameFrame
 
         private int DoEntity(ECSEntity entity, bool silently, ushort changeType)
         {
-            if (this.matcher.Match(entity))
+            bool match = this.matcher.Match(entity);
+            if (changeType != EcsChangeEventState.RemoveType && match)
                 this.AddOrUpdateComponent(entity, silently, changeType);
-            else
+            else if (changeType == EcsChangeEventState.RemoveType && !match)
                 this.RemoveComponent(entity, silently);
-            return entitiesMap.Count;
+            return EntitiesMap.Count;
         }
 
 
@@ -76,11 +76,11 @@ namespace GameFrame
             GroupRomve -= GroupRomve;
             GroupUpdate -= GroupUpdate;
             matcher = null;
-            entitiesMap.Clear();
+            EntitiesMap.Clear();
         }
 
         public IEnumerable<ECSEntity> AsEnumerable() => (IEnumerable<ECSEntity>) this.EntitiesMap;
 
-        public HashSet<ECSEntity>.Enumerator GetEnumerator() => this.EntitiesMap.GetEnumerator();
+        public List<ECSEntity>.Enumerator GetEnumerator() => this.EntitiesMap.GetEnumerator();
     }
 }

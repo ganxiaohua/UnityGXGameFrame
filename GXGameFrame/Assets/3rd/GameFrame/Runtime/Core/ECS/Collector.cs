@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace GameFrame
 {
     public class Collector : IDisposable
     {
-        private HashSet<ECSEntity> collectedEntities;
+        private FastSoleList<ECSEntity> collectedEntities;
 
-        public HashSet<ECSEntity> CollectedEntities => collectedEntities;
+        public FastSoleList<ECSEntity> CollectedEntities => collectedEntities;
 
         private Group[] groups;
 
@@ -28,15 +27,15 @@ namespace GameFrame
 
             Collector collector = ReferencePool.Acquire<Collector>();
             collector.state = stateType;
-            collector.InitCollector(groups);
+            collector.InitCollector(world.ChildsCount, groups);
             return collector;
         }
 
 
-        private void InitCollector(Group[] group)
+        private void InitCollector(int childSize, Group[] group)
         {
             groups = group;
-            collectedEntities ??= new HashSet<ECSEntity>();
+            collectedEntities ??= new FastSoleList<ECSEntity>(childSize);
             groupChange = AddEvent;
             foreach (var item in groups)
             {

@@ -37,7 +37,7 @@ namespace GameFrame
         private IEntity Create(Type type, bool isComponent)
         {
             IEntity entity = (IEntity) ReferencePool.Acquire(type);
-            entity.Initialize(this, ++sSerialId);
+            entity.Initialize(this, sSerialId++);
             if (isComponent)
             {
                 Components.Add(type, entity);

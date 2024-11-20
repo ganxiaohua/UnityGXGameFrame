@@ -2,7 +2,7 @@
 
 namespace GameFrame
 {
-    public interface IEntity : IDisposable
+    public interface IEntity : IDisposable, IContinuousID
     {
         public enum EntityState : byte
         {
@@ -12,8 +12,6 @@ namespace GameFrame
         }
 
         public IEntity Parent { get; }
-
-        public int ID { get; }
 
         public string Name { get; }
 
