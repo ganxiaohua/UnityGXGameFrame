@@ -22,6 +22,10 @@ namespace GameFrame
 
         private bool keepOrder;
 
+#if UNITY_EDITOR
+        private int foreachAddCount;
+#endif
+
         public StrongList(int capacity = 0, bool keepOrder = false)
         {
             dataList = new List<T>(capacity);
@@ -32,6 +36,16 @@ namespace GameFrame
 
         public void Add(T val)
         {
+#if UNITY_EDITOR
+            if (currentIndex != -1)
+            {
+                if (++foreachAddCount == 100)
+                {
+                    foreachAddCount = 0;
+                    throw new Exception("在循环中不断地加入,死循环");
+                }
+            }
+#endif
             dataList.Add(val);
         }
 
@@ -99,6 +113,7 @@ namespace GameFrame
             if (currentIndex == dataList.Count)
             {
                 currentElement = default;
+                currentIndex = -1;
                 return false;
             }
             else
