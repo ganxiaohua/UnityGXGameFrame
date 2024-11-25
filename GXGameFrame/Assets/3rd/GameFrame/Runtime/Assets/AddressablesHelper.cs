@@ -15,8 +15,6 @@ public static class AddressablesHelper
 
     public const string CatalogName = "catalog_GXGame.zip.json";
 
-    public const string PreloadLabel = "Preload";
-
     public static string PlayerDataPath => $"{Application.streamingAssetsPath}/{Bundles}";
 
     public static string PlayerDataURL => GetPlayerDataProtocol();

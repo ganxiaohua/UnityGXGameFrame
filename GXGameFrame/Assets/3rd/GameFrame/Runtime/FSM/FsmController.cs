@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace GameFrame
 {
-    public abstract class FsmController : Entity, IInitializeSystem, IUpdateSystem
+    public abstract partial class FsmController : Entity, IInitializeSystem, IUpdateSystem
     {
         public FsmState CurState { get; private set; }
 
@@ -31,6 +31,7 @@ namespace GameFrame
 
             states = null;
             CurState = null;
+            ClearBlcakboard();
             base.Dispose();
         }
 

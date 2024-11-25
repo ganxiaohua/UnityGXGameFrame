@@ -100,7 +100,6 @@ namespace GameFrame.Editor
             var guid = AssetDatabase.AssetPathToGUID(EditorString.ConfigAssetPath);
             var entry = AssetSettings.CreateOrMoveEntry(guid, group, false, false);
             entry.SetLabel(assetGroup.groupName, true, true);
-            entry.SetLabel(AddressablesHelper.PreloadLabel, true, true);
         }
 
         public static void BuildBundles(bool withUpdate = false)
@@ -180,7 +179,6 @@ namespace GameFrame.Editor
                         {
                             var entry = AssetSettings.CreateOrMoveEntry(guid, group, false, false);
                             
-                            entry.SetLabel(AddressablesHelper.PreloadLabel, true, true);
                             entry.SetLabel(assetGroup.groupName, true, true);
                         }
                     }
@@ -205,8 +203,7 @@ namespace GameFrame.Editor
                         {
                             entry.SetAddress(null);
                         }
-
-                        entry.SetLabel(AddressablesHelper.PreloadLabel, true, true);
+                        
                         entry.SetLabel(assetGroup.groupName, true, true);
                     }
                 }
@@ -246,17 +243,7 @@ namespace GameFrame.Editor
             {
                 AssetSettings.RemoveGroup(group);
             }
-
-
-            var duplicateGroup = FindGroup("Duplicate Asset Isolation", false);
-            if (duplicateGroup != null)
-            {
-                foreach (var item in duplicateGroup.entries)
-                {
-                    item.SetLabel(AddressablesHelper.PreloadLabel, true, true);
-                }
-            }
-
+            
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
         }
@@ -351,7 +338,6 @@ namespace GameFrame.Editor
             updateInfo.Timestamp = GetTimestamp();
             var updateFilePath = $"{toPath}/{UpdateInfo.Filename}";
             File.WriteAllText(updateFilePath, JsonUtility.ToJson(updateInfo));
-            // CopyToLocalServer(updateFilePath, UpdateInfo.Filename);
             log.AppendLine($"totalSize:{FormatBytes(totalSize)}");
             files.Sort((a, b) => (int) (b.Length - a.Length));
             foreach (var file in files)

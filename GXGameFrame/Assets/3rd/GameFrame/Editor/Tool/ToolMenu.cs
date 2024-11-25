@@ -46,64 +46,34 @@ namespace GameFrame.Editor
         {
             FGUIChecker.OpenWindow();
         }
+        
+        
+        [MenuItem("GX框架工具/远程资源/开启", true)]
+        private static bool OpenRemoteResourceBindValidate()
+        {
+            string macro =PlayerSettings.GetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup);
+            Menu.SetChecked("GX框架工具/远程资源/开启", macro.Contains(EditorString.RESSEQ));
+            return true;
+        }
+        
+        
 
         [MenuItem("GX框架工具/远程资源/开启", false, 4)]
         public static void OpenRemoteResource()
         {
-            Menu.SetChecked("GX框架工具/远程资源/开启", true);
-            Menu.SetChecked("GX框架工具/远程资源/关闭", false);
             Debugger.Log("开启这个,并且AA设置成Use Asset Database的话,优先读取本地,没有本地则读取服务器资源.用于项目资源过大,拆分资源");
             string macro = PlayerSettings.GetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup);
             if (macro.Contains(EditorString.RESSEQ))
             {
+                macro = macro.Replace($"{EditorString.RESSEQ};", "");
+                PlayerSettings.SetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup, macro);
                 return;
             }
 
             macro = $"{EditorString.RESSEQ};{macro}";
             PlayerSettings.SetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup, macro);
         }
-
-        [MenuItem("GX框架工具/远程资源/关闭", false, 5)]
-        public static void CloseRemoteResource()
-        {
-            Menu.SetChecked("GX框架工具/远程资源/开启", false);
-            Menu.SetChecked("GX框架工具/远程资源/关闭", true);
-            string macro = PlayerSettings.GetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup);
-            if (!macro.Contains(EditorString.RESSEQ))
-            {
-                return;
-            }
-
-            macro = macro.Replace($"{EditorString.RESSEQ};", "");
-            PlayerSettings.SetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup, macro);
-        }
-
-        // [MenuItem("GX框架工具/SystemBind/开启", false, 5)]
-        // public static void OpenSystemBind()
-        // {
-        //     string macro = PlayerSettings.GetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup);
-        //     if (macro.Contains("SYSTEMBIND"))
-        //     {
-        //         return;
-        //     }
-        //
-        //     macro = $"SYSTEMBIND;{macro}";
-        //     PlayerSettings.SetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup, macro);
-        // }
-        //
-        // [MenuItem("GX框架工具/SystemBind/关闭", false, 6)]
-        // public static void CloseSystemBind()
-        // {
-        //     
-        //     string macro = PlayerSettings.GetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup);
-        //     if (!macro.Contains("SYSTEMBIND"))
-        //     {
-        //         return;
-        //     }
-        //
-        //     macro = macro.Replace($"SYSTEMBIND", "");
-        //     PlayerSettings.SetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup, macro);
-        // }
+        
 
         [MenuItem("GX框架工具/路径/Open PersistentDataPath")]
         public static void OpenPersistentDataPath()
@@ -129,33 +99,27 @@ namespace GameFrame.Editor
             Application.OpenURL($"{Application.dataPath + "/../"}ServerData/{BuildScript.BuildTarget}");
         }
 
+        [MenuItem("GX框架工具/断言/开启" , true)]
+        private static bool OpenAssertBindValidate()
+        {
+            string macro = PlayerSettings.GetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup);
+            Menu.SetChecked("GX框架工具/断言/开启", macro.Contains(EditorString.SHOWASSERT));
+            return true;
+        }
+        
+
         [MenuItem("GX框架工具/断言/开启", false, 7)]
         public static void OpenAssertBind()
         {
             string macro = PlayerSettings.GetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup);
-            Menu.SetChecked("GX框架工具/断言/开启", true);
-            Menu.SetChecked("GX框架工具/断言/关闭", false);
             if (macro.Contains(EditorString.SHOWASSERT))
             {
+                macro = macro.Replace(EditorString.SHOWASSERT, "");
+                PlayerSettings.SetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup, macro);
                 return;
             }
 
             macro = $"{EditorString.SHOWASSERT};{macro}";
-            PlayerSettings.SetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup, macro);
-        }
-
-        [MenuItem("GX框架工具/断言/关闭", false, 8)]
-        public static void CloseAssertBind()
-        {
-            Menu.SetChecked("GX框架工具/断言/开启", false);
-            Menu.SetChecked("GX框架工具/断言/关闭", true);
-            string macro = PlayerSettings.GetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup);
-            if (!macro.Contains(EditorString.SHOWASSERT))
-            {
-                return;
-            }
-
-            macro = macro.Replace(EditorString.SHOWASSERT, "");
             PlayerSettings.SetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup, macro);
         }
     }

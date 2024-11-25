@@ -2,9 +2,11 @@
 {
     public abstract class FsmState : Entity
     {
+        private FsmController fsmController;
+
         public virtual void OnEnter(FsmController fsmController)
         {
-            
+            this.fsmController = fsmController;
         }
 
         public virtual void OnExit()
@@ -17,6 +19,21 @@
 
         public override void Dispose()
         {
+        }
+
+        protected void SetData(string key, object data)
+        {
+            fsmController.SetData(key, data);
+        }
+
+        protected object GetData(string key)
+        {
+            return fsmController.GetData(key);
+        }
+
+        protected void Remove(string key)
+        {
+            fsmController.RemoveData(key);
         }
     }
 }
