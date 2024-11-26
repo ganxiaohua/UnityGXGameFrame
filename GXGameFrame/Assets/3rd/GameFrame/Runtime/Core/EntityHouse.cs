@@ -143,7 +143,7 @@ namespace GameFrame
                 throw new Exception($"EverySceneEntity not have entity:{sceneType}");
             }
 
-            GXGameFrame.Instance.MainScene.RemoveComponent(scene.GetType());
+            GXGameFrame.Instance.RootEntity.RemoveComponent(scene.GetType());
             sceneEntityDic.Remove(sceneType);
         }
 

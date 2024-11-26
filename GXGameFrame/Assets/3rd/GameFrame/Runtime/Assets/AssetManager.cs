@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
-using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.SceneManagement;
+using YooAsset;
 
 namespace GameFrame
 {
@@ -15,12 +14,11 @@ namespace GameFrame
         private class AssetHandleCache
         {
             public readonly string Path;
-            public AsyncOperationHandle Handle;
+            public AssetHandle Handle;
             public Action<object> UnloadHandle;
             public object UnloadHandleParameter;
             public int ReferenceCount;
             public float LifeTime;
-            public bool IsScene;
 
             public AssetHandleCache(string _path)
             {
@@ -33,43 +31,31 @@ namespace GameFrame
 
         private readonly List<AssetHandleCache> dyingAssetHandles = new List<AssetHandleCache>();
 
-        public async UniTask<T> LoadAsync<T>(string path, IAssetReference reference = null, System.Threading.CancellationToken cancellationToken = default)
+        public async UniTask<T> LoadAsync<T>(string path, IAssetReference reference = null, System.Threading.CancellationToken token = default)
+            where T : UnityEngine.Object
         {
-            IAssetReference tempRef = reference;
             if (!assetHandleCaches.TryGetValue(path, out var cache))
             {
                 cache = new AssetHandleCache(path);
                 assetHandleCaches.Add(path, cache);
             }
-
             cache.LifeTime = InfinityLifeTime;
-
-            tempRef?.RefAsset(path);
-            if (tempRef == null)
-            {
-                IncrementReferenceCount(path);
-            }
-
-            if (!cache.Handle.IsValid())
-                cache.Handle = Addressables.LoadAssetAsync<T>(path);
-
-            var tHandle = cache.Handle.Convert<T>();
-            if (tHandle.IsDone)
-                return tHandle.Result;
-
-
+            reference.RefAsset(path);
+            if (cache.Handle==null || !cache.Handle.IsValid)
+                cache.Handle = YooAssets.LoadAssetAsync(path);
+            if (cache.Handle.IsDone)
+                return (T) cache.Handle.AssetObject;
             try
             {
-                await tHandle.ToUniTask(cancellationToken: cancellationToken);
+                await cache.Handle.ToUniTask(cancellationToken: token);
             }
             catch (OperationCanceledException)
             {
                 cache.Handle = default;
                 return default(T);
             }
-
-            tempRef?.LoadLater();
-            return tHandle.Result;
+            reference.LoadLater();
+            return (T) cache.Handle.AssetObject;
         }
 
         /// <summary>
@@ -92,34 +78,18 @@ namespace GameFrame
         }
 
 
-        public async UniTask<Scene> LoadSceneAsync(string path, IAssetReference reference = null, System.Threading.CancellationToken token = default)
+        public async UniTask<SceneHandle> LoadSceneAsync(string path, LoadSceneMode sceneMode = LoadSceneMode.Single,
+            System.Threading.CancellationToken token = default)
         {
-            if (!assetHandleCaches.TryGetValue(path, out var cache))
+            var handle = YooAssets.LoadSceneAsync(path, sceneMode);
+            if (!handle.IsValid || handle.IsDone)
+                return null;
+            await handle.ToUniTask(cancellationToken:token);
+            if (handle.Status == EOperationStatus.Succeed)
             {
-                cache = new AssetHandleCache(path);
-                cache.IsScene = true;
-                assetHandleCaches.Add(path, cache);
+                return handle;
             }
-
-            cache.LifeTime = InfinityLifeTime;
-
-            reference?.RefAsset(path);
-            if (reference == null)
-            {
-                IncrementReferenceCount(path);
-            }
-
-            // if (!cache.handle.IsValid())
-            var handle = Addressables.LoadSceneAsync(path, LoadSceneMode.Additive);
-            cache.Handle = handle;
-            var result = await handle.ToUniTask(cancellationToken: token).SuppressCancellationThrow();
-            if (result.IsCanceled)
-            {
-                cache.Handle = default;
-                return default(Scene);
-            }
-
-            return result.Result.Scene;
+            return null;
         }
 
         public void IncrementReferenceCount(string path)
@@ -160,11 +130,8 @@ namespace GameFrame
                         dyingAssetHandles.RemoveAt(i);
                         assetHandleCaches.Remove(cache.Path);
                         cache.UnloadHandle?.Invoke(cache.UnloadHandleParameter);
-                        if (cache.Handle.IsValid())
-                            if (!cache.IsScene)
-                                Addressables.Release(cache.Handle);
-                            else
-                                Addressables.UnloadSceneAsync(cache.Handle);
+                        if (cache.Handle.IsValid)
+                            cache.Handle.Release();
                     }
                 }
             }

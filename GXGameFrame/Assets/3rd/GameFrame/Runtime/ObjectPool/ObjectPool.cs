@@ -179,7 +179,7 @@ namespace GameFrame
         public async UniTask<T> SpawnAsync(System.Threading.CancellationToken token = default)
         {
             ObjectPoolHandle objectPoolHandle = ReferencePool.Acquire<ObjectPoolHandle>();
-            objectPoolHandle.Init(token);
+            objectPoolHandle.SetToken(token);
             spawnAsyncQueue.Enqueue(objectPoolHandle);
             SetAsyncMaxCount();
             await objectPoolHandle;

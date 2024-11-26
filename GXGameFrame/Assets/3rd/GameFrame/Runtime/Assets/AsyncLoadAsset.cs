@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using Object = UnityEngine.Object;
 
 namespace GameFrame
 {
-    public class AsyncLoadAsset<T> where T : class
+    public class AsyncLoadAsset<T> where T : Object
     {
         private List<T> assets;
         private IAssetReference assetReference;

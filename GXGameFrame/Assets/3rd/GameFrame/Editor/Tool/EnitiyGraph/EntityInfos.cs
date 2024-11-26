@@ -37,7 +37,7 @@ namespace GameFrame.Editor
             IEntity root = null;
             if (ientity == null)
             {
-                root = GXGameFrame.Instance.MainScene;
+                root = GXGameFrame.Instance.RootEntity;
             }
             else
             {

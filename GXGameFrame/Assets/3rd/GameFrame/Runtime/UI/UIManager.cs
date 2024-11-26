@@ -587,7 +587,7 @@ namespace GameFrame
             foreach (Type recycleWindow in mTempRecycleWindow)
             {
                 RemoveRecycleWindowDic(recycleWindow);
-                GXGameFrame.Instance.MainScene.GetComponent<UIComponent>().RemoveComponent(recycleWindow);
+                GXGameFrame.Instance.RootEntity.GetComponent<UIComponent>().RemoveComponent(recycleWindow);
             }
 
             mTempRecycleWindow.Clear();

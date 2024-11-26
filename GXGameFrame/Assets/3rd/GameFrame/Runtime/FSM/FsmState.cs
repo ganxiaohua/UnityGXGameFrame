@@ -21,6 +21,11 @@
         {
         }
 
+        protected void ChangeState<T>() where T : FsmState
+        {
+            fsmController.ChangeState<T>();
+        }
+
         protected void SetData(string key, object data)
         {
             fsmController.SetData(key, data);

@@ -60,7 +60,7 @@ namespace GameFrame
 
         public static UINode CreateNode(Type windowType, object data)
         {
-            UIComponent UIComponent = GXGameFrame.Instance.MainScene.GetComponent<UIComponent>();
+            UIComponent UIComponent = GXGameFrame.Instance.RootEntity.GetComponent<UIComponent>();
             UINode uiNode = ReferencePool.Acquire<UINode>();
             uiNode.Name = windowType.Name;
             uiNode.WindowType = windowType;

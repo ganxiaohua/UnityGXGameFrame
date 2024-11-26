@@ -1,9 +1,9 @@
 {
   "dependencies": {
+    "com.tuyoogame.yooasset": "2.2.4-preview",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.2d.tilemap": "1.0.0",
     "com.unity.2d.tilemap.extras": "3.1.2",
-    "com.unity.addressables": "1.21.21",
     "com.unity.ads": "4.4.2",
     "com.unity.ai.navigation": "1.1.5",
     "com.unity.analytics": "3.8.1",
@@ -54,5 +54,14 @@
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
     "com.unity.modules.xr": "1.0.0"
-  }
+  },
+  "scopedRegistries": [
+    {
+      "name": "package.openupm.com",
+      "url": "https://package.openupm.com",
+      "scopes": [
+        "com.tuyoogame.yooasset"
+      ]
+    }
+  ]
 }

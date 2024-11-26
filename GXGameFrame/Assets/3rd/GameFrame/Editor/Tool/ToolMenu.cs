@@ -90,13 +90,13 @@ namespace GameFrame.Editor
         [MenuItem("GX框架工具/路径/打开包体路径")]
         public static void OpenPackagePath()
         {
-            Application.OpenURL(Application.dataPath + "/../Bin/" + BuildScript.BuildTarget);
+            // Application.OpenURL(Application.dataPath + "/../Bin/" + BuildScript.BuildTarget);
         }
 
         [MenuItem("GX框架工具/路径/打开AB包路径")]
         public static void OpenABPackagePath()
         {
-            Application.OpenURL($"{Application.dataPath + "/../"}ServerData/{BuildScript.BuildTarget}");
+            // Application.OpenURL($"{Application.dataPath + "/../"}ServerData/{BuildScript.BuildTarget}");
         }
 
         [MenuItem("GX框架工具/断言/开启" , true)]

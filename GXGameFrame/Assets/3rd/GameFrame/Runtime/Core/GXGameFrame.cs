@@ -5,14 +5,19 @@ namespace GameFrame
 {
     public class GXGameFrame : Singleton<GXGameFrame>
     {
-        public MainScene MainScene { get; private set; }
+        public RootEntity RootEntity { get; private set; }
 
         public async UniTask Start()
         {
-            MainScene = ReferencePool.Acquire<MainScene>();
-            MainScene.Initialize(null, 0);
-            MainScene.AddComponent<UIComponent>();
-            await MainScene.AddComponent<AssetInitComponent>().WaitLoad();
+            RootEntity = ReferencePool.Acquire<RootEntity>();
+            RootEntity.Initialize(null, 0);
+            RootEntity.AddComponent<UIComponent>();
+            var assetsFsmController =  await RootEntity.AddComponent<AssetsFsmController>();
+            if (assetsFsmController.TaskState != TaskState.Succ)
+            {
+                Debugger.LogError("资源流程失败");
+            }
+            RootEntity.RemoveComponent<AssetsFsmController>();
         }
 
         public void Update()
@@ -42,7 +47,7 @@ namespace GameFrame
 
         public void OnDisable()
         {
-            ReferencePool.Release(MainScene);
+            ReferencePool.Release(RootEntity);
             UIManager.Instance.Disable();
             EntityHouse.Instance.Disable();
             ObjectPoolManager.Instance.Disable();

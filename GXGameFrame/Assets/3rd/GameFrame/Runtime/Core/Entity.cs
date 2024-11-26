@@ -20,7 +20,7 @@ namespace GameFrame
 
         private static int sSerialId;
 
-        public void Initialize(IEntity parent, int id)
+        public  void Initialize(IEntity parent, int id)
         {
             State = IEntity.EntityState.IsRunning;
             Parent = parent;

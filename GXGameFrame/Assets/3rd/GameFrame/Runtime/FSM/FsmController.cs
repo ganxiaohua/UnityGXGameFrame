@@ -56,15 +56,6 @@ namespace GameFrame
             return state;
         }
 
-        public void SwitchState<T>() where T : FsmState
-        {
-            bool b = states.TryGetValue(typeof(T), out var state);
-            Assert.IsTrue(b, $"不包含这个stateP{typeof(T)}");
-            CurState?.OnExit();
-            CurState = state;
-            CurState.OnEnter(this);
-        }
-
         protected void RemoveState(FsmState state)
         {
             Type type = state.GetType();
@@ -76,6 +67,15 @@ namespace GameFrame
             }
 
             RemoveChild(state);
+        }
+        
+        public virtual void ChangeState<T>() where T : FsmState
+        {
+            bool b = states.TryGetValue(typeof(T), out var state);
+            Assert.IsTrue(b, $"不包含这个stateP{typeof(T)}");
+            CurState?.OnExit();
+            CurState = state;
+            CurState.OnEnter(this);
         }
     }
 }
