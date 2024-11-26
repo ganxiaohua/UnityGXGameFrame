@@ -17,15 +17,15 @@ namespace GameFrame
 
         public Dictionary<Type, IEntity> Components { get; private set; } = new();
 
-
         public HashSet<IEntity> Children { get; private set; } = new();
 
-        private static int sSerialId;
+        private int serialId;
 
         public void OnDirty(IEntity parent, int id)
         {
             State = IEntity.EntityState.IsRunning;
             Parent = parent;
+            serialId = 0;
             ID = id;
             Versions++;
         }
@@ -40,7 +40,7 @@ namespace GameFrame
         private IEntity Create(Type type, bool isComponent)
         {
             IEntity entity = (IEntity) ReferencePool.Acquire(type);
-            entity.OnDirty(this, sSerialId++);
+            entity.OnDirty(this, serialId++);
             if (isComponent)
             {
                 Components.Add(type, entity);
