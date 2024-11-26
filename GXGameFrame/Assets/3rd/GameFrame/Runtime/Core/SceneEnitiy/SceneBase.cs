@@ -8,7 +8,6 @@ namespace GameFrame
     public class SceneBase : Entity, IInitializeSystem, IScene
     {
         private Dictionary<string, SceneHandle> sceneHandleDic = new Dictionary<string, SceneHandle>();
-
         protected virtual string SingleSceneName { get; set; }
 
         public virtual void Initialize()
@@ -20,25 +19,18 @@ namespace GameFrame
         {
             bool succ = await LoadScene(SingleSceneName, LoadSceneMode.Single);
             if (succ)
-            {
                 OnReady();
-            }
-            else
-            {
-                Debugger.LogError("加载主场景失败");
-            }
         }
 
         protected virtual void OnReady()
         {
-            
         }
 
         protected async UniTask<bool> LoadScene(string name, LoadSceneMode sceneMode = LoadSceneMode.Additive)
         {
             int id = ID;
             var hand = await AssetManager.Instance.LoadSceneAsync(name);
-            if (id != ID)
+            if (id != ID || State != IEntity.EntityState.IsRunning)
             {
                 hand.UnSuspend();
                 return false;
