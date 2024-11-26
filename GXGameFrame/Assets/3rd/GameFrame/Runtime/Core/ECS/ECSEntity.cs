@@ -15,7 +15,7 @@ namespace GameFrame
     /// <summary>
     /// ECSEntity挂载的一定是Context
     /// </summary>
-    public class ECSEntity : IEntity
+    public class ECSEntity : IEntity,IVersions
     {
         public IEntity.EntityState State { get; private set; }
 
@@ -24,18 +24,21 @@ namespace GameFrame
         public int ID { get; private set; }
 
         public string Name { get; set; }
+        
+        public int Versions { get; private set; }
 
         private World world;
 
         public GXArray<ECSComponent> EcsComponentArray { get; private set; }
 
-        public void Initialize(IEntity parent, int id)
+        public void OnDirty(IEntity parent, int id)
         {
             EcsComponentArray = ReferencePool.Acquire<GXArray<ECSComponent>>();
             EcsComponentArray.Init(GXComponents.ComponentTypes.Length);
             State = IEntity.EntityState.IsRunning;
             Parent = parent;
             ID = id;
+            Versions++;
         }
 
         /// <summary>
@@ -147,6 +150,7 @@ namespace GameFrame
         public void Dispose()
         {
             State = IEntity.EntityState.IsClear;
+            Versions++;
             ClearAllComponent();
         }
     }

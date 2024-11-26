@@ -28,9 +28,9 @@ namespace GameFrame
 
         protected async UniTask<bool> LoadScene(string name, LoadSceneMode sceneMode = LoadSceneMode.Additive)
         {
-            int id = ID;
+            int versions = Versions;
             var hand = await AssetManager.Instance.LoadSceneAsync(name);
-            if (id != ID || State != IEntity.EntityState.IsRunning)
+            if (versions != Versions)
             {
                 hand.UnSuspend();
                 return false;

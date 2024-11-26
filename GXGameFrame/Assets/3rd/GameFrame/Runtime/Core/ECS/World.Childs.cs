@@ -2,27 +2,16 @@
 
 namespace GameFrame
 {
-    public partial class World : IEntity
+    public partial class World
     {
-        public IEntity Parent { get; private set; }
-        public int ID { get; private set; }
-        public string Name { get; set; }
-
-        public IEntity.EntityState State { get; private set; }
-
-        private int ecsSerialId;
-
         public int ChildsCount { get; private set; }
 
         public FastSoleList<IEntity> Children;
 
         private Stack<int> heritageId = new();
-
-        public void Initialize(IEntity parent, int id)
+        
+        private void InitializeChilds()
         {
-            State = IEntity.EntityState.IsRunning;
-            Parent = parent;
-            ID = id;
             ChildsCount = 32;
             Children = new FastSoleList<IEntity>(ChildsCount);
         }
@@ -55,7 +44,7 @@ namespace GameFrame
                 id = ecsSerialId++;
             }
 
-            entity.Initialize(this, id);
+            entity.OnDirty(this, id);
             entity.SetContext(this);
             Children.Add(entity);
         }
@@ -77,6 +66,13 @@ namespace GameFrame
             }
 
             Children.Clear();
+        }
+
+        private void DisposeChilds()
+        {
+            ClearAllChild();
+            ChildsCount = 0;
+            heritageId.Clear();
         }
     }
 }

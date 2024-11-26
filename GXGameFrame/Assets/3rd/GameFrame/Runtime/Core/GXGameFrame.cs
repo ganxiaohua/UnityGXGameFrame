@@ -10,7 +10,7 @@ namespace GameFrame
         public async UniTask Start()
         {
             RootEntity = ReferencePool.Acquire<RootEntity>();
-            RootEntity.Initialize(null, 0);
+            RootEntity.OnDirty(null, 0);
             RootEntity.AddComponent<UIComponent>();
             var assetsFsmController =  await RootEntity.AddComponent<AssetsFsmController>();
             if (assetsFsmController.TaskState != TaskState.Succ)

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace GameFrame
 {
-    public abstract class Entity : IEntity
+    public abstract class Entity : IEntity, IVersions
     {
         public IEntity.EntityState State { get; private set; }
 
@@ -13,6 +13,8 @@ namespace GameFrame
 
         public string Name { get; set; }
 
+        public int Versions { get; private set; }
+
         public Dictionary<Type, IEntity> Components { get; private set; } = new();
 
 
@@ -20,11 +22,12 @@ namespace GameFrame
 
         private static int sSerialId;
 
-        public  void Initialize(IEntity parent, int id)
+        public void OnDirty(IEntity parent, int id)
         {
             State = IEntity.EntityState.IsRunning;
             Parent = parent;
             ID = id;
+            Versions++;
         }
 
 
@@ -37,7 +40,7 @@ namespace GameFrame
         private IEntity Create(Type type, bool isComponent)
         {
             IEntity entity = (IEntity) ReferencePool.Acquire(type);
-            entity.Initialize(this, sSerialId++);
+            entity.OnDirty(this, sSerialId++);
             if (isComponent)
             {
                 Components.Add(type, entity);
@@ -339,6 +342,7 @@ namespace GameFrame
             Parent = null;
             ClearAllChild();
             ClearAllComponent();
+            Versions++;
         }
     }
 }

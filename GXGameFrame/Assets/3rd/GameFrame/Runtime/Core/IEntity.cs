@@ -17,6 +17,6 @@ namespace GameFrame
 
         public EntityState State { get; }
 
-        public void Initialize(IEntity parent, int id);
+        public void OnDirty(IEntity parent, int id);
     }
 }

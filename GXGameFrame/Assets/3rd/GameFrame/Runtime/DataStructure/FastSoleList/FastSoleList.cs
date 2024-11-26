@@ -21,9 +21,9 @@ namespace GameFrame
 
         public void SetCapacity(int capacity)
         {
+            Assert.IsTrue(blocks.Count == 0, "快内已经有成员,不允许修改");
             this.capacity = capacity;
             datas.Capacity = capacity;
-            Assert.IsTrue(blocks.Count == 0, "快内已经有成员,不允许修改");
         }
 
         public bool Add(T data)
@@ -32,16 +32,18 @@ namespace GameFrame
             int subBlockIndex = data.ID % capacity;
             if (blocks.Count <= blockIndex)
             {
-                blocks.Add(new DirtyBlock(capacity));
+                for (int i = blocks.Count; i <= blockIndex; i++)
+                {
+                    blocks.Add(new DirtyBlock(capacity));
+                }
             }
-
+            
             var block = blocks[blockIndex];
             if (block.Dirty(subBlockIndex))
             {
                 datas.Add(data);
                 return true;
             }
-
             return false;
         }
 

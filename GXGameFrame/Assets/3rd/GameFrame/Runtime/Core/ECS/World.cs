@@ -2,16 +2,40 @@
 
 namespace GameFrame
 {
-    public partial class World : IInitializeSystem, IUpdateSystem
+    public partial class World : IEntity, IVersions, IInitializeSystem, IUpdateSystem
     {
-        private Dictionary<Matcher, Group> groups = new();
-        private List<Group>[] groupsList;
-        public float DeltaTime { get; private set; }
-        public float Multiple { get; private set; }
+        public IEntity Parent { get; private set; }
+        
+        public int ID { get; private set; }
+        
+        public string Name { get; set; }
 
+        public int Versions { get; private set; }
+
+        public IEntity.EntityState State { get; private set; }
+
+        private int ecsSerialId;
+        
+        public float DeltaTime { get; private set; }
+        
+        public float Multiple { get; private set; }
+        
+        private Dictionary<Matcher, Group> groups = new();
+        
+        private List<Group>[] groupsList;
+
+        public void OnDirty(IEntity parent, int id)
+        {
+            State = IEntity.EntityState.IsRunning;
+            Parent = parent;
+            ecsSerialId = 0;
+            ID = id;
+            Versions++;
+        }
 
         public virtual void Initialize()
         {
+            InitializeChilds();
             SetMultiple(1);
             groupsList = new List<Group>[GXComponents.ComponentTypes.Length];
         }
@@ -72,13 +96,13 @@ namespace GameFrame
 
         public virtual void Dispose()
         {
-            ClearAllChild();
+            DisposeChilds();
             foreach (var group in groups)
             {
                 Matcher.ClearMatcher(group.Key);
                 Group.RemoveGroup(group.Value);
             }
-
+            Versions++;
             ecsSerialId = 0;
             groupsList = null;
             groups.Clear();
