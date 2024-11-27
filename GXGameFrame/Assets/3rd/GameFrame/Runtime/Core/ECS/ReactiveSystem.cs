@@ -16,7 +16,7 @@ namespace GameFrame
         /// </summary>
         private Collector collector;
 
-        public virtual void Initialize(World entity)
+        public virtual void OnInitialize(World entity)
         {
             buffer = new List<ECSEntity>();
             World = entity;

@@ -10,7 +10,7 @@ namespace GameFrame
         {
             if (system is IInitializeSystem ecsinitsystem)
             {
-                ecsinitsystem.Initialize();
+                ecsinitsystem.OnInitialize();
                 return true;
             }
 
@@ -21,7 +21,7 @@ namespace GameFrame
         {
             if (system is IInitializeSystem<P1> ecsinitsystem)
             {
-                ecsinitsystem.Initialize(p1);
+                ecsinitsystem.OnInitialize(p1);
                 return true;
             }
 
@@ -32,7 +32,7 @@ namespace GameFrame
         {
             if (system is IInitializeSystem<P1, P2> ecsinitsystem)
             {
-                ecsinitsystem.Initialize(p1, p2);
+                ecsinitsystem.OnInitialize(p1, p2);
                 return true;
             }
 

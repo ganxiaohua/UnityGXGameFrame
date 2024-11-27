@@ -10,7 +10,7 @@ namespace GameFrame
         private Dictionary<IBehaviorData, BehaviorEntity> dataForBehaviorDic;
         private List<IBehaviorData> dataList;
 
-        public void Initialize(Type arenatype)
+        public void OnInitialize(Type arenatype)
         {
             dataForBehaviorDic = new();
             behaviorDic = new();

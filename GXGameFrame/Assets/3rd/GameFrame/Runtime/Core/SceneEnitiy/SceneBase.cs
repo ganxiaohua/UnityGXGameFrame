@@ -10,7 +10,7 @@ namespace GameFrame
         private Dictionary<string, SceneHandle> sceneHandleDic = new Dictionary<string, SceneHandle>();
         protected virtual string SingleSceneName { get; set; }
 
-        public virtual void Initialize()
+        public virtual void OnInitialize()
         {
             LoadMainScene().Forget();
         }

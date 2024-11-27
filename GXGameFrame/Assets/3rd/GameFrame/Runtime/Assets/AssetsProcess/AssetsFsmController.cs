@@ -9,9 +9,9 @@ namespace GameFrame
 
         private string packageName = "DefaultPackage";
 
-        public override void Initialize()
+        public override void OnInitialize()
         {
-            base.Initialize();
+            base.OnInitialize();
             YooAssets.Initialize();
             SetData("packageName", packageName);
             SetData("playMode", playMode);

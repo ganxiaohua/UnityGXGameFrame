@@ -6,7 +6,7 @@ namespace GameFrame
     {
         public UniTaskCompletionSource UniTaskCompletionSource;
 
-        public void Initialize()
+        public void OnInitialize()
         {
             UniTaskCompletionSource = new UniTaskCompletionSource();
         }

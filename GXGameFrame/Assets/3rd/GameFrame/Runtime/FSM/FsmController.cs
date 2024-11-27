@@ -9,7 +9,7 @@ namespace GameFrame
 
         private Dictionary<Type, FsmState> states = new Dictionary<Type, FsmState>();
 
-        public virtual void Initialize()
+        public virtual void OnInitialize()
         {
       
         }

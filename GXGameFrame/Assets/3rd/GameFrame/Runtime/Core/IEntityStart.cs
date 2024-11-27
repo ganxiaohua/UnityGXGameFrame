@@ -2,16 +2,16 @@
 {
     public interface IInitializeSystem : ISystem
     {
-        void Initialize();
+        void OnInitialize();
     }
 
     public interface IInitializeSystem<in TP1> : ISystem
     {
-        void Initialize(TP1 p1);
+        void OnInitialize(TP1 p1);
     }
 
     public interface IInitializeSystem<in TP1, in TP2> : ISystem
     {
-        void Initialize(TP1 p1, TP2 p2);
+        void OnInitialize(TP1 p1, TP2 p2);
     }
 }

@@ -8,7 +8,7 @@ namespace GameFrame
         public Behavior Behavior;
         private List<IBehaviorData> dataList;
 
-        public void Initialize(Type behaviorType, BehaviorWorld behaviorWorld)
+        public void OnInitialize(Type behaviorType, BehaviorWorld behaviorWorld)
         {
             Behavior = (Behavior) ReferencePool.Acquire(behaviorType);
             Behavior.Init(behaviorWorld);

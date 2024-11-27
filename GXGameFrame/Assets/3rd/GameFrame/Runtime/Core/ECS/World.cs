@@ -33,7 +33,7 @@ namespace GameFrame
             Versions++;
         }
 
-        public virtual void Initialize()
+        public virtual void OnInitialize()
         {
             InitializeChilds();
             SetMultiple(1);

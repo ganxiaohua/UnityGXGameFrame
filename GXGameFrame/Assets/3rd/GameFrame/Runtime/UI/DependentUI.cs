@@ -9,7 +9,7 @@ namespace GameFrame
         public GObject Window;
         private UniTaskCompletionSource waitLoadTask;
 
-        public void Initialize(string packageName,string windowName)
+        public void OnInitialize(string packageName,string windowName)
         {
             DefaultAssetReference = new DefaultAssetReference();
             waitLoadTask = new UniTaskCompletionSource();
