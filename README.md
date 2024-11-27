@@ -7,7 +7,7 @@
 * https://github.com/ganxiaohua/GXGame
 
 
-集成UI框架(基于fgui),资源加载框架(基于AA的的拓展,可以做到一键出包,一键构建,只需要少量配置)
+集成UI框架(基于fgui),资源加载框架(基于yooAssets)
 
 本框架特点:
 
