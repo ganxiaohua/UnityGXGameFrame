@@ -140,6 +140,7 @@ namespace GameFrame.Editor
 
             CreateRoot(rootNode);
             CreateEntityNode(rootNode);
+            // RemoveBeyondEntityNode();
         }
 
         private void CreateRoot(EntityNode root)
@@ -172,6 +173,9 @@ namespace GameFrame.Editor
                 var enititnode = node.NextNodes[i];
                 if (nodeDic.ContainsValue(enititnode))
                 {
+                    var Port = (Port) enititnode.GraphNode.outputContainer.hierarchy[0];
+                    if (!Port.connected && node.GraphNode != null)
+                        generalGraphView.AddEdgeByPorts(node.GraphNode.OutPort, Port, PickingMode.Ignore);
                     CreateEntityNode(enititnode);
                     continue;
                 }
@@ -183,6 +187,7 @@ namespace GameFrame.Editor
                 Rect rectView = new Rect(localRect.x * scale + worldBound.x, localRect.y * scale + worldBound.y, localRect.width, localRect.height);
                 if (!graphViewRect.Overlaps(rectView))
                 {
+                    CreateEntityNode(enititnode);
                     continue;
                 }
 
@@ -194,19 +199,20 @@ namespace GameFrame.Editor
                     : $"{enititnode.Entity.GetType().Name} ({enititnode.Entity.Name})";
                 graphNode.Init(this, enititnode, graphNodeName, localRect);
                 var inPort = graphNode.AddProt("", typeof(bool), Direction.Input);
-                var outPort = graphNode.AddProt("", typeof(bool), Direction.Output);
+                _ = graphNode.AddProt("", typeof(bool), Direction.Output);
                 enititnode.GraphNode = graphNode;
                 graphNode.RefreshExpandedState();
                 graphNode.RefreshPorts();
                 generalGraphView.AddElement(graphNode);
-                generalGraphView.AddEdgeByPorts(node.GraphNode.OutPort, inPort, PickingMode.Ignore);
+                if (node.GraphNode != null)
+                    generalGraphView.AddEdgeByPorts(node.GraphNode.OutPort, inPort, PickingMode.Ignore);
                 graphNode.SetColor(enititnode.Entity is ECSEntity ? new Color(0.5f, 0.2f, 0.1f) : Color.gray);
                 nodeDic.Add(graphNode, enititnode);
                 CreateEntityNode(enititnode);
             }
         }
 
-        private void RemoveEntityNode()
+        private void RemoveBeyondEntityNode()
         {
             Rect graphViewRect = generalGraphView.viewport.worldBound;
             var list = nodeDic.Keys;

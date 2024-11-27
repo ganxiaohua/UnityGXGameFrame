@@ -7,11 +7,11 @@ namespace GameFrame
     {
         public FsmState CurState { get; private set; }
 
-        private Dictionary<Type, FsmState> states;
+        private Dictionary<Type, FsmState> states = new Dictionary<Type, FsmState>();
 
         public virtual void Initialize()
         {
-            states = new();
+      
         }
 
         public void OnUpdate(float elapseSeconds, float realElapseSeconds)
@@ -29,7 +29,7 @@ namespace GameFrame
                 }
             }
 
-            states = null;
+            states.Clear();
             CurState = null;
             ClearBlcakboard();
             base.Dispose();
