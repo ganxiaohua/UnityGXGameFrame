@@ -78,7 +78,7 @@ namespace GameFrame
         }
 
 
-        public async UniTask<SceneHandle> LoadSceneAsync(string path, LoadSceneMode sceneMode = LoadSceneMode.Single,
+        public async UniTask<SceneHandle> LoadSceneAsync(string path, LoadSceneMode sceneMode,
             System.Threading.CancellationToken token = default)
         {
             var handle = YooAssets.LoadSceneAsync(path, sceneMode);

@@ -27,7 +27,7 @@ namespace GameFrame
         {
         }
 
-        protected async UniTask<bool> LoadScene(string name, LoadSceneMode sceneMode = LoadSceneMode.Additive)
+        protected async UniTask<bool> LoadScene(string name, LoadSceneMode sceneMode)
         {
             int versions = Versions;
             var hand = await AssetManager.Instance.LoadSceneAsync(name, sceneMode);
