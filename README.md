@@ -6,8 +6,6 @@
 
 * https://github.com/ganxiaohua/GXGame
 
-* 需要先运行一下GXGameFrame\Config\Excel\gen_code_bin 制作表格数据
-
 
 集成UI框架(基于fgui),资源加载框架(基于AA的的拓展,可以做到一键出包,一键构建,只需要少量配置)
 
