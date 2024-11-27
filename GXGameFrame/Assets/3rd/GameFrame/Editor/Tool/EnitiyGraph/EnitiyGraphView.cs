@@ -166,50 +166,64 @@ namespace GameFrame.Editor
             graphNode.SetColor(root.Entity is ECSEntity ? new Color(0.5f, 0.2f, 0.1f) : Color.gray);
         }
 
-        private void CreateEntityNode(EntityNode node)
+        private void CreateEntityNode(EntityNode parentNode)
         {
-            for (int i = 0; i < node.NextNodes.Count; i++)
+            for (int i = 0; i < parentNode.NextNodes.Count; i++)
             {
-                var enititnode = node.NextNodes[i];
-                if (nodeDic.ContainsValue(enititnode))
+                var childNode = parentNode.NextNodes[i];
+                if (nodeDic.ContainsValue(childNode))
                 {
-                    var Port = (Port) enititnode.GraphNode.outputContainer.hierarchy[0];
-                    if (!Port.connected && node.GraphNode != null)
-                        generalGraphView.AddEdgeByPorts(node.GraphNode.OutPort, Port, PickingMode.Ignore);
-                    CreateEntityNode(enititnode);
+                    if (parentNode.GraphNode == null)
+                        CreateGraphNode(parentNode);
+                    var port = (Port) childNode.GraphNode.outputContainer.hierarchy[0];
+                    if (!port.connected)
+                        generalGraphView.AddEdgeByPorts(parentNode.GraphNode.OutPort, port, PickingMode.Ignore);
+                    CreateEntityNode(childNode);
                     continue;
                 }
 
-                Rect localRect = new Rect(enititnode.Floor * (flootHeght + 50), flootHeght + enititnode.Grid * 100, flootWidth - 50, 100);
+                Rect localRect = new Rect(childNode.Floor * (flootHeght + 50), flootHeght + childNode.Grid * 100, flootWidth - 50, 100);
                 Rect graphViewRect = generalGraphView.viewport.worldBound;
                 float scale = generalGraphView.contentViewContainer.transform.scale.x;
                 Rect worldBound = generalGraphView.contentViewContainer.worldBound;
                 Rect rectView = new Rect(localRect.x * scale + worldBound.x, localRect.y * scale + worldBound.y, localRect.width, localRect.height);
                 if (!graphViewRect.Overlaps(rectView))
                 {
-                    CreateEntityNode(enititnode);
+                    CreateEntityNode(childNode);
                     continue;
                 }
 
-                var graphNode = generalGraphView.AddNode<GeneralGrophNode>();
-                graphNode.AddButton("关注", FollowNode);
-                graphNode.AddButton("删除", RemoveNode);
-                var graphNodeName = string.IsNullOrEmpty(enititnode.Entity.Name)
-                    ? enititnode.Entity.GetType().Name
-                    : $"{enititnode.Entity.GetType().Name} ({enititnode.Entity.Name})";
-                graphNode.Init(this, enititnode, graphNodeName, localRect);
-                var inPort = graphNode.AddProt("", typeof(bool), Direction.Input);
-                _ = graphNode.AddProt("", typeof(bool), Direction.Output);
-                enititnode.GraphNode = graphNode;
-                graphNode.RefreshExpandedState();
-                graphNode.RefreshPorts();
-                generalGraphView.AddElement(graphNode);
-                if (node.GraphNode != null)
-                    generalGraphView.AddEdgeByPorts(node.GraphNode.OutPort, inPort, PickingMode.Ignore);
-                graphNode.SetColor(enititnode.Entity is ECSEntity ? new Color(0.5f, 0.2f, 0.1f) : Color.gray);
-                nodeDic.Add(graphNode, enititnode);
-                CreateEntityNode(enititnode);
+                CreateEntityNode(parentNode, childNode);
             }
+        }
+
+        private void CreateEntityNode(EntityNode parentNode, EntityNode childNode)
+        {
+            var nodesPort = CreateGraphNode(childNode);
+            if (parentNode.GraphNode != null)
+                generalGraphView.AddEdgeByPorts(parentNode.GraphNode.OutPort, nodesPort.inPort, PickingMode.Ignore);
+            nodesPort.node.SetColor(childNode.Entity is ECSEntity ? new Color(0.5f, 0.2f, 0.1f) : Color.gray);
+            nodeDic.Add(nodesPort.node, childNode);
+            CreateEntityNode(childNode);
+        }
+
+        private (GeneralGrophNode node, Port inPort) CreateGraphNode(EntityNode node)
+        {
+            Rect localRect = new Rect(node.Floor * (flootHeght + 50), flootHeght + node.Grid * 100, flootWidth - 50, 100);
+            var graphNode = generalGraphView.AddNode<GeneralGrophNode>();
+            graphNode.AddButton("关注", FollowNode);
+            graphNode.AddButton("删除", RemoveNode);
+            var graphNodeName = string.IsNullOrEmpty(node.Entity.Name)
+                ? node.Entity.GetType().Name
+                : $"{node.Entity.GetType().Name} ({node.Entity.Name})";
+            graphNode.Init(this, node, graphNodeName, localRect);
+            var inPort = graphNode.AddProt("", typeof(bool), Direction.Input);
+            _ = graphNode.AddProt("", typeof(bool), Direction.Output);
+            node.GraphNode = graphNode;
+            graphNode.RefreshExpandedState();
+            graphNode.RefreshPorts();
+            generalGraphView.AddElement(graphNode);
+            return (graphNode, inPort);
         }
 
         private void RemoveBeyondEntityNode()
