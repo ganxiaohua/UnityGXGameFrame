@@ -1,4 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
+using UnityEngine;
 using YooAsset;
 
 namespace GameFrame
@@ -52,7 +53,7 @@ namespace GameFrame
                 createParameters.WebFileSystemParameters = FileSystemParameters.CreateDefaultWebFileSystemParameters();
                 initializationOperation = package.InitializeAsync(createParameters);
             }
-            
+
             InitializationOperation(initializationOperation).Forget();
         }
 
@@ -64,10 +65,9 @@ namespace GameFrame
                 Debugger.LogError("初始化资源文件失败");
                 return;
             }
+
             ChangeState<PackageVersionUpdateState>();
         }
-        
-        
 
 
         /// <summary>
@@ -78,27 +78,16 @@ namespace GameFrame
             string hostServerIP = "http://127.0.0.1";
             string appVersion = "v1.0";
 
-#if UNITY_EDITOR
-            if (UnityEditor.EditorUserBuildSettings.activeBuildTarget == UnityEditor.BuildTarget.Android)
+            if (Application.platform == RuntimePlatform.Android)
                 return $"{hostServerIP}/CDN/Android/{appVersion}";
-            else if (UnityEditor.EditorUserBuildSettings.activeBuildTarget == UnityEditor.BuildTarget.iOS)
+            else if (Application.platform == RuntimePlatform.IPhonePlayer)
                 return $"{hostServerIP}/CDN/IPhone/{appVersion}";
-            else if (UnityEditor.EditorUserBuildSettings.activeBuildTarget == UnityEditor.BuildTarget.WebGL)
+            else if (Application.platform == RuntimePlatform.WebGLPlayer)
                 return $"{hostServerIP}/CDN/WebGL/{appVersion}";
             else
                 return $"{hostServerIP}/CDN/PC/{appVersion}";
-#else
-        if (Application.platform == RuntimePlatform.Android)
-            return $"{hostServerIP}/CDN/Android/{appVersion}";
-        else if (Application.platform == RuntimePlatform.IPhonePlayer)
-            return $"{hostServerIP}/CDN/IPhone/{appVersion}";
-        else if (Application.platform == RuntimePlatform.WebGLPlayer)
-            return $"{hostServerIP}/CDN/WebGL/{appVersion}";
-        else
-            return $"{hostServerIP}/CDN/PC/{appVersion}";
-#endif
         }
-        
+
         /// <summary>
         /// 远端资源地址查询服务类
         /// </summary>
@@ -112,10 +101,12 @@ namespace GameFrame
                 _defaultHostServer = defaultHostServer;
                 _fallbackHostServer = fallbackHostServer;
             }
+
             string IRemoteServices.GetRemoteMainURL(string fileName)
             {
                 return $"{_defaultHostServer}/{fileName}";
             }
+
             string IRemoteServices.GetRemoteFallbackURL(string fileName)
             {
                 return $"{_fallbackHostServer}/{fileName}";

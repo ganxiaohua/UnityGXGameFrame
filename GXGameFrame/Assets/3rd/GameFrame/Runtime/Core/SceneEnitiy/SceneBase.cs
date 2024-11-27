@@ -8,6 +8,7 @@ namespace GameFrame
     public class SceneBase : Entity, IInitializeSystem, IScene
     {
         private Dictionary<string, SceneHandle> sceneHandleDic = new Dictionary<string, SceneHandle>();
+        
         protected virtual string SingleSceneName { get; set; }
 
         public virtual void OnInitialize()
@@ -29,15 +30,19 @@ namespace GameFrame
         protected async UniTask<bool> LoadScene(string name, LoadSceneMode sceneMode = LoadSceneMode.Additive)
         {
             int versions = Versions;
-            var hand = await AssetManager.Instance.LoadSceneAsync(name);
-            if (versions != Versions)
+            var hand = await AssetManager.Instance.LoadSceneAsync(name, sceneMode);
+            if (hand != null && versions != Versions)
             {
                 hand.UnSuspend();
                 return false;
             }
+            else if (hand != null)
+            {
+                sceneHandleDic.Add(name, hand);
+                return true;
+            }
 
-            sceneHandleDic.Add(name, hand);
-            return true;
+            return false;
         }
 
         public override void Dispose()
@@ -46,7 +51,6 @@ namespace GameFrame
             {
                 sceneHandle.Value.UnSuspend();
             }
-
             sceneHandleDic.Clear();
             base.Dispose();
         }
