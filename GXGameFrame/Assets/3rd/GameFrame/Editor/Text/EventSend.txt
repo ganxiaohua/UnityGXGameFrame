@@ -22,7 +22,10 @@ namespace Eden.Gameplay.Runtime
             }}
             foreach (var entity in allEntity)
             {{
-                ((I{0}) entity).{2}({3});
+                if (entity.State == IEntity.EntityState.IsRunning)
+                {{
+                    ((I{0}) entity).{2}({3});
+                }}
             }}
         }}
         
