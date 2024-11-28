@@ -71,10 +71,9 @@ namespace GameFrame
             {
                 throw new Exception($"TypeWithEntitys not have entity:{entity.ID}");
             }
-
+            RemoveAllSystem(entity);
             EventData.Instance.RemoveEventEntity(entity);
             entityList.Remove(entity);
-            RemoveAllSystem(entity);
         }
 
         /// <summary>

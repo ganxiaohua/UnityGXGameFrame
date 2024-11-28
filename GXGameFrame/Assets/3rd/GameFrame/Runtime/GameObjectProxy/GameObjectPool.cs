@@ -26,6 +26,17 @@ namespace GameFrame
         /// </summary>
         private const int ExpireTime = 30;
 
+        public static GameObject ObjectCacheArea;
+
+        public GameObjectPool()
+        {
+            ObjectCacheArea = new GameObject();
+            ObjectCacheArea.name = "ObjectCacheArea";
+            ObjectCacheArea.transform.localScale = Vector3.zero;
+            ObjectCacheArea.transform.position = Vector3.zero;
+            GameObject.DontDestroyOnLoad(ObjectCacheArea);
+        }
+
         /// <summary>
         /// 基础数据初始化
         /// </summary>

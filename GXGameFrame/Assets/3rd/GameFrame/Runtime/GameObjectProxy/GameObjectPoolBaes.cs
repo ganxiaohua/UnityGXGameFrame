@@ -50,7 +50,7 @@ namespace GameFrame
                 return;
             }
 
-            Obj.SetActive(false);
+            Obj.transform.parent = GameObjectPool.ObjectCacheArea.transform;
         }
 
         public void SetAssetPath(string assetPath)
@@ -77,7 +77,6 @@ namespace GameFrame
         /// </summary>
         public override void Dispose()
         {
-            base.Dispose();
             if (Obj == null)
             {
                 return;
@@ -90,6 +89,7 @@ namespace GameFrame
             Obj = null;
             parent = null;
             prefab = null;
+            base.Dispose();
         }
     }
 }
