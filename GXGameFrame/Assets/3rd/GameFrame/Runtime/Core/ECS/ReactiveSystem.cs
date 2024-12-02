@@ -38,15 +38,14 @@ namespace GameFrame
             {
                 if (ecsentity.State != IEntity.EntityState.IsClear && this.Filter(ecsentity))
                 {
-                    this.buffer.Add(ecsentity);
+                    buffer.Add(ecsentity);
                 }
             }
-
             collector.CollectedEntities.Clear();
-            if (this.buffer.Count == 0)
+            if (buffer.Count == 0)
                 return;
-            Execute(this.buffer);
-            this.buffer.Clear();
+            Execute(buffer);
+            buffer.Clear();
         }
 
         public abstract void Dispose();

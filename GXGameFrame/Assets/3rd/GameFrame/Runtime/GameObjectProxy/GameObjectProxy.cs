@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using GameFrame;
 using UnityEngine;
 
 namespace Common.Runtime
@@ -38,16 +39,16 @@ namespace Common.Runtime
             }
         }
 
-        public void BindFromEmpty(IGameObjectPool pool, Transform parent = null)
+        public void BindFromEmpty(Transform parent = null)
         {
-            BindFromPrefab(pool, EmptyPrefab, parent);
+            BindFromPrefab(EmptyPrefab, parent);
         }
 
-        public void BindFromPrefab(IGameObjectPool pool, GameObject prefab, Transform parent = null)
+        public void BindFromPrefab(GameObject prefab, Transform parent = null)
         {
             version++;
-            Unbind(pool);
-            var go = pool.InstantiateGameObject(prefab, parent);
+            Unbind();
+            var go = GameObjectPool.Instance.InstantiateGameObject(prefab, parent);
             go.hideFlags = HideFlags.None;
             this.gameObject = go;
             this.transform = go.transform;
@@ -57,33 +58,33 @@ namespace Common.Runtime
             onAfterBind?.Invoke();
         }
 
-        public async UniTask<bool> BindFromAssetAsync(IGameObjectPool pool, string asset, Transform parent = null,
+        public async UniTask<bool> BindFromAssetAsync( string asset, Transform parent = null,
             CancellationToken cancelToken = default)
         {
             version++;
             int prevVersion = version;
-            
+
             var go = default(GameObject);
             try
             {
-                go = await pool.GetAsync(asset, transform, cancelToken);
+                go = await GameObjectPool.Instance.GetAsync(asset, transform, cancelToken);
             }
             catch (Exception e)
             {
-                if (go) pool.Release(asset, go);
+                if (go) GameObjectPool.Instance.Release(asset, go);
                 if (e is not OperationCanceledException)
                     Debug.LogException(e);
                 return false;
             }
-            
+
             if (prevVersion != version)
             {
                 // operation is obsolete
-                pool.Release(asset, go);
+                GameObjectPool.Instance.Release(asset, go);
                 return false;
             }
 
-            Unbind(pool);
+            Unbind();
             this.gameObject = go;
             this.transform = go.transform;
             this.transform.parent = parent;
@@ -94,16 +95,16 @@ namespace Common.Runtime
             return true;
         }
 
-        public bool Unbind(IGameObjectPool pool)
+        public bool Unbind()
         {
             version++;
             if (!binded) return false;
             onBeforeUnbind?.Invoke();
             OnBeforeUnbind();
             if (prefab)
-                pool.Release(prefab, gameObject);
+                GameObjectPool.Instance.Release(prefab, gameObject);
             else
-                pool.Release(asset, gameObject);
+                GameObjectPool.Instance.Release(asset, gameObject);
             gameObject = null;
             transform = null;
             asset = null;
@@ -114,12 +115,10 @@ namespace Common.Runtime
 
         protected virtual void OnBeforeUnbind()
         {
-
         }
 
         protected virtual void OnAfterBind()
         {
-
         }
     }
 }

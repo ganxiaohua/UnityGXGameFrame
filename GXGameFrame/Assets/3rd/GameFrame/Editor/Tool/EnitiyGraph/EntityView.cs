@@ -11,6 +11,7 @@ namespace GameFrame.Editor
         private static EntityView sEntityPanel;
         private PropertyTree propertyTree;
         private IEntity target;
+        private static List<Type> filterType = new() {typeof(Entity), typeof(FsmController), typeof(UIEntity)};
 
         public static void Init(IEntity entity)
         {
@@ -49,7 +50,18 @@ namespace GameFrame.Editor
             {
                 if (member is FieldInfo or PropertyInfo)
                 {
-                    if (member.DeclaringType != typeof(Entity) && member.DeclaringType != typeof(FsmController))
+                    for (int i = 0; i < filterType.Count; i++)
+                    {
+                        if (member.DeclaringType == filterType[i])
+                        {
+                            return;
+                        }
+                    }
+                    if (member.DeclaringType == typeof(World) && member.Name == "Multiple")
+                    {
+                        attributes.Add<ShowInInspectorAttribute>();
+                    }
+                    else if(member.DeclaringType != typeof(World))
                     {
                         attributes.Add<ShowInInspectorAttribute>();
                         attributes.Add<ReadOnlyAttribute>();

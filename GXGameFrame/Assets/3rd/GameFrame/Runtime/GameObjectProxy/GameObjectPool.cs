@@ -150,6 +150,7 @@ namespace GameFrame
             ObjectPool<GameObjectPoolBaes> objectPool = null;
             string assetPath = null;
             SetPrefabMsg(prefab, ref defaultAssetReference, ref objectPool, ref assetPath);
+            objectPool.SetUserData(prefab);
             GameObjectPoolBaes gameObjectPoolBaes = objectPool.Spawn();
             gameObjectPoolBaes.SetParent(parent);
             gameObjectPoolBaes.SetAssetPath(assetPath);
