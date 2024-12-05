@@ -2,7 +2,7 @@
 高性能组件式框架,参考ET,GF,Entitas框架
 
 * 需要odin插件
-* 测试案例(将之放入到Assets目录下即可):
+* 测试案例(将之放入到Assets目录下即可): 需要NodeCanvas插件
 
 * https://github.com/ganxiaohua/GXGame
 
