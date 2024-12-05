@@ -81,6 +81,6 @@ namespace GameFrame
 
         public IEnumerable<ECSEntity> AsEnumerable() => (IEnumerable<ECSEntity>) this.EntitiesMap;
 
-        public List<ECSEntity>.Enumerator GetEnumerator() => this.EntitiesMap.GetEnumerator();
+        public IEnumerator<ECSEntity> GetEnumerator() => this.EntitiesMap.GetEnumerator();
     }
 }

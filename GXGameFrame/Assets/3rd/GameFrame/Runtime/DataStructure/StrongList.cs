@@ -34,6 +34,11 @@ namespace GameFrame
             this.keepOrder = keepOrder;
         }
 
+        public void SetCapacity(int capacity)
+        {
+            dataList.Capacity = capacity;
+        }
+
         public void Add(T val)
         {
 #if UNITY_EDITOR
@@ -134,6 +139,13 @@ namespace GameFrame
         {
             currentIndex = -1;
             currentElement = default;
+        }
+
+        public void Clear()
+        {
+            currentIndex = -1;
+            currentElement = default;
+            dataList.Clear();
         }
 
         public IEnumerator<T> GetEnumerator()

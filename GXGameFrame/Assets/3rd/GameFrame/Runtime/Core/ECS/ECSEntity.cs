@@ -1,11 +1,11 @@
 ﻿using System;
-using GameFrame.DataStructureRef;
 
 namespace GameFrame
 {
     [Serializable]
     public partial class ECSComponent : IDisposable
     {
+        public ECSEntity Owner;
         public virtual void Dispose()
         {
         }
@@ -56,6 +56,7 @@ namespace GameFrame
             }
 
             ECSComponent entity = EcsComponentArray.Add(cid, type);
+            entity.Owner = this;
             world.Reactive(cid, this, EcsChangeEventState.AddType);
             return entity;
         }
@@ -67,12 +68,14 @@ namespace GameFrame
         /// <exception cref="Exception"></exception>
         public void RemoveComponent(int cid)
         {
-            if (EcsComponentArray.Items[cid] == null)
+            var component = EcsComponentArray.Items[cid];
+            if (component == null)
             {
                 Type type = GXComponents.ComponentTypes[cid];
                 throw new Exception($"entity not already  component: {type.FullName}");
             }
 
+            component.Owner = null;
             EcsComponentArray.Remove(cid);
             world.Reactive(cid, this, EcsChangeEventState.RemoveType);
         }
@@ -138,13 +141,14 @@ namespace GameFrame
         /// <summary>
         /// 清除所有组件
         /// </summary>
-        public void ClearAllComponent()
+        private void ClearAllComponent()
         {
-            var indexList = ReferencePool.Acquire<RefList<int>>();
-            indexList.List.AddRange(EcsComponentArray.indexList);
+            var list = EcsComponentArray.indexList;
+            for (int i = list.Count-1; i >=0; i--)
+            {
+                RemoveComponent(list[i]);
+            }
             ReferencePool.Release(EcsComponentArray);
-            ((World) Parent).Reactive(indexList.List, this, EcsChangeEventState.RemoveType);
-            ReferencePool.Release(indexList);
         }
 
         public void Dispose()

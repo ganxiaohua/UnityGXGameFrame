@@ -5,7 +5,7 @@ using Object = UnityEngine.Object;
 
 namespace GameFrame
 {
-    public class AsyncLoadAsset<T> where T : Object
+    public class AsyncLoadAsset<T>  where T : Object
     {
         private List<T> assets;
         private IAssetReference assetReference;

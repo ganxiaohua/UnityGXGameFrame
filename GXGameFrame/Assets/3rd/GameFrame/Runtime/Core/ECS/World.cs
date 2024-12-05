@@ -70,17 +70,6 @@ namespace GameFrame
             return grop;
         }
 
-
-        public void Reactive(List<int> indexs, ECSEntity ecsEntity, ushort changeType)
-        {
-            int count = indexs.Count;
-            for (int i = 0; i < count; i++)
-            {
-                Reactive(indexs[i], ecsEntity, changeType);
-            }
-        }
-
-
         public void Reactive(int comid, ECSEntity entity, ushort changeType)
         {
             var groupList = groupsList[comid];

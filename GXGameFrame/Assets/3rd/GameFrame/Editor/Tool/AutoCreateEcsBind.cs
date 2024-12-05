@@ -37,10 +37,10 @@ namespace GameFrame.Editor
             var assembly = AppDomain.CurrentDomain.GetAssemblies();
             foreach (var item in assembly)
             {
-                foreach (var name in  EditorString.AssemblyNames)
+                foreach (var name in EditorString.AssemblyNames)
                 {
                     if (item.GetName().Name != name) continue;
-                    FindAllECSCom(item); 
+                    FindAllECSCom(item);
                     break;
                 }
             }
@@ -100,7 +100,7 @@ namespace GameFrame.Editor
                     var vb = tp.GetCustomAttribute<ViewBindAttribute>();
                     if (vb != null)
                     {
-                        AddEvent(tp,vb.BindType);
+                        AddEvent(tp, vb.BindType);
                     }
 
                     SetComponents(tp);
@@ -120,38 +120,50 @@ namespace GameFrame.Editor
             {
                 return;
             }
+
             string ECSComponentName = "ECSEntity";
             var vb = type.GetCustomAttribute<AssignBindAttribute>();
             if (vb != null)
             {
                 ECSComponentName = vb.BindType.FullName;
             }
-            
-            FieldInfo[] variable = type.GetFields();
+
+            FieldInfo[] variable = type.GetFields(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance);
+            PropertyInfo[] propertyInfos = type.GetProperties();
             string typeName = type.Name;
             string typeFullName = type.FullName;
             StringBuilder sb = new StringBuilder(1024);
             string abcls = s_TextDictionary[CreateAuto.Class];
-            string abAdd = string.Format(s_TextDictionary[CreateAuto.Add], typeName,ECSComponentName);
-            string abGet = string.Format(s_TextDictionary[CreateAuto.Get], typeName, typeFullName,ECSComponentName);
+            string abAdd = string.Format(s_TextDictionary[CreateAuto.Add], typeName, ECSComponentName);
+            string abGet = string.Format(s_TextDictionary[CreateAuto.Get], typeName, typeFullName, ECSComponentName);
             string abSet = "";
             string addParameter = "";
-            if (variable.Length > 0)
+            string fieldName = "";
+            string fieldTypeName = "";
+            if (propertyInfos.Length > 0)
             {
-                string fieldName = variable[0].Name;
-                string fieldTypeName = variable[0].FieldType.FullName;
+                 fieldName = propertyInfos[0].Name;
+                 fieldTypeName = propertyInfos[0].PropertyType.FullName;
+            }else if (variable.Length > 0)
+            {
+                 fieldName = variable[0].Name;
+                 fieldTypeName = variable[0].FieldType.FullName;
+            }
+
+            if (!string.IsNullOrEmpty(fieldName))
+            {
                 if (fieldTypeName == "String")
                 {
                     fieldTypeName = "string";
                 }
 
-                addParameter = string.Format(s_TextDictionary[CreateAuto.AddParameter], typeName, fieldTypeName, typeFullName, fieldName,ECSComponentName);
+                addParameter = string.Format(s_TextDictionary[CreateAuto.AddParameter], typeName, fieldTypeName, typeFullName, fieldName, ECSComponentName);
                 string evetString = "";
                 if (s_EventDictionary.TryGetValue(type, out evetString))
                 {
                 }
 
-                abSet = string.Format(s_TextDictionary[CreateAuto.Set], typeName, fieldTypeName, typeFullName, fieldName, evetString,ECSComponentName);
+                abSet = string.Format(s_TextDictionary[CreateAuto.Set], typeName, fieldTypeName, typeFullName, fieldName, evetString, ECSComponentName);
             }
 
             sb.Append(abAdd);
@@ -163,13 +175,13 @@ namespace GameFrame.Editor
             File.WriteAllText($"{EditorString.ECSOutPutPath}{typeName}Auto.cs", lastText);
         }
 
-        public static void AddEvent(Type type,Type bindType)
+        public static void AddEvent(Type type, Type bindType)
         {
-             MethodInfo[] methods = bindType.GetMethods(BindingFlags.Public | BindingFlags.Instance);
-             string funcName = methods[0].Name;
-            s_EventDictionary.Add(type,  $"View view = ecsEntity.GetView();\n" +
-                                         $"        if (view == null) return null;\n" +
-                                         $"        (({bindType.FullName}) (view.Value)).{funcName}(p);");
+            MethodInfo[] methods = bindType.GetMethods(BindingFlags.Public | BindingFlags.Instance);
+            string funcName = methods[0].Name;
+            s_EventDictionary.Add(type, $"View view = ecsEntity.GetView();\n" +
+                                        $"        if (view == null) return null;\n" +
+                                        $"        (({bindType.FullName}) (view.Value)).{funcName}(p);");
         }
 
         public static void CreateEvent()
@@ -186,6 +198,7 @@ namespace GameFrame.Editor
             {
                 return;
             }
+
             ComponentsSub += string.Format(s_TextDictionary[CreateAuto.ComponentsSub], type.Name, ComponentsSubIndex);
             ComponentsSubIndex++;
             ComponentsTypeSub += string.Format(s_TextDictionary[CreateAuto.ComponentsTypeSub], type.FullName);
@@ -206,6 +219,5 @@ namespace GameFrame.Editor
                 Directory.CreateDirectory(path);
             }
         }
-        
     }
 }

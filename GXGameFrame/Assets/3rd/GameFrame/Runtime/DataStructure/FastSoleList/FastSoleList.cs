@@ -6,7 +6,7 @@ namespace GameFrame
     {
         private List<DirtyBlock> blocks;
 
-        private List<T> datas;
+        private StrongList<T> datas;
 
         private int capacity;
 
@@ -15,7 +15,7 @@ namespace GameFrame
         public FastSoleList(int capacity)
         {
             this.capacity = capacity;
-            datas = new List<T>(capacity);
+            datas = new StrongList<T>(capacity);
             blocks = new List<DirtyBlock>(1);
         }
 
@@ -23,7 +23,7 @@ namespace GameFrame
         {
             Assert.IsTrue(blocks.Count == 0, "快内已经有成员,不允许修改");
             this.capacity = capacity;
-            datas.Capacity = capacity;
+            datas.SetCapacity(capacity);
         }
 
         public bool Add(T data)
@@ -59,7 +59,7 @@ namespace GameFrame
             var block = blocks[blockIndex];
             if (block.Erase(subBlockIndex))
             {
-                datas.RemoveSwapBack(data);
+                datas.Remove(data);
                 return true;
             }
 
@@ -74,10 +74,9 @@ namespace GameFrame
             {
                 blocks[i].Clear();
             }
-
             datas.Clear();
         }
 
-        public List<T>.Enumerator GetEnumerator() => this.datas.GetEnumerator();
+        public IEnumerator<T> GetEnumerator() => this.datas.GetEnumerator();
     }
 }
