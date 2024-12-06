@@ -157,6 +157,11 @@ namespace GameFrame.Editor
                     fieldTypeName = "string";
                 }
 
+                if (fieldTypeName.Contains("List"))
+                {
+                    fieldTypeName = $"System.Collections.Generic.List<{variable[0].FieldType.GenericTypeArguments[0].FullName}>";
+                }
+
                 addParameter = string.Format(s_TextDictionary[CreateAuto.AddParameter], typeName, fieldTypeName, typeFullName, fieldName, ECSComponentName);
                 string evetString = "";
                 if (s_EventDictionary.TryGetValue(type, out evetString))

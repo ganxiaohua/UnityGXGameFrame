@@ -2,7 +2,7 @@
 
 namespace GameFrame
 {
-    public abstract class ReactiveSystem : IInitializeSystem<World>, IUpdateSystem
+    public abstract class ReactiveBaseSystem : IInitializeSystem<World>
     {
         /// <summary>
         /// 挂载的父实体
@@ -29,7 +29,7 @@ namespace GameFrame
 
         protected abstract void Execute(List<ECSEntity> entities);
 
-        public void OnUpdate(float elapseSeconds, float realElapseSeconds)
+        protected void Do(float elapseSeconds, float realElapseSeconds)
         {
             if (collector.CollectedEntities.Count == 0)
                 return;
