@@ -2,7 +2,7 @@
 
 namespace GameFrame
 {
-    public class FastSoleList<T> where T : IContinuousID
+    public class GXHashSet<T> where T : IContinuousID
     {
         private List<DirtyBlock> blocks;
 
@@ -12,7 +12,7 @@ namespace GameFrame
 
         public int Count => datas.Count;
 
-        public FastSoleList(int capacity)
+        public GXHashSet(int capacity)
         {
             this.capacity = capacity;
             datas = new StrongList<T>(capacity);

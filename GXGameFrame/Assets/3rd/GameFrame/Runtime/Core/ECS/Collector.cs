@@ -4,9 +4,9 @@ namespace GameFrame
 {
     public class Collector : IDisposable
     {
-        private FastSoleList<ECSEntity> collectedEntities;
+        private GXHashSet<ECSEntity> collectedEntities;
 
-        public FastSoleList<ECSEntity> CollectedEntities => collectedEntities;
+        public GXHashSet<ECSEntity> CollectedEntities => collectedEntities;
 
         private Group[] groups;
 
@@ -35,7 +35,7 @@ namespace GameFrame
         private void InitCollector(int childSize, Group[] group)
         {
             groups = group;
-            collectedEntities ??= new FastSoleList<ECSEntity>(childSize);
+            collectedEntities ??= new GXHashSet<ECSEntity>(childSize);
             groupChange = AddEvent;
             foreach (var item in groups)
             {

@@ -6,14 +6,14 @@ namespace GameFrame
     {
         public int ChildsCount { get; private set; }
 
-        public FastSoleList<IEntity> Children;
+        public GXHashSet<IEntity> Children;
 
         private Stack<int> heritageId = new();
         
         private void InitializeChilds()
         {
             ChildsCount = 32;
-            Children = new FastSoleList<IEntity>(ChildsCount);
+            Children = new GXHashSet<IEntity>(ChildsCount);
         }
 
         public void EstimateChildsCount(int count)

@@ -9,7 +9,7 @@ namespace GameFrame
         public event GroupChanged GroupAdd;
         public event GroupChanged GroupRomve;
         public event GroupChanged GroupUpdate;
-        public FastSoleList<ECSEntity> EntitiesMap { get; private set; }
+        public GXHashSet<ECSEntity> EntitiesMap { get; private set; }
 
         public static Group CreateGroup(int childsCount, Matcher matcher)
         {
