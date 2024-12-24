@@ -18,7 +18,7 @@ namespace GameFrame.Runtime.Timer
             }
         }
         
-        public async UniTask WaitFrame(float sec, CancellationToken cancellationToken = default)
+        public async UniTask WaitFrame( CancellationToken cancellationToken = default)
         {
             int ver = ++versions;
             await UniTask.Yield();

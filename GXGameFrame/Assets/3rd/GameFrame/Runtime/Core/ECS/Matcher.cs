@@ -129,14 +129,13 @@ namespace GameFrame
         {
             if (obj == null || obj.GetType() != this.GetType() || obj.GetHashCode() != this.GetHashCode())
                 return false;
-            Matcher matcher = obj;
-            return equalIndices(matcher.allOfIndices, this.allOfIndices) && equalIndices(matcher.anyOfIndices, anyOfIndices) &&
-                   equalIndices(matcher.noneOfIndices, this.noneOfIndices);
+            return EqualIndices(obj.allOfIndices, this.allOfIndices) && EqualIndices(obj.anyOfIndices, anyOfIndices) &&
+                   EqualIndices(obj.noneOfIndices, this.noneOfIndices);
         }
 
         public override bool Equals(object obj) => Equals((Matcher) obj);
 
-        private bool equalIndices(int[] i1, int[] i2)
+        private bool EqualIndices(int[] i1, int[] i2)
         {
             if (i1 == null != (i2 == null))
                 return false;
