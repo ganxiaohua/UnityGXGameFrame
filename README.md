@@ -4,8 +4,8 @@
 * 需要odin插件
 * 测试案例(将之放入到Assets目录下即可): 需要NodeCanvas插件
 
-* https://github.com/ganxiaohua/GXGame
-
+* 测试案例：https://github.com/ganxiaohua/GXGame
+* 详情知乎：https://www.zhihu.com/column/c_1841845301331226626
 
 集成UI框架(基于fgui),资源加载框架(基于yooAssets)
 
