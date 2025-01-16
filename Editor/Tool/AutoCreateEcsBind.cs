@@ -34,6 +34,9 @@ namespace GameFrame.Editor
         {
             OpFile.DeleteFilesInDirectory(EditorString.ECSOutPutPath);
             LoadText();
+            ComponentsSubIndex = 0;
+            ComponentsTypeSub = "";
+            ComponentsSub = "";
             var assembly = AppDomain.CurrentDomain.GetAssemblies();
             foreach (var item in assembly)
             {
@@ -44,9 +47,12 @@ namespace GameFrame.Editor
                     break;
                 }
             }
+            CreateComponents();
+            CreateEvent();
+            AssetDatabase.Refresh();
         }
 
-        public static void LoadText()
+        private static void LoadText()
         {
             string add = EditorString.GameFramePath + "Editor/Text/ECS/Add.txt";
             string cls = EditorString.GameFramePath + "Editor/Text/Class.txt";
@@ -85,14 +91,10 @@ namespace GameFrame.Editor
             s_TextDictionary.Add(CreateAuto.ComponentsTypeSub, strComponentsIndex[3]);
         }
 
-        public static void FindAllECSCom(Assembly assembly)
+        private static void FindAllECSCom(Assembly assembly)
         {
             s_EventSb.Clear();
             Type[] types = assembly.GetTypes();
-            ComponentsSubIndex = 0;
-            ComponentsTypeSub = "";
-            ComponentsSub = "";
-            // Directory.Delete(EditorString.ECSOutPutPath,true);
             foreach (var tp in types)
             {
                 if (typeof(ECSComponent).IsAssignableFrom(tp) && tp.IsClass)
@@ -107,14 +109,10 @@ namespace GameFrame.Editor
                     CreateCshap(tp);
                 }
             }
-
-            CreateComponents();
-            CreateEvent();
-            AssetDatabase.Refresh();
         }
 
         //创建c#脚本
-        public static void CreateCshap(Type type)
+        private static void CreateCshap(Type type)
         {
             if (type.Name == nameof(ECSComponent))
             {
@@ -180,7 +178,7 @@ namespace GameFrame.Editor
             File.WriteAllText($"{EditorString.ECSOutPutPath}{typeName}Auto.cs", lastText);
         }
 
-        public static void AddEvent(Type type, Type bindType)
+        private static void AddEvent(Type type, Type bindType)
         {
             MethodInfo[] methods = bindType.GetMethods(BindingFlags.Public | BindingFlags.Instance);
             string funcName = methods[0].Name;
@@ -189,7 +187,7 @@ namespace GameFrame.Editor
                                         $"        (({bindType.FullName}) (view.Value)).{funcName}(p);");
         }
 
-        public static void CreateEvent()
+        private static void CreateEvent()
         {
             if (s_EventSb.Length == 0)
                 return;
@@ -197,7 +195,7 @@ namespace GameFrame.Editor
             File.WriteAllText($"{EditorString.ECSOutPutPath}ViewBindEventAuto.cs", last);
         }
 
-        public static void SetComponents(Type type)
+        private static void SetComponents(Type type)
         {
             if (type.Name == nameof(ECSComponent))
             {
@@ -209,14 +207,14 @@ namespace GameFrame.Editor
             ComponentsTypeSub += string.Format(s_TextDictionary[CreateAuto.ComponentsTypeSub], type.FullName);
         }
 
-        public static void CreateComponents()
+        private static void CreateComponents()
         {
             var typestr = string.Format(s_TextDictionary[CreateAuto.ComponentsTypeMain], ComponentsTypeSub);
             var str = string.Format(s_TextDictionary[CreateAuto.ComponentsMain], ComponentsSub, ComponentsSubIndex, typestr);
             File.WriteAllText($"{EditorString.ECSOutPutPath}Components.cs", str);
         }
 
-        public static void CreateDirectory(string path)
+        private static void CreateDirectory(string path)
         {
             path = Path.GetDirectoryName(path);
             if (!Directory.Exists(path))
