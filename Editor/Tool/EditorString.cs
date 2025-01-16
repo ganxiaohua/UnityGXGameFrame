@@ -41,11 +41,11 @@ namespace GameFrame.Editor
 
         // ---------------------------------------------------------以下路径最好不要改
 
-        public static string GameFramePath = "Assets/3rd/GameFrame/";
+        public static string GameFramePath = "Assets/3rd/UnityGXGameFrame/";
 
         // public static string SystemBindOutPutPath = "Assets/GXGame/Scripts/Runtime/Auto/SystemBindAuto.cs";
 
-        public static string UIScenePath = "Assets/3rd/GameFrame/Editor/Tool/Fgui/CreateUIScene.unity";
+        public static string UIScenePath = "Assets/3rd/UnityGXGameFrame/Editor/Tool/Fgui/CreateUIScene.unity";
 
         public static string RESSEQ = "RESSEQ";
 

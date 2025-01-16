@@ -5,9 +5,9 @@ namespace GameFrame.Editor
 {
     public class CreateFiles
     {
-        public static string UIMainUIText = "Assets/3rd/GameFrame/Editor/Text/UI/MainUI.txt";
-        public static string UIViewText = "Assets/3rd/GameFrame/Editor/Text/UI/UIViewText.txt";
-        public static string UIViewAutoText = "Assets/3rd/GameFrame/Editor/Text/UI/UIViewAutoText.txt";
+        public static string UIMainUIText = "Assets/3rd/UnityGXGameFrame/Editor/Text/UI/MainUI.txt";
+        public static string UIViewText = "Assets/3rd/UnityGXGameFrame/Editor/Text/UI/UIViewText.txt";
+        public static string UIViewAutoText = "Assets/3rd/UnityGXGameFrame/Editor/Text/UI/UIViewAutoText.txt";
         public static string[] UIViewAutoTexts;
 
 
