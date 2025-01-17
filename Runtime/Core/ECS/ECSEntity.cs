@@ -57,7 +57,7 @@ namespace GameFrame
 
             ECSComponent entity = EcsComponentArray.Add(cid, type);
             entity.Owner = this;
-            world.Reactive(cid, this, EcsChangeEventState.AddType);
+            world.Reactive(cid, this);
             return entity;
         }
 
@@ -77,7 +77,7 @@ namespace GameFrame
 
             component.Owner = null;
             EcsComponentArray.Remove(cid);
-            world.Reactive(cid, this, EcsChangeEventState.RemoveType);
+            world.Reactive(cid, this);
         }
 
         /// <summary>

@@ -12,7 +12,7 @@ namespace GameFrame
         static StringBuilder _cache = new StringBuilder(256);
         private const int MAX_BUILDER_SIZE = 512;
 
-        public static StringBuilder Acquire(int capacity = 256)
+        public static StringBuilder Get(int capacity = 256)
         {
             StringBuilder sb = _cache;
 

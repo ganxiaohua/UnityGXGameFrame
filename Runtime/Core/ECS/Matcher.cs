@@ -10,13 +10,13 @@ namespace GameFrame
 
 
         //全部包含
-        private int[] allOfIndices;
+        public int[] AllOfIndices { get; private set; }
 
         //任意一个
-        private int[] anyOfIndices;
+        public int[] AnyOfIndices{ get; private set; }
 
         //除了这个之外
-        private int[] noneOfIndices;
+        public int[] NoneOfIndices{ get; private set; } 
 
         public HashSet<int> Indices { get; } = new HashSet<int>();
 
@@ -40,39 +40,39 @@ namespace GameFrame
         public static Matcher SetAll(params int[] snitiyHasCodes)
         {
             Matcher matcher = ReferencePool.Acquire<Matcher>();
-            matcher.allOfIndices = matcher.Set(snitiyHasCodes);
+            matcher.AllOfIndices = matcher.Set(snitiyHasCodes);
             return matcher;
         }
 
         public static Matcher SetAny(params int[] snitiyHasCodes)
         {
             Matcher matcher = ReferencePool.Acquire<Matcher>();
-            matcher.anyOfIndices = matcher.Set(snitiyHasCodes);
+            matcher.AnyOfIndices = matcher.Set(snitiyHasCodes);
             return matcher;
         }
 
         public static Matcher SetNoneOf(params int[] snitiyHasCodes)
         {
             Matcher matcher = ReferencePool.Acquire<Matcher>();
-            matcher.noneOfIndices = matcher.Set(snitiyHasCodes);
+            matcher.NoneOfIndices = matcher.Set(snitiyHasCodes);
             return matcher;
         }
 
         public Matcher All(params int[] snitiyHasCodes)
         {
-            allOfIndices = Set(snitiyHasCodes);
+            AllOfIndices = Set(snitiyHasCodes);
             return this;
         }
 
         public Matcher Any(params int[] snitiyHasCodes)
         {
-            anyOfIndices = Set(snitiyHasCodes);
+            AnyOfIndices = Set(snitiyHasCodes);
             return this;
         }
 
         public Matcher NoneOf(params int[] snitiyHasCodes)
         {
-            noneOfIndices = Set(snitiyHasCodes);
+            NoneOfIndices = Set(snitiyHasCodes);
             return this;
         }
 
@@ -84,18 +84,18 @@ namespace GameFrame
 
         public bool Match(ECSEntity entity)
         {
-            if (this.allOfIndices != null && !entity.HasComponents(this.allOfIndices) ||
-                this.anyOfIndices != null && !entity.HasAnyComponent(this.anyOfIndices))
+            if (this.AllOfIndices != null && !entity.HasComponents(this.AllOfIndices) ||
+                this.AnyOfIndices != null && !entity.HasAnyComponent(this.AnyOfIndices))
                 return false;
-            return this.noneOfIndices == null || !entity.HasAnyComponent(this.noneOfIndices);
+            return this.NoneOfIndices == null || !entity.HasAnyComponent(this.NoneOfIndices);
         }
 
 
         public void Dispose()
         {
-            noneOfIndices = null;
-            allOfIndices = null;
-            noneOfIndices = null;
+            NoneOfIndices = null;
+            AllOfIndices = null;
+            NoneOfIndices = null;
             Indices.Clear();
             isHashCached = false;
             hash = 0;
@@ -117,8 +117,8 @@ namespace GameFrame
         {
             if (!this.isHashCached)
             {
-                this.hash = ApplyHash(ApplyHash(ApplyHash(this.GetType().GetHashCode(), this.allOfIndices, 3, 53), this.anyOfIndices, 307, 367),
-                    this.noneOfIndices, 647, 683);
+                this.hash = ApplyHash(ApplyHash(ApplyHash(this.GetType().GetHashCode(), this.AllOfIndices, 3, 53), this.AnyOfIndices, 307, 367),
+                    this.NoneOfIndices, 647, 683);
                 this.isHashCached = true;
             }
 
@@ -129,8 +129,8 @@ namespace GameFrame
         {
             if (obj == null || obj.GetType() != this.GetType() || obj.GetHashCode() != this.GetHashCode())
                 return false;
-            return EqualIndices(obj.allOfIndices, this.allOfIndices) && EqualIndices(obj.anyOfIndices, anyOfIndices) &&
-                   EqualIndices(obj.noneOfIndices, this.noneOfIndices);
+            return EqualIndices(obj.AllOfIndices, this.AllOfIndices) && EqualIndices(obj.AnyOfIndices, AnyOfIndices) &&
+                   EqualIndices(obj.NoneOfIndices, this.NoneOfIndices);
         }
 
         public override bool Equals(object obj) => Equals((Matcher) obj);

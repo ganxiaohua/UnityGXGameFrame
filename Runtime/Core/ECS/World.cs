@@ -57,7 +57,7 @@ namespace GameFrame
             grop = Group.CreateGroup(ChildsCount, matcher);
             foreach (var item in Children)
             {
-                grop.HandleEntitySilently((ECSEntity) item, EcsChangeEventState.AddType);
+                grop.HandleEntitySilently((ECSEntity) item);
             }
 
             groups.Add(matcher, grop);
@@ -70,7 +70,7 @@ namespace GameFrame
             return grop;
         }
 
-        public void Reactive(int comid, ECSEntity entity, ushort changeType)
+        public void Reactive(int comid, ECSEntity entity)
         {
             var groupList = groupsList[comid];
             if (groupList != null)
@@ -78,7 +78,7 @@ namespace GameFrame
                 int count = groupList.Count;
                 for (int i = 0; i < count; i++)
                 {
-                    groupList[i].HandleEntity(entity, changeType);
+                    groupList[i].HandleEntity(entity);
                 }
             }
         }

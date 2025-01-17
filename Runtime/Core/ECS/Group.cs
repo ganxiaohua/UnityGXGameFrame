@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace GameFrame
 {
@@ -24,19 +25,11 @@ namespace GameFrame
             ReferencePool.Release(group);
         }
 
-        private void AddOrUpdateComponent(ECSEntity entity, bool silently, ushort changeType)
+        private void AddOrUpdateComponent(ECSEntity entity, bool silently)
         {
-            if (changeType == EcsChangeEventState.UpdateType)
-            {
-                if (!silently)
-                    GroupUpdate?.Invoke(this, entity);
-            }
-            else if (changeType == EcsChangeEventState.AddType)
-            {
-                var addSucc = EntitiesMap.Add(entity);
-                if (addSucc && !silently)
-                    GroupAdd?.Invoke(this, entity);
-            }
+            EntitiesMap.Add(entity);
+            if (!silently)
+                GroupAdd?.Invoke(this, entity);
         }
 
 
@@ -47,26 +40,59 @@ namespace GameFrame
                 GroupRomve?.Invoke(this, entity);
         }
 
-        public int HandleEntitySilently(ECSEntity entity, ushort changeType)
+        public int HandleEntitySilently(ECSEntity entity)
         {
-            return DoEntity(entity, true, changeType);
+            return DoEntity(entity, true);
         }
 
 
-        public int HandleEntity(ECSEntity entity, ushort changeType)
+        public int HandleEntity(ECSEntity entity)
         {
-            return DoEntity(entity, false, changeType);
+            return DoEntity(entity, false);
         }
 
 
-        private int DoEntity(ECSEntity entity, bool silently, ushort changeType)
+        private int DoEntity(ECSEntity entity, bool silently)
         {
             bool match = this.matcher.Match(entity);
-            if (changeType != EcsChangeEventState.RemoveType && match)
-                this.AddOrUpdateComponent(entity, silently, changeType);
-            else if (changeType == EcsChangeEventState.RemoveType && !match)
+            if (match)
+                this.AddOrUpdateComponent(entity, silently);
+            else
                 this.RemoveComponent(entity, silently);
             return EntitiesMap.Count;
+        }
+
+        public override string ToString()
+        {
+            var sb = StringBuilderCache.Get();
+            if (matcher.AllOfIndices != null)
+            {
+                sb.Append("AllOfIndices:");
+                foreach (var  value in matcher.AllOfIndices)
+                {
+                    sb.Append(GXComponents.ComponentTypes[value].Name);
+                }
+            }
+            if (matcher.AnyOfIndices != null)
+            {
+                sb.Append("AnyOfIndices:");
+                foreach (var  value in matcher.AnyOfIndices)
+                {
+                    sb.Append(GXComponents.ComponentTypes[value].Name);
+                }
+            }
+            
+            if (matcher.NoneOfIndices != null)
+            {
+                sb.Append("NoneOfIndices:");
+                foreach (var  value in matcher.NoneOfIndices)
+                {
+                    sb.Append(GXComponents.ComponentTypes[value].Name);
+                }
+            }
+            string str = sb.ToString();
+            StringBuilderCache.Release(sb);
+            return str;
         }
 
 
