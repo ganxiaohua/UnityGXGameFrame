@@ -7,7 +7,7 @@
 
     public interface IInitializeSystem<in TP1> : ISystem
     {
-        void OnInitialize(TP1 p1);
+        void OnInitialize(TP1 world);
     }
 
     public interface IInitializeSystem<in TP1, in TP2> : ISystem

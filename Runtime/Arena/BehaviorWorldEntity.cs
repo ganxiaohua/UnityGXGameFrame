@@ -10,12 +10,12 @@ namespace GameFrame
         private Dictionary<IBehaviorData, BehaviorEntity> dataForBehaviorDic;
         private List<IBehaviorData> dataList;
 
-        public void OnInitialize(Type arenatype)
+        public void OnInitialize(Type world)
         {
             dataForBehaviorDic = new();
             behaviorDic = new();
             dataList = new();
-            behaviorWorld = (BehaviorWorld) ReferencePool.Acquire(arenatype);
+            behaviorWorld = (BehaviorWorld) ReferencePool.Acquire(world);
             behaviorWorld.Init(this);
         }
 

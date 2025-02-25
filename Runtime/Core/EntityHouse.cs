@@ -203,19 +203,17 @@ namespace GameFrame
                 updateSystems.AddUpdateSystem(entity, sysObject);
             }
 
-            if (system is IUpdateSystem)
+            switch (system)
             {
-                Add(typeof(IUpdateSystem));
-            }
-
-            if (system is ILateUpdateSystem)
-            {
-                Add(typeof(ILateUpdateSystem));
-            }
-
-            if (system is IFixedUpdateSystem)
-            {
-                Add(typeof(IFixedUpdateSystem));
+                case IUpdateSystem:
+                    Add(typeof(IUpdateSystem));
+                    break;
+                case ILateUpdateSystem:
+                    Add(typeof(ILateUpdateSystem));
+                    break;
+                case IFixedUpdateSystem:
+                    Add(typeof(IFixedUpdateSystem));
+                    break;
             }
         }
 

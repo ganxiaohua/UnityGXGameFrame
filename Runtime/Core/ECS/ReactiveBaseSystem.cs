@@ -16,11 +16,11 @@ namespace GameFrame
         /// </summary>
         private Collector collector;
 
-        public virtual void OnInitialize(World entity)
+        public virtual void OnInitialize(World world)
         {
             buffer = new List<ECSEntity>();
-            World = entity;
-            collector = this.GetTrigger(entity);
+            World = world;
+            collector = this.GetTrigger(world);
         }
 
         protected abstract Collector GetTrigger(World world);
@@ -28,6 +28,7 @@ namespace GameFrame
         protected abstract bool Filter(ECSEntity entity);
 
         protected abstract void Execute(List<ECSEntity> entities);
+        
 
         protected void Do(float elapseSeconds, float realElapseSeconds)
         {
@@ -41,6 +42,7 @@ namespace GameFrame
                     buffer.Add(ecsentity);
                 }
             }
+
             collector.CollectedEntities.Clear();
             if (buffer.Count == 0)
                 return;
