@@ -5,7 +5,7 @@ namespace GameFrame
     public class UpdateSystems
     {
         private StrongList<ISystem>[] updateSystemEntityArr;
-
+        
         public StrongList<ISystem>[] UpdateSystemEntityArr => updateSystemEntityArr;
 
         private Dictionary<IEntity, StrongList<ISystem>> entityUpdateMap = new();
@@ -20,10 +20,10 @@ namespace GameFrame
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="ecsSystemObject"></param>
-        public void AddUpdateSystem(IEntity entity, ISystemObject ecsSystemObject)
+        public void AddUpdateSystem(IEntity entity, ISystem system)
         {
-            UpdateType updateType = ecsSystemObject.System.GetUpdateSystemType();
-            if (updateType != UpdateType.Node && !InUpdateMap(entity, ecsSystemObject.System))
+            UpdateType updateType = system.GetUpdateSystemType();
+            if (updateType != UpdateType.Node && !InUpdateMap(entity, system))
             {
                 if (!entityUpdateMap.TryGetValue(entity, out var updateSystem))
                 {
@@ -32,10 +32,10 @@ namespace GameFrame
                 }
 
                 int index = (int) updateType;
-                if (!updateSystem.Contains(ecsSystemObject.System))
+                if (!updateSystem.Contains(system))
                 {
-                    updateSystem.Add(ecsSystemObject.System);
-                    updateSystemEntityArr[index].Add(ecsSystemObject.System);
+                    updateSystem.Add(system);
+                    updateSystemEntityArr[index].Add(system);
                 }
             }
         }

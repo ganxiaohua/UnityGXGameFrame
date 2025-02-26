@@ -29,6 +29,8 @@ namespace GameFrame
 
         private World world;
 
+        public bool IsInactive => State == IEntity.EntityState.IsClear;
+
         public GXArray<ECSComponent> EcsComponentArray { get; private set; }
 
         public void OnDirty(IEntity parent, int id)
