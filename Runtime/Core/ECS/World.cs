@@ -5,9 +5,9 @@ namespace GameFrame
     public partial class World : IEntity, IVersions, IInitializeSystem, IUpdateSystem
     {
         public IEntity Parent { get; private set; }
-        
+
         public int ID { get; private set; }
-        
+
         public string Name { get; set; }
 
         public int Versions { get; private set; }
@@ -15,13 +15,13 @@ namespace GameFrame
         public IEntity.EntityState State { get; private set; }
 
         private int ecsSerialId;
-        
+
         public float DeltaTime { get; private set; }
-        
+
         public float Multiple { get; private set; }
-        
+
         private Dictionary<Matcher, Group> groups = new();
-        
+
         private List<Group>[] groupsList;
 
         public void OnDirty(IEntity parent, int id)
@@ -48,26 +48,26 @@ namespace GameFrame
 
         public Group GetGroup(Matcher matcher)
         {
-            if (groups.TryGetValue(matcher, out Group grop))
+            if (groups.TryGetValue(matcher, out Group group))
             {
                 Matcher.ClearMatcher(matcher);
-                return grop;
+                return group;
             }
 
-            grop = Group.CreateGroup(ChildsCount, matcher);
+            group = Group.CreateGroup(ChildsCount, matcher);
             foreach (var item in Children)
             {
-                grop.HandleEntitySilently((ECSEntity) item);
+                group.HandleEntitySilently((ECSEntity) item);
             }
 
-            groups.Add(matcher, grop);
+            groups.Add(matcher, group);
             foreach (var cid in matcher.Indices)
             {
                 groupsList[cid] ??= new List<Group>(128);
-                groupsList[cid].Add(grop);
+                groupsList[cid].Add(group);
             }
 
-            return grop;
+            return group;
         }
 
         public void Reactive(int comid, ECSEntity entity)
@@ -91,6 +91,7 @@ namespace GameFrame
                 Matcher.ClearMatcher(group.Key);
                 Group.RemoveGroup(group.Value);
             }
+
             Versions++;
             ecsSerialId = 0;
             groupsList = null;

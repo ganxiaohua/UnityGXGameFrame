@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace GameFrame
 {
-    public class Group : IDisposable
+    public partial class Group : IDisposable
     {
         private Matcher matcher;
         public event GroupChanged GroupAdd;
@@ -68,28 +67,30 @@ namespace GameFrame
             if (matcher.AllOfIndices != null)
             {
                 sb.Append("AllOfIndices:");
-                foreach (var  value in matcher.AllOfIndices)
+                foreach (var value in matcher.AllOfIndices)
                 {
                     sb.Append(GXComponents.ComponentTypes[value].Name);
                 }
             }
+
             if (matcher.AnyOfIndices != null)
             {
                 sb.Append("AnyOfIndices:");
-                foreach (var  value in matcher.AnyOfIndices)
+                foreach (var value in matcher.AnyOfIndices)
                 {
                     sb.Append(GXComponents.ComponentTypes[value].Name);
                 }
             }
-            
+
             if (matcher.NoneOfIndices != null)
             {
                 sb.Append("NoneOfIndices:");
-                foreach (var  value in matcher.NoneOfIndices)
+                foreach (var value in matcher.NoneOfIndices)
                 {
                     sb.Append(GXComponents.ComponentTypes[value].Name);
                 }
             }
+
             string str = sb.ToString();
             StringBuilderCache.Release(sb);
             return str;
@@ -103,6 +104,9 @@ namespace GameFrame
             GroupUpdate -= GroupUpdate;
             matcher = null;
             EntitiesMap.Clear();
+#if UNITY_EDITOR
+            EditorDisPose();
+#endif
         }
 
         public IEnumerable<ECSEntity> AsEnumerable() => (IEnumerable<ECSEntity>) this.EntitiesMap;
