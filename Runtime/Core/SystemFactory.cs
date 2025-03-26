@@ -6,10 +6,10 @@
         {
             EntityHouse.Instance.AddSystem<T>(entity);
         }
-        
-        public static void AddSystem<T>(this World entity,object obj) where T : class, ISystem
+
+        public static void AddSystem<T>(this World entity, object obj) where T : class, ISystem, ISystemCarryover
         {
-            EntityHouse.Instance.AddSystem<T>(entity,obj);
+            EntityHouse.Instance.AddSystem<T>(entity, obj);
         }
 
 
