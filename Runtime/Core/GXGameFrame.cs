@@ -12,11 +12,12 @@ namespace GameFrame
             RootEntity = ReferencePool.Acquire<RootEntity>();
             RootEntity.OnDirty(null, 0);
             RootEntity.AddComponent<UIComponent>();
-            var assetsFsmController =  await RootEntity.AddComponent<AssetsFsmController>();
+            var assetsFsmController = await RootEntity.AddComponent<AssetsFsmController>();
             if (assetsFsmController.TaskState != TaskState.Succ)
             {
                 Debugger.LogError("资源流程失败");
             }
+
             RootEntity.RemoveComponent<AssetsFsmController>();
         }
 

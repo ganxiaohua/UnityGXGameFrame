@@ -167,23 +167,18 @@ namespace GameFrame
         private ISystem CreateSystem(IEntity entity, Type systemType)
         {
             var sys = entitySysTypeSysDic.GetVValue(entity, systemType);
-            if (sys == null)
-            {
-                sys = (ISystem) ReferencePool.Acquire(systemType);
-                entitySysTypeSysDic.Add(entity, systemType, sys);
-            }
-
+            Assert.IsNull(sys, $"{systemType.Name}已经加入了过了");
+            sys = (ISystem) ReferencePool.Acquire(systemType);
+            entitySysTypeSysDic.Add(entity, systemType, sys);
             return sys;
         }
 
         private ISystem CreateSystem(IEntity entity, Type systemType, object obj)
         {
             var sys = entitySysTypeSysDic.GetVValue(entity, systemType);
-            if (sys == null)
-            {
-                sys = (ISystem) ReferencePool.Acquire(systemType);
-                entitySysTypeSysDic.Add(entity, systemType, sys);
-            }
+            Assert.IsNull(sys, $"{systemType.Name}已经加入了过了");
+            sys = (ISystem) ReferencePool.Acquire(systemType);
+            entitySysTypeSysDic.Add(entity, systemType, sys);
             ((ISystemCarryover) sys).Carryover = obj;
             return sys;
         }
@@ -389,6 +384,11 @@ namespace GameFrame
 
         public void Disable()
         {
+            foreach (var ts in entitySysTypeSysDic)
+            {
+                if (ts is not IEntity)
+                    ReferencePool.Release(ts);
+            }
         }
     }
 }

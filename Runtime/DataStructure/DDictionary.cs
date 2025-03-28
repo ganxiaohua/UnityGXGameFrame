@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace GameFrame
 {
-    public class DDictionary<T, K, V> 
+    public class DDictionary<T, K, V> : IEnumerable
     {
         private readonly Dictionary<T, Dictionary<K, V>> DDTKV = new();
 
@@ -52,6 +52,7 @@ namespace GameFrame
             {
                 return null;
             }
+
             return kv;
         }
 
@@ -64,20 +65,32 @@ namespace GameFrame
 
             return true;
         }
-        
+
         public bool ContainsT(T t)
         {
             if (!DDTKV.ContainsKey(t))
             {
                 return false;
             }
+
             return true;
         }
 
-        
-        public  IEnumerator GetEnumerator()
+
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            return DDTKV.GetEnumerator();
+            return GetEnumerator();
+        }
+
+        public IEnumerator<V> GetEnumerator()
+        {
+            foreach (var kv in DDTKV.Values)
+            {
+                foreach (var value in kv.Values)
+                {
+                    yield return value;
+                }
+            }
         }
     }
 }

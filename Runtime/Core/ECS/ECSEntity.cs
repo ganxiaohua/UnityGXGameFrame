@@ -6,6 +6,7 @@ namespace GameFrame
     public partial class ECSComponent : IDisposable
     {
         public ECSEntity Owner;
+
         public virtual void Dispose()
         {
         }
@@ -15,7 +16,7 @@ namespace GameFrame
     /// <summary>
     /// ECSEntity挂载的一定是Context
     /// </summary>
-    public class ECSEntity : IEntity,IVersions
+    public class ECSEntity : IEntity, IVersions
     {
         public IEntity.EntityState State { get; private set; }
 
@@ -24,12 +25,12 @@ namespace GameFrame
         public int ID { get; private set; }
 
         public string Name { get; set; }
-        
+
         public int Versions { get; private set; }
 
         private World world;
 
-        public bool IsInactive => State == IEntity.EntityState.IsClear;
+        public bool IsAction => State == IEntity.EntityState.IsRunning;
 
         public GXArray<ECSComponent> EcsComponentArray { get; private set; }
 
@@ -146,10 +147,11 @@ namespace GameFrame
         private void ClearAllComponent()
         {
             var list = EcsComponentArray.indexList;
-            for (int i = list.Count-1; i >=0; i--)
+            for (int i = list.Count - 1; i >= 0; i--)
             {
                 RemoveComponent(list[i]);
             }
+
             ReferencePool.Release(EcsComponentArray);
         }
 

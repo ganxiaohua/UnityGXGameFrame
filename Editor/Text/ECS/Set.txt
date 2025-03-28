@@ -8,3 +8,16 @@
         return ecsEntity;
     }}
     
+    public static ECSEntity AddOrSet{0}(this {5} ecsEntity,{1} param)
+    {{
+        var p = ({2})ecsEntity.GetComponent(Components.{0});
+        if(p==null)
+        {{
+           p = ({2})(ecsEntity.AddComponent(Components.{0}));
+        }}
+        p.{3} = param;
+        ((World)ecsEntity.Parent).Reactive(Components.{0}, ecsEntity);
+        {4}
+        return ecsEntity;
+    }} 
+    

@@ -19,7 +19,7 @@ namespace GameFrame
         [Conditional(SHOWASSERT)]
         public static void IsNull(object obj, string explain)
         {
-            UnityEngine.Assertions.Assert.IsNotNull(obj, explain);
+            UnityEngine.Assertions.Assert.IsNull(obj, explain);
         }
 
         [Conditional(SHOWASSERT)]
