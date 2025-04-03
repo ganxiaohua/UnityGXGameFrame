@@ -73,14 +73,15 @@ namespace GameFrame
                 }
                 else if (index < currentIndex - 1)
                 {
-                    dataList[index] = dataList[currentIndex - 1];
                     if (!keepOrder)
+                    {
+                        dataList[index] = dataList[currentIndex - 1];
                         dataList.RemoveAtSwapBack(currentIndex - 1);
+                    }
                     else
                     {
                         dataList.RemoveAt(index);
                     }
-
                     currentIndex--;
                 }
                 else
