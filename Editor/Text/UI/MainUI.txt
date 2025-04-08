@@ -1,0 +1,21 @@
+using Cysharp.Threading.Tasks;
+using GameFrame;
+using System;
+
+
+namespace GXGame
+{{
+    public class {0} : UIEntity
+    {{
+        protected override string PackName => "{1}";
+        
+        protected override string WindowName => "{2}";
+        
+        protected override Type ViewType => typeof({0}View);
+        
+        public override async UniTask OnInitialize()
+        {{
+             await base.OnInitialize();
+        }}     
+    }}
+}}

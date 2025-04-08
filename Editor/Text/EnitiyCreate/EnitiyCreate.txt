@@ -1,0 +1,94 @@
+using System;
+using System.Collections.Generic;
+using GameFrame;
+namespace GXGame
+{{
+    public class {0} : Entity, {1}
+    {{
+          {2}
+    }}
+}}
+#
+using System;
+using System.Collections.Generic;
+using GameFrame;
+namespace GXGame
+{{
+    public static class {0}System
+    {{
+        {1}
+    }}
+}}
+#
+        [SystemBind]
+        public class {0}StartSystem : StartSystem<{0}>
+        {{
+            protected override void Start({0} self)
+            {{
+                {1}
+            }}
+        }}
+#
+        [SystemBind]
+        public class {0}ShowSystem : ShowSystem<{0}>
+        {{
+            protected override void Show({0} self)
+            {{
+                {1}
+            }}
+        }}
+#
+        [SystemBind]
+        public class {0}HideSystem : HideSystem<{0}>
+        {{
+            protected override void Hide({0} self)
+            {{
+                {1}
+            }}
+        }}
+#
+        [SystemBind]
+        public class {0}UpdateSystem : UpdateSystem<{0}>
+        {{
+            protected override void Update({0} self,float elapseSeconds, float realElapseSeconds)
+            {{
+                {1}
+            }}
+        }}
+#
+        [SystemBind]
+        public class {0}ClearSystem : ClearSystem<{0}>
+        {{
+            protected override void Clear({0} self)
+            {{
+                {1}
+            }}
+        }}
+#
+        [SystemBind]
+        public class {0}PreShowSystem : PreShowSystem<{0}>
+        {{
+            protected override void PreShow({0} self,bool isFirstShow)
+            {{
+                {1}
+            }}
+        }}
+#
+        [SystemBind]
+        public class {0}LateUpdateSystem : LateUpdateSystem<{0}>
+        {{
+            protected override void LateUpdate({0} self,float elapseSeconds, float realElapseSeconds)
+            {{
+                {1}
+            }}
+        }}
+#
+        [SystemBind]
+        public class {0}FixedUpdateSystem : FixedUpdateSystem<{0}>
+        {{
+            protected override void FixedUpdate({0} self,float elapseSeconds, float realElapseSeconds)
+            {{
+                {1}
+            }}
+        }}
+#

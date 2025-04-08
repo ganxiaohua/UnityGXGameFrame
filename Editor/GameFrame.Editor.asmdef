@@ -1,0 +1,22 @@
+{
+    "name": "GameFrame.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:780046c9b7c57824d93edf84d597df8a",
+        "GUID:2cd4e9b765b2b5d4aa6f8209f3e8fdbf",
+        "GUID:1b65f7a3fa38d8243bcba32b248375dc",
+        "GUID:4ec328fd8ef7e3648910c19f2ae0c29f",
+        "GUID:4d1926c9df5b052469a1c63448b7609a"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
