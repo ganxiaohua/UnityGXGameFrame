@@ -4,7 +4,11 @@ namespace GameFrame
 {
     public class AssetsFsmController : FsmTaskController
     {
+#if UNITY_EDITOR
         private EPlayMode playMode = EPlayMode.EditorSimulateMode;
+#else
+        private EPlayMode playMode = EPlayMode.OfflinePlayMode;
+#endif
         private EDefaultBuildPipeline pipeline = EDefaultBuildPipeline.ScriptableBuildPipeline;
 
         private string packageName = "DefaultPackage";

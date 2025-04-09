@@ -42,21 +42,16 @@ namespace GameFrame
             entityList.Add(entity);
         }
 
-        public List<T> GetEntity<T>() where T : class, IEntity, new()
+        public List<IEntity> GetEntity<T>() where T : class, IEntity, new()
         {
             Type type = typeof(T);
             var entityList = GetEntity(type);
-            return entityList as List<T>;
+            return entityList;
         }
 
         public List<IEntity> GetEntity(Type type)
         {
-            if (!typeWithEntityDic.TryGetValue(type, out var entityList))
-            {
-                throw new Exception($"TypeWithEntitys not have {type}");
-            }
-
-            return entityList;
+            return typeWithEntityDic.GetValueOrDefault(type);
         }
 
 
