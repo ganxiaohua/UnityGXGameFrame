@@ -55,7 +55,7 @@ namespace GameFrame.Editor
         private static void LoadText()
         {
             string add = EditorString.GameFramePath + "Editor/Text/ECS/Add.txt";
-            string cls = EditorString.GameFramePath + "Editor/Text/Class.txt";
+            string cls = EditorString.GameFramePath + "Editor/Text/ECS/Class.txt";
             string addparameter = EditorString.GameFramePath + "Editor/Text/ECS/AddParameter.txt";
             string get = EditorString.GameFramePath + "Editor/Text/ECS/Get.txt";
             string set = EditorString.GameFramePath + "Editor/Text/ECS/Set.txt";

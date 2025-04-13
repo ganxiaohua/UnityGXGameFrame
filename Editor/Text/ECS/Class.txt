@@ -4,7 +4,7 @@
 //------------------------------------------------------------------------------
 using GameFrame;
 using UnityEngine;
-public static class Auto{0}
+public static partial class Auto{0}
 {{
     {1}     
 }}
