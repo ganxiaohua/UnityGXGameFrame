@@ -17,6 +17,8 @@ namespace GameFrame
 
         public EntityState State { get; }
 
+        public bool IsAction { get; }
+
         public void OnDirty(IEntity parent, int id);
     }
 }

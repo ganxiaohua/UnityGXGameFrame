@@ -13,6 +13,8 @@ namespace GameFrame
         public int Versions { get; private set; }
 
         public IEntity.EntityState State { get; private set; }
+        
+        public bool IsAction => State == IEntity.EntityState.IsRunning;
 
         private int ecsSerialId;
 
