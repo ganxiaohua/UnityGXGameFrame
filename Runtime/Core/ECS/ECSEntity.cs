@@ -74,8 +74,7 @@ namespace GameFrame
             var component = EcsComponentArray.Items[cid];
             if (component == null)
             {
-                Type type = GXComponents.ComponentTypes[cid];
-                throw new Exception($"entity not already  component: {type.FullName}");
+                return;
             }
 
             component.Owner = null;
