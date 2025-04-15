@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace GameFrame
@@ -9,7 +10,7 @@ namespace GameFrame
         public event GroupChanged GroupAdd;
         public event GroupChanged GroupRomve;
         public event GroupChanged GroupUpdate;
-        public GXHashSet<ECSEntity> EntitiesMap { get; private set; }
+        public HashSet<ECSEntity> EntitiesMap { get; private set; }
 
         public static Group CreateGroup(int childsCount, Matcher matcher)
         {
@@ -109,8 +110,18 @@ namespace GameFrame
 #endif
         }
 
-        public IEnumerable<ECSEntity> AsEnumerable() => (IEnumerable<ECSEntity>) this.EntitiesMap;
 
-        public IEnumerator<ECSEntity> GetEnumerator() => this.EntitiesMap.GetEnumerator();
+        public GroupEnumerator GetEnumerator() => new GroupEnumerator(EntitiesMap);
+
+        public struct GroupEnumerator : IEnumerator<ECSEntity>
+        {
+            private HashSet<ECSEntity>.Enumerator hashSetEnumerator;
+            public GroupEnumerator(HashSet<ECSEntity> set) => hashSetEnumerator = set.GetEnumerator();
+            public ECSEntity Current => hashSetEnumerator.Current;
+            object IEnumerator.Current => Current;
+            public bool MoveNext() => hashSetEnumerator.MoveNext();
+            public void Reset() => throw new NotSupportedException();
+            public void Dispose() => hashSetEnumerator.Dispose();
+        }
     }
 }

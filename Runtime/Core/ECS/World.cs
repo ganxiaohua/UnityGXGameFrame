@@ -25,6 +25,7 @@ namespace GameFrame
         private Dictionary<Matcher, Group> groups = new();
 
         private List<Group>[] groupsList;
+        private int sIndex;
 
         public void OnDirty(IEntity parent, int id)
         {
@@ -104,5 +105,6 @@ namespace GameFrame
         {
             DeltaTime = elapseSeconds * Multiple;
         }
+        
     }
 }

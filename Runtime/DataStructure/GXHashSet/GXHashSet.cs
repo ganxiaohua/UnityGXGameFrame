@@ -14,16 +14,19 @@ namespace GameFrame
 
         public GXHashSet(int capacity)
         {
-            this.capacity = capacity;
             datas = new StrongList<T>(capacity);
             blocks = new List<DirtyBlock>(1);
+            SetCapacity(capacity);
         }
 
         public void SetCapacity(int capacity)
         {
+            datas.Clear();
+            blocks.Clear();
             Assert.IsTrue(blocks.Count == 0, "快内已经有成员,不允许修改");
             this.capacity = capacity;
             datas.SetCapacity(capacity);
+            blocks.Add(new DirtyBlock(capacity));
         }
 
         public bool Add(T data)
@@ -37,7 +40,7 @@ namespace GameFrame
                     blocks.Add(new DirtyBlock(capacity));
                 }
             }
-            
+            //
             var block = blocks[blockIndex];
             if (block.Dirty(subBlockIndex))
             {

@@ -6,20 +6,20 @@ namespace GameFrame
     {
         public int ChildsCount { get; private set; }
 
-        public GXHashSet<IEntity> Children;
+        public HashSet<IEntity> Children;
 
         private Stack<int> heritageId = new();
         
         private void InitializeChilds()
         {
             ChildsCount = 32;
-            Children = new GXHashSet<IEntity>(ChildsCount);
+            Children = new HashSet<IEntity>(ChildsCount);
         }
 
         public void EstimateChildsCount(int count)
         {
             ChildsCount = count;
-            Children.SetCapacity(ChildsCount);
+            Children.EnsureCapacity(count);
         }
 
         public T AddChild<T>() where T : ECSEntity, new()
