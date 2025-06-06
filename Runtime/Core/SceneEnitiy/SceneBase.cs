@@ -7,7 +7,7 @@ namespace GameFrame
 {
     public class SceneBase : Entity, IInitializeSystem, IScene
     {
-        private Dictionary<string, SceneHandle> sceneHandleDic = new Dictionary<string, SceneHandle>();
+        private Dictionary<string, IAssetHandle> sceneHandleDic = new Dictionary<string, IAssetHandle>();
         
         protected virtual string SingleSceneName { get; set; }
 
@@ -33,7 +33,7 @@ namespace GameFrame
             var hand = await AssetManager.Instance.LoadSceneAsync(name, sceneMode);
             if (hand != null && versions != Versions)
             {
-                hand.UnSuspend();
+                hand.Release();
                 return false;
             }
             else if (hand != null)
@@ -49,7 +49,7 @@ namespace GameFrame
         {
             foreach (var sceneHandle in sceneHandleDic)
             {
-                sceneHandle.Value.UnSuspend();
+                sceneHandle.Value.Release();
             }
             sceneHandleDic.Clear();
             base.Dispose();

@@ -4,21 +4,15 @@ namespace GameFrame
 {
     public class AssetsFsmController : FsmTaskController
     {
-#if UNITY_EDITOR
-        private EPlayMode playMode = EPlayMode.EditorSimulateMode;
-#else
-        private EPlayMode playMode = EPlayMode.OfflinePlayMode;
-#endif
         private EDefaultBuildPipeline pipeline = EDefaultBuildPipeline.ScriptableBuildPipeline;
-
-        private string packageName = "DefaultPackage";
-
+        
         public override void OnInitialize()
         {
             base.OnInitialize();
             YooAssets.Initialize();
-            SetData("packageName", packageName);
-            SetData("playMode", playMode);
+            var defPackage = YooConst.PackageSettings[0];
+            SetData("packageName",defPackage.name);
+            SetData("playMode", defPackage.playMode);
             SetData("pipeline", pipeline);
             AddState<PackageInitState>();
             AddState<PackageVersionUpdateState>();

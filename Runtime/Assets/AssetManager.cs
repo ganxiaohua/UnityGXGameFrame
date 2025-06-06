@@ -1,140 +1,319 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using Cysharp.Threading.Tasks;
+using UnityEngine;
 using UnityEngine.SceneManagement;
-using YooAsset;
 
 namespace GameFrame
 {
-    public sealed class AssetManager : Singleton<AssetManager>
+    public sealed partial class AssetManager : Singleton<AssetManager>  , IDisposable
     {
         private const float InfinityLifeTime = float.PositiveInfinity;
-        private const float ReleaseDelayTime = 60;
 
-        private class AssetHandleCache
+        private const float DefaultDelayReleaseTime = 30;
+        
+        private float unloadUnusedAssetsTime;
+
+        private float delayReleaseTime = DefaultDelayReleaseTime;
+
+        private bool isAlive = true;
+
+        private class AssetCache
         {
-            public readonly string Path;
-            public AssetHandle Handle;
-            public Action<object> UnloadHandle;
-            public object UnloadHandleParameter;
-            public int ReferenceCount;
-            public float LifeTime;
+            public readonly string path;
+            public IAssetHandle handle;
+            public int referenceCount;
+            public float lifeTime;
 
-            public AssetHandleCache(string _path)
+            public bool IsDying => !float.IsInfinity(lifeTime);
+
+            public AssetCache(string _path)
             {
-                Path = _path;
+                path = _path;
+                lifeTime = InfinityLifeTime;
             }
         }
 
-        private readonly Dictionary<string, AssetHandleCache> assetHandleCaches =
-            new Dictionary<string, AssetHandleCache>();
+        private readonly Dictionary<string, AssetCache> assetCaches = new Dictionary<string, AssetCache>();
 
-        private readonly List<AssetHandleCache> dyingAssetHandles = new List<AssetHandleCache>();
+        private readonly List<AssetCache> dyingAssetCaches = new List<AssetCache>();
 
-        public async UniTask<T> LoadAsync<T>(string path, IAssetReference reference = null, System.Threading.CancellationToken token = default)
-            where T : UnityEngine.Object
+        public async UniTask<T> LoadAsync<T>(string path, IAssetReference reference,
+                CancellationToken cancellationToken = default)
         {
-            if (!assetHandleCaches.TryGetValue(path, out var cache))
-            {
-                cache = new AssetHandleCache(path);
-                assetHandleCaches.Add(path, cache);
-            }
-            cache.LifeTime = InfinityLifeTime;
-            reference.RefAsset(path);
-            if (cache.Handle==null || !cache.Handle.IsValid)
-                cache.Handle = YooAssets.LoadAssetAsync(path);
-            if (cache.Handle.IsDone)
-                return (T) cache.Handle.AssetObject;
-            try
-            {
-                await cache.Handle.ToUniTask(cancellationToken: token);
-            }
-            catch (OperationCanceledException)
-            {
-                cache.Handle = default;
-                return default(T);
-            }
-            reference.LoadLater();
-            return (T) cache.Handle.AssetObject;
+            Assert.IsNotNull(reference, "IAssetReference is null");
+            Type type = typeof(T);
+            var handle = await LoadAsync(path, type, typeof(DefaultAssetHandle), reference, cancellationToken);
+            Assert.IsTrue(handle.Result == null || handle.Result is T, $"Type match fail from {handle.Result}, expect {typeof(T)}");
+            return (T) handle.Result;
         }
 
         /// <summary>
-        /// 当资源销毁的时候执行的操作
+        /// assetHandleType: <see cref="IAssetHandle"/>
         /// </summary>
-        /// <param name="path"></param>
-        /// <param name="action"></param>
-        /// <param name="param"></param>
-        /// <returns></returns>
-        public bool SetUnloadHandle(string path, Action<object> action, object param)
+        public async UniTask<IAssetHandle> LoadAsync(string path, Type assetType, Type assetHandleType, IAssetReference reference,
+                CancellationToken cancellationToken = default)
         {
-            if (assetHandleCaches.TryGetValue(path, out var cache))
+            if (!assetCaches.TryGetValue(path, out var cache))
             {
-                cache.UnloadHandle = action;
-                cache.UnloadHandleParameter = param;
-                return true;
+                cache = new AssetCache(path);
+                assetCaches.Add(path, cache);
             }
 
-            return false;
+            reference.RefAsset(path);
+
+            var handle = cache.handle;
+
+            if (handle == null || !handle.IsValid)
+            {
+                handle = (IAssetHandle) Activator.CreateInstance(assetHandleType);
+                handle.Initialize(path, assetType);
+                cache.handle = handle;
+            }
+
+            if (handle.IsDone)
+                return handle;
+
+            try
+            {
+                await handle.GetTask(cancellationToken);
+                if (!handle.IsDone)
+                    handle.Finish();
+            }
+            catch (OperationCanceledException)
+            {
+                handle.Release();
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+
+            return handle;
         }
 
-
-        public async UniTask<SceneHandle> LoadSceneAsync(string path, LoadSceneMode sceneMode,
-            System.Threading.CancellationToken token = default)
+        public async UniTask<IAssetHandle> LoadSceneAsync(string path, LoadSceneMode loadMode = LoadSceneMode.Single,
+                bool activateOnLoad = true, int priority = 100, CancellationToken cancellationToken = default)
         {
-            var handle = YooAssets.LoadSceneAsync(path, sceneMode);
-            if (!handle.IsValid || handle.IsDone)
-                return null;
-            await handle.ToUniTask(cancellationToken:token);
-            if (handle.Status == EOperationStatus.Succeed)
+            var handle = new SceneHandle(loadMode, activateOnLoad, priority);
+            handle.Initialize(path, null);
+            try
             {
-                return handle;
+                await handle.GetTask(cancellationToken);
             }
-            return null;
+            catch (OperationCanceledException)
+            {
+                handle.Release();
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+
+            return handle;
+        }
+
+        public async UniTask LoadAssetCallBack<TObject>(string path, DefaultAssetReference reference, Action<TObject> callback)
+                where TObject : UnityEngine.Object
+        {
+            var objectgo = await LoadAsync<TObject>(path, reference);
+            if (objectgo == null)
+            {
+                return;
+            }
+
+            callback?.Invoke(objectgo);
+        }
+
+        public async UniTask<byte[]> LoadRawAsync(string path, CancellationToken cancellationToken = default)
+        {
+            var handle = new TextAssetHandle();
+            handle.Initialize(path, null);
+            try
+            {
+                await handle.GetTask(cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                handle.Release();
+                return default;
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                return default;
+            }
+
+            var result = (handle.Result as TextAsset)?.bytes;
+            handle.Release();
+            return result;
+        }
+
+        public async UniTask<string> LoadTextAsync(string path, CancellationToken cancellationToken = default)
+        {
+            var handle = new TextAssetHandle();
+            handle.Initialize(path, null);
+            try
+            {
+                await handle.GetTask(cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                handle.Release();
+                return default;
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                return default;
+            }
+
+            var result = (handle.Result as TextAsset)?.text;
+            handle.Release();
+            return result;
+        }
+
+        public async UniTask<IList<byte[]>> LoadRawsAsync(object paths, CancellationToken cancellationToken = default)
+        {
+            var handle = new TextAssetsHandle();
+            handle.Initialize(paths, null);
+            try
+            {
+                await handle.GetTask(cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                handle.Release();
+                return default;
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                return default;
+            }
+
+            var tas = handle.Result as IList;
+            if (tas == null)
+            {
+                handle.Release();
+                return default;
+            }
+
+            var result = new List<byte[]>(tas.Count);
+            foreach (var ta in tas)
+            {
+                result.Add(((TextAsset) ta).bytes);
+            }
+
+            handle.Release();
+            return result;
+        }
+
+        public async UniTask<IList<string>> LoadTextsAsync(object paths, CancellationToken cancellationToken = default)
+        {
+            var handle = new TextAssetsHandle();
+            handle.Initialize(paths, null);
+            try
+            {
+                await handle.GetTask(cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                handle.Release();
+                return default;
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                return default;
+            }
+
+            var tas = handle.Result as IList;
+            if (tas == null)
+            {
+                handle.Release();
+                return default;
+            }
+
+            var result = new List<string>(tas.Count);
+            foreach (var ta in tas)
+            {
+                result.Add(((TextAsset) ta).text);
+            }
+
+            handle.Release();
+            return result;
         }
 
         public void IncrementReferenceCount(string path)
         {
-            if (assetHandleCaches.TryGetValue(path, out var cache))
+            if (!isAlive) return;
+            Assert.IsTrue(assetCaches.ContainsKey(path), $"Bad Asset{path} Reference Count Increment");
+            if (assetCaches.TryGetValue(path, out var cache))
             {
-                cache.ReferenceCount++;
+                if (cache.IsDying)
+                {
+                    Assert.AreEqual(0, cache.referenceCount, $"Bad Asset{path} Reference Count");
+                    dyingAssetCaches.RemoveSwapBack(cache);
+                    cache.lifeTime = InfinityLifeTime;
+                }
+
+                cache.referenceCount++;
             }
         }
 
-        public void DecrementReferenceCount(string path, bool immediately = false)
+        public void DecrementReferenceCount(string path, bool releaseImmediately = false)
         {
-            if (assetHandleCaches.TryGetValue(path, out var cache))
+            if (!isAlive) return;
+            Assert.IsTrue(assetCaches.ContainsKey(path), $"Bad Asset{path} Reference Count Decrement");
+            if (assetCaches.TryGetValue(path, out var cache))
             {
-                Assert.AreNotEqual(0, cache.ReferenceCount, "Bad Asset Reference Count " + path);
-                if (--cache.ReferenceCount == 0)
+                Assert.AreNotEqual(0, cache.referenceCount, $"Bad Asset{path} Reference Count");
+                if (--cache.referenceCount == 0)
                 {
-                    cache.LifeTime = immediately ? 0 : ReleaseDelayTime;
-                    dyingAssetHandles.Add(cache);
+                    if (releaseImmediately)
+                    {
+                        assetCaches.Remove(cache.path);
+                        cache.handle.Release();
+                    }
+                    else
+                    {
+                        cache.lifeTime = delayReleaseTime;
+                        dyingAssetCaches.Add(cache);
+                    }
                 }
             }
         }
 
         public void Update(float deltaTime)
         {
-            for (int i = dyingAssetHandles.Count - 1; i >= 0; i--)
+
+            for (int i = dyingAssetCaches.Count - 1; i >= 0; i--)
             {
-                var cache = dyingAssetHandles[i];
-                if (float.IsPositiveInfinity(cache.LifeTime))
+                var cache = dyingAssetCaches[i];
+                cache.lifeTime -= deltaTime;
+                if (cache.lifeTime <= 0f)
                 {
-                    dyingAssetHandles.RemoveAt(i);
-                }
-                else
-                {
-                    cache.LifeTime -= deltaTime;
-                    if (cache.LifeTime <= 0f)
-                    {
-                        dyingAssetHandles.RemoveAt(i);
-                        assetHandleCaches.Remove(cache.Path);
-                        cache.UnloadHandle?.Invoke(cache.UnloadHandleParameter);
-                        if (cache.Handle.IsValid)
-                            cache.Handle.Release();
-                    }
+                    dyingAssetCaches.RemoveAtSwapBack(i);
+                    assetCaches.Remove(cache.path);
+                    cache.handle.Release();
                 }
             }
         }
+
+        public void Dispose()
+        {
+            foreach (var kv in assetCaches)
+            {
+                kv.Value.handle.Release();
+            }
+
+            dyingAssetCaches.Clear();
+            assetCaches.Clear();
+            isAlive = false;
+        }
+        
     }
 }

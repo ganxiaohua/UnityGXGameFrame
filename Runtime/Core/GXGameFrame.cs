@@ -52,6 +52,7 @@ namespace GameFrame
             UIManager.Instance.Disable();
             EntityHouse.Instance.Disable();
             ObjectPoolManager.Instance.Disable();
+            AssetManager.Instance.Dispose();;
         }
     }
 }

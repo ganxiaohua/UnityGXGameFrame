@@ -83,6 +83,7 @@ namespace GameFrame
             objectPool.curAutoReleaseTime = 0;
             objectPool.Activate = true;
             objectPool.maxSpawnCount = 0;
+            objectPool.SetAsyncMaxCount();
             return objectPool;
         }
 
@@ -181,7 +182,6 @@ namespace GameFrame
             ObjectPoolHandle objectPoolHandle = ReferencePool.Acquire<ObjectPoolHandle>();
             objectPoolHandle.SetToken(token);
             spawnAsyncQueue.Enqueue(objectPoolHandle);
-            SetAsyncMaxCount();
             await objectPoolHandle;
             bool spawn = (objectPoolHandle.TaskState == TaskState.Succ && Activate);
             ReferencePool.Release(objectPoolHandle);

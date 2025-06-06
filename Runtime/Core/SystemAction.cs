@@ -100,12 +100,11 @@ namespace GameFrame
             foreach (var system in systems)
             {
 #if UNITY_EDITOR
-                Profiler.BeginSample(system.GetType().Name);
+                using (new Profiler(system.GetType().Name))
 #endif
-                ((IUpdateSystem) system).OnUpdate(elapseSeconds, realElapseSeconds);
-#if UNITY_EDITOR
-                Profiler.EndSample();
-#endif
+                {
+                    ((IUpdateSystem) system).OnUpdate(elapseSeconds, realElapseSeconds);
+                }
             }
         }
 
@@ -114,12 +113,11 @@ namespace GameFrame
             foreach (var system in systems)
             {
 #if UNITY_EDITOR
-                Profiler.BeginSample(system.GetType().Name);
+                using (new Profiler(system.GetType().Name))
 #endif
-                ((ILateUpdateSystem) system).LateUpdate(elapseSeconds, realElapseSeconds);
-#if UNITY_EDITOR
-                Profiler.EndSample();
-#endif
+                {
+                    ((ILateUpdateSystem) system).LateUpdate(elapseSeconds, realElapseSeconds);
+                }
             }
         }
 
@@ -128,12 +126,11 @@ namespace GameFrame
             foreach (var system in systems)
             {
 #if UNITY_EDITOR
-                Profiler.BeginSample(system.GetType().Name);
+                using (new Profiler(system.GetType().Name))
 #endif
-                ((IFixedUpdateSystem) system).FixedUpdate(elapseSeconds, realElapseSeconds);
-#if UNITY_EDITOR
-                Profiler.EndSample();
-#endif
+                {
+                    ((IFixedUpdateSystem) system).FixedUpdate(elapseSeconds, realElapseSeconds);
+                }
             }
         }
     }

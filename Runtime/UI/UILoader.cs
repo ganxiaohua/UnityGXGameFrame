@@ -31,13 +31,12 @@ namespace GameFrame
                 return;
             }
             
-            var desText = await AssetManager.Instance.LoadAsync<TextAsset>(desPath, reference, token);
+            var desText = await AssetManager.Instance.LoadRawAsync(desPath,token);
             if (desText == null)
             {
                 return;
             }
-            AssetManager.Instance.SetUnloadHandle(desPath, UnloadHandle, packageName);
-            var uipackage = UIPackage.AddPackage(desText.bytes, packageName, LoadResource);
+            var uipackage = UIPackage.AddPackage(desText, packageName, LoadResource);
             var dependencies = uipackage.dependencies;
             foreach (var dependenciesDic in dependencies)
             {
@@ -90,7 +89,7 @@ namespace GameFrame
 
         public async UniTask<bool> LoadOver(string packageName)
         {
-            while (AuxResDic.TryGetValue(packageName, out DefaultAssetReference curAsset) && !curAsset.IsLoadAll)
+            while (AuxResDic.TryGetValue(packageName, out DefaultAssetReference curAsset) && curAsset.PercentComplete>0.9f)
             {
                 await UniTask.Yield();
             }

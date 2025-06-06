@@ -1,18 +1,19 @@
-﻿
+﻿using System;
+
 namespace GameFrame
 {
-    public interface IAssetReference
+    public interface IAssetReference : IDisposable
     {
-        void RefInitialize();
-        
+        bool IsDisposed { get; }
+
+        float PercentComplete { get; }
+
+        bool RefInitialize();
+
         bool RefAsset(string asset);
 
-        void LoadLater();
+        void UnrefAsset(string asset, bool releaseImmediately = false);
 
-        void UnrefAsset(string asset,bool immediately);
-        
-        void UnrefAssets(bool immediately);
-
-        bool IsLoadAll { get; }
+        void UnrefAssets(bool releaseImmediately = false);
     }
 }
