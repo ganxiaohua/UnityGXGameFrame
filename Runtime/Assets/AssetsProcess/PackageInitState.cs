@@ -73,19 +73,12 @@ namespace GameFrame
         /// <summary>
         /// 获取资源服务器地址
         /// </summary>
+        /// <summary>
+        /// 获取资源服务器地址
+        /// </summary>
         private string GetHostServerURL()
         {
-            string hostServerIP = "http://127.0.0.1";
-            string appVersion = "v1.0";
-
-            if (Application.platform == RuntimePlatform.Android)
-                return $"{hostServerIP}/CDN/Android/{appVersion}";
-            else if (Application.platform == RuntimePlatform.IPhonePlayer)
-                return $"{hostServerIP}/CDN/IPhone/{appVersion}";
-            else if (Application.platform == RuntimePlatform.WebGLPlayer)
-                return $"{hostServerIP}/CDN/WebGL/{appVersion}";
-            else
-                return $"{hostServerIP}/CDN/PC/{appVersion}";
+            return $"{YooConst.ResUrl}/{YooConst.GetPlatformName()}";
         }
 
         /// <summary>
