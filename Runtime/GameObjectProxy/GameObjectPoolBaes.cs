@@ -6,10 +6,14 @@ namespace GameFrame
     public class GameObjectPoolBaes : ObjectBase
     {
         private DefaultAssetReference defaultAssetReference;
-        public string assetName { get; private set; }
+        public string AssetName { get; private set; }
         private Transform parent;
         private GameObject prefab;
         public GameObject Obj { get; private set; }
+
+        public Transform Tra { get; private set; }
+
+        private bool isNew;
 
 
         /// <summary>
@@ -35,8 +39,14 @@ namespace GameFrame
             if (Obj == null)
             {
                 Obj = Object.Instantiate(prefab);
+                isNew = true;
+            }
+            else
+            {
+                isNew = false;
             }
 
+            Tra = Obj.transform;
             Obj.SetActive(true);
         }
 
@@ -50,12 +60,28 @@ namespace GameFrame
                 return;
             }
 
-            Obj.transform.parent = GameObjectPool.ObjectCacheArea.transform;
+            Obj.SetActive(false);
+#if UNITY_EDITOR
+            
+            var areaName = AssetName.Replace("/", "_");
+            var goCacheParent = GameObjectPool.ObjectCacheArea.transform.Find(areaName);
+            if (goCacheParent == null)
+            {
+                var go = new GameObject();
+                goCacheParent = go.transform;
+                goCacheParent.name = areaName;
+                goCacheParent.transform.SetParent(GameObjectPool.ObjectCacheArea.transform);
+            }
+
+            Obj.transform.SetParent(goCacheParent);
+#else
+            Obj.transform.SetParent(GameObjectPool.ObjectCacheArea.transform);
+#endif
         }
 
         public void SetAssetPath(string assetPath)
         {
-            this.assetName = assetPath;
+            this.AssetName = assetPath;
         }
 
         public void SetParent(Transform parent)
@@ -70,6 +96,10 @@ namespace GameFrame
         public void SetAssetReference(DefaultAssetReference defaultAssetReference)
         {
             this.defaultAssetReference = defaultAssetReference;
+            if (isNew)
+            {
+                DefaultAssetReferenceContainer.Bind(Obj, defaultAssetReference);
+            }
         }
 
         /// <summary>
@@ -85,7 +115,7 @@ namespace GameFrame
             this.defaultAssetReference?.UnrefAssets(false);
             this.defaultAssetReference = null;
             Object.Destroy(Obj);
-            assetName = null;
+            AssetName = null;
             Obj = null;
             parent = null;
             prefab = null;

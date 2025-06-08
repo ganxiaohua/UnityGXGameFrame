@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using Sirenix.OdinInspector;
+
 namespace GameFrame
 {
     [StructLayout(LayoutKind.Auto)]
     public struct TypeNamePair : IEquatable<TypeNamePair>
     {
+        [ShowInInspector]
         private readonly Type m_Type;
+        [ShowInInspector]
         private readonly string m_Name;
 
         /// <summary>

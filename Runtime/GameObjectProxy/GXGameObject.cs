@@ -14,13 +14,13 @@ namespace Common.Runtime
         {
             get
             {
-                if (transform) return transform.localPosition;
+                if (GoBase!=null) return GoBase.Tra.localPosition;
                 return cacheLocalPosition;
             }
             set
             {
                 isLocalPos = true;
-                if (transform) transform.localPosition = value;
+                if (GoBase!=null) GoBase.Tra.localPosition = value;
                 cacheLocalPosition = value;
             }
         }
@@ -31,13 +31,13 @@ namespace Common.Runtime
         {
             get
             {
-                if (transform) return transform.position;
+                if (GoBase!=null)  return GoBase.Tra.position;
                 return cachePosition;
             }
             set
             {
                 isLocalPos = false;
-                if (transform) transform.position = value;
+                if (GoBase!=null)  GoBase.Tra.position = value;
                 cachePosition = value;
             }
         }
@@ -48,13 +48,13 @@ namespace Common.Runtime
         {
             get
             {
-                if (transform) return transform.localRotation;
+                if (GoBase!=null)  return GoBase.Tra.localRotation;
                 return cachelocalRotation;
             }
             set
             {
                 isLocalRot = true;
-                if (transform) transform.localRotation = value;
+                if (GoBase!=null)  GoBase.Tra.localRotation = value;
                 cachelocalRotation = value;
             }
         }
@@ -66,13 +66,13 @@ namespace Common.Runtime
         {
             get
             {
-                if (transform) return transform.rotation;
+                if (GoBase!=null)  return GoBase.Tra.rotation;
                 return cacheRotation;
             }
             set
             {
                 isLocalRot = false;
-                if (transform) transform.rotation = value;
+                if (GoBase!=null)  GoBase.Tra.rotation = value;
                 cacheRotation = value;
             }
         }
@@ -83,12 +83,12 @@ namespace Common.Runtime
         {
             get
             {
-                if (transform) return transform.localScale;
+                if (GoBase!=null)  return GoBase.Tra.localScale;
                 return cacheScale;
             }
             set
             {
-                if (transform) transform.localScale = value;
+                if (GoBase!=null)  GoBase.Tra.localScale = value;
                 cacheScale = value;
             }
         }

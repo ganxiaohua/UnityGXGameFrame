@@ -8,17 +8,19 @@ namespace Common.Runtime
 {
     public abstract class GameObjectProxy
     {
-        public GameObject gameObject { get; private set; }
+        protected GameObjectPoolBaes GoBase { get; private set; }
 
-        public Transform transform { get; private set; }
+        public GameObject Go => GoBase.Obj;
 
-        public string asset { get; private set; }
+        public Transform Trans => GoBase.Tra;
+        
+        public string Asset { get; private set; }
 
-        public GameObject prefab { get; private set; }
+        public GameObject Prefab { get; private set; }
 
-        public int version { get; private set; }
+        public int Version { get; private set; }
 
-        public bool binded { get; private set; }
+        public bool Binded { get; private set; }
 
         public event Action onBeforeUnbind;
         public event Action onAfterBind;
@@ -46,14 +48,13 @@ namespace Common.Runtime
 
         public void BindFromPrefab(GameObject prefab, Transform parent = null)
         {
-            version++;
+            Version++;
             Unbind();
-            var go = GameObjectPool.Instance.InstantiateGameObject(prefab, parent);
-            go.hideFlags = HideFlags.None;
-            this.gameObject = go;
-            this.transform = go.transform;
-            this.binded = true;
-            this.prefab = prefab;
+            var goBase = GameObjectPool.Instance.InstantiateGameObject(prefab, parent);
+            goBase.Obj.hideFlags = HideFlags.None;
+            this.GoBase = goBase;
+            this.Binded = true;
+            this.Prefab = prefab;
             OnAfterBind();
             onAfterBind?.Invoke();
         }
@@ -61,23 +62,23 @@ namespace Common.Runtime
         public async UniTask<bool> BindFromAssetAsync( string asset, Transform parent = null,
             CancellationToken cancelToken = default)
         {
-            version++;
-            int prevVersion = version;
+            Version++;
+            int prevVersion = Version;
 
-            var go = default(GameObject);
+            var go = default(GameObjectPoolBaes);
             try
             {
-                go = await GameObjectPool.Instance.GetAsync(asset, transform, cancelToken);
+                go = await GameObjectPool.Instance.GetAsync(asset, parent, cancelToken);
             }
             catch (Exception e)
             {
-                if (go) GameObjectPool.Instance.Release(asset, go);
+                if (go!=null) GameObjectPool.Instance.Release(asset, go);
                 if (e is not OperationCanceledException)
                     Debug.LogException(e);
                 return false;
             }
 
-            if (prevVersion != version)
+            if (prevVersion != Version)
             {
                 // operation is obsolete
                 GameObjectPool.Instance.Release(asset, go);
@@ -85,11 +86,9 @@ namespace Common.Runtime
             }
 
             Unbind();
-            this.gameObject = go;
-            this.transform = go.transform;
-            this.transform.parent = parent;
-            this.asset = asset;
-            this.binded = true;
+            this.GoBase = go;
+            this.Asset = asset;
+            this.Binded = true;
             OnAfterBind();
             onAfterBind?.Invoke();
             return true;
@@ -97,19 +96,22 @@ namespace Common.Runtime
 
         public bool Unbind()
         {
-            version++;
-            if (!binded) return false;
+            Version++;
+            if (!Binded) return false;
             onBeforeUnbind?.Invoke();
             OnBeforeUnbind();
-            if (prefab)
-                GameObjectPool.Instance.Release(prefab, gameObject);
-            else
-                GameObjectPool.Instance.Release(asset, gameObject);
-            gameObject = null;
-            transform = null;
-            asset = null;
-            prefab = null;
-            binded = false;
+            if (GoBase != null)
+            {
+                if (Prefab)
+                    GameObjectPool.Instance.Release(Prefab, GoBase);
+                else
+                    GameObjectPool.Instance.Release(Asset, GoBase);
+            }
+
+            GoBase = null;
+            Asset = null;
+            Prefab = null;
+            Binded = false;
             return true;
         }
 

@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using GameFrame;
+using Sirenix.OdinInspector;
 
 
 namespace GameFrame
 {
     public class ObjectPoolManager : Singleton<ObjectPoolManager>
     {
+        [ShowInInspector]
         private Dictionary<TypeNamePair, IObjectPoolBase> s_ObjectPoolBase = new Dictionary<TypeNamePair, IObjectPoolBase>();
 
         

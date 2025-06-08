@@ -8,7 +8,7 @@ namespace GameFrame
     public sealed class DefaultAssetReferenceContainer : MonoBehaviour
     {
         [SerializeField, HideInInspector] private DefaultAssetReference assetReference;
-
+        
         public DefaultAssetReference AssetReference
         {
             get

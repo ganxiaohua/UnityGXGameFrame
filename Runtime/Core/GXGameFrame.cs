@@ -3,11 +3,11 @@ using UnityEngine;
 
 namespace GameFrame
 {
-    public class GXGameFrame : Singleton<GXGameFrame>
+    public partial class GXGameFrame : SingletonMono<GXGameFrame>
     {
         public RootEntity RootEntity { get; private set; }
 
-        public async UniTask Start()
+        public async UniTask Init()
         {
             RootEntity = ReferencePool.Acquire<RootEntity>();
             RootEntity.OnDirty(null, 0);
@@ -46,13 +46,13 @@ namespace GameFrame
             EntityHouse.Instance.FixedUpdate(datetime, realtimeSinceStartup);
         }
 
-        public void OnDisable()
+        public void OnApplicationQuit()
         {
             ReferencePool.Release(RootEntity);
             UIManager.Instance.Disable();
             EntityHouse.Instance.Disable();
             ObjectPoolManager.Instance.Disable();
-            AssetManager.Instance.Dispose();;
+            AssetManager.Instance.Dispose();
         }
     }
 }
