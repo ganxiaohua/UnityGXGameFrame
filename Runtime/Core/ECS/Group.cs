@@ -10,7 +10,7 @@ namespace GameFrame
         public event GroupChanged GroupAdd;
         public event GroupChanged GroupRomve;
         public event GroupChanged GroupUpdate;
-        public GXHashSet<ECSEntity> EntitiesMap { get; private set; }
+        public HashSet<ECSEntity> EntitiesMap { get; private set; }
 
         public static Group CreateGroup(int childsCount, Matcher matcher)
         {
@@ -61,7 +61,6 @@ namespace GameFrame
                 this.RemoveComponent(entity, silently);
             return EntitiesMap.Count;
         }
-
         public override string ToString()
         {
             var sb = StringBuilderCache.Get();
@@ -109,19 +108,23 @@ namespace GameFrame
             EditorDisPose();
 #endif
         }
-        public  IEnumerator<ECSEntity> GetEnumerator() => EntitiesMap.GetEnumerator();
+        /// <summary>
+        /// 调用接口转换会产生一次分装
+        /// </summary>
+        /// <returns></returns>
+        // public IEnumerator<ECSEntity> GetEnumerator() => EntitiesMap.GetEnumerator();
 
-        // public GroupEnumerator GetEnumerator() => new GroupEnumerator(EntitiesMap);
-
-        // public struct GroupEnumerator : IEnumerator<ECSEntity>
-        // {
-        //     private HashSet<ECSEntity>.Enumerator hashSetEnumerator;
-        //     public GroupEnumerator(HashSet<ECSEntity> set) => hashSetEnumerator = set.GetEnumerator();
-        //     public ECSEntity Current => hashSetEnumerator.Current;
-        //     object IEnumerator.Current => Current;
-        //     public bool MoveNext() => hashSetEnumerator.MoveNext();
-        //     public void Reset() => throw new NotSupportedException();
-        //     public void Dispose() => hashSetEnumerator.Dispose();
-        // }
+        public GroupEnumerator GetEnumerator() => new GroupEnumerator(EntitiesMap);
+        
+        public struct GroupEnumerator : IEnumerator<ECSEntity>
+        {
+            private HashSet<ECSEntity>.Enumerator hashSetEnumerator;
+            public GroupEnumerator(HashSet<ECSEntity> set) => hashSetEnumerator = set.GetEnumerator();
+            public ECSEntity Current => hashSetEnumerator.Current;
+            object IEnumerator.Current => Current;
+            public bool MoveNext() => hashSetEnumerator.MoveNext();
+            public void Reset() => throw new NotSupportedException();
+            public void Dispose() => hashSetEnumerator.Dispose();
+        }
     }
 }

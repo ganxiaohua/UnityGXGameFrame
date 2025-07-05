@@ -14,7 +14,7 @@ namespace GameFrame
         /// <summary>
         /// PoolObject类型吐出的最大数量,作用于所有的PoolObject的对象池
         /// </summary>
-        private const int FrameMaxInstanceCount = 8;
+        private const int FrameMaxInstanceCount = 100;
 
         /// <summary>
         /// 对象池大小

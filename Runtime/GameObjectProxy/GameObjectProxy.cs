@@ -13,7 +13,7 @@ namespace Common.Runtime
         public GameObject Go => GoBase.Obj;
 
         public Transform Trans => GoBase.Tra;
-        
+
         public string Asset { get; private set; }
 
         public GameObject Prefab { get; private set; }
@@ -59,8 +59,8 @@ namespace Common.Runtime
             onAfterBind?.Invoke();
         }
 
-        public async UniTask<bool> BindFromAssetAsync( string asset, Transform parent = null,
-            CancellationToken cancelToken = default)
+        public async UniTask<bool> BindFromAssetAsync(string asset, Transform parent = null,
+                CancellationToken cancelToken = default)
         {
             Version++;
             int prevVersion = Version;
@@ -69,10 +69,12 @@ namespace Common.Runtime
             try
             {
                 go = await GameObjectPool.Instance.GetAsync(asset, parent, cancelToken);
+                if (go == null)
+                    return false;
             }
             catch (Exception e)
             {
-                if (go!=null) GameObjectPool.Instance.Release(asset, go);
+                if (go != null) GameObjectPool.Instance.Release(asset, go);
                 if (e is not OperationCanceledException)
                     Debug.LogException(e);
                 return false;
@@ -80,7 +82,6 @@ namespace Common.Runtime
 
             if (prevVersion != Version)
             {
-                // operation is obsolete
                 GameObjectPool.Instance.Release(asset, go);
                 return false;
             }
