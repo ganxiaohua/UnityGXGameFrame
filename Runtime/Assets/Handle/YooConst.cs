@@ -26,7 +26,7 @@ namespace GameFrame
                         name = "DefaultPackage",
 #if UNITY_EDITOR
                         playMode = EPlayMode.EditorSimulateMode,
-#elif UNITY_WEBGL || WechatSDK
+#elif UNITY_WEBGL
                 playMode = EPlayMode.WebPlayMode,
 #else
                 playMode = EPlayMode.HostPlayMode,
@@ -45,10 +45,6 @@ namespace GameFrame
 
         public static string GetPlatformName()
         {
-#if WechatSDK
-            return PlatformName.WxWebGL.ToString();
-#endif
-
 #if UNITY_EDITOR
             var activeBuildTarget = UnityEditor.EditorUserBuildSettings.activeBuildTarget;
             return activeBuildTarget switch

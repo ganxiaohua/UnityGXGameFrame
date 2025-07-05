@@ -17,12 +17,7 @@ namespace GameFrame
         /// 是否是激活的
         /// </summary>
         [ShowInInspector] public bool Activate;
-
-
-        /// <summary>
-        /// 如果说吐出操作比较耗时们可以使用异步突出
-        /// </summary>
-       private Queue<ObjectPoolHandle> spawnAsyncQueue;
+        
 
         /// <summary>
         /// 对象池最大数量
@@ -65,11 +60,14 @@ namespace GameFrame
         [ShowInInspector]
         private Type objectType;
 
+        private int frameVersion;
+
+        private int frameSpawn;
+
         public static ObjectPool<T> Create(TypeNamePair typeName, Type objectType, int maxNum, int expireTime, object userData)
         {
             Type objectPoolType = typeof(ObjectPool<>).MakeGenericType(objectType);
             ObjectPool<T> objectPool = ReferencePool.Acquire(objectPoolType) as ObjectPool<T>;
-            objectPool.spawnAsyncQueue = new();
             objectPool.Initialize(typeName);
             objectPool.maxCacheCount = maxNum;
             objectPool.userData = userData;
@@ -140,45 +138,32 @@ namespace GameFrame
                 TimeCheck();
                 curAutoReleaseTime = 0;
             }
-
-            FrameSpawn();
         }
-
-        /// <summary>
-        /// 按帧吐出对象
-        /// </summary>
-        private void FrameSpawn()
-        {
-            if (spawnAsyncQueue.Count == 0)
-            {
-                return;
-            }
-
-            int cur = 0;
-            while (spawnAsyncQueue.Count > 0 && cur < maxSpawnCount)
-            {
-                cur++;
-                ObjectPoolHandle objectPoolHandle = spawnAsyncQueue.Dequeue();
-                objectPoolHandle.Complete();
-            }
-        }
-
-
+        
         /// <summary>
         /// 异步吐出
         /// </summary>
         /// <returns></returns>
         public async UniTask<T> SpawnAsync(System.Threading.CancellationToken token = default)
         {
-            ObjectPoolHandle objectPoolHandle = ReferencePool.Acquire<ObjectPoolHandle>();
-            objectPoolHandle.SetToken(token);
-            spawnAsyncQueue.Enqueue(objectPoolHandle);
-            SetAsyncMaxCount();
-            await objectPoolHandle;
-            bool spawn = (objectPoolHandle.TaskState == TaskState.Succ && Activate);
-            ReferencePool.Release(objectPoolHandle);
-            if (!spawn)
-                return null;
+            while (true)
+            {
+                if (token.IsCancellationRequested || !Activate)
+                    return null;
+
+                if (frameSpawn < maxSpawnCount || frameVersion != Time.frameCount)
+                    break;
+                
+                await UniTask.Yield();
+            }
+
+            if (frameVersion != Time.frameCount)
+            {
+                frameVersion = Time.frameCount;
+                frameSpawn = 0;
+            }
+
+            frameSpawn++;
             return Spawn();
         }
 
@@ -275,13 +260,6 @@ namespace GameFrame
         public void Dispose()
         {
             Activate = false;
-            while (spawnAsyncQueue.Count > 0)
-            {
-                var spawnaSynce = spawnAsyncQueue.Dequeue();
-                spawnaSynce.Cancel();
-            }
-
-            spawnAsyncQueue.Clear();
             curAutoReleaseTime = 0;
             maxSpawnCount = 0;
             hideObject.Clear();
