@@ -53,7 +53,7 @@ namespace GameFrame
         public ECSComponent AddComponent(int cid)
         {
             Type type = GXComponents.ComponentTypes[cid];
-            if (EcsComponentArray.Items[cid] != null)
+            if (EcsComponentArray[cid] != null)
             {
                 throw new Exception($"entity already has component: {type.FullName}");
             }
@@ -71,7 +71,7 @@ namespace GameFrame
         /// <exception cref="Exception"></exception>
         public void RemoveComponent(int cid)
         {
-            var component = EcsComponentArray.Items[cid];
+            var component = EcsComponentArray[cid];
             if (component == null)
             {
                 return;
@@ -89,7 +89,7 @@ namespace GameFrame
         /// <returns></returns>
         public ECSComponent GetComponent(int cid)
         {
-            var component = EcsComponentArray.Items[cid];
+            var component = EcsComponentArray[cid];
             return component;
         }
 
@@ -102,7 +102,7 @@ namespace GameFrame
         {
             for (int index = 0; index < cids.Length; ++index)
             {
-                if (EcsComponentArray.Items[cids[index]] == null)
+                if (EcsComponentArray[cids[index]] == null)
                 {
                     return false;
                 }
@@ -118,7 +118,7 @@ namespace GameFrame
 
         public bool HasComponent(int cid)
         {
-            return EcsComponentArray.Items[cid] != null;
+            return EcsComponentArray[cid] != null;
         }
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace GameFrame
         {
             for (int index = 0; index < cids.Length; ++index)
             {
-                if (EcsComponentArray.Items[cids[index]] != null)
+                if (EcsComponentArray[cids[index]] != null)
                 {
                     return true;
                 }
@@ -145,7 +145,7 @@ namespace GameFrame
         /// </summary>
         private void ClearAllComponent()
         {
-            var list = EcsComponentArray.indexList;
+            var list = EcsComponentArray.IndexList;
             for (int i = list.Count - 1; i >= 0; i--)
             {
                 RemoveComponent(list[i]);

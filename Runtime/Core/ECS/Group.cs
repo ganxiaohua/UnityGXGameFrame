@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace GameFrame
 {
-    public partial class Group : IDisposable, IEnumerable<ECSEntity>
+    public partial class Group : IDisposable
     {
         private Matcher matcher;
         public event GroupChanged GroupAdd;
@@ -62,11 +62,6 @@ namespace GameFrame
             return EntitiesMap.Count;
         }
 
-        IEnumerator<ECSEntity> IEnumerable<ECSEntity>.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
         public override string ToString()
         {
             var sb = StringBuilderCache.Get();
@@ -102,12 +97,6 @@ namespace GameFrame
             return str;
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-
         public void Dispose()
         {
             GroupAdd -= GroupAdd;
@@ -120,9 +109,10 @@ namespace GameFrame
 #endif
         }
         
+
         public GroupEnumerator GetEnumerator() => new GroupEnumerator(EntitiesMap);
-        
-        public struct GroupEnumerator : IEnumerator<ECSEntity>
+
+        public struct GroupEnumerator : IEnumerator<ECSEntity>, IEnumerator
         {
             private HashSet<ECSEntity>.Enumerator hashSetEnumerator;
             public GroupEnumerator(HashSet<ECSEntity> set) => hashSetEnumerator = set.GetEnumerator();
@@ -130,7 +120,9 @@ namespace GameFrame
             object IEnumerator.Current => Current;
             public bool MoveNext() => hashSetEnumerator.MoveNext();
 
-            public void Reset() { }
+            public void Reset()
+            {
+            }
 
             public void Dispose() => hashSetEnumerator.Dispose();
         }

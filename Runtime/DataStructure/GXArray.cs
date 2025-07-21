@@ -1,61 +1,125 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using Codice.CM.WorkspaceServer.Lock;
 
 namespace GameFrame
 {
-    public class GXArray<T> : IDisposable where T : class, IDisposable, new()
+    public class GXArray<T> : IDisposable where T : class, IDisposable
     {
-        public T[] Items { get; private set; }
+        private T[] items;
 
-        public List<int> indexList { get; private set; }
+        public List<int> IndexList { get; private set; }
 
+        public T this[int index]
+        {
+            get
+            {
+                if (index >= items.Length)
+                {
+                    throw new Exception($"ThrowArgumentOutOfRange {index}");
+                }
+
+                return items[index];
+            }
+        }
 
         public void Init(int arrayMaxCount)
         {
-            if (Items == null || Items.Length != arrayMaxCount)
+            if (items == null || items.Length != arrayMaxCount)
             {
-                Items = new T[arrayMaxCount];
+                items = new T[arrayMaxCount];
             }
 
-            indexList = new List<int>(arrayMaxCount);
-            indexList.Clear();
+            IndexList = new List<int>(arrayMaxCount);
+            IndexList.Clear();
         }
 
         public T Add(int index, Type type)
         {
-            if (Items[index] != null)
+            if (index >= items.Length)
             {
-                return default(T);
+                var newArray = new T[items.Length * (index / items.Length + 1)];
+                Array.Copy(items, 0, newArray, 0, items.Length);
+                items = newArray;
+            }
+
+            if (items[index] != null)
+            {
+                return items[index];
             }
 
             var t = (T) ReferencePool.Acquire(type);
-            indexList.Add(index);
-            Items[index] = t;
+            IndexList.Add(index);
+            items[index] = t;
             return t;
         }
 
 
         public void Remove(int index)
         {
-            if (Items[index] == null)
+            if (items[index] == null)
             {
                 return;
             }
 
-            ReferencePool.Release(Items[index]);
-            Items[index] = null;
-            indexList.RemoveSwapBack(index);
+            ReferencePool.Release(items[index]);
+            items[index] = null;
+            IndexList.RemoveSwapBack(index);
         }
 
         public void Dispose()
         {
-            foreach (var index in indexList)
+            foreach (var index in IndexList)
             {
-                ReferencePool.Release(Items[index]);
-                Items[index] = default(T);
+                ReferencePool.Release(items[index]);
+                items[index] = default(T);
             }
 
-            indexList.Clear();
+            IndexList.Clear();
+        }
+
+        public GXEnumerator GetEnumerator() => new GXEnumerator(IndexList,items);
+
+        [StructLayout(LayoutKind.Auto)]
+        public struct GXEnumerator : IEnumerator<T>
+        {
+            private List<int>.Enumerator indexEnumerator;
+            private T[] items;
+
+            internal GXEnumerator(List<int> indexs, T[] items)
+            {
+                if (indexs == null)
+                {
+                    throw new Exception("Linked list is invalid.");
+                }
+
+                this.items = items;
+                indexEnumerator = indexs.GetEnumerator();
+            }
+
+            public T Current
+            {
+                get { return items[indexEnumerator.Current]; }
+            }
+
+            object IEnumerator.Current => Current;
+
+            public void Dispose()
+            {
+                indexEnumerator.Dispose();
+            }
+
+            public bool MoveNext()
+            {
+                return indexEnumerator.MoveNext();
+            }
+
+            void IEnumerator.Reset()
+            {
+                ((IEnumerator<int>) indexEnumerator).Reset();
+            }
         }
     }
 }
