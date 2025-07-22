@@ -1,7 +1,10 @@
-﻿namespace SH.GameFrame
+﻿using System.Collections.Generic;
+
+namespace SH.GameFrame
 {
     public abstract class CapabilityBase : ICapability
     {
+        protected List<CapabilityTags> TagList;
         public bool IsActive { get; private set; }
         public int TickGroupOrder { get; protected set; }
 
