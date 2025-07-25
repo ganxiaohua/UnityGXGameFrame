@@ -70,7 +70,7 @@ namespace GameFrame
                 sb.Append("AllOfIndices:");
                 foreach (var value in matcher.AllOfIndices)
                 {
-                    sb.Append(GXComponents.ComponentTypes[value].Name);
+                    sb.Append(ComponentsID2Type.ComponentsTypes[value].Name);
                 }
             }
 
@@ -79,7 +79,7 @@ namespace GameFrame
                 sb.Append("AnyOfIndices:");
                 foreach (var value in matcher.AnyOfIndices)
                 {
-                    sb.Append(GXComponents.ComponentTypes[value].Name);
+                    sb.Append(ComponentsID2Type.ComponentsTypes[value].Name);
                 }
             }
 
@@ -88,7 +88,7 @@ namespace GameFrame
                 sb.Append("NoneOfIndices:");
                 foreach (var value in matcher.NoneOfIndices)
                 {
-                    sb.Append(GXComponents.ComponentTypes[value].Name);
+                    sb.Append(ComponentsID2Type.ComponentsTypes[value].Name);
                 }
             }
 

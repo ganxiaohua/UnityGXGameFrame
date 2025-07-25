@@ -37,7 +37,7 @@ namespace GameFrame
         public void OnDirty(IEntity parent, int id)
         {
             EcsComponentArray = ReferencePool.Acquire<GXArray<ECSComponent>>();
-            EcsComponentArray.Init(GXComponents.ComponentTypes.Length);
+            EcsComponentArray.Init(world.MaxComponentCount);
             State = IEntity.EntityState.IsRunning;
             Parent = parent;
             ID = id;
@@ -50,9 +50,10 @@ namespace GameFrame
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public ECSComponent AddComponent(int cid)
+        public ECSComponent AddComponent<T>() where T : ECSComponent
         {
-            Type type = GXComponents.ComponentTypes[cid];
+            var cid = ComponentsID<T>.TID;
+            var type = typeof(T);
             if (EcsComponentArray[cid] != null)
             {
                 throw new Exception($"entity already has component: {type.FullName}");
@@ -63,6 +64,7 @@ namespace GameFrame
             world.Reactive(cid, this);
             return entity;
         }
+        
 
         /// <summary>
         /// 删除组件

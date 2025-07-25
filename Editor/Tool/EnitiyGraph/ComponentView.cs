@@ -72,13 +72,13 @@ namespace GameFrame.Editor
             sWindow.ecsEntity = ecsEntity;
             sWindow.ecsComponentsTree.Clear();
             sWindow.isShowAllEcsComponents = false;
-            if (GXComponents.ComponentTypes.Length == 0)
+            if (ComponentsID2Type.Count == 0)
                 return;
             Action<Type> action = sWindow.AddComponent;
             var baseType = typeof(ECSComponent);
             if (allEcsComponents.Count == 0)
             {
-                var derivedTypes = GXComponents.ComponentTypes[0].Assembly.GetTypes().Where(type => type.IsSubclassOf(baseType)).ToList();
+                var derivedTypes = ComponentsID2Type.ComponentsTypes[0].Assembly.GetTypes().Where(type => type.IsSubclassOf(baseType)).ToList();
                 foreach (var item in derivedTypes)
                 {
                     var componet = new ComponentInfo();
@@ -172,7 +172,7 @@ namespace GameFrame.Editor
             var type = property.Tree.TargetType;
             var fields = property.Tree.WeakTargets[0].GetType().GetFields();
             var fieldValue = fields[0].GetValue(property.Tree.WeakTargets[0]);
-            var comType = GXComponents.ComponentTypes[0].Assembly.GetType($"Auto{type.Name}");
+            var comType = ComponentsID2Type.ComponentsTypes[0].Assembly.GetType($"Auto{type.Name}");
             var methodInfo = comType.GetMethod($"Set{type.Name}", BindingFlags.Static | BindingFlags.Public);
             methodInfo.Invoke(null, new[] {ecsEntity, fieldValue});
         }
@@ -180,7 +180,7 @@ namespace GameFrame.Editor
         private void AddComponent(Type type)
         {
             if (!isShowAllEcsComponents) return;
-            var comType = GXComponents.ComponentTypes[0].Assembly.GetType($"Auto{type.Name}");
+            var comType = ComponentsID2Type.ComponentsTypes[0].Assembly.GetType($"Auto{type.Name}");
             var methodInfo = comType.GetMethod($"Add{type.Name}", BindingFlags.Static | BindingFlags.Public, null, new[] {typeof(ECSEntity)}, null);
             methodInfo.Invoke(null, new object[] {ecsEntity});
             isShowAllEcsComponents = false;

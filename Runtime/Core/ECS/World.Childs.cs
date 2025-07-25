@@ -41,8 +41,8 @@ namespace GameFrame
             }
 
             var entity = Children.Add(ecsSerialId,type);
-            entity.OnDirty(this, id);
             entity.SetContext(this);
+            entity.OnDirty(this, id);
             return entity;
         }
 

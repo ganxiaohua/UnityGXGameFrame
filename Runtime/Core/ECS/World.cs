@@ -16,8 +16,10 @@ namespace GameFrame
         
         public bool IsAction => State == IEntity.EntityState.IsRunning;
 
+        public int MaxComponentCount { get; private set; }
+        
         private int ecsSerialId;
-
+        
         public float DeltaTime { get; private set; }
 
         public float Multiple { get; private set; }
@@ -25,7 +27,9 @@ namespace GameFrame
         private Dictionary<Matcher, Group> groups = new();
 
         private List<Group>[] groupsList;
+        
         private int sIndex;
+        
 
         public void OnDirty(IEntity parent, int id)
         {
@@ -40,7 +44,7 @@ namespace GameFrame
         {
             InitializeChilds();
             SetMultiple(1);
-            groupsList = new List<Group>[GXComponents.ComponentTypes.Length];
+            groupsList = new List<Group>[MaxComponentCount];
         }
 
         protected virtual void SetMultiple(float mul)
