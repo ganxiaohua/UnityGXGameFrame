@@ -1,4 +1,4 @@
-﻿namespace SH.GameFrame
+﻿namespace GameFrame.Runtime.SH
 {
     public enum CapabilityTags
     {

@@ -107,7 +107,7 @@ namespace GameFrame
         /// </summary>
         /// <typeparam name="T">引用类型</typeparam>
         /// <returns></returns>
-        public static void SetMaxReferenceCount<T>(int count) where T : class, IDisposable, new()
+        public static void SetMaxReferenceCount<T>(int count) where T : class, IDisposable
         {
             lock (sReferenceCollections)
             {
@@ -126,7 +126,7 @@ namespace GameFrame
         /// </summary>
         /// <typeparam name="T">引用类型。</typeparam>
         /// <returns>引用。</returns>
-        public static T Acquire<T>() where T : class, IDisposable, new()
+        public static T Acquire<T>() where T : class, IDisposable
         {
             return GetReferenceCollection(typeof(T)).Acquire<T>();
         }

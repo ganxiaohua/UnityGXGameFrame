@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
-using GameFrame;
 using UnityEngine;
 
-namespace SH.GameFrame
+namespace GameFrame.Runtime.SH
 {
-    public partial class CapabiltyComponent
+    public partial class CapabiltyComponent : ECSComponent
     {
         private int[] tags;
 

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using GameFrame;
 
-namespace SH.GameFrame
+namespace GameFrame.Runtime.SH
 {
     public partial class CapabiltyComponent
     {

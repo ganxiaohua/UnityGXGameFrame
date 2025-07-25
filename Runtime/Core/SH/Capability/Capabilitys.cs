@@ -1,25 +1,38 @@
 ﻿using System.Collections.Generic;
 using GameFrame;
 
-namespace SH.GameFrame
+namespace GameFrame.Runtime.SH
 {
-    public partial class CapabilitySystem : Singleton<CapabilitySystem>
+    public partial class Capabilitys
     {
-        private GXArray<CapabilityBase>[] bilityCapabilitiesList;
+        private GXArray<CapabilityBase>[] capabilitiesUpdateList;
+        
+        private GXArray<CapabilityBase>[] capabilitiesFixUpdateList;
 
         public void Init()
         {
             int capabilityCount = 50;
-            bilityCapabilitiesList = new GXArray<CapabilityBase>[capabilityCount];
+            capabilitiesUpdateList = new GXArray<CapabilityBase>[capabilityCount];
+            capabilitiesFixUpdateList = new GXArray<CapabilityBase>[capabilityCount];
         }
 
 
-        public void Update(float delatTime)
+        public void OnUpdate(float delatTime)
         {
-            int count = bilityCapabilitiesList.Length;
+            int count = capabilitiesUpdateList.Length;
             for (int i = 0; i < count; i++)
             {
-                var capabilityArray = bilityCapabilitiesList[i];
+                var capabilityArray = capabilitiesUpdateList[i];
+                UpdateCapability(capabilityArray, delatTime);
+            }
+        }
+
+        public void OnFixedUpdate(float delatTime)
+        {
+            int count = capabilitiesFixUpdateList.Length;
+            for (int i = 0; i < count; i++)
+            {
+                var capabilityArray = capabilitiesFixUpdateList[i];
                 UpdateCapability(capabilityArray, delatTime);
             }
         }

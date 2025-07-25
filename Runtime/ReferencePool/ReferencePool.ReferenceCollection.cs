@@ -86,25 +86,14 @@ namespace GameFrame
                 maxAcquireReferenceCount = count;
             }
 
-            public T Acquire<T>() where T : class, IDisposable, new()
+            public T Acquire<T>() where T : class, IDisposable
             {
                 if (typeof(T) != referenceType)
                 {
                     throw new Exception("Type is invalid.");
                 }
 
-                usingReferenceCount++;
-                acquireReferenceCount++;
-                lock (references)
-                {
-                    if (references.Count > 0)
-                    {
-                        return (T) references.Dequeue();
-                    }
-                }
-
-                addReferenceCount++;
-                return new T();
+                return (T)Acquire();
             }
 
             public IDisposable Acquire()

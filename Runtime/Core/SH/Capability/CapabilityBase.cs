@@ -1,14 +1,20 @@
 ﻿using System.Collections.Generic;
 
-namespace SH.GameFrame
+namespace GameFrame.Runtime.SH
 {
     public abstract class CapabilityBase : ICapability
     {
         protected List<CapabilityTags> TagList;
+        public CapabilitysUpdateMode UpdateMode;
+        public int ID { get; private set; }
         public bool IsActive { get; private set; }
         public int TickGroupOrder { get; protected set; }
 
-        public abstract void Init();
+        public virtual void Init(int id)
+        {
+            ID = id;
+        }
+
         public abstract bool ShouldActivate();
         public abstract bool ShouldDeactivate();
 

@@ -100,11 +100,10 @@ namespace GameFrame
             groupsList = null;
             groups.Clear();
         }
-
-        public void OnUpdate(float elapseSeconds, float realElapseSeconds)
+        
+        public virtual void OnUpdate(float elapseSeconds, float realElapseSeconds)
         {
             DeltaTime = elapseSeconds * Multiple;
         }
-        
     }
 }

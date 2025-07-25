@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace GameFrame
 {
@@ -6,37 +7,32 @@ namespace GameFrame
     {
         public int ChildsCount { get; private set; }
 
-        public HashSet<IEntity> Children;
+        public GXArray<ECSEntity> Children { get; private set; }
 
         private Stack<int> heritageId = new();
-        
+
         private void InitializeChilds()
         {
-            ChildsCount = 32;
-            Children = new HashSet<IEntity>(ChildsCount);
+            Children = new GXArray<ECSEntity>();
         }
 
         public void EstimateChildsCount(int count)
         {
             ChildsCount = count;
-            Children.EnsureCapacity(count);
+            Children.Init(count);
         }
 
-        public T AddChild<T>() where T : ECSEntity, new()
+        public T AddChild<T>() where T : ECSEntity
         {
-            var entity = ReferencePool.Acquire<T>();
-            AddChild(entity);
-            return entity;
+            return (T)CreateChild(typeof(T));
         }
 
         public ECSEntity AddChild()
         {
-            var entity = (ECSEntity) ReferencePool.Acquire(typeof(ECSEntity));
-            AddChild(entity);
-            return entity;
+            return CreateChild(typeof(ECSEntity));
         }
 
-        private void AddChild(ECSEntity entity)
+        private ECSEntity CreateChild(Type type)
         {
             int id = 0;
             if (!heritageId.TryPop(out id))
@@ -44,14 +40,15 @@ namespace GameFrame
                 id = ecsSerialId++;
             }
 
+            var entity = Children.Add(ecsSerialId,type);
             entity.OnDirty(this, id);
             entity.SetContext(this);
-            Children.Add(entity);
+            return entity;
         }
 
         public void RemoveChild(IEntity ecsEntity)
         {
-            bool b = Children.Remove(ecsEntity);
+            bool b = Children.Remove(ecsEntity.ID);
             if (!b)
                 return;
             heritageId.Push(ecsEntity.ID);
@@ -65,7 +62,7 @@ namespace GameFrame
                 ReferencePool.Release(item);
             }
 
-            Children.Clear();
+            Children.Dispose();
         }
 
         private void DisposeChilds()

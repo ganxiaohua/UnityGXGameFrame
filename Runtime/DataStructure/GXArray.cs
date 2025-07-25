@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using Codice.CM.WorkspaceServer.Lock;
+
 
 namespace GameFrame
 {
@@ -16,7 +16,7 @@ namespace GameFrame
         {
             get
             {
-                if (index >= items.Length)
+                if (index >= items.Length || index<0)
                 {
                     throw new Exception($"ThrowArgumentOutOfRange {index}");
                 }
@@ -57,16 +57,24 @@ namespace GameFrame
         }
 
 
-        public void Remove(int index)
+        public bool Remove(int index)
         {
             if (items[index] == null)
             {
-                return;
+                return false;
             }
 
             ReferencePool.Release(items[index]);
             items[index] = null;
             IndexList.RemoveSwapBack(index);
+            return true;
+        }
+
+        public bool Contains(int index)
+        {
+            if (index >= items.Length || index<0)
+                return false;
+            return items[index] != null;
         }
 
         public void Dispose()
