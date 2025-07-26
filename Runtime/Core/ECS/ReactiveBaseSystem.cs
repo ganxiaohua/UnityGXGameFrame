@@ -9,8 +9,6 @@ namespace GameFrame
         /// </summary>
         protected World World;
 
-        private List<ECSEntity> buffer;
-
         /// <summary>
         /// 我想要关注的实体
         /// </summary>
@@ -18,7 +16,6 @@ namespace GameFrame
 
         public virtual void OnInitialize(World world)
         {
-            buffer = new List<ECSEntity>();
             World = world;
             collector = this.GetTrigger(world);
         }
@@ -27,10 +24,9 @@ namespace GameFrame
 
         protected abstract bool Filter(ECSEntity entity);
 
-        protected abstract void Execute(List<ECSEntity> entities);
+        protected abstract void Execute(ECSEntity entities);
         
-
-        protected void Do(float elapseSeconds, float realElapseSeconds)
+        protected void Do()
         {
             if (collector.CollectedEntities.Count == 0)
                 return;
@@ -39,15 +35,10 @@ namespace GameFrame
             {
                 if (ecsentity.State != IEntity.EntityState.IsClear && this.Filter(ecsentity))
                 {
-                    buffer.Add(ecsentity);
+                    Execute(ecsentity);
                 }
             }
-
             collector.CollectedEntities.Clear();
-            if (buffer.Count == 0)
-                return;
-            Execute(buffer);
-            buffer.Clear();
         }
 
         public abstract void Dispose();

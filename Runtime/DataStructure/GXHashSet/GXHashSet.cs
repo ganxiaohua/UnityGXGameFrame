@@ -3,6 +3,10 @@ using System.Collections.Generic;
 
 namespace GameFrame
 {
+    /// <summary>
+    /// TODO: SHOULD OPT IT
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class GXHashSet<T> : IEnumerable<T>,IEnumerable
     {
         private HashSet<T> blocks;

@@ -4,7 +4,7 @@
     {
         public void FixedUpdate(float elapseSeconds, float realElapseSeconds)
         {
-            Do(elapseSeconds,realElapseSeconds);
+            Do();
         }
     }
 }
