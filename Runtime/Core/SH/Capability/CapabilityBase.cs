@@ -4,14 +4,16 @@ namespace GameFrame.Runtime.SH
 {
     public abstract class CapabilityBase : ICapability
     {
-        protected List<CapabilityTags> TagList;
-        public CapabilitysUpdateMode UpdateMode;
+        protected List<int> tagList;
+        public IReadOnlyList<int> Taglist => tagList;
         public int ID { get; private set; }
+        public int OwnerId { get; private set; }
         public bool IsActive { get; private set; }
         public int TickGroupOrder { get; protected set; }
 
-        public virtual void Init(int id)
+        public virtual void Init(int ownerId,int id)
         {
+            OwnerId = ownerId;
             ID = id;
         }
 

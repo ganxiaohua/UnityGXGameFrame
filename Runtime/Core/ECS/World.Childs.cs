@@ -22,12 +22,12 @@ namespace GameFrame
             Children.Init(count);
         }
 
-        public T AddChild<T>() where T : ECSEntity
+        public virtual T AddChild<T>() where T : ECSEntity
         {
             return (T)CreateChild(typeof(T));
         }
 
-        public ECSEntity AddChild()
+        public virtual ECSEntity AddChild()
         {
             return CreateChild(typeof(ECSEntity));
         }
@@ -52,6 +52,11 @@ namespace GameFrame
             if (!b)
                 return;
             heritageId.Push(ecsEntity.ID);
+        }
+
+        public ECSEntity GetChild(int id)
+        {
+            return Children[id];
         }
 
         private void ClearAllChild()

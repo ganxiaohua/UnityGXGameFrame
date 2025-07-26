@@ -2,7 +2,7 @@
 {
     public abstract class FixedUpdateReactiveSystem:ReactiveBaseSystem, IFixedUpdateSystem
     {
-        public void FixedUpdate(float elapseSeconds, float realElapseSeconds)
+        public void OnFixedUpdate(float elapseSeconds, float realElapseSeconds)
         {
             Do();
         }

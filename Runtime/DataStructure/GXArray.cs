@@ -16,7 +16,7 @@ namespace GameFrame
         {
             get
             {
-                if (index >= items.Length || index<0)
+                if (index >= items.Length || index < 0)
                 {
                     throw new Exception($"ThrowArgumentOutOfRange {index}");
                 }
@@ -36,6 +36,11 @@ namespace GameFrame
             IndexList.Clear();
         }
 
+        public Q Add<Q>(int index) where Q : T
+        {
+            return (Q)Add(index, typeof(Q));
+        }
+
         public T Add(int index, Type type)
         {
             if (index >= items.Length)
@@ -43,6 +48,7 @@ namespace GameFrame
                 var newArray = new T[items.Length * (index / items.Length + 1)];
                 Array.Copy(items, 0, newArray, 0, items.Length);
                 items = newArray;
+                Debugger.LogWarning($"{type.Name} GXArray Expansion!!!");
             }
 
             if (items[index] != null)
@@ -55,7 +61,6 @@ namespace GameFrame
             items[index] = t;
             return t;
         }
-
 
         public bool Remove(int index)
         {
@@ -72,7 +77,7 @@ namespace GameFrame
 
         public bool Contains(int index)
         {
-            if (index >= items.Length || index<0)
+            if (index >= items.Length || index < 0)
                 return false;
             return items[index] != null;
         }
@@ -88,7 +93,7 @@ namespace GameFrame
             IndexList.Clear();
         }
 
-        public GXEnumerator GetEnumerator() => new GXEnumerator(IndexList,items);
+        public GXEnumerator GetEnumerator() => new GXEnumerator(IndexList, items);
 
         [StructLayout(LayoutKind.Auto)]
         public struct GXEnumerator : IEnumerator<T>

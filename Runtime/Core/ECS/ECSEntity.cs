@@ -50,16 +50,15 @@ namespace GameFrame
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public ECSComponent AddComponent<T>() where T : ECSComponent
+        public T AddComponent<T>() where T : ECSComponent
         {
             var cid = ComponentsID<T>.TID;
-            var type = typeof(T);
             if (EcsComponentArray[cid] != null)
             {
+                var type = typeof(T);
                 throw new Exception($"entity already has component: {type.FullName}");
             }
-
-            ECSComponent entity = EcsComponentArray.Add(cid, type);
+            T entity = EcsComponentArray.Add<T>(cid);
             entity.Owner = this;
             world.Reactive(cid, this);
             return entity;

@@ -129,7 +129,7 @@ namespace GameFrame
                 using (new Profiler(system.GetType().Name))
 #endif
                 {
-                    ((IFixedUpdateSystem) system).FixedUpdate(elapseSeconds, realElapseSeconds);
+                    ((IFixedUpdateSystem) system).OnFixedUpdate(elapseSeconds, realElapseSeconds);
                 }
             }
         }

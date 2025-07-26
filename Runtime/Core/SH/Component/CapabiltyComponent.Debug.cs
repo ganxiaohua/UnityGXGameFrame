@@ -6,13 +6,13 @@ namespace GameFrame.Runtime.SH
 {
     public partial class CapabiltyComponent
     {
-        private Dictionary<CapabilityBase, List<CapabilityTags>> instigatorsDic = new();
+        private Dictionary<CapabilityBase, List<int>> instigatorsDic = new();
 
-        private bool CanBlock(CapabilityTags index, CapabilityBase Instigators)
+        private bool CanBlock(int index, CapabilityBase Instigators)
         {
             if (instigatorsDic.TryGetValue(Instigators, out var list))
             {
-                list ??= new List<CapabilityTags>();
+                list ??= new List<int>();
                 instigatorsDic.Add(Instigators, list);
             }
 
@@ -25,7 +25,7 @@ namespace GameFrame.Runtime.SH
             return true;
         }
 
-        private bool CanUnBlock(CapabilityTags index, CapabilityBase Instigators)
+        private bool CanUnBlock(int index, CapabilityBase Instigators)
         {
             if (instigatorsDic.TryGetValue(Instigators, out var list))
             {

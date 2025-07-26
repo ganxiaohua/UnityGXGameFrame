@@ -3,15 +3,17 @@ using GameFrame;
 
 namespace GameFrame.Runtime.SH
 {
-    public partial class Capabilitys
+    public partial class Capabilitys : IInitializeSystem<SHWorld, int>
     {
         private GXArray<CapabilityBase>[] capabilitiesUpdateList;
-        
+
         private GXArray<CapabilityBase>[] capabilitiesFixUpdateList;
 
-        public void Init()
+        private SHWorld shWorld;
+
+        public void OnInitialize(SHWorld shWorld, int capabilityCount)
         {
-            int capabilityCount = 50;
+            this.shWorld = shWorld;
             capabilitiesUpdateList = new GXArray<CapabilityBase>[capabilityCount];
             capabilitiesFixUpdateList = new GXArray<CapabilityBase>[capabilityCount];
         }
@@ -41,6 +43,12 @@ namespace GameFrame.Runtime.SH
         {
             foreach (var capability in capabilityBaseArray)
             {
+                var owner = shWorld.GetChild(capability.OwnerId);
+                var capailty = (CapabiltyComponent)owner.GetComponent(ComponentsID<CapabiltyComponent>.TID);
+                if (capailty.IsBlock(capability.Taglist))
+                {
+                    continue;
+                }
                 if (!capability.IsActive)
                 {
                     bool succ = capability.ShouldActivate();
@@ -57,9 +65,14 @@ namespace GameFrame.Runtime.SH
                         capability.OnDeactivated();
                     }
                 }
-                if(capability.IsActive)
+
+                if (capability.IsActive)
                     capability.TickActive(delatTime);
             }
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

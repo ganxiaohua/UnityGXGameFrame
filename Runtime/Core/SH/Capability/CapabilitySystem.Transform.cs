@@ -11,38 +11,32 @@ namespace GameFrame.Runtime.SH
             {
                 int id = CapabilityID<T, IUpdateSystem>.TID;
                 var array = capabilitiesUpdateList[id];
-                var cap =  array.Add(playerId, typeof(T));
-                cap.Init(id);
+                var cap = array.Add(playerId, typeof(T));
+                cap.Init(playerId, id);
             }
-            else if (mode == CapabilitysUpdateMode.FixedUpdat)
+            else if (mode == CapabilitysUpdateMode.FixedUpdate)
             {
                 int id = CapabilityID<T, IFixedUpdateSystem>.TID;
                 var array = capabilitiesFixUpdateList[id];
-                var cap =  array.Add(playerId, typeof(T));
-                cap.Init(id);
+                var cap = array.Add(playerId, typeof(T));
+                cap.Init(playerId, id);
             }
         }
 
         public void Remove<T>(int playerId) where T : CapabilityBase
         {
             int id = CapabilityID<T, IUpdateSystem>.TID;
-            Remove(playerId,id);
+            Remove(playerId, id);
         }
 
         public void Remove(int playerId, int capabilitieId)
         {
             var array = capabilitiesUpdateList[capabilitieId];
-            if (array.Contains(playerId))
-            {
-                array.Remove(playerId);
+            bool succ = array.Remove(playerId);
+            if (succ)
                 return;
-            }
-
             array = capabilitiesFixUpdateList[capabilitieId];
-            if (array.Contains(playerId))
-            {
-                array.Remove(playerId);
-            }
+            array.Remove(playerId);
         }
     }
 }

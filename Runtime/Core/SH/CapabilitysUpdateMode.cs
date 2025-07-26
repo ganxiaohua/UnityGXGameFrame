@@ -3,6 +3,6 @@
     public enum CapabilitysUpdateMode
     {
         Update,
-        FixedUpdat,
+        FixedUpdate,
     }
 }
