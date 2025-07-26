@@ -40,7 +40,7 @@ namespace GameFrame
                 id = ecsSerialId++;
             }
 
-            var entity = Children.Add(ecsSerialId,type);
+            var entity = Children.Add(id,type);
             entity.SetContext(this);
             entity.OnDirty(this, id);
             return entity;
@@ -52,16 +52,10 @@ namespace GameFrame
             if (!b)
                 return;
             heritageId.Push(ecsEntity.ID);
-            ReferencePool.Release(ecsEntity);
         }
 
-        public void ClearAllChild()
+        private void ClearAllChild()
         {
-            foreach (var item in Children)
-            {
-                ReferencePool.Release(item);
-            }
-
             Children.Dispose();
         }
 

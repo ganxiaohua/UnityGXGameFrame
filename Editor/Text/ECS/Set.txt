@@ -1,22 +1,22 @@
  
     public static ECSEntity Set{0}(this {5} ecsEntity,{1} param)
     {{
-        var p = ({2})ecsEntity.GetComponent(Components.{0});
+        var p = ({2})ecsEntity.GetComponent(ComponentsID<{2}>.TID);
         p.{3} = param;
-        ((World)ecsEntity.Parent).Reactive(Components.{0}, ecsEntity);
+        ((World)ecsEntity.Parent).Reactive(ComponentsID<{2}>.TID, ecsEntity);
         {4}
         return ecsEntity;
     }}
     
     public static ECSEntity AddOrSet{0}(this {5} ecsEntity,{1} param)
     {{
-        var p = ({2})ecsEntity.GetComponent(Components.{0});
+        var p = ({2})ecsEntity.GetComponent(ComponentsID<{2}>.TID);
         if(p==null)
         {{
-           p = ({2})(ecsEntity.AddComponent(Components.{0}));
+           p = ({2})(ecsEntity.AddComponent<{2}>());
         }}
         p.{3} = param;
-        ((World)ecsEntity.Parent).Reactive(Components.{0}, ecsEntity);
+        ((World)ecsEntity.Parent).Reactive(ComponentsID<{2}>.TID, ecsEntity);
         {4}
         return ecsEntity;
     }} 

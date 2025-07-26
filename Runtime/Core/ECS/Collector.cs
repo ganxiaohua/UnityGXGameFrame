@@ -16,6 +16,7 @@ namespace GameFrame
 
         private EcsChangeEventState.ChangeEventState state = 0;
 
+        
 
         public static Collector CreateCollector(World world, EcsChangeEventState.ChangeEventState stateType, params int[] indexs)
         {

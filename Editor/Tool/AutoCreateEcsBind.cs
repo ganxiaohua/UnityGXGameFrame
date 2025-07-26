@@ -26,28 +26,23 @@ namespace GameFrame.Editor
         private static Dictionary<CreateAuto, string> s_TextDictionary;
         private static Dictionary<Type, string> s_EventDictionary;
         private static StringBuilder s_EventSb = new StringBuilder(1024);
-        private static int ComponentsSubIndex;
-        private static string ComponentsSub;
-        private static string ComponentsTypeSub;
 
         public static void AutoCreateScript()
         {
             OpFile.DeleteFilesInDirectory(EditorString.ECSOutPutPath);
             LoadText();
-            ComponentsSubIndex = 0;
-            ComponentsTypeSub = "";
-            ComponentsSub = "";
             var assembly = AppDomain.CurrentDomain.GetAssemblies();
+            var number = 0;
             foreach (var item in assembly)
             {
                 foreach (var name in EditorString.AssemblyNames)
                 {
                     if (item.GetName().Name != name) continue;
-                    FindAllECSCom(item);
+                    number+=  FindAllECSCom(item);
                     break;
                 }
             }
-            CreateComponents();
+            CreateComponents(number);
             CreateEvent();
             AssetDatabase.Refresh();
         }
@@ -67,7 +62,6 @@ namespace GameFrame.Editor
             string strget = File.ReadAllText(get);
             string strset = File.ReadAllText(set);
             string strAllComponents = File.ReadAllText(ECSALLComponents);
-            string[] strComponentsIndex = strAllComponents.Split('#');
             if (s_EventDictionary == null)
             {
                 s_EventDictionary = new Dictionary<Type, string>();
@@ -85,16 +79,14 @@ namespace GameFrame.Editor
             s_TextDictionary.Add(CreateAuto.AddParameter, straddparameter);
             s_TextDictionary.Add(CreateAuto.Get, strget);
             s_TextDictionary.Add(CreateAuto.Set, strset);
-            s_TextDictionary.Add(CreateAuto.ComponentsMain, strComponentsIndex[0]);
-            s_TextDictionary.Add(CreateAuto.ComponentsSub, strComponentsIndex[1]);
-            s_TextDictionary.Add(CreateAuto.ComponentsTypeMain, strComponentsIndex[2]);
-            s_TextDictionary.Add(CreateAuto.ComponentsTypeSub, strComponentsIndex[3]);
+            s_TextDictionary.Add(CreateAuto.ComponentsMain,strAllComponents);
         }
 
-        private static void FindAllECSCom(Assembly assembly)
+        private static int FindAllECSCom(Assembly assembly)
         {
             s_EventSb.Clear();
             Type[] types = assembly.GetTypes();
+            int number = 0;
             foreach (var tp in types)
             {
                 if (typeof(ECSComponent).IsAssignableFrom(tp) && tp.IsClass)
@@ -105,10 +97,12 @@ namespace GameFrame.Editor
                         AddEvent(tp, vb.BindType);
                     }
 
-                    SetComponents(tp);
+                    number++;
                     CreateCshap(tp);
                 }
             }
+
+            return number;
         }
 
         //创建c#脚本
@@ -132,7 +126,7 @@ namespace GameFrame.Editor
             string typeFullName = type.FullName;
             StringBuilder sb = new StringBuilder(1024);
             string abcls = s_TextDictionary[CreateAuto.Class];
-            string abAdd = string.Format(s_TextDictionary[CreateAuto.Add], typeName, ECSComponentName);
+            string abAdd = string.Format(s_TextDictionary[CreateAuto.Add], typeName, ECSComponentName,typeFullName);
             string abGet = string.Format(s_TextDictionary[CreateAuto.Get], typeName, typeFullName, ECSComponentName);
             string abSet = "";
             string addParameter = "";
@@ -194,23 +188,10 @@ namespace GameFrame.Editor
             string last = string.Format(s_TextDictionary[CreateAuto.EventClass], s_EventSb);
             File.WriteAllText($"{EditorString.ECSOutPutPath}ViewBindEventAuto.cs", last);
         }
-
-        private static void SetComponents(Type type)
+        
+        private static void CreateComponents(int number)
         {
-            if (type.Name == nameof(ECSComponent))
-            {
-                return;
-            }
-
-            ComponentsSub += string.Format(s_TextDictionary[CreateAuto.ComponentsSub], type.Name, ComponentsSubIndex);
-            ComponentsSubIndex++;
-            ComponentsTypeSub += string.Format(s_TextDictionary[CreateAuto.ComponentsTypeSub], type.FullName);
-        }
-
-        private static void CreateComponents()
-        {
-            var typestr = string.Format(s_TextDictionary[CreateAuto.ComponentsTypeMain], ComponentsTypeSub);
-            var str = string.Format(s_TextDictionary[CreateAuto.ComponentsMain], ComponentsSub, ComponentsSubIndex, typestr);
+            var str = string.Format(s_TextDictionary[CreateAuto.ComponentsMain], number);
             File.WriteAllText($"{EditorString.ECSOutPutPath}Components.cs", str);
         }
 

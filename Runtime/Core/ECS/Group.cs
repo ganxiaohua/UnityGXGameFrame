@@ -10,7 +10,7 @@ namespace GameFrame
         public event GroupChanged GroupAdd;
         public event GroupChanged GroupRomve;
         public event GroupChanged GroupUpdate;
-        public HashSet<ECSEntity> EntitiesMap { get; private set; }
+        public GXHashSet<ECSEntity> EntitiesMap { get; private set; }
 
         public static Group CreateGroup(int childsCount, Matcher matcher)
         {
@@ -110,21 +110,7 @@ namespace GameFrame
         }
         
 
-        public GroupEnumerator GetEnumerator() => new GroupEnumerator(EntitiesMap);
-
-        public struct GroupEnumerator : IEnumerator<ECSEntity>, IEnumerator
-        {
-            private HashSet<ECSEntity>.Enumerator hashSetEnumerator;
-            public GroupEnumerator(HashSet<ECSEntity> set) => hashSetEnumerator = set.GetEnumerator();
-            public ECSEntity Current => hashSetEnumerator.Current;
-            object IEnumerator.Current => Current;
-            public bool MoveNext() => hashSetEnumerator.MoveNext();
-
-            public void Reset()
-            {
-            }
-
-            public void Dispose() => hashSetEnumerator.Dispose();
-        }
+        public IEnumerator<ECSEntity> GetEnumerator() => EntitiesMap.GetEnumerator();
+        
     }
 }

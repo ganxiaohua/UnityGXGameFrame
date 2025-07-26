@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 
 namespace GameFrame
 {
-    public class GXHashSet<T> where T : IContinuousID
+    public class GXHashSet<T> : IEnumerable<T>,IEnumerable
     {
-        private List<DirtyBlock> blocks;
+        private HashSet<T> blocks;
 
         private StrongList<T> datas;
 
@@ -15,52 +16,29 @@ namespace GameFrame
         public GXHashSet(int capacity)
         {
             datas = new StrongList<T>(capacity);
-            blocks = new List<DirtyBlock>(1);
+            blocks = new HashSet<T>(1);
             SetCapacity(capacity);
         }
 
         public void SetCapacity(int capacity)
         {
-            datas.Clear();
-            blocks.Clear();
-            Assert.IsTrue(blocks.Count == 0, "快内已经有成员,不允许修改");
-            this.capacity = capacity;
             datas.SetCapacity(capacity);
-            blocks.Add(new DirtyBlock(capacity));
+            blocks.EnsureCapacity(capacity);
         }
 
         public bool Add(T data)
         {
-            int blockIndex = data.ID / capacity;
-            int subBlockIndex = data.ID % capacity;
-            if (blocks.Count <= blockIndex)
-            {
-                for (int i = blocks.Count; i <= blockIndex; i++)
-                {
-                    blocks.Add(new DirtyBlock(capacity));
-                }
-            }
-            //
-            var block = blocks[blockIndex];
-            if (block.Dirty(subBlockIndex))
-            {
+            bool succ = blocks.Add(data);
+            if (succ)
                 datas.Add(data);
-                return true;
-            }
+
             return false;
         }
 
         public bool Remove(T data)
         {
-            int blockIndex = data.ID / capacity;
-            int subBlockIndex = data.ID % capacity;
-            if (blockIndex >= blocks.Count || subBlockIndex > blocks[blockIndex].pointer)
-            {
-                return false;
-            }
-
-            var block = blocks[blockIndex];
-            if (block.Erase(subBlockIndex))
+            var succ = blocks.Remove(data);
+            if (succ)
             {
                 datas.Remove(data);
                 return true;
@@ -72,14 +50,15 @@ namespace GameFrame
 
         public void Clear()
         {
-            int count = blocks.Count;
-            for (int i = 0; i < count; i++)
-            {
-                blocks[i].Clear();
-            }
+            blocks.Clear();
             datas.Clear();
         }
 
         public IEnumerator<T> GetEnumerator() => this.datas.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }

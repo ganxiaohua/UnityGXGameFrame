@@ -2,7 +2,7 @@
 
 namespace GameFrame
 {
-    public partial class World : IEntity, IVersions, IInitializeSystem, IUpdateSystem
+    public partial class World : IEntity, IVersions, IInitializeSystem<int>, IUpdateSystem
     {
         public IEntity Parent { get; private set; }
 
@@ -39,20 +39,20 @@ namespace GameFrame
             ID = id;
             Versions++;
         }
-
-        public virtual void OnInitialize()
+        
+        public virtual void OnInitialize(int maxComponentCount)
         {
+            MaxComponentCount = maxComponentCount;
             InitializeChilds();
             SetMultiple(1);
             groupsList = new List<Group>[MaxComponentCount];
         }
-
+        
         protected virtual void SetMultiple(float mul)
         {
             Multiple = mul;
         }
-
-
+        
         public Group GetGroup(Matcher matcher)
         {
             if (groups.TryGetValue(matcher, out Group group))
@@ -89,6 +89,8 @@ namespace GameFrame
                 }
             }
         }
+
+
 
         public virtual void Dispose()
         {
