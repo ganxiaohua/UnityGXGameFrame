@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
-using GameFrame.Runtime.Runtime.SH;
+using GameFrame.Runtime;
 using UnityEditor;
 
-namespace GameFrame.Runtime.Editor
+namespace GameFrame.Editor
 {
     enum CreateAuto
     {

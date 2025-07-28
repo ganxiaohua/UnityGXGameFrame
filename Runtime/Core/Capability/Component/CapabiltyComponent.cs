@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace GameFrame.Runtime.Runtime.SH
+namespace GameFrame.Runtime
 {
     public partial class CapabiltyComponent : EffComponent
     {

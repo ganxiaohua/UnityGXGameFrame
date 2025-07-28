@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.Build;
 
-namespace GameFrame.Runtime.Editor
+namespace GameFrame.Editor
 {
     public static class MacroDefineHelper
     {

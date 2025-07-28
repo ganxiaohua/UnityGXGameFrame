@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace GameFrame.Runtime.Editor
+namespace GameFrame.Editor
 {
     public static class EditorStylesHelper
     {

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using GameFrame.Runtime;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 
-namespace GameFrame.Runtime.Editor
+namespace GameFrame.Editor
 {
     public class EntityView : OdinEditorWindow
     {

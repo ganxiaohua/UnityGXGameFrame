@@ -3,7 +3,7 @@ using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace GameFrame.Runtime.Editor
+namespace GameFrame.Editor
 {
     public class GeneralGrophNode : Node
     {

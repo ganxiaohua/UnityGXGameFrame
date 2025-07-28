@@ -9,7 +9,7 @@ using Sirenix.Utilities.Editor;
 using UnityEditor;
 using UnityEngine;
 
-namespace GameFrame.Runtime.Editor
+namespace GameFrame.Editor
 {
     public class TextureEditor
     {

@@ -1,6 +1,6 @@
 ﻿using UnityEditor;
 
-namespace GameFrame.Runtime.Editor
+namespace GameFrame.Editor
 {
     public static class Macro
     {

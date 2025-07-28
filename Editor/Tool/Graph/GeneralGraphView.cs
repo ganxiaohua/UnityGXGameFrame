@@ -2,7 +2,7 @@
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
 
-namespace GameFrame.Runtime.Editor
+namespace GameFrame.Editor
 {
     public class GeneralGraphView : GraphView
     {

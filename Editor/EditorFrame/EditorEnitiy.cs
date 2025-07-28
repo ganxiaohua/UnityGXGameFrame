@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using GameFrame.Runtime;
 using UnityEngine;
 
-namespace GameFrame.Runtime.Editor
+namespace GameFrame.Editor
 {
     public interface IEditorEntity: IDisposable
     {

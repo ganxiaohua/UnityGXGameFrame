@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using GameFrame.Runtime;
 using UnityEditor;
 using UnityEngine;
 
-namespace GameFrame.Runtime.Editor
+namespace GameFrame.Editor
 {
     public class MakeAutoEventBind
     {

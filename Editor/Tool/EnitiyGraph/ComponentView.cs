@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using GameFrame.Runtime;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 using UnityEditor;
@@ -9,7 +10,7 @@ using UnityEngine;
 using OdinEditorWindow = Sirenix.OdinInspector.Editor.OdinEditorWindow;
 using PropertyTree = Sirenix.OdinInspector.Editor.PropertyTree;
 
-namespace GameFrame.Runtime.Editor
+namespace GameFrame.Editor
 {
     [Serializable]
     public struct ComponentInfo : ISearchFilterable

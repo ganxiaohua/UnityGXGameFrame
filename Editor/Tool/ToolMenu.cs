@@ -1,9 +1,8 @@
-﻿using GameFrame.Runtime.Editor.UI;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
-namespace GameFrame.Runtime.Editor
+namespace GameFrame.Editor
 {
     public class ToolMenu
     {

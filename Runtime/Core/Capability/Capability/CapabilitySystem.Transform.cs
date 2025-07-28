@@ -1,7 +1,7 @@
 ﻿using System;
 using GameFrame.Runtime;
 
-namespace GameFrame.Runtime.Runtime.SH
+namespace GameFrame.Runtime
 {
     public partial class Capabilitys
     {

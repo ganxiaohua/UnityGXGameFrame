@@ -1,4 +1,4 @@
-﻿namespace GameFrame.Runtime.Runtime.SH
+﻿namespace GameFrame.Runtime
 {
     public enum CapabilitysUpdateMode
     {

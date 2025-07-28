@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
-namespace GameFrame.Runtime.Editor
+namespace GameFrame.Editor
 {
     [InitializeOnLoad]
     public static class ToolbarExtensions
@@ -52,11 +52,6 @@ namespace GameFrame.Runtime.Editor
                 if (GUILayout.Button(content))
                     action.Invoke();
             }
-
-            if (GUILayout.Button("Goto NoviceMapEditor"))
-                SaveCurrentSceneIfDirty("Assets/Scenes/Editor/NoviceMapEditor.unity");
-            if (GUILayout.Button("Goto DungeonMapEditor"))
-                SaveCurrentSceneIfDirty("Assets/Scenes/Editor/DungeonMapEditor.unity");
             GUILayout.EndHorizontal();
         }
 

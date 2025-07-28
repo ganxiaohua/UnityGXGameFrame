@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace GameFrame.Runtime.Editor
+namespace GameFrame.Editor
 {
     public class CreateFiles
     {

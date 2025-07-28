@@ -1,9 +1,10 @@
-﻿using UnityEditor;
+﻿using GameFrame.Runtime;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace GameFrame.Runtime.Editor
+namespace GameFrame.Editor
 {
     public class EntityGraphView : EditorEntity
     {

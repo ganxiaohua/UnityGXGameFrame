@@ -4,7 +4,7 @@ using System.Xml;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace GameFrame.Runtime.Editor.UI
+namespace GameFrame.Editor
 {
     public partial class FGUIChecker
     {

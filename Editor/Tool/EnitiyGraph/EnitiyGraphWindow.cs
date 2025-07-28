@@ -3,7 +3,7 @@ using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace GameFrame.Runtime.Editor
+namespace GameFrame.Editor
 {
     public class DialogueGraphWindow : EditorWindow
     {

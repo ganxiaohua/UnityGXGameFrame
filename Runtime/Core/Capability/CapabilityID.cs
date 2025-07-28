@@ -1,4 +1,4 @@
-﻿namespace GameFrame.Runtime.Runtime.SH
+﻿namespace GameFrame.Runtime
 {
     internal static class CapabilityIDGenerator<TUpdateMode>
     {

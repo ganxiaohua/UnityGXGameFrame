@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace GameFrame.Runtime.Editor
+namespace GameFrame.Editor
 {
     public abstract class VirtualBaseDialog : VirtualDialog
     {
