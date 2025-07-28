@@ -1,6 +1,6 @@
 using Cysharp.Threading.Tasks;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public class WaitComponent : Entity, IInitializeSystem
     {

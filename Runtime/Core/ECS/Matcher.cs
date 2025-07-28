@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public class Matcher : IDisposable, IEquatable<Matcher>
     {
@@ -82,7 +82,7 @@ namespace GameFrame
             ReferencePool.Release(matcher);
         }
 
-        public bool Match(ECSEntity entity)
+        public bool Match(EffEntity entity)
         {
             if (this.AllOfIndices != null && !entity.HasComponents(this.AllOfIndices) ||
                 this.AnyOfIndices != null && !entity.HasAnyComponent(this.AnyOfIndices))

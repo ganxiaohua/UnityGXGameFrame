@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     //KV 双向结构   
     public class DoubleMap<K, V>

@@ -1,7 +1,7 @@
 ﻿using System;
 using Cysharp.Threading.Tasks;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public abstract class UIEntity : Entity, IPreShowSystem, IShowSystem, IHideSystem, IUpdateSystem
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     /// <summary>
     /// 表示这个组件需要绑定和视觉相关的参数

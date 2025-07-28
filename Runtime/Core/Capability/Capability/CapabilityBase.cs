@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace GameFrame.Runtime.SH
+namespace GameFrame.Runtime.Runtime.SH
 {
     public abstract class CapabilityBase : ICapability
     {

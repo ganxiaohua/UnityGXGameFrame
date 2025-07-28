@@ -7,7 +7,7 @@ using Sirenix.Utilities;
 using Sirenix.Utilities.Editor;
 using UnityEngine;
 
-namespace GameFrame.Editor.UI
+namespace GameFrame.Runtime.Editor.UI
 {
     public partial class FGUIChecker : OdinEditorWindow
     {

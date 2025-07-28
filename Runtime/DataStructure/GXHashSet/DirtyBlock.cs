@@ -1,4 +1,4 @@
-﻿namespace GameFrame
+﻿namespace GameFrame.Runtime
 {
     public class DirtyBlock
     {

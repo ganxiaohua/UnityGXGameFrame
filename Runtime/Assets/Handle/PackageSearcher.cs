@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using YooAsset;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public static class PackageSearcher
     {

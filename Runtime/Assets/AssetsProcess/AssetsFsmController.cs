@@ -1,6 +1,6 @@
 ﻿using YooAsset;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public class AssetsFsmController : FsmTaskController
     {

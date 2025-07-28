@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public abstract partial class FsmController : Entity, IInitializeSystem, IUpdateSystem
     {

@@ -3,7 +3,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine.SceneManagement;
 using YooAsset;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public class SceneBase : Entity, IInitializeSystem, IScene
     {

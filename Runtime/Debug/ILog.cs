@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public interface ICmd
     {

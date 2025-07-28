@@ -3,7 +3,7 @@ using System.Reflection;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public sealed class DefaultAssetReferenceContainer : MonoBehaviour
     {

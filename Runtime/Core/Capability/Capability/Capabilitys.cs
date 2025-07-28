@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using GameFrame;
+using GameFrame.Runtime;
 
-namespace GameFrame.Runtime.SH
+namespace GameFrame.Runtime.Runtime.SH
 {
     public partial class Capabilitys : IInitializeSystem<SHWorld, int>
     {

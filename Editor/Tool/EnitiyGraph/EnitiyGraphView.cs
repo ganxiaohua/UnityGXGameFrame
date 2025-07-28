@@ -3,7 +3,7 @@ using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace GameFrame.Editor
+namespace GameFrame.Runtime.Editor
 {
     public class EntityGraphView : EditorEntity
     {
@@ -108,7 +108,7 @@ namespace GameFrame.Editor
             {
                 if (entityNode.Entity.Parent is World)
                 {
-                    (((ECSEntity) entityNode.Entity).Parent as World).RemoveChild((ECSEntity) entityNode.Entity);
+                    (((EffEntity) entityNode.Entity).Parent as World).RemoveChild((EffEntity) entityNode.Entity);
                 }
                 else
                 {
@@ -163,7 +163,7 @@ namespace GameFrame.Editor
             graphNode.RefreshExpandedState();
             graphNode.RefreshPorts();
             nodeDic.Add(graphNode, root);
-            graphNode.SetColor(root.Entity is ECSEntity ? new Color(0.5f, 0.2f, 0.1f) : Color.gray);
+            graphNode.SetColor(root.Entity is EffEntity ? new Color(0.5f, 0.2f, 0.1f) : Color.gray);
         }
 
         private void CreateEntityNode(EntityNode parentNode)
@@ -202,7 +202,7 @@ namespace GameFrame.Editor
             var nodesPort = CreateGraphNode(childNode);
             if (parentNode.GraphNode != null)
                 generalGraphView.AddEdgeByPorts(parentNode.GraphNode.OutPort, nodesPort.inPort, PickingMode.Ignore);
-            nodesPort.node.SetColor(childNode.Entity is ECSEntity ? new Color(0.5f, 0.2f, 0.1f) : Color.gray);
+            nodesPort.node.SetColor(childNode.Entity is EffEntity ? new Color(0.5f, 0.2f, 0.1f) : Color.gray);
             nodeDic.Add(nodesPort.node, childNode);
             CreateEntityNode(childNode);
         }
@@ -245,7 +245,7 @@ namespace GameFrame.Editor
 
         public void ShowComponent(EntityNode selectEntityNode)
         {
-            if (selectEntityNode.Entity is ECSEntity ecs)
+            if (selectEntityNode.Entity is EffEntity ecs)
             {
                 ComponentView.Init(ecs);
             }

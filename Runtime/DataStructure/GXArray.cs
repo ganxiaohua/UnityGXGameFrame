@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public class GXArray<T> : IDisposable where T : class, IDisposable
     {

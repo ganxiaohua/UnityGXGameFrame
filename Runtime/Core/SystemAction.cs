@@ -2,7 +2,7 @@
 using UnityEngine.Profiling;
 #endif
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public static class SystemAction
     {

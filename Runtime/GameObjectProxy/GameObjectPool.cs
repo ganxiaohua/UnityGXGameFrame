@@ -4,7 +4,7 @@ using Common.Runtime;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public class GameObjectPool : Singleton<GameObjectPool>, IGameObjectPool, IDisposable
     {

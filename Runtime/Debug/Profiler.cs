@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityProfiler = UnityEngine.Profiling.Profiler;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public struct Profiler : IDisposable
     {

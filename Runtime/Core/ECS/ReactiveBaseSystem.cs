@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public abstract class ReactiveBaseSystem : IInitializeSystem<World>
     {
@@ -20,25 +21,32 @@ namespace GameFrame
             collector = this.GetTrigger(world);
         }
 
+        private List<EffEntity> effEntities = new(64);
+
         protected abstract Collector GetTrigger(World world);
 
-        protected abstract bool Filter(ECSEntity entity);
+        protected abstract bool Filter(EffEntity entity);
 
-        protected abstract void Execute(ECSEntity entities);
-        
+        protected abstract void Execute(EffEntity entities);
+
         protected void Do()
         {
             if (collector.CollectedEntities.Count == 0)
                 return;
-
-            foreach (ECSEntity ecsentity in collector.CollectedEntities)
+            foreach (EffEntity ecsentity in collector.CollectedEntities)
             {
-                if (ecsentity.State != IEntity.EntityState.IsClear && this.Filter(ecsentity))
+                if (ecsentity.State != IEntity.EntityState.IsClear && Filter(ecsentity))
                 {
-                    Execute(ecsentity);
+                    effEntities.Add(ecsentity);
                 }
             }
             collector.CollectedEntities.Clear();
+            int count = effEntities.Count;
+            for (int i = 0; i < count; i++)
+            {
+                Execute(effEntities[i]);
+            }
+            effEntities.Clear();
         }
 
         public abstract void Dispose();

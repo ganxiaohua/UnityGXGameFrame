@@ -1,4 +1,4 @@
-﻿namespace GameFrame
+﻿namespace GameFrame.Runtime
 {
     /// <summary>
     /// 在下一个节点的UI本窗口打开的

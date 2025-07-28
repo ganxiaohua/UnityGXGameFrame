@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     /// <summary>
     /// 引用池信息。

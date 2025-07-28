@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using Debug = UnityEngine.Debug;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public static class Debugger
     {

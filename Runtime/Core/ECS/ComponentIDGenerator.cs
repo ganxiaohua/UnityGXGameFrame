@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     internal static class ComponentsIdidGenerator
     {
         private static int next = 0;
 
-        public static int GetId<T>() where T : ECSComponent
+        public static int GetId<T>() where T : EffComponent
         {
             ComponentsID2Type.ComponentsTypes.Add(typeof(T));
             return next++;
         }
     }
-    public static class ComponentsID<T> where T : ECSComponent
+    public static class ComponentsID<T> where T : EffComponent
     {
         public static readonly int TID = ComponentsIdidGenerator.GetId<T>();
     }

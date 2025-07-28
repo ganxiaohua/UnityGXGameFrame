@@ -4,7 +4,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using YooAsset;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public struct YooAssetsHandle
     {

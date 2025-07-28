@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     /// <summary>
     /// 状态任务机和普通状态机的区别就是可以等待,执行任务使用

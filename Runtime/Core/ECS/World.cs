@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public partial class World : IEntity, IVersions, IInitializeSystem<int>, IUpdateSystem
     {
@@ -64,7 +64,7 @@ namespace GameFrame
             group = Group.CreateGroup(ChildsCount, matcher);
             foreach (var item in Children)
             {
-                group.HandleEntitySilently((ECSEntity) item);
+                group.HandleEntitySilently((EffEntity) item);
             }
 
             groups.Add(matcher, group);
@@ -77,7 +77,7 @@ namespace GameFrame
             return group;
         }
 
-        public void Reactive(int comid, ECSEntity entity)
+        public void Reactive(int comid, EffEntity entity)
         {
             var groupList = groupsList[comid];
             if (groupList != null)

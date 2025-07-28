@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using GameFrame;
+using GameFrame.Runtime;
 using Sirenix.OdinInspector;
 
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public class ObjectPoolManager : Singleton<ObjectPoolManager>
     {

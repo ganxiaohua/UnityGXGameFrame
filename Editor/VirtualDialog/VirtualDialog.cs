@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace GameFrame.Editor
+namespace GameFrame.Runtime.Editor
 {
     public abstract class VirtualDialog : ScriptableObject
     {

@@ -4,7 +4,7 @@ using System.Reflection;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 
-namespace GameFrame.Editor
+namespace GameFrame.Runtime.Editor
 {
     public class EntityView : OdinEditorWindow
     {

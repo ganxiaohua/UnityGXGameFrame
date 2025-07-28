@@ -1,7 +1,7 @@
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using System.Threading;
-using GameFrame;
+using GameFrame.Runtime;
 
 namespace Common.Runtime
 {

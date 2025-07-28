@@ -4,7 +4,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using YooAsset;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public sealed class DefaultAssetHandle : IAssetHandle
     {

@@ -1,23 +1,23 @@
  
-    public static ECSEntity Set{0}(this {5} ecsEntity,{1} param)
+    public static EffEntity Set{0}(this {5} effEntity,{1} param)
     {{
-        var p = ({2})ecsEntity.GetComponent(ComponentsID<{2}>.TID);
+        var p = ({2})effEntity.GetComponent(ComponentsID<{2}>.TID);
         p.{3} = param;
-        ((World)ecsEntity.Parent).Reactive(ComponentsID<{2}>.TID, ecsEntity);
+        ((World)effEntity.Parent).Reactive(ComponentsID<{2}>.TID, effEntity);
         {4}
-        return ecsEntity;
+        return effEntity;
     }}
     
-    public static ECSEntity AddOrSet{0}(this {5} ecsEntity,{1} param)
+    public static EffEntity AddOrSet{0}(this {5} effEntity,{1} param)
     {{
-        var p = ({2})ecsEntity.GetComponent(ComponentsID<{2}>.TID);
+        var p = ({2})effEntity.GetComponent(ComponentsID<{2}>.TID);
         if(p==null)
         {{
-           p = ({2})(ecsEntity.AddComponent<{2}>());
+           p = ({2})(effEntity.AddComponent<{2}>());
         }}
         p.{3} = param;
-        ((World)ecsEntity.Parent).Reactive(ComponentsID<{2}>.TID, ecsEntity);
+        ((World)effEntity.Parent).Reactive(ComponentsID<{2}>.TID, effEntity);
         {4}
-        return ecsEntity;
+        return effEntity;
     }} 
     

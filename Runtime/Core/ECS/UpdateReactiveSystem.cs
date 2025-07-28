@@ -1,4 +1,4 @@
-﻿namespace GameFrame
+﻿namespace GameFrame.Runtime
 {
     public abstract class UpdateReactiveSystem : ReactiveBaseSystem, IUpdateSystem
     {

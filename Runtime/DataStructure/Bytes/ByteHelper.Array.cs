@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public static partial class ByteHelper
     {

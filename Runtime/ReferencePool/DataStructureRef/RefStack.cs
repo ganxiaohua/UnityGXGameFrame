@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace GameFrame.DataStructureRef
+namespace GameFrame.Runtime.DataStructureRef
 {
     public class RefStack<T> : IDisposable
     {

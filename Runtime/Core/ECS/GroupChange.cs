@@ -1,6 +1,6 @@
-﻿namespace GameFrame
+﻿namespace GameFrame.Runtime
 {
     public delegate void GroupChanged(
         Group group,
-        ECSEntity component);
+        EffEntity component);
 }

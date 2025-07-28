@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using FairyGUI;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public class UINode : IDisposable
     {

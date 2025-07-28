@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using YooAsset;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public class PackageSetting
     {

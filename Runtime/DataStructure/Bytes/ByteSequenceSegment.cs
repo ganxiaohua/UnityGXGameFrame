@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Buffers;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public class ByteSequenceSegment : ReadOnlySequenceSegment<byte>,IDisposable
     {

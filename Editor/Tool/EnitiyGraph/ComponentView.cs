@@ -9,7 +9,7 @@ using UnityEngine;
 using OdinEditorWindow = Sirenix.OdinInspector.Editor.OdinEditorWindow;
 using PropertyTree = Sirenix.OdinInspector.Editor.PropertyTree;
 
-namespace GameFrame.Editor
+namespace GameFrame.Runtime.Editor
 {
     [Serializable]
     public struct ComponentInfo : ISearchFilterable
@@ -50,7 +50,7 @@ namespace GameFrame.Editor
 
         private Assembly assembly;
 
-        private ECSEntity ecsEntity;
+        private EffEntity effEntity;
 
         private bool isShowAllEcsComponents;
         private Dictionary<int, PropertyTree> ecsComponentsTree = new();
@@ -65,17 +65,17 @@ namespace GameFrame.Editor
             waitRemoveList.Clear();
         }
 
-        public static void Init(ECSEntity ecsEntity)
+        public static void Init(EffEntity effEntity)
         {
             sWindow ??= GetWindow<ComponentView>();
-            sWindow.titleContent.text = string.IsNullOrEmpty(ecsEntity.Name) ? "Entity" : ecsEntity.Name;
-            sWindow.ecsEntity = ecsEntity;
+            sWindow.titleContent.text = string.IsNullOrEmpty(effEntity.Name) ? "Entity" : effEntity.Name;
+            sWindow.effEntity = effEntity;
             sWindow.ecsComponentsTree.Clear();
             sWindow.isShowAllEcsComponents = false;
             if (ComponentsID2Type.Count == 0)
                 return;
             Action<Type> action = sWindow.AddComponent;
-            var baseType = typeof(ECSComponent);
+            var baseType = typeof(EffComponent);
             if (allEcsComponents.Count == 0)
             {
                 var derivedTypes = ComponentsID2Type.ComponentsTypes[0].Assembly.GetTypes().Where(type => type.IsSubclassOf(baseType)).ToList();
@@ -105,14 +105,14 @@ namespace GameFrame.Editor
         protected override void OnBeginDrawEditors()
         {
             base.OnBeginDrawEditors();
-            if (ecsEntity.State == IEntity.EntityState.IsClear)
+            if (effEntity.State == IEntity.EntityState.IsClear)
             {
                 Close();
                 return;
             }
 
 
-            var comIndexs = ecsEntity.EcsComponentArray.IndexList;
+            var comIndexs = effEntity.EcsComponentArray.IndexList;
             waitRemoveList.Clear();
             foreach (var key in ecsComponentsTree.Keys)
                 if (!comIndexs.Contains(key))
@@ -129,7 +129,7 @@ namespace GameFrame.Editor
                 var cid = comIndexs[i];
                 var comID = $"Com_{cid}";
                 var t = EditorPrefs.GetBool(comID, false);
-                var ecsComponent = ecsEntity.GetComponent(cid);
+                var ecsComponent = effEntity.GetComponent(cid);
                 var lineRect = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, GUILayout.Height(1));
                 EditorGUI.DrawRect(lineRect, new Color(1, 1, 1, 0.1f));
                 EditorGUILayout.BeginHorizontal();
@@ -164,7 +164,7 @@ namespace GameFrame.Editor
 
         private void RemoveComponent(int index)
         {
-            ecsEntity.RemoveComponent(index);
+            effEntity.RemoveComponent(index);
         }
 
         private void ChangeComponent(InspectorProperty property, int selectionIndex)
@@ -174,15 +174,15 @@ namespace GameFrame.Editor
             var fieldValue = fields[0].GetValue(property.Tree.WeakTargets[0]);
             var comType = ComponentsID2Type.ComponentsTypes[0].Assembly.GetType($"Auto{type.Name}");
             var methodInfo = comType.GetMethod($"Set{type.Name}", BindingFlags.Static | BindingFlags.Public);
-            methodInfo.Invoke(null, new[] {ecsEntity, fieldValue});
+            methodInfo.Invoke(null, new[] {effEntity, fieldValue});
         }
 
         private void AddComponent(Type type)
         {
             if (!isShowAllEcsComponents) return;
             var comType = ComponentsID2Type.ComponentsTypes[0].Assembly.GetType($"Auto{type.Name}");
-            var methodInfo = comType.GetMethod($"Add{type.Name}", BindingFlags.Static | BindingFlags.Public, null, new[] {typeof(ECSEntity)}, null);
-            methodInfo.Invoke(null, new object[] {ecsEntity});
+            var methodInfo = comType.GetMethod($"Add{type.Name}", BindingFlags.Static | BindingFlags.Public, null, new[] {typeof(EffEntity)}, null);
+            methodInfo.Invoke(null, new object[] {effEntity});
             isShowAllEcsComponents = false;
         }
     }

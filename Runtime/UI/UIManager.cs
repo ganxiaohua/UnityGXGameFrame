@@ -4,7 +4,7 @@ using Cysharp.Threading.Tasks;
 using FairyGUI;
 using Time = UnityEngine.Time;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public class UIManager : Singleton<UIManager>
     {

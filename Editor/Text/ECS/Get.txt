@@ -1,6 +1,6 @@
       
-    public static {1} Get{0}(this {2} ecsEntity)
+    public static {1} Get{0}(this {2} effEntity)
     {{
-        return ({1})ecsEntity.GetComponent(ComponentsID<{1}>.TID);
+        return ({1})effEntity.GetComponent(ComponentsID<{1}>.TID);
     }}
     

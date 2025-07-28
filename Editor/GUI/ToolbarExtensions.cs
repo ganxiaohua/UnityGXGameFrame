@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
-namespace GameFrame.Editor
+namespace GameFrame.Runtime.Editor
 {
     [InitializeOnLoad]
     public static class ToolbarExtensions

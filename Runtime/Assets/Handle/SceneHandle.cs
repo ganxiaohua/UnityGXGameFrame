@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using YooAsset;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public sealed class SceneHandle : IAssetHandle
     {

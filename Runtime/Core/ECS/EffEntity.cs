@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     [Serializable]
-    public partial class ECSComponent : IDisposable
+    public partial class EffComponent : IDisposable
     {
-        public ECSEntity Owner;
+        public EffEntity Owner;
 
         public virtual void Dispose()
         {
@@ -16,7 +16,7 @@ namespace GameFrame
     /// <summary>
     /// ECSEntity挂载的一定是Context
     /// </summary>
-    public class ECSEntity : IEntity, IVersions
+    public class EffEntity : IEntity, IVersions
     {
         public IEntity.EntityState State { get; private set; }
 
@@ -32,11 +32,11 @@ namespace GameFrame
 
         public bool IsAction => State == IEntity.EntityState.IsRunning;
 
-        public GXArray<ECSComponent> EcsComponentArray { get; private set; }
+        public GXArray<EffComponent> EcsComponentArray { get; private set; }
 
         public void OnDirty(IEntity parent, int id)
         {
-            EcsComponentArray = ReferencePool.Acquire<GXArray<ECSComponent>>();
+            EcsComponentArray = ReferencePool.Acquire<GXArray<EffComponent>>();
             EcsComponentArray.Init(world.MaxComponentCount);
             State = IEntity.EntityState.IsRunning;
             Parent = parent;
@@ -50,7 +50,7 @@ namespace GameFrame
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public T AddComponent<T>() where T : ECSComponent
+        public T AddComponent<T>() where T : EffComponent
         {
             var cid = ComponentsID<T>.TID;
             if (EcsComponentArray[cid] != null)
@@ -88,7 +88,7 @@ namespace GameFrame
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public ECSComponent GetComponent(int cid)
+        public EffComponent GetComponent(int cid)
         {
             var component = EcsComponentArray[cid];
             return component;

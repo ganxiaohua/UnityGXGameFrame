@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public static partial class ReferencePool
     {

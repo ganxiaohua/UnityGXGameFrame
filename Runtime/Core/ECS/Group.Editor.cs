@@ -1,5 +1,5 @@
 ﻿#if UNITY_EDITOR
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public partial class Group
     {

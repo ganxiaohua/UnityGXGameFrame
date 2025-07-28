@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public class DoubleKeyWithValue<T, K, V> : IEquatable<DoubleKeyWithValue<T, K, V>>
     {

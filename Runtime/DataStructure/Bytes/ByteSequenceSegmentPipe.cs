@@ -3,7 +3,7 @@ using System.Buffers;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public class ByteSequenceSegmentPipe : IDisposable
     {

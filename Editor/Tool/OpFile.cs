@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using UnityEngine;
 
-namespace GameFrame.Editor
+namespace GameFrame.Runtime.Editor
 {
     public static class OpFile
     {

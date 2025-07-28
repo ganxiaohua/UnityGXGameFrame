@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public abstract class Entity : IEntity, IVersions
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public sealed partial class AssetManager
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using FairyGUI;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public interface IView:IDisposable
     {
@@ -16,6 +16,6 @@ namespace GameFrame
     
     public interface IEceView:IDisposable,IUpdateSystem
     {
-        void Link(ECSEntity ecsEntity);
+        void Link(EffEntity effEntity);
     }
 }

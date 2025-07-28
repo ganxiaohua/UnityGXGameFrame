@@ -7,7 +7,7 @@ using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace GameFrame.Editor
+namespace GameFrame.Runtime.Editor
 {
     public class ConsoleCSharp : VirtualBaseDialog
     {

@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public class StrongList<T> : IEnumerator<T>, IEnumerable<T>
     {

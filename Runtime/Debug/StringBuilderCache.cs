@@ -4,7 +4,7 @@ using System;
 using System.Reflection;
 using System.Text;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public static class StringBuilderCache
     {

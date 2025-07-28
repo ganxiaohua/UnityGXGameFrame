@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace GameFrame.Runtime.SH
+namespace GameFrame.Runtime.Runtime.SH
 {
-    public partial class CapabiltyComponent : ECSComponent
+    public partial class CapabiltyComponent : EffComponent
     {
         private int[] tags;
 

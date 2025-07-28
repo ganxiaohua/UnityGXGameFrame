@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
-namespace GameFrame.Editor
+namespace GameFrame.Runtime.Editor
 {
     [InitializeOnLoad]
     public class RichSearchWindow : EditorWindow

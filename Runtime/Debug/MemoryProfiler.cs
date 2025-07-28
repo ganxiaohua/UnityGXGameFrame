@@ -3,7 +3,7 @@
 using Unity.Profiling;
 #endif
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public struct MemoryProfiler : IDisposable
     {

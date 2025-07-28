@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public class ObjectPoolHandle : IHandle, IDisposable
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace GameFrame.Editor
+namespace GameFrame.Runtime.Editor
 {
     public struct ColorScope : IDisposable
     {

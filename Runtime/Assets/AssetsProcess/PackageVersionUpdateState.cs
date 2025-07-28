@@ -2,7 +2,7 @@
 using UnityEngine;
 using YooAsset;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public class PackageVersionUpdateState :FsmState
     {

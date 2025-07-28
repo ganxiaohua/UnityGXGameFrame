@@ -4,7 +4,7 @@ using Common.Runtime;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     [Serializable]
     public sealed partial class DefaultAssetReference : IAssetReference

@@ -2,7 +2,7 @@
 using System;
 using System.Text;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public static partial class StringBuilderExtensionMethods
     {

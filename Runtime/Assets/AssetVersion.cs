@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public class AssetVersion
     {

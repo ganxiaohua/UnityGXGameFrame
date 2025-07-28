@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Object = UnityEngine.Object;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public class AsyncLoadAsset<T>  where T : Object
     {

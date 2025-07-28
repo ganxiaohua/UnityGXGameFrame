@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public class Assert
     {

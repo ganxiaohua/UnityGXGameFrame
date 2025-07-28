@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public class GameObjectPoolBaes : ObjectBase
     {

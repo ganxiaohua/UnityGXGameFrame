@@ -3,7 +3,7 @@
 using System.Diagnostics;
 #endif
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public struct TimeProfiler : IDisposable
     {

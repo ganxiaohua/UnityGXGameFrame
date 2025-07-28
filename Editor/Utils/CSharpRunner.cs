@@ -7,7 +7,7 @@ using Cysharp.Threading.Tasks;
 using Microsoft.CSharp;
 using UnityEngine;
 
-namespace GameFrame.Editor
+namespace GameFrame.Runtime.Editor
 {
     public static class CSharpRunner
     {

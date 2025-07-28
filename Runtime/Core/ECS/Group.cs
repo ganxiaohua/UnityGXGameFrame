@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public partial class Group : IDisposable
     {
@@ -10,7 +10,7 @@ namespace GameFrame
         public event GroupChanged GroupAdd;
         public event GroupChanged GroupRomve;
         public event GroupChanged GroupUpdate;
-        public GXHashSet<ECSEntity> EntitiesMap { get; private set; }
+        public GXHashSet<EffEntity> EntitiesMap { get; private set; }
 
         public static Group CreateGroup(int childsCount, Matcher matcher)
         {
@@ -25,7 +25,7 @@ namespace GameFrame
             ReferencePool.Release(group);
         }
 
-        private void AddOrUpdateComponent(ECSEntity entity, bool silently)
+        private void AddOrUpdateComponent(EffEntity entity, bool silently)
         {
             EntitiesMap.Add(entity);
             if (!silently)
@@ -33,26 +33,26 @@ namespace GameFrame
         }
 
 
-        private void RemoveComponent(ECSEntity entity, bool silently)
+        private void RemoveComponent(EffEntity entity, bool silently)
         {
             bool b = EntitiesMap.Remove(entity);
             if (!silently && b)
                 GroupRomve?.Invoke(this, entity);
         }
 
-        public int HandleEntitySilently(ECSEntity entity)
+        public int HandleEntitySilently(EffEntity entity)
         {
             return DoEntity(entity, true);
         }
 
 
-        public int HandleEntity(ECSEntity entity)
+        public int HandleEntity(EffEntity entity)
         {
             return DoEntity(entity, false);
         }
 
 
-        private int DoEntity(ECSEntity entity, bool silently)
+        private int DoEntity(EffEntity entity, bool silently)
         {
             bool match = this.matcher.Match(entity);
             if (match)
@@ -110,7 +110,7 @@ namespace GameFrame
         }
         
 
-        public IEnumerator<ECSEntity> GetEnumerator() => EntitiesMap.GetEnumerator();
+        public IEnumerator<EffEntity> GetEnumerator() => EntitiesMap.GetEnumerator();
         
     }
 }

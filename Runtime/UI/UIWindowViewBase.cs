@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using FairyGUI;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public class UIViewBase : IUIView
     {

@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using Sirenix.OdinInspector;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     [StructLayout(LayoutKind.Auto)]
     public struct TypeNamePair : IEquatable<TypeNamePair>

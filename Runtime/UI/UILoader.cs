@@ -5,7 +5,7 @@ using Cysharp.Threading.Tasks;
 using FairyGUI;
 using UnityEngine;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public class UILoader : Singleton<UILoader>
     {

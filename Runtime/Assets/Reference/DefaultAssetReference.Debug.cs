@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Sirenix.OdinInspector;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public sealed partial class DefaultAssetReference
     {

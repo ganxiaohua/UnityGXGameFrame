@@ -6,7 +6,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public sealed partial class AssetManager : Singleton<AssetManager>  , IDisposable
     {

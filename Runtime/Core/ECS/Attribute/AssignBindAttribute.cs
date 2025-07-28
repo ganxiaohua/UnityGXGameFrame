@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     /// <summary>
     /// 指定绑定的ecs实体类型

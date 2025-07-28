@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public class AwaiterTask<T> : INotifyCompletion,IDisposable where T : IHandle
     {

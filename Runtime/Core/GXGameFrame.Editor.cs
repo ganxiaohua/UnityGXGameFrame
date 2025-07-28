@@ -3,7 +3,7 @@ using Common.Runtime;
 using Cysharp.Threading.Tasks;
 using Sirenix.OdinInspector;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public partial class GXGameFrame
     {

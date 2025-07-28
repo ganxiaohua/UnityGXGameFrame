@@ -4,7 +4,7 @@ using Cysharp.Threading.Tasks;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public class ObjectPool<T> : IObjectPoolBase where T : ObjectBase
     {

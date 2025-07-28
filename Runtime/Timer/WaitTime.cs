@@ -2,7 +2,7 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
 
-namespace GameFrame.Runtime.Timer
+namespace GameFrame.Runtime.Runtime.Timer
 {
     public class WaitTime : IDisposable
     {

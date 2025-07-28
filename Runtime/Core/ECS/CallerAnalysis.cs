@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public static class CallerAnalysis
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEditor;
 
-namespace GameFrame.Editor
+namespace GameFrame.Runtime.Editor
 {
     public struct LabelWidthScope : IDisposable
     {

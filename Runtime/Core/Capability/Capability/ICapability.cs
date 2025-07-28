@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GameFrame.Runtime.SH
+namespace GameFrame.Runtime.Runtime.SH
 {
     public interface ICapability : IDisposable
     {

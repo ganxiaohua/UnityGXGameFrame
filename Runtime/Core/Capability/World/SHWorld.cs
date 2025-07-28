@@ -1,4 +1,4 @@
-﻿namespace GameFrame.Runtime.SH
+﻿namespace GameFrame.Runtime.Runtime.SH
 {
     
     public class SHWorld : World, IFixedUpdateSystem, IInitializeSystem<SHWorld.Input>
@@ -29,7 +29,7 @@
             maxCapabilityTagsCount = input.MaxCapabilityTagsCount;
         }
 
-        public override ECSEntity AddChild()
+        public override EffEntity AddChild()
         {
             var child = base.AddChild();
             var capabiltyComponet= child.AddComponent<CapabiltyComponent>();

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace GameFrame.Editor
+namespace GameFrame.Runtime.Editor
 {
     public class EntityNode
     {

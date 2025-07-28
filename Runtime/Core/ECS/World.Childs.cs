@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public partial class World
     {
         public int ChildsCount { get; private set; }
 
-        public GXArray<ECSEntity> Children { get; private set; }
+        public GXArray<EffEntity> Children { get; private set; }
 
         private Stack<int> heritageId = new();
 
         private void InitializeChilds()
         {
-            Children = new GXArray<ECSEntity>();
+            Children = new GXArray<EffEntity>();
         }
 
         public void EstimateChildsCount(int count)
@@ -22,17 +22,17 @@ namespace GameFrame
             Children.Init(count);
         }
 
-        public virtual T AddChild<T>() where T : ECSEntity
+        public virtual T AddChild<T>() where T : EffEntity
         {
             return (T)CreateChild(typeof(T));
         }
 
-        public virtual ECSEntity AddChild()
+        public virtual EffEntity AddChild()
         {
-            return CreateChild(typeof(ECSEntity));
+            return CreateChild(typeof(EffEntity));
         }
 
-        private ECSEntity CreateChild(Type type)
+        private EffEntity CreateChild(Type type)
         {
             int id = 0;
             if (!heritageId.TryPop(out id))
@@ -54,7 +54,7 @@ namespace GameFrame
             heritageId.Push(ecsEntity.ID);
         }
 
-        public ECSEntity GetChild(int id)
+        public EffEntity GetChild(int id)
         {
             return Children[id];
         }

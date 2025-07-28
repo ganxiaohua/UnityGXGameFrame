@@ -1,7 +1,7 @@
 ﻿using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public partial class GXGameFrame : SingletonMono<GXGameFrame>
     {

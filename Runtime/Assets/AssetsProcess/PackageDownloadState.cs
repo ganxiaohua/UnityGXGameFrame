@@ -1,7 +1,7 @@
 ﻿using Cysharp.Threading.Tasks;
 using YooAsset;
 
-namespace GameFrame
+namespace GameFrame.Runtime
 {
     public class PackageDownloadState : FsmState
     {
