@@ -27,7 +27,7 @@ namespace GameFrame.Runtime
 
         protected abstract bool Filter(EffEntity entity);
 
-        protected abstract void Execute(EffEntity entities);
+        protected abstract void Execute(List<EffEntity> entities);
 
         protected void Do()
         {
@@ -42,10 +42,7 @@ namespace GameFrame.Runtime
             }
             collector.CollectedEntities.Clear();
             int count = effEntities.Count;
-            for (int i = 0; i < count; i++)
-            {
-                Execute(effEntities[i]);
-            }
+            Execute(effEntities);
             effEntities.Clear();
         }
 
