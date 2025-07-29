@@ -5,38 +5,40 @@ namespace GameFrame.Runtime
 {
     public partial class Capabilitys
     {
-        public void Add<T>(int playerId, CapabilitysUpdateMode mode) where T : CapabilityBase
+        public void Add<T>(EffEntity player, CapabilitysUpdateMode mode) where T : CapabilityBase
         {
+            int id = CapabilityID<T, IUpdateSystem>.TID;
             if (mode == CapabilitysUpdateMode.Update)
             {
-                int id = CapabilityID<T, IUpdateSystem>.TID;
-                var array = capabilitiesUpdateList[id];
-                var cap = array.Add(playerId, typeof(T));
-                cap.Init(playerId, id);
+                SetArray<T>(capabilitiesUpdateList, player, id);
             }
             else if (mode == CapabilitysUpdateMode.FixedUpdate)
             {
-                int id = CapabilityID<T, IFixedUpdateSystem>.TID;
-                var array = capabilitiesFixUpdateList[id];
-                var cap = array.Add(playerId, typeof(T));
-                cap.Init(playerId, id);
+                SetArray<T>(capabilitiesFixUpdateList, player, id);
             }
         }
 
-        public void Remove<T>(int playerId) where T : CapabilityBase
+        private void SetArray<T>(GXArray<CapabilityBase>[]  arrays, EffEntity player, int id) where T : CapabilityBase
         {
-            int id = CapabilityID<T, IUpdateSystem>.TID;
-            Remove(playerId, id);
+            var array = arrays[id];
+            if (array == null)
+            {
+                array = new GXArray<CapabilityBase>();
+                array.Init(estimatedNumberPlayer);
+                arrays[id] = array;
+            }
+            var cap = array.Add(player.ID, typeof(T));
+            cap.Init(player, id);
         }
 
-        public void Remove(int playerId, int capabilitieId)
+        public void Remove(EffEntity player, int capabilitieId)
         {
             var array = capabilitiesUpdateList[capabilitieId];
-            bool succ = array.Remove(playerId);
+            bool succ = array.Remove(player.ID);
             if (succ)
                 return;
             array = capabilitiesFixUpdateList[capabilitieId];
-            array.Remove(playerId);
+            array.Remove(player.ID);
         }
     }
 }

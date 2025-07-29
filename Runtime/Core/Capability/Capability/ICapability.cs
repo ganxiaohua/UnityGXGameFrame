@@ -5,10 +5,10 @@ namespace GameFrame.Runtime
     public interface ICapability : IDisposable
     {
         int ID { get; }
-        int OwnerId { get; }
+        EffEntity Owner { get; }
         bool IsActive { get; }
         int TickGroupOrder { get; }
-        void Init(int ownerId, int id);
+        void Init(EffEntity owner, int id);
         bool ShouldActivate();
         bool ShouldDeactivate();
         void OnActivated();

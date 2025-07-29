@@ -5,9 +5,9 @@ namespace GameFrame.Runtime
 {
     public partial class World
     {
-        public int ChildsCount { get; private set; }
-
         public GXArray<EffEntity> Children { get; private set; }
+        
+        public int ChildsCount => Children.Count;
 
         private Stack<int> heritageId = new();
 
@@ -18,7 +18,6 @@ namespace GameFrame.Runtime
 
         public void EstimateChildsCount(int count)
         {
-            ChildsCount = count;
             Children.Init(count);
         }
 
@@ -67,7 +66,6 @@ namespace GameFrame.Runtime
         private void DisposeChilds()
         {
             ClearAllChild();
-            ChildsCount = 0;
             heritageId.Clear();
         }
     }

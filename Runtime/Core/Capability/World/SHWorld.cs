@@ -1,56 +1,53 @@
 ﻿namespace GameFrame.Runtime
 {
-    
-    public class SHWorld : World, IFixedUpdateSystem, IInitializeSystem<SHWorld.Input>
+    public abstract class SHWorld : World, IFixedUpdateSystem
     {
-        public struct Input
-        {
-            public int MaxComponentCount;
-            public int MaxCapabilityCount;
-            public int MaxCapabilityTagsCount;
-
-            public Input(int mcc, int mcac, int mctc)
-            {
-                MaxComponentCount = mcc;
-                MaxCapabilityCount = mcac;
-                MaxCapabilityTagsCount = mctc;
-            }
-        }
-        private int maxCapabilityTagsCount;
-
         private int maxCapabilityCount;
+
+        private int maxCapabilityTag;
         private Capabilitys capabilitys;
-        
-        public void OnInitialize(Input input)
+
+
+        public void InitCapabilitys(int maxCapabilityCount, int maxTag, int estimatePlayer)
         {
-            base.OnInitialize(input.MaxComponentCount);
+            maxCapabilityTag = maxTag;
             capabilitys = new Capabilitys();
-            capabilitys.OnInitialize(this,input.MaxCapabilityCount);
-            maxCapabilityTagsCount = input.MaxCapabilityTagsCount;
+            capabilitys.Init(this, maxCapabilityCount, estimatePlayer);
         }
 
         public override EffEntity AddChild()
         {
             var child = base.AddChild();
-            var capabiltyComponet= child.AddComponent<CapabiltyComponent>();
-            capabiltyComponet.Init(maxCapabilityTagsCount);
+            var capabiltyComponet = child.AddComponent<CapabiltyComponent>();
+            capabiltyComponet.Init(maxCapabilityTag);
             return child;
         }
 
-        public void BindCapability<T>(int playerId, CapabilitysUpdateMode mode) where T : CapabilityBase
+        public void BindCapabilityUpdate<T>(EffEntity effEntity) where T : CapabilityBase
         {
-            Assert.IsNotNull(Children[playerId], $"not have {playerId} ecsentity");
-            capabilitys.Add<T>(playerId, mode);
+            BindCapability<T>(effEntity, CapabilitysUpdateMode.Update);
         }
 
-        public void UnBindCapability<T>(int playerId) where T : CapabilityBase
+        public void BindCapabilityUFixedUpdate<T>(EffEntity effEntity) where T : CapabilityBase
         {
-            capabilitys.Remove<T>(playerId);
+            BindCapability<T>(effEntity, CapabilitysUpdateMode.FixedUpdate);
         }
 
-        public void UnBindCapability(int playerId, int capabilitieId)
+        private void BindCapability<T>(EffEntity effEntity, CapabilitysUpdateMode mode) where T : CapabilityBase
         {
-            capabilitys.Remove(playerId, capabilitieId);
+            Assert.IsNotNull(effEntity, $"not have {effEntity.Name} ecsentity");
+            capabilitys.Add<T>(effEntity, mode);
+        }
+
+        public void UnBindCapability<T>(EffEntity player) where T : CapabilityBase
+        {
+            int id = CapabilityID<T, IUpdateSystem>.TID;
+            UnBindCapability(player, id);
+        }
+
+        public void UnBindCapability(EffEntity player, int capabilitieId)
+        {
+            capabilitys.Remove(player, capabilitieId);
         }
 
         public override void OnUpdate(float elapseSeconds, float realElapseSeconds)
@@ -61,6 +58,12 @@
         public void OnFixedUpdate(float elapseSeconds, float realElapseSeconds)
         {
             capabilitys.OnFixedUpdate(elapseSeconds);
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            capabilitys.Dispose();
         }
     }
 }

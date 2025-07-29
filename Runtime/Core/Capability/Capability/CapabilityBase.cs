@@ -7,13 +7,13 @@ namespace GameFrame.Runtime
         protected List<int> tagList;
         public IReadOnlyList<int> Taglist => tagList;
         public int ID { get; private set; }
-        public int OwnerId { get; private set; }
+        public EffEntity Owner { get; private set; }
         public bool IsActive { get; private set; }
         public int TickGroupOrder { get; protected set; }
 
-        public virtual void Init(int ownerId,int id)
+        public virtual void Init(EffEntity owner, int id)
         {
-            OwnerId = ownerId;
+            Owner = owner;
             ID = id;
         }
 
@@ -32,6 +32,11 @@ namespace GameFrame.Runtime
 
         public abstract void TickActive(float delatTime);
 
-        public abstract void Dispose();
+        public virtual void Dispose()
+        {
+            IsActive = false;
+            tagList = null;
+            Owner = null;
+        }
     }
 }

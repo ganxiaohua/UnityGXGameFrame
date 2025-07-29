@@ -2,7 +2,7 @@
 
 namespace GameFrame.Runtime
 {
-    public partial class World : IEntity, IVersions, IInitializeSystem<int>, IUpdateSystem
+    public abstract partial class World : IEntity, IVersions, IInitializeSystem<int>, IUpdateSystem
     {
         public IEntity Parent { get; private set; }
 

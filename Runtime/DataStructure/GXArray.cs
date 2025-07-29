@@ -12,6 +12,9 @@ namespace GameFrame.Runtime
 
         public List<int> IndexList { get; private set; }
 
+        public int Count => IndexList.Count;
+
+        public bool isInit => IndexList != null;
         public T this[int index]
         {
             get
@@ -33,7 +36,6 @@ namespace GameFrame.Runtime
             }
 
             IndexList = new List<int>(arrayMaxCount);
-            IndexList.Clear();
         }
 
         public Q Add<Q>(int index) where Q : T
@@ -91,6 +93,7 @@ namespace GameFrame.Runtime
             }
 
             IndexList.Clear();
+            IndexList = null;
         }
 
         public GXEnumerator GetEnumerator() => new GXEnumerator(IndexList, items);

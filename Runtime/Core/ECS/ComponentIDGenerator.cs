@@ -20,7 +20,7 @@ namespace GameFrame.Runtime
 
     public static class ComponentsID2Type
     {
-        public static List<Type> ComponentsTypes = new List<Type>();
+        public static List<Type> ComponentsTypes = new List<Type>(128);
 
         public static int Count => ComponentsTypes.Count;
     }
