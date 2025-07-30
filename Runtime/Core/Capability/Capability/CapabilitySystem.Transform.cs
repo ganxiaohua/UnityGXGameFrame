@@ -28,7 +28,7 @@ namespace GameFrame.Runtime
                 arrays[id] = array;
             }
             var cap = array.Add(player.ID, typeof(T));
-            cap.Init(player, id);
+            cap.Init(shWorld,player, id);
         }
 
         public void Remove(EffEntity player, int capabilitieId)

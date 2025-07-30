@@ -7,11 +7,12 @@ namespace GameFrame.Runtime
         protected List<int> tagList;
         public IReadOnlyList<int> Taglist => tagList;
         public int ID { get; private set; }
+        public SHWorld World { get; private set; }
         public EffEntity Owner { get; private set; }
         public bool IsActive { get; private set; }
         public int TickGroupOrder { get; protected set; }
 
-        public virtual void Init(EffEntity owner, int id)
+        public virtual void Init(SHWorld world, EffEntity owner, int id)
         {
             Owner = owner;
             ID = id;
@@ -30,7 +31,7 @@ namespace GameFrame.Runtime
             IsActive = false;
         }
 
-        public abstract void TickActive(float delatTime,float realElapseSeconds);
+        public abstract void TickActive(float delatTime, float realElapseSeconds);
 
         public virtual void Dispose()
         {
