@@ -55,6 +55,7 @@ ECS特点:
    
 ECC特点：
    实体和组件的方式和ecs模式相同，但是将system拆开分给每个实体，让他们自己控制自己，而不是统一控制。
+   ```
             var palyer = AddChild();
             palyer.Name = "主角";
             palyer.AddViewType(typeof(Go2DView));
@@ -64,8 +65,9 @@ ECC特点：
             BindCapabilityUpdate<AtkStartCapability>(palyer);
             BindCapabilityUpdate<AtkingCapability>(palyer);
             BindCapabilityUpdate<SearchMonsterCapability>(palyer);
+```
   每个能力组件都包含如下配置，一眼懂
-  
+  ```
      public interface ICapability : IDisposable
     {
         int ID { get; }
@@ -80,6 +82,7 @@ ECC特点：
         void OnDeactivated();
         void TickActive(float delatTime,float realElapseSeconds);
     }
+```
   同样的所有的能力都是数组，操作极快，缺点就是浪费点内存。
 
  编辑器功能 看图识功能:
