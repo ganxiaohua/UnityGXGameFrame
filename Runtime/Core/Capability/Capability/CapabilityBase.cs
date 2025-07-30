@@ -4,8 +4,7 @@ namespace GameFrame.Runtime
 {
     public abstract class CapabilityBase : ICapability
     {
-        protected List<int> tagList;
-        public IReadOnlyList<int> Taglist => tagList;
+        public List<int> TagList { get; protected set; }
         public int ID { get; private set; }
         public SHWorld World { get; private set; }
         public EffEntity Owner { get; private set; }
@@ -36,8 +35,9 @@ namespace GameFrame.Runtime
         public virtual void Dispose()
         {
             IsActive = false;
-            tagList = null;
+            TagList = null;
             Owner = null;
+            World = null;
         }
     }
 }

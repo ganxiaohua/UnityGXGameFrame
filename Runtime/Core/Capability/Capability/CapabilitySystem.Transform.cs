@@ -7,13 +7,14 @@ namespace GameFrame.Runtime
     {
         public void Add<T>(EffEntity player, CapabilitysUpdateMode mode) where T : CapabilityBase
         {
-            int id = CapabilityID<T, IUpdateSystem>.TID;
             if (mode == CapabilitysUpdateMode.Update)
             {
+                int id = CapabilityID<T, IUpdateSystem>.TID;
                 SetArray<T>(capabilitiesUpdateList, player, id);
             }
             else if (mode == CapabilitysUpdateMode.FixedUpdate)
             {
+                int id = CapabilityID<T,IFixedUpdateSystem >.TID;
                 SetArray<T>(capabilitiesFixUpdateList, player, id);
             }
         }

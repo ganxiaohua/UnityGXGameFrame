@@ -29,7 +29,7 @@ namespace GameFrame.Runtime
             tags[index]--;
         }
 
-        public bool IsBlock(IReadOnlyList<int> indexs)
+        public bool IsBlock(List<int> indexs)
         {
             foreach (var index in indexs)
             {

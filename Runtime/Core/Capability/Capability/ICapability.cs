@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace GameFrame.Runtime
 {
@@ -7,6 +8,7 @@ namespace GameFrame.Runtime
         int ID { get; }
         SHWorld World { get; }
         EffEntity Owner { get; }
+        List<int> TagList{ get; }
         bool IsActive { get; }
         int TickGroupOrder { get; }
         void Init(SHWorld world,EffEntity owner, int id);

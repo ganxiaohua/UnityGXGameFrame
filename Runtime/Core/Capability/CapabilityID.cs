@@ -12,7 +12,6 @@ namespace GameFrame.Runtime
             return next++;
         }
     }
-
     public static class CapabilityID<T,TUpdateMode> 
     {
         public static readonly int TID = CapabilityIDGenerator<TUpdateMode>.GetId<T>();

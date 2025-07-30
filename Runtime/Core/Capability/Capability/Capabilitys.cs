@@ -52,11 +52,10 @@ namespace GameFrame.Runtime
             {
                 var owner = capability.Owner;
                 var capailty = (CapabiltyComponent) owner.GetComponent(ComponentsID<CapabiltyComponent>.TID);
-                if (capability.Taglist != null && capailty.IsBlock(capability.Taglist))
+                if (capability.TagList != null && capailty.IsBlock(capability.TagList))
                 {
                     continue;
                 }
-
                 if (!capability.IsActive)
                 {
                     bool succ = capability.ShouldActivate();
