@@ -113,7 +113,7 @@ namespace GameFrame.Editor
             }
 
 
-            var comIndexs = effEntity.EcsComponentArray.IndexList;
+            var comIndexs = effEntity.ecsComponentArrayEx.IndexList;
             waitRemoveList.Clear();
             foreach (var key in ecsComponentsTree.Keys)
                 if (!comIndexs.Contains(key))

@@ -32,12 +32,12 @@ namespace GameFrame.Runtime
 
         public bool IsAction => State == IEntity.EntityState.IsRunning;
 
-        public GXArray<EffComponent> EcsComponentArray { get; private set; }
+        public JumpIndexArrayEx<EffComponent> ecsComponentArrayEx { get; private set; }
 
         public void OnDirty(IEntity parent, int id)
         {
-            EcsComponentArray = ReferencePool.Acquire<GXArray<EffComponent>>();
-            EcsComponentArray.Init(world.MaxComponentCount);
+            ecsComponentArrayEx = ReferencePool.Acquire<JumpIndexArrayEx<EffComponent>>();
+            ecsComponentArrayEx.Init(world.MaxComponentCount);
             State = IEntity.EntityState.IsRunning;
             Parent = parent;
             ID = id;
@@ -53,12 +53,12 @@ namespace GameFrame.Runtime
         public T AddComponent<T>() where T : EffComponent
         {
             var cid = ComponentsID<T>.TID;
-            if (EcsComponentArray[cid] != null)
+            if (ecsComponentArrayEx[cid] != null)
             {
                 var type = typeof(T);
                 throw new Exception($"entity already has component: {type.FullName}");
             }
-            T entity = EcsComponentArray.Add<T>(cid);
+            T entity = ecsComponentArrayEx.Add<T>(cid);
             entity.Owner = this;
             world.Reactive(cid, this);
             return entity;
@@ -72,14 +72,14 @@ namespace GameFrame.Runtime
         /// <exception cref="Exception"></exception>
         public void RemoveComponent(int cid)
         {
-            var component = EcsComponentArray[cid];
+            var component = ecsComponentArrayEx[cid];
             if (component == null)
             {
                 return;
             }
 
             component.Owner = null;
-            EcsComponentArray.Remove(cid);
+            ecsComponentArrayEx.Remove(cid);
             world.Reactive(cid, this);
         }
 
@@ -90,7 +90,7 @@ namespace GameFrame.Runtime
         /// <returns></returns>
         public EffComponent GetComponent(int cid)
         {
-            var component = EcsComponentArray[cid];
+            var component = ecsComponentArrayEx[cid];
             return component;
         }
 
@@ -103,7 +103,7 @@ namespace GameFrame.Runtime
         {
             for (int index = 0; index < cids.Length; ++index)
             {
-                if (EcsComponentArray[cids[index]] == null)
+                if (ecsComponentArrayEx[cids[index]] == null)
                 {
                     return false;
                 }
@@ -119,7 +119,7 @@ namespace GameFrame.Runtime
 
         public bool HasComponent(int cid)
         {
-            return EcsComponentArray[cid] != null;
+            return ecsComponentArrayEx[cid] != null;
         }
 
         /// <summary>
@@ -131,7 +131,7 @@ namespace GameFrame.Runtime
         {
             for (int index = 0; index < cids.Length; ++index)
             {
-                if (EcsComponentArray[cids[index]] != null)
+                if (ecsComponentArrayEx[cids[index]] != null)
                 {
                     return true;
                 }
@@ -146,13 +146,13 @@ namespace GameFrame.Runtime
         /// </summary>
         private void ClearAllComponent()
         {
-            var list = EcsComponentArray.IndexList;
+            var list = ecsComponentArrayEx.IndexList;
             for (int i = list.Count - 1; i >= 0; i--)
             {
                 RemoveComponent(list[i]);
             }
 
-            ReferencePool.Release(EcsComponentArray);
+            ReferencePool.Release(ecsComponentArrayEx);
         }
 
         public void Dispose()

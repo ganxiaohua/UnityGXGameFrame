@@ -5,7 +5,7 @@ namespace GameFrame.Runtime
 {
     public partial class World
     {
-        public GXArray<EffEntity> Children { get; private set; }
+        public JumpIndexArrayEx<EffEntity> Children { get; private set; }
         
         public int ChildsCount => Children.Count;
 
@@ -13,7 +13,7 @@ namespace GameFrame.Runtime
 
         private void InitializeChilds()
         {
-            Children = new GXArray<EffEntity>();
+            Children = new JumpIndexArrayEx<EffEntity>();
         }
 
         public void EstimateChildsCount(int count)
@@ -45,7 +45,7 @@ namespace GameFrame.Runtime
             return entity;
         }
 
-        public void RemoveChild(IEntity ecsEntity)
+        public virtual void RemoveChild(EffEntity ecsEntity)
         {
             bool b = Children.Remove(ecsEntity.ID);
             if (!b)

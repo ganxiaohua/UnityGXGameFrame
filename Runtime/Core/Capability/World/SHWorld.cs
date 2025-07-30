@@ -23,20 +23,16 @@
             return child;
         }
 
-        public void BindCapabilityUpdate<T>(EffEntity effEntity) where T : CapabilityBase
+        public override void RemoveChild(EffEntity ecsEntity)
         {
-            BindCapability<T>(effEntity, CapabilitysUpdateMode.Update);
+            capabilitys.RemoveEffEntitysAllCapability(ecsEntity);
+            base.RemoveChild(ecsEntity);
         }
 
-        public void BindCapabilityUFixedUpdate<T>(EffEntity effEntity) where T : CapabilityBase
-        {
-            BindCapability<T>(effEntity, CapabilitysUpdateMode.FixedUpdate);
-        }
-
-        private void BindCapability<T>(EffEntity effEntity, CapabilitysUpdateMode mode) where T : CapabilityBase
+        public void BindCapability<T>(EffEntity effEntity) where T : CapabilityBase
         {
             Assert.IsNotNull(effEntity, $"not have {effEntity.Name} ecsentity");
-            capabilitys.Add<T>(effEntity, mode);
+            capabilitys.Add<T>(effEntity);
         }
 
         public void UnBindCapability<T>(EffEntity player) where T : CapabilityBase
@@ -53,12 +49,12 @@
         public override void OnUpdate(float elapseSeconds, float realElapseSeconds)
         {
             base.OnUpdate(elapseSeconds, realElapseSeconds);
-            capabilitys.OnUpdate(DeltaTime,realElapseSeconds);
+            capabilitys.OnUpdate(DeltaTime, realElapseSeconds);
         }
 
         public void OnFixedUpdate(float elapseSeconds, float realElapseSeconds)
         {
-            capabilitys.OnFixedUpdate(elapseSeconds * Multiple,realElapseSeconds);
+            capabilitys.OnFixedUpdate(elapseSeconds * Multiple, realElapseSeconds);
         }
 
         public override void Dispose()

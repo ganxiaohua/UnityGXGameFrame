@@ -3,100 +3,83 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-
 namespace GameFrame.Runtime
 {
-    public class GXArray<T> : IDisposable where T : class, IDisposable
+    public class JumpIndexArray<T> : IDisposable
     {
-        private T[] items;
+        protected T[] Items;
 
         public List<int> IndexList { get; private set; }
 
         public int Count => IndexList.Count;
 
         public bool isInit => IndexList != null;
+
         public T this[int index]
         {
             get
             {
-                if (index >= items.Length || index < 0)
+                if (index >= Items.Length || index < 0)
                 {
                     throw new Exception($"ThrowArgumentOutOfRange {index}");
                 }
 
-                return items[index];
+                return Items[index];
             }
         }
 
         public void Init(int arrayMaxCount)
         {
-            if (items == null || items.Length != arrayMaxCount)
+            if (Items == null || Items.Length != arrayMaxCount)
             {
-                items = new T[arrayMaxCount];
+                Items = new T[arrayMaxCount];
             }
 
             IndexList = new List<int>(arrayMaxCount);
         }
-
-        public Q Add<Q>(int index) where Q : T
+        
+        public T Add(int index, T t)
         {
-            return (Q)Add(index, typeof(Q));
-        }
-
-        public T Add(int index, Type type)
-        {
-            if (index >= items.Length)
+            if (index >= Items.Length)
             {
-                var newArray = new T[items.Length * (index / items.Length + 1)];
-                Array.Copy(items, 0, newArray, 0, items.Length);
-                items = newArray;
-                Debugger.LogWarning($"{type.Name} GXArray Expansion!!!");
+                var newArray = new T[Items.Length * (index / Items.Length + 1)];
+                Array.Copy(Items, 0, newArray, 0, Items.Length);
+                Items = newArray;
+                Debugger.LogWarning($"{typeof(T).Name} GXArray Expansion!!!");
             }
 
-            if (items[index] != null)
+            if (Items[index] != null)
             {
-                return items[index];
+                Debugger.LogWarning($"add {index} error!! type {typeof(T).Name}");
+                return Items[index];
             }
-
-            var t = (T) ReferencePool.Acquire(type);
             IndexList.Add(index);
-            items[index] = t;
+            Items[index] = t;
             return t;
         }
 
-        public bool Remove(int index)
+        public T Remove(int index)
         {
-            if (items[index] == null)
-            {
-                return false;
-            }
-
-            ReferencePool.Release(items[index]);
-            items[index] = null;
             IndexList.RemoveSwapBack(index);
-            return true;
+            var t = Items[index];
+            Items[index] = default;
+            return t;
         }
 
         public bool Contains(int index)
         {
-            if (index >= items.Length || index < 0)
+            if (index >= Items.Length || index < 0)
                 return false;
-            return items[index] != null;
+            return Items[index] != null;
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
-            foreach (var index in IndexList)
-            {
-                ReferencePool.Release(items[index]);
-                items[index] = default(T);
-            }
-
             IndexList.Clear();
             IndexList = null;
         }
 
-        public GXEnumerator GetEnumerator() => new GXEnumerator(IndexList, items);
+        public GXEnumerator GetEnumerator() => new GXEnumerator(IndexList, Items);
 
         [StructLayout(LayoutKind.Auto)]
         public struct GXEnumerator : IEnumerator<T>

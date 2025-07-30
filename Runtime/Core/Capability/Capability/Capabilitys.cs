@@ -5,9 +5,9 @@ namespace GameFrame.Runtime
 {
     public partial class Capabilitys
     {
-        private GXArray<CapabilityBase>[] capabilitiesUpdateList;
+        private JumpIndexArray<CapabilityBase>[] capabilitiesUpdateList;
 
-        private GXArray<CapabilityBase>[] capabilitiesFixUpdateList;
+        private JumpIndexArray<CapabilityBase>[] capabilitiesFixUpdateList;
 
         private int estimatedNumberPlayer;
 
@@ -17,8 +17,8 @@ namespace GameFrame.Runtime
         {
             this.shWorld = shWorld;
             this.estimatedNumberPlayer = estimatedNumberPlayer;
-            capabilitiesUpdateList = new GXArray<CapabilityBase>[capabilityCount];
-            capabilitiesFixUpdateList = new GXArray<CapabilityBase>[capabilityCount];
+            capabilitiesUpdateList = new JumpIndexArray<CapabilityBase>[capabilityCount];
+            capabilitiesFixUpdateList = new JumpIndexArray<CapabilityBase>[capabilityCount];
         }
 
         public void OnUpdate(float delatTime, float realElapseSeconds)
@@ -31,7 +31,7 @@ namespace GameFrame.Runtime
             ConvenientCapabilitys(capabilitiesFixUpdateList, delatTime, realElapseSeconds);
         }
 
-        private void ConvenientCapabilitys(GXArray<CapabilityBase>[] arrays, float delatTime, float realElapseSeconds)
+        private void ConvenientCapabilitys(JumpIndexArray<CapabilityBase>[] arrays, float delatTime, float realElapseSeconds)
         {
             int count = arrays.Length;
             for (int i = 0; i < count; i++)
@@ -46,9 +46,9 @@ namespace GameFrame.Runtime
             }
         }
 
-        private void UpdateCapability(GXArray<CapabilityBase> capabilityBaseArray, float delatTime, float realElapseSeconds)
+        private void UpdateCapability(JumpIndexArray<CapabilityBase> capabilityBaseArrayEx, float delatTime, float realElapseSeconds)
         {
-            foreach (var capability in capabilityBaseArray)
+            foreach (var capability in capabilityBaseArrayEx)
             {
                 var owner = capability.Owner;
                 var capailty = (CapabiltyComponent) owner.GetComponent(ComponentsID<CapabiltyComponent>.TID);
@@ -86,7 +86,7 @@ namespace GameFrame.Runtime
             capabilitiesFixUpdateList = null;
         }
 
-        private void ClearCapabilities(GXArray<CapabilityBase>[] arrays)
+        private void ClearCapabilities(JumpIndexArray<CapabilityBase>[] arrays)
         {
             foreach (var array in arrays)
             {
@@ -94,8 +94,7 @@ namespace GameFrame.Runtime
                     continue;
                 foreach (var item in array)
                 {
-                    if (item.IsActive)
-                        item.OnDeactivated();
+                    ReferencePool.Release(item);
                 }
                 array.Dispose();
             }
