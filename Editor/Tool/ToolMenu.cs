@@ -19,7 +19,7 @@ namespace GameFrame.Editor
         }
 
 
-        [MenuItem("GX框架工具/生成ECS绑定脚本", false, 2)]
+        [MenuItem("GX框架工具/生成绑定脚本", false, 2)]
         public static void AutoCreateScript()
         {
             AutoCreate.AutoCreateScript();

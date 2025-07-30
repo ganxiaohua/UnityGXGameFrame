@@ -1,15 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace GameFrame.Runtime
 {
-    public abstract class CapabilityBase : ICapability
+    public abstract class CapabilityBase : IDisposable
     {
         public List<int> TagList { get; protected set; }
         public int ID { get; private set; }
         public SHWorld World { get; private set; }
         public EffEntity Owner { get; private set; }
         public bool IsActive { get; private set; }
-        public int TickGroupOrder { get; protected set; }
+        public virtual int TickGroupOrder { get; protected set; }
 
         public virtual void Init(SHWorld world, EffEntity owner, int id)
         {
