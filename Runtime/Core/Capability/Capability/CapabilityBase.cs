@@ -30,7 +30,7 @@ namespace GameFrame.Runtime
             IsActive = false;
         }
 
-        public abstract void TickActive(float delatTime);
+        public abstract void TickActive(float delatTime,float realElapseSeconds);
 
         public virtual void Dispose()
         {

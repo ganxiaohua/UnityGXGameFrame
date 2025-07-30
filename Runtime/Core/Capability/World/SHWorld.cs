@@ -52,18 +52,19 @@
 
         public override void OnUpdate(float elapseSeconds, float realElapseSeconds)
         {
-            capabilitys.OnUpdate(elapseSeconds);
+            base.OnUpdate(elapseSeconds, realElapseSeconds);
+            capabilitys.OnUpdate(DeltaTime,realElapseSeconds);
         }
 
         public void OnFixedUpdate(float elapseSeconds, float realElapseSeconds)
         {
-            capabilitys.OnFixedUpdate(elapseSeconds);
+            capabilitys.OnFixedUpdate(elapseSeconds * Multiple,realElapseSeconds);
         }
 
         public override void Dispose()
         {
-            base.Dispose();
             capabilitys.Dispose();
+            base.Dispose();
         }
     }
 }

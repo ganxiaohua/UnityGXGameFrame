@@ -10,7 +10,7 @@ namespace GameFrame.Runtime
 
         private bool CanBlock(int index, CapabilityBase Instigators)
         {
-            if (instigatorsDic.TryGetValue(Instigators, out var list))
+            if (!instigatorsDic.TryGetValue(Instigators, out var list))
             {
                 list ??= new List<int>();
                 instigatorsDic.Add(Instigators, list);
@@ -27,7 +27,7 @@ namespace GameFrame.Runtime
 
         private bool CanUnBlock(int index, CapabilityBase Instigators)
         {
-            if (instigatorsDic.TryGetValue(Instigators, out var list))
+            if (!instigatorsDic.TryGetValue(Instigators, out var list))
             {
                 Debugger.LogError($"{Instigators.GetType().Name}  not block {index}");
                 return false;

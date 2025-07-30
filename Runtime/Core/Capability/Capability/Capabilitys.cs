@@ -21,17 +21,17 @@ namespace GameFrame.Runtime
             capabilitiesFixUpdateList = new GXArray<CapabilityBase>[capabilityCount];
         }
 
-        public void OnUpdate(float delatTime)
+        public void OnUpdate(float delatTime, float realElapseSeconds)
         {
-            ConvenientCapabilitys(capabilitiesUpdateList, delatTime);
+            ConvenientCapabilitys(capabilitiesUpdateList, delatTime, realElapseSeconds);
         }
 
-        public void OnFixedUpdate(float delatTime)
+        public void OnFixedUpdate(float delatTime, float realElapseSeconds)
         {
-            ConvenientCapabilitys(capabilitiesFixUpdateList, delatTime);
+            ConvenientCapabilitys(capabilitiesFixUpdateList, delatTime, realElapseSeconds);
         }
 
-        private void ConvenientCapabilitys(GXArray<CapabilityBase>[] arrays, float delatTime)
+        private void ConvenientCapabilitys(GXArray<CapabilityBase>[] arrays, float delatTime, float realElapseSeconds)
         {
             int count = arrays.Length;
             for (int i = 0; i < count; i++)
@@ -42,11 +42,11 @@ namespace GameFrame.Runtime
 #if UNITY_EDITOR
                 using (new Profiler(CapabilityID2Type.CapabilitysTyps[i].Name))
 #endif
-                    UpdateCapability(capabilityArray, delatTime);
+                    UpdateCapability(capabilityArray, delatTime, realElapseSeconds);
             }
         }
 
-        private void UpdateCapability(GXArray<CapabilityBase> capabilityBaseArray, float delatTime)
+        private void UpdateCapability(GXArray<CapabilityBase> capabilityBaseArray, float delatTime, float realElapseSeconds)
         {
             foreach (var capability in capabilityBaseArray)
             {
@@ -75,7 +75,7 @@ namespace GameFrame.Runtime
                 }
 
                 if (capability.IsActive)
-                    capability.TickActive(delatTime);
+                    capability.TickActive(delatTime, realElapseSeconds);
             }
         }
 
@@ -95,9 +95,9 @@ namespace GameFrame.Runtime
                     continue;
                 foreach (var item in array)
                 {
-                    item.OnDeactivated();
+                    if (item.IsActive)
+                        item.OnDeactivated();
                 }
-
                 array.Dispose();
             }
         }

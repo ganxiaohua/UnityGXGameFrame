@@ -13,6 +13,6 @@ namespace GameFrame.Runtime
         bool ShouldDeactivate();
         void OnActivated();
         void OnDeactivated();
-        void TickActive(float delatTime);
+        void TickActive(float delatTime,float realElapseSeconds);
     }
 }
