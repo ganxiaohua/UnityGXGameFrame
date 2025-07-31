@@ -49,7 +49,7 @@ namespace GameFrame.Editor
         [ShowInInspector] [ShowIf("isShowAllEcsComponents")] [Searchable]
         private static List<ComponentInfo> allEcsComponents = new();
 
-        private Assembly assembly;
+        private Assembly gamePlayAssembly;
 
         private EffEntity effEntity;
 
@@ -79,7 +79,7 @@ namespace GameFrame.Editor
             var baseType = typeof(EffComponent);
             if (allEcsComponents.Count == 0)
             {
-                var derivedTypes = ComponentsID2Type.ComponentsTypes[0].Assembly.GetTypes().Where(type => type.IsSubclassOf(baseType)).ToList();
+                var derivedTypes = sWindow.GetAssembly().GetTypes().Where(type => type.IsSubclassOf(baseType)).ToList();
                 foreach (var item in derivedTypes)
                 {
                     var componet = new ComponentInfo();
@@ -173,7 +173,8 @@ namespace GameFrame.Editor
             var type = property.Tree.TargetType;
             var fields = property.Tree.WeakTargets[0].GetType().GetFields();
             var fieldValue = fields[0].GetValue(property.Tree.WeakTargets[0]);
-            var comType = typeof(AllComponents).Assembly.GetType($"Auto{type.Name}");
+
+            var comType = GetAssembly().GetType($"Auto{type.Name}");
             var methodInfo = comType.GetMethod($"Set{type.Name}", BindingFlags.Static | BindingFlags.Public);
             methodInfo.Invoke(null, new[] {effEntity, fieldValue});
         }
@@ -181,10 +182,27 @@ namespace GameFrame.Editor
         private void AddComponent(Type type)
         {
             if (!isShowAllEcsComponents) return;
-            var comType = typeof(AllComponents).Assembly.GetType($"Auto{type.Name}");
+            var comType = GetAssembly().GetType($"Auto{type.Name}");
             var methodInfo = comType.GetMethod($"Add{type.Name}", BindingFlags.Static | BindingFlags.Public, null, new[] {typeof(EffEntity)}, null);
             methodInfo.Invoke(null, new object[] {effEntity});
             isShowAllEcsComponents = false;
+        }
+
+        private Assembly GetAssembly()
+        {
+            if (gamePlayAssembly != null)
+                return gamePlayAssembly;
+            var assemblys = AppDomain.CurrentDomain.GetAssemblies();
+            foreach (var assembly in assemblys)
+            {
+                if (assembly.GetType("AllComponents") != null)
+                {
+                    gamePlayAssembly = assembly;
+                    return gamePlayAssembly;
+                }
+            }
+
+            throw new Exception("Please generate a component");
         }
     }
 }
