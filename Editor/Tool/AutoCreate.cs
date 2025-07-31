@@ -17,7 +17,7 @@ namespace GameFrame.Editor
         Set,
         EventClass,
         ComponentsMain,
-        Capabiltys
+        Capability
     }
 
     public partial class AutoCreate
@@ -82,7 +82,7 @@ namespace GameFrame.Editor
             s_TextDictionary.Add(CreateAuto.Get, strget);
             s_TextDictionary.Add(CreateAuto.Set, strset);
             s_TextDictionary.Add(CreateAuto.ComponentsMain, strAllComponents);
-            s_TextDictionary.Add(CreateAuto.Capabiltys, strAllCapabiltys);
+            s_TextDictionary.Add(CreateAuto.Capability, strAllCapabiltys);
         }
 
         private static int FindAllECSCom(Assembly assembly)

@@ -173,7 +173,7 @@ namespace GameFrame.Editor
             var type = property.Tree.TargetType;
             var fields = property.Tree.WeakTargets[0].GetType().GetFields();
             var fieldValue = fields[0].GetValue(property.Tree.WeakTargets[0]);
-            var comType = ComponentsID2Type.ComponentsTypes[0].Assembly.GetType($"Auto{type.Name}");
+            var comType = typeof(AllComponents).Assembly.GetType($"Auto{type.Name}");
             var methodInfo = comType.GetMethod($"Set{type.Name}", BindingFlags.Static | BindingFlags.Public);
             methodInfo.Invoke(null, new[] {effEntity, fieldValue});
         }
@@ -181,7 +181,7 @@ namespace GameFrame.Editor
         private void AddComponent(Type type)
         {
             if (!isShowAllEcsComponents) return;
-            var comType = ComponentsID2Type.ComponentsTypes[0].Assembly.GetType($"Auto{type.Name}");
+            var comType = typeof(AllComponents).Assembly.GetType($"Auto{type.Name}");
             var methodInfo = comType.GetMethod($"Add{type.Name}", BindingFlags.Static | BindingFlags.Public, null, new[] {typeof(EffEntity)}, null);
             methodInfo.Invoke(null, new object[] {effEntity});
             isShowAllEcsComponents = false;

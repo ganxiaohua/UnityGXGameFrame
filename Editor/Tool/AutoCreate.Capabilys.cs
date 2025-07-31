@@ -52,8 +52,8 @@ namespace GameFrame.Editor
                 index++;
             }
 
-            var str = string.Format(s_TextDictionary[CreateAuto.Capabiltys], tempStr, number);
-            File.WriteAllText($"{EditorString.ECSOutPutPath}Capabiltys.cs", str);
+            var str = string.Format(s_TextDictionary[CreateAuto.Capability], tempStr, number);
+            File.WriteAllText($"{EditorString.ECSOutPutPath}AllCapabilitys.cs", str);
             tempStr.Clear();
         }
     }
