@@ -12,17 +12,23 @@ namespace GameFrame.Editor
             DialogueGraphWindow.OpenDialogueGraphWindow();
         }
 
-        [MenuItem("GX框架工具/打开图片处理工具")]
-        public static void OpenPictureDispose()
+        // [MenuItem("GX框架工具/打开图片处理工具")]
+        // public static void OpenPictureDispose()
+        // {
+        //     TextureEditor.TextureEditorWindow.OpenWindow();
+        // }
+
+
+        [MenuItem("GX框架工具/脚本生成/生成所有绑定脚本", false, 2)]
+        public static void AutoCreateAllScript()
         {
-            TextureEditor.TextureEditorWindow.OpenWindow();
+            AutoCreate.AutoAllScript();
         }
-
-
-        [MenuItem("GX框架工具/生成绑定脚本", false, 2)]
-        public static void AutoCreateScript()
+        
+        [MenuItem("GX框架工具/脚本生成/生成Capabilitys", false, 2)]
+        public static void AutoCreateCapabilitysScript()
         {
-            AutoCreate.AutoCreateScript();
+            AutoCreate.AutoCapabilityScript();
         }
 
         [MenuItem("GX框架工具/事件绑定", false, 3)]

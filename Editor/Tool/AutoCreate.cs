@@ -20,13 +20,13 @@ namespace GameFrame.Editor
         Capabiltys
     }
 
-    public class AutoCreate
+    public partial class AutoCreate
     {
         private static Dictionary<CreateAuto, string> s_TextDictionary;
-        private static Dictionary<Type, string> s_EventDictionary;
-        private static StringBuilder s_EventSb = new StringBuilder(1024);
+        private static Dictionary<Type, string> s_ViewBindDictionary;
+        private static StringBuilder tempStr = new StringBuilder(1024);
 
-        public static void AutoCreateScript()
+        public static void AutoAllScript()
         {
             OpFile.DeleteFilesInDirectory(EditorString.ECSOutPutPath);
             LoadText();
@@ -41,7 +41,6 @@ namespace GameFrame.Editor
                     break;
                 }
             }
-
             CreateComponents(number);
             CreateEvent();
             CreateCapabiltys();
@@ -65,12 +64,12 @@ namespace GameFrame.Editor
             string strset = File.ReadAllText(set);
             string strAllComponents = File.ReadAllText(ECSALLComponents);
             string strAllCapabiltys = File.ReadAllText(ECSALLCapabiltys);
-            if (s_EventDictionary == null)
+            if (s_ViewBindDictionary == null)
             {
-                s_EventDictionary = new Dictionary<Type, string>();
+                s_ViewBindDictionary = new Dictionary<Type, string>();
             }
 
-            s_EventDictionary.Clear();
+            s_ViewBindDictionary.Clear();
             if (s_TextDictionary == null)
             {
                 s_TextDictionary = new Dictionary<CreateAuto, string>();
@@ -88,7 +87,7 @@ namespace GameFrame.Editor
 
         private static int FindAllECSCom(Assembly assembly)
         {
-            s_EventSb.Clear();
+            tempStr.Clear();
             Type[] types = assembly.GetTypes();
             int number = 0;
             foreach (var tp in types)
@@ -98,7 +97,7 @@ namespace GameFrame.Editor
                     var vb = tp.GetCustomAttribute<ViewBindAttribute>();
                     if (vb != null)
                     {
-                        AddEvent(tp, vb.BindType);
+                        AddViewBind(tp, vb.BindType);
                     }
 
                     number++;
@@ -161,7 +160,7 @@ namespace GameFrame.Editor
 
                 addParameter = string.Format(s_TextDictionary[CreateAuto.AddParameter], typeName, fieldTypeName, typeFullName, fieldName, ECSComponentName);
                 string evetString = "";
-                if (s_EventDictionary.TryGetValue(type, out evetString))
+                if (s_ViewBindDictionary.TryGetValue(type, out evetString))
                 {
                 }
 
@@ -177,20 +176,20 @@ namespace GameFrame.Editor
             File.WriteAllText($"{EditorString.ECSOutPutPath}{typeName}Auto.cs", lastText);
         }
 
-        private static void AddEvent(Type type, Type bindType)
+        private static void AddViewBind(Type type, Type bindType)
         {
             MethodInfo[] methods = bindType.GetMethods(BindingFlags.Public | BindingFlags.Instance);
             string funcName = methods[0].Name;
-            s_EventDictionary.Add(type, $"View view = effEntity.GetView();\n" +
+            s_ViewBindDictionary.Add(type, $"View view = effEntity.GetView();\n" +
                                         $"        if (view == null) return null;\n" +
                                         $"        (({bindType.FullName}) (view.Value)).{funcName}(p);");
         }
 
         private static void CreateEvent()
         {
-            if (s_EventSb.Length == 0)
+            if (tempStr.Length == 0)
                 return;
-            string last = string.Format(s_TextDictionary[CreateAuto.EventClass], s_EventSb);
+            string last = string.Format(s_TextDictionary[CreateAuto.EventClass], tempStr);
             File.WriteAllText($"{EditorString.ECSOutPutPath}ViewBindEventAuto.cs", last);
         }
 
@@ -199,32 +198,6 @@ namespace GameFrame.Editor
             var str = string.Format(s_TextDictionary[CreateAuto.ComponentsMain], number);
             File.WriteAllText($"{EditorString.ECSOutPutPath}Components.cs", str);
         }
-
-
-        private static void CreateCapabiltys()
-        {
-            var assembly = AppDomain.CurrentDomain.GetAssemblies();
-            var number = 0;
-            foreach (var item in assembly)
-            {
-                foreach (var name in EditorString.AssemblyNames)
-                {
-                    if (item.GetName().Name != name) continue;
-                    Type[] types = item.GetTypes();
-                    foreach (var tp in types)
-                    {
-                        if (typeof(CapabilityBase).IsAssignableFrom(tp) && tp.IsClass)
-                        {
-                            number++;
-                        }
-                    }
-                }
-            }
-
-            var str = string.Format(s_TextDictionary[CreateAuto.Capabiltys], number);
-            File.WriteAllText($"{EditorString.ECSOutPutPath}Capabiltys.cs", str);
-        }
-
 
         private static void CreateDirectory(string path)
         {
