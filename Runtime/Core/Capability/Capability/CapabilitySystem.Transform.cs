@@ -31,7 +31,7 @@ namespace GameFrame.Runtime
             }
 
             var cap = array.Add(player.ID, capability);
-            cap.Init(shWorld, player, id);
+            cap.Init(shWorld, player);
         }
 
         public void Remove(EffEntity player, int capabilitieId)

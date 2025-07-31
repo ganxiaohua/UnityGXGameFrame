@@ -6,7 +6,6 @@ namespace GameFrame.Runtime
     public abstract class CapabilityBase : IDisposable
     {
         public List<int> TagList { get; protected set; }
-        public int ID { get; private set; }
         public SHWorld World { get; private set; }
         public EffEntity Owner { get; private set; }
         public bool IsActive { get; private set; }
@@ -14,10 +13,9 @@ namespace GameFrame.Runtime
         public virtual CapabilitysUpdateMode UpdateMode { get; protected set; } = CapabilitysUpdateMode.Update;
         public virtual int TickGroupOrder { get; protected set; }
 
-        public virtual void Init(SHWorld world, EffEntity owner, int id)
+        public virtual void Init(SHWorld world, EffEntity owner)
         {
             Owner = owner;
-            ID = id;
         }
 
         public abstract bool ShouldActivate();
