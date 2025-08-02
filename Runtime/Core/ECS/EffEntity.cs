@@ -28,7 +28,7 @@ namespace GameFrame.Runtime
 
         public int Versions { get; private set; }
 
-        private World world;
+        public World world { get; private set; }
 
         public bool IsAction => State == IEntity.EntityState.IsRunning;
 
@@ -58,12 +58,13 @@ namespace GameFrame.Runtime
                 var type = typeof(T);
                 throw new Exception($"entity already has component: {type.FullName}");
             }
+
             T entity = ecsComponentArrayEx.Add<T>(cid);
             entity.Owner = this;
             world.Reactive(cid, this);
             return entity;
         }
-        
+
 
         /// <summary>
         /// 删除组件

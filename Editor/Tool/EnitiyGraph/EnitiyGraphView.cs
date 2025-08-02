@@ -1,4 +1,5 @@
-﻿using GameFrame.Runtime;
+﻿using System.Text;
+using GameFrame.Runtime;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -77,6 +78,7 @@ namespace GameFrame.Editor
             generalGraphView = null;
             EditorApplication.playModeStateChanged -= PlayModeStateChange;
             ComponentView.Destroy();
+            CapabilityView.Destroy();
             EntityView.Destroy();
             base.Dispose();
         }
@@ -152,13 +154,14 @@ namespace GameFrame.Editor
             }
 
             var graphNode = generalGraphView.AddNode<GeneralGrophNode>();
+            var graphNodeName = string.IsNullOrEmpty(root.Entity.Name)
+                    ? root.Entity.GetType().Name
+                    : $"{root.Entity.GetType().Name} ({root.Entity.Name})";
+            nodeDic.Add(graphNode, root);
+            graphNode.Init(this, root, graphNodeName,
+                    new Rect(root.Floor * (flootHeght + 50), flootHeght + root.Grid * 100, Encoding.UTF8.GetByteCount(graphNodeName), 100));
             graphNode.AddButton("关注", FollowNode);
             graphNode.AddButton("删除", RemoveNode);
-            var graphNodeName = string.IsNullOrEmpty(root.Entity.Name)
-                ? root.Entity.GetType().Name
-                : $"{root.Entity.GetType().Name} ({root.Entity.Name})";
-            nodeDic.Add(graphNode, root);
-            graphNode.Init(this, root, graphNodeName, new Rect(root.Floor * (flootHeght + 50), flootHeght + root.Grid * 100, flootWidth - 50, 100));
             var outPort = graphNode.AddProt("", typeof(bool), Direction.Output);
             root.GraphNode = graphNode;
             graphNode.RefreshExpandedState();
@@ -183,7 +186,7 @@ namespace GameFrame.Editor
                     continue;
                 }
 
-                Rect localRect = new Rect(childNode.Floor * (flootHeght + 50), flootHeght + childNode.Grid * 100, flootWidth - 50, 100);
+                Rect localRect = new Rect(childNode.Floor * (flootHeght + 50), flootHeght + childNode.Grid * 100, flootWidth - 100, 100);
                 Rect graphViewRect = generalGraphView.viewport.worldBound;
                 float scale = generalGraphView.contentViewContainer.transform.scale.x;
                 Rect worldBound = generalGraphView.contentViewContainer.worldBound;
@@ -210,14 +213,23 @@ namespace GameFrame.Editor
 
         private (GeneralGrophNode node, Port inPort) CreateGraphNode(EntityNode node)
         {
-            Rect localRect = new Rect(node.Floor * (flootHeght + 50), flootHeght + node.Grid * 100, flootWidth - 50, 100);
             var graphNode = generalGraphView.AddNode<GeneralGrophNode>();
+            var graphNodeName = string.IsNullOrEmpty(node.Entity.Name)
+                    ? node.Entity.GetType().Name
+                    : $"{node.Entity.GetType().Name} ({node.Entity.Name})";
+            Rect localRect = new Rect(node.Floor * (flootHeght + 50), flootHeght + node.Grid * 100, Encoding.UTF8.GetByteCount(graphNodeName), 100);
+            graphNode.Init(this, node, graphNodeName, localRect);
             graphNode.AddButton("关注", FollowNode);
             graphNode.AddButton("删除", RemoveNode);
-            var graphNodeName = string.IsNullOrEmpty(node.Entity.Name)
-                ? node.Entity.GetType().Name
-                : $"{node.Entity.GetType().Name} ({node.Entity.Name})";
-            graphNode.Init(this, node, graphNodeName, localRect);
+            graphNode.AddButton("组件", (x) => { ShowComponent(node); });
+            if (node.Entity is EffEntity effEntity)
+            {
+                if (effEntity.world is SHWorld)
+                {
+                    graphNode.AddButton("能力", (x) => { ShowCapability(node); });
+                }
+            }
+
             var inPort = graphNode.AddProt("", typeof(bool), Direction.Input);
             _ = graphNode.AddProt("", typeof(bool), Direction.Output);
             node.GraphNode = graphNode;
@@ -256,23 +268,42 @@ namespace GameFrame.Editor
             }
         }
 
+        public void ShowCapability(EntityNode selectEntityNode)
+        {
+            if (selectEntityNode.Entity is EffEntity ecs)
+            {
+                CapabilityView.Init(ecs);
+            }
+        }
+
         private void PlayModeStateChange(PlayModeStateChange playModeStateChange)
         {
             nodeDic.Clear();
             entityInfos = null;
         }
 
-        public void FindNode(string name)
+        public void FindNodeComp(string name)
         {
             if (entityInfos == null) return;
-            FindNode(entityInfos.RootNode, name);
+            FindNode(entityInfos.RootNode, name, true);
         }
 
-        private void FindNode(EntityNode node, string name)
+        public void FindNodecapability(string name)
+        {
+            if (entityInfos == null) return;
+            FindNode(entityInfos.RootNode, name, false);
+        }
+
+        private void FindNode(EntityNode node, string name, bool isComp)
         {
             if (string.Equals(node.Entity.Name, name, System.StringComparison.OrdinalIgnoreCase))
             {
-                ShowComponent(node);
+                if (isComp)
+                    ShowComponent(node);
+                else
+                {
+                    ShowCapability(node);
+                }
             }
             else if (node.NextNodes == null || node.NextNodes.Count == 0)
             {
@@ -282,7 +313,7 @@ namespace GameFrame.Editor
             {
                 foreach (var nextNode in node.NextNodes)
                 {
-                    FindNode(nextNode, name);
+                    FindNode(nextNode, name,isComp);
                 }
             }
         }

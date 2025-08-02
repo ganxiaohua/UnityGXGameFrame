@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -13,6 +15,9 @@ namespace GameFrame.Editor
         public Port OutPort;
         private EntityGraphView mParent;
         private EntityNode mData;
+        private List<string> options = new List<string> { };
+        private int selectedIndex = 0;
+        private List<Action<Node>> buttonList = new List<Action<Node>>();
 
         public void Init(EntityGraphView parent, EntityNode data, string text, Rect rect)
         {
@@ -22,8 +27,15 @@ namespace GameFrame.Editor
             GUID = Guid.NewGuid().ToString();
             title = text;
             layer = 1;
+            buttonList.Clear();
             SetPosition(rect);
             this.RegisterCallback<MouseDownEvent>(OnNodeSelected);
+            var triggerButton = new Button(ShowDropdownMenu) 
+            { 
+                    text = "选项",
+                    style = { width = 30, height = 20 } // 自定义尺寸
+            };
+            titleButtonContainer.Add(triggerButton);
         }
 
         public void Show()
@@ -33,6 +45,7 @@ namespace GameFrame.Editor
         public void Hide()
         {
         }
+        
 
         public new void Clear()
         {
@@ -47,6 +60,25 @@ namespace GameFrame.Editor
                 InPort.Clear();
             }
         }
+        
+        private void ShowDropdownMenu()
+        {
+            GenericMenu menu = new GenericMenu();
+            for (int i = 0; i < options.Count; i++)
+            {
+                int index = i;
+                menu.AddItem(new GUIContent(options[i]), 
+                        false, 
+                        () => OnSelectOption(index));
+            }
+            menu.ShowAsContext();
+        }
+        
+        private void OnSelectOption(int index)
+        {
+            selectedIndex = index;
+            buttonList[index].Invoke(this);
+        }
 
         public void AddChildCount(int count)
         {
@@ -57,9 +89,8 @@ namespace GameFrame.Editor
 
         public void AddButton(string name, Action<Node> action)
         {
-            Button btn = new Button(() => { action(this); });
-            btn.text = name;
-            titleContainer.Add(btn);
+            buttonList.Add(action);
+            options.Add(name);
         }
 
         public Port AddProt(string name, Type type, Direction portDir, Port.Capacity capacity = Port.Capacity.Multi)
@@ -87,10 +118,10 @@ namespace GameFrame.Editor
 
         private void OnNodeSelected(MouseDownEvent e)
         {
-            if (e.button == 0)
-            {
-                mParent.ShowComponent(mData);
-            }
+            // if (e.button == 0)
+            // {
+            //     mParent.ShowComponent(mData);
+            // }
         }
     }
 }

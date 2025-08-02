@@ -119,7 +119,7 @@ namespace GameFrame.Runtime
         {
             if (!sceneEntityDic.TryGetValue(sceneType, out IScene IScene))
             {
-                throw new Exception($"EverySceneEntity not have entity:{sceneType}");
+                return null;
             }
 
             return IScene;

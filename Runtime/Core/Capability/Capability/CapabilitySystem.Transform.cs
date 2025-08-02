@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using GameFrame.Runtime;
 
 namespace GameFrame.Runtime
@@ -31,7 +32,25 @@ namespace GameFrame.Runtime
             }
 
             var cap = array.Add(player.ID, capability);
-            cap.Init(shWorld, player);
+            cap.Init(id,shWorld, player);
+        }
+
+        public void GetCapabilityBaseWithPlayer(EffEntity player, List<CapabilityBase> update, List<CapabilityBase> fixedUpdate)
+        {
+            void Get(EffEntity player, JumpIndexArray<CapabilityBase>[] scr,List<CapabilityBase> dst )
+            {
+                foreach (var capArray in scr)
+                {
+                    if (capArray == null)
+                    {
+                        continue;
+                    }
+                    if (capArray[player.ID] != null)
+                        dst.Add(capArray[player.ID]);
+                }
+            }
+            Get(player, capabilitiesUpdateList, update);
+            Get(player, capabilitiesFixUpdateList, fixedUpdate);
         }
 
         public void Remove(EffEntity player, int capabilitieId)
@@ -39,7 +58,7 @@ namespace GameFrame.Runtime
             RemoveUpdate(player, capabilitieId);
             RemoveFixedUpdate(player, capabilitieId);
         }
-        
+
         private void RemoveUpdate(EffEntity player, int capabilitieId)
         {
             var array = capabilitiesUpdateList[capabilitieId];
@@ -68,6 +87,7 @@ namespace GameFrame.Runtime
                     RemoveArray(array, player);
                 }
             }
+
             foreach (var array in capabilitiesFixUpdateList)
             {
                 if (array != null)
@@ -76,7 +96,7 @@ namespace GameFrame.Runtime
                 }
             }
         }
-        
+
         private void RemoveArray(JumpIndexArray<CapabilityBase> array, EffEntity player)
         {
             var capability = array.Remove(player.ID);

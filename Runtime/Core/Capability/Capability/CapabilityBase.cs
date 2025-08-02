@@ -5,6 +5,7 @@ namespace GameFrame.Runtime
 {
     public abstract class CapabilityBase : IDisposable
     {
+        public int ID { get; private set; }
         public List<int> TagList { get; protected set; }
         public SHWorld World { get; private set; }
         public EffEntity Owner { get; private set; }
@@ -13,8 +14,9 @@ namespace GameFrame.Runtime
         public virtual CapabilitysUpdateMode UpdateMode { get; protected set; } = CapabilitysUpdateMode.Update;
         public virtual int TickGroupOrder { get; protected set; }
 
-        public virtual void Init(SHWorld world, EffEntity owner)
+        public virtual void Init(int id,SHWorld world, EffEntity owner)
         {
+            ID = id;
             Owner = owner;
         }
 

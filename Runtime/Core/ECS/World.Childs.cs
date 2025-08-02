@@ -45,12 +45,12 @@ namespace GameFrame.Runtime
             return entity;
         }
 
-        public virtual void RemoveChild(EffEntity ecsEntity)
+        public virtual void RemoveChild(EffEntity effEntity)
         {
-            bool b = Children.Remove(ecsEntity.ID);
+            bool b = Children.Remove(effEntity.ID);
             if (!b)
                 return;
-            heritageId.Push(ecsEntity.ID);
+            heritageId.Push(effEntity.ID);
         }
 
         public EffEntity GetChild(int id)

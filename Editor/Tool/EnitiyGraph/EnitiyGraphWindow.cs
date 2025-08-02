@@ -1,3 +1,4 @@
+using GameFrame.Runtime;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -23,7 +24,7 @@ namespace GameFrame.Editor
                 rootVisualElement.Clear();
                 graphView = null;
             }
-            else if (EditorApplication.isPlaying && graphView == null)
+            else if (EditorApplication.isPlaying && graphView == null && SceneFactory.GetPlayerScene()!=null)
             {
                 graphView = new EntityGraphView();
                 graphView.Init(this);
@@ -47,8 +48,14 @@ namespace GameFrame.Editor
             TextField searchField = new TextField();
             searchField.style.width = 150;
             Button refreshBtn = new Button(() => { graphView.FollowNode(null); });
-            Button serchBtn = new Button(() => { graphView.FindNode(searchField.text); });
-            serchBtn.text = "搜索";
+            Button serchBtn = new Button(() => { graphView.FindNodeComp(searchField.text); });
+            serchBtn.text = "搜索成员组件";
+            var scene = SceneFactory.GetPlayerScene();
+            if (scene.HasComponent<SHWorld>())
+            {
+                serchBtn = new Button(() => { graphView.FindNodecapability(searchField.text); });
+                serchBtn.text = "搜索成员能力";
+            }
             refreshBtn.text = "刷新";
             toolbar.Add(refreshBtn);
             toolbar.Add(searchField);

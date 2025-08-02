@@ -1,14 +1,17 @@
-﻿namespace GameFrame.Runtime
+﻿using System.Collections.Generic;
+
+namespace GameFrame.Runtime
 {
     public abstract class SHWorld : World, IFixedUpdateSystem
     {
         private int maxCapabilityCount;
 
         private int maxCapabilityTag;
+
         private Capabilitys capabilitys;
 
 
-        public void InitCapabilitys(int maxCapabilityCount, int maxTag, int estimatePlayer)
+        protected void InitCapabilitys(int maxCapabilityCount, int maxTag, int estimatePlayer)
         {
             maxCapabilityTag = maxTag;
             capabilitys = new Capabilitys();
@@ -23,10 +26,15 @@
             return child;
         }
 
-        public override void RemoveChild(EffEntity ecsEntity)
+        public override void RemoveChild(EffEntity effEntity)
         {
-            capabilitys.RemoveEffEntitysAllCapability(ecsEntity);
-            base.RemoveChild(ecsEntity);
+            capabilitys.RemoveEffEntitysAllCapability(effEntity);
+            base.RemoveChild(effEntity);
+        }
+
+        public void GetCapability(EffEntity eff, List<CapabilityBase> update, List<CapabilityBase> fixedUpdate)
+        {
+            capabilitys.GetCapabilityBaseWithPlayer(eff, update, fixedUpdate);
         }
 
         public void BindCapability<T>(EffEntity effEntity) where T : CapabilityBase
@@ -41,9 +49,15 @@
             UnBindCapability(player, id);
         }
 
-        public void UnBindCapability(EffEntity player, int capabilitieId)
+        public void UnBindCapability(EffEntity player, int capabilitiyId)
         {
-            capabilitys.Remove(player, capabilitieId);
+            capabilitys.Remove(player, capabilitiyId);
+        }
+
+        public bool IsBindCapability(EffEntity player,List<int> tagInts)
+        {
+            var capabiltyComponent = (CapabiltyComponent)player.GetComponent(ComponentsID<CapabiltyComponent>.TID);
+            return capabiltyComponent.IsBlock(tagInts);
         }
 
         public override void OnUpdate(float elapseSeconds, float realElapseSeconds)
