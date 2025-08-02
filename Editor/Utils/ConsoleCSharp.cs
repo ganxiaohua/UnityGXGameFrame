@@ -14,7 +14,7 @@ namespace GameFrame.Editor
         private static readonly string HistoryConsoleScript = typeof(ConsoleCSharp).FullName;
         private static readonly string HistoryConsoleUsings = typeof(ConsoleCSharp).FullName + ".using";
 
-        [MenuItem("Tools/Console/CSharp", false, 102)]
+        [MenuItem("GX框架工具/Console/CSharp", false, 102)]
         public static void Open()
         {
             VirtualDialogContainer.Open<ConsoleCSharp>((dialog) => dialog.OnAwake());

@@ -31,12 +31,11 @@ namespace GameFrame.Editor
             AutoCreate.AutoCapabilityScript();
         }
 
-        [MenuItem("GX框架工具/事件绑定", false, 3)]
+        [MenuItem("GX框架工具/脚本生成/事件绑定", false, 3)]
         public static void AutoEventBind()
         {
             MakeAutoEventBind.AutoCreateScript();
         }
-
 
         [MenuItem("GX框架工具/UI/UI创建", false, 3)]
         public static void CreateUI()
