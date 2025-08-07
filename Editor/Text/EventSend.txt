@@ -5,7 +5,7 @@
 using GameFrame.Runtime;
 using GXGame;
 
-namespace Eden.Gameplay.Runtime
+namespace Gameplay.Runtime
 {{
     public class EventSend : Singleton<EventSend>
     {{
