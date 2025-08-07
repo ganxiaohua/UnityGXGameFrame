@@ -3,7 +3,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using GameFrame.Runtime;
-using GXGame;
 
 namespace Gameplay.Runtime
 {{
@@ -15,7 +14,7 @@ namespace Gameplay.Runtime
 @
         public void Fire{0}({1})
         {{
-            var allEntity = EventData.Instance.GetEntity(typeof(I{0}));
+            var allEntity = EventData.Instance.GetEntity(typeof({4}));
             if (allEntity == null)
             {{
                 return;
@@ -24,7 +23,7 @@ namespace Gameplay.Runtime
             {{
                 if (entity.State == IEntity.EntityState.IsRunning)
                 {{
-                    ((I{0}) entity).{2}({3});
+                    (({4}) entity).{2}({3});
                 }}
             }}
         }}

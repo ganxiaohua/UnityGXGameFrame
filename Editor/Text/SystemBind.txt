@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 #endif
 using GameFrame;
-using GXGame;
 
 public  class AutoBindSystem
 {{
