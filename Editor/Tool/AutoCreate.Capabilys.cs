@@ -15,7 +15,10 @@ namespace GameFrame.Editor
             LoadText();
             CreateCapabiltys();
             AssetDatabase.Refresh();
+            Debugger.Log("生成完毕");
         }
+        
+        //asd
 
         private static void CreateCapabiltys()
         {
@@ -25,7 +28,7 @@ namespace GameFrame.Editor
             capabilitylist.Clear();
             foreach (var assembly in assemblys)
             {
-                foreach (var name in EditorString.AssemblyNames)
+                foreach (var name in EditorString.GetPaths("AssemblyNames"))
                 {
                     if (assembly.GetName().Name != name) continue;
                     Type[] types = assembly.GetTypes();
@@ -53,7 +56,7 @@ namespace GameFrame.Editor
             }
 
             var str = string.Format(s_TextDictionary[CreateAuto.Capability], tempStr, number);
-            File.WriteAllText($"{EditorString.ECSOutPutPath}AllCapabilitys.cs", str);
+            File.WriteAllText($"{EditorString.GetPath("ECSOutPutPath")}AllCapabilitys.cs", str);
             tempStr.Clear();
         }
     }

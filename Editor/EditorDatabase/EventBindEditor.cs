@@ -29,10 +29,10 @@ namespace GameFrame.Editor
             var assembly = AppDomain.CurrentDomain.GetAssemblies();
             foreach (var item in assembly)
             {
-                foreach (var name in  EditorString.AssemblyNames)
+                foreach (var name in EditorString.GetPaths("AssemblyNames"))
                 {
                     if (item.GetName().Name != name) continue;
-                    FindEntityClass(item); 
+                    FindEntityClass(item);
                     break;
                 }
             }
@@ -42,7 +42,7 @@ namespace GameFrame.Editor
 
         private static void LoadText()
         {
-            string systemPath = EditorString.GameFramePath + "Editor/Text/EventBind.txt";
+            string systemPath = EditorString.GetPath("GameFramePath") + "Editor/Text/EventBind.txt";
             string system = File.ReadAllText(systemPath);
             string[] text = system.Split('@', StringSplitOptions.None);
             MainText = text[0];
@@ -51,7 +51,7 @@ namespace GameFrame.Editor
 
         private static void LoadText2()
         {
-            string systemPath = EditorString.GameFramePath + "Editor/Text/EventSend.txt";
+            string systemPath = EditorString.GetPath("GameFramePath") + "Editor/Text/EventSend.txt";
             string system = File.ReadAllText(systemPath);
             string[] text = system.Split('@', StringSplitOptions.None);
             MainTextSend = text[0];
@@ -80,12 +80,12 @@ namespace GameFrame.Editor
 
                             string parameter = "";
                             {
-                            } //{1}
+                            }                                                            //{1}
                             string typex = item.Name.Substring(1, item.Name.Length - 1); //{0}
                             MethodInfo[] ins = item.GetMethods();
                             ParameterInfo[] parmeters = ins[0].GetParameters();
                             string method = ins[0].Name; //{2}
-                            string paremwairte = ""; //{3}
+                            string paremwairte = "";     //{3}
                             foreach (ParameterInfo parmeter in parmeters)
                             {
                                 parameter += parmeter.ParameterType.FullName + " " + parmeter.Name + ",";
@@ -120,8 +120,8 @@ namespace GameFrame.Editor
                 sendeventtext += item;
             }
 
-            File.WriteAllText(EditorString.EventBindOutPutPath, string.Format(MainText, bigtext));
-            File.WriteAllText(EditorString.EventSendOutPutPath, string.Format(MainTextSend, sendeventtext));
+            File.WriteAllText(EditorString.GetPath("EventBindOutPutPath"), string.Format(MainText, bigtext));
+            File.WriteAllText(EditorString.GetPath("EventSendOutPutPath"), string.Format(MainTextSend, sendeventtext));
             AssetDatabase.Refresh();
             Debug.Log("生成系统绑定结束");
         }

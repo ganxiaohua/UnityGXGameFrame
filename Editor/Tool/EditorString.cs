@@ -1,52 +1,51 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using GameFrame.Runtime;
+using UnityEditor;
+using UnityEngine;
 
 namespace GameFrame.Editor
 {
     public static class EditorString
     {
-        /// <summary>
-        /// 主场景路径
-        /// </summary>
-        public static string FirstScenePath = "Assets/GXGame/Scenes/Main.unity";
+        private static GamePathData gamePathData;
 
-        /// <summary>
-        /// fgui文件目录
-        /// </summary>
-        public static string FguiConfigAssetPath = "../../Fgui/asset";
+        public static string GetPath(string key)
+        {
+            var pathDatas = Get();
+            if (pathDatas == null)
+                return null;
+            if (pathDatas.PathData.TryGetValue(key, out var data))
+            {
+                return data;
+            }
 
-        /// <summary>
-        /// UI创建的脚本路径
-        /// </summary>
-        public static string UIScriptsPath = "Assets/GXGame/Scripts/Runtime/UI";
+            throw new Exception($"gamePathData PathData not have {key}");
+        }
 
-        /// <summary>
-        /// 外部配表数据
-        /// </summary>
-        public static string ConfigFullPath = $"{Application.dataPath}/GXGame/Config/ConfigData";
+        public static string[] GetPaths(string key)
+        {
+            var pathDatas = Get();
+            if (pathDatas.PathArrayData.TryGetValue(key, out var data))
+            {
+                return data;
+            }
 
-        /// <summary>
-        /// 配表数据
-        /// </summary>
-        public static string ConfigAssetPath = "Assets/GXGame/Config/ConfigData";
+            throw new Exception($"gamePathData PathArrayData not have {key}");
+        }
 
+        private static GamePathData Get()
+        {
+            if (gamePathData != null)
+                return gamePathData;
+            string[] guids = AssetDatabase.FindAssets("t:GamePathData");
+            if (guids == null || guids.Length == 0)
+            {
+                throw new Exception("Please create it first GX框架工具/脚本生成/编辑器路径配置文件");
+            }
 
-        /// <summary>
-        /// ecs绑定路径
-        /// </summary>
-        public static string ECSOutPutPath = "Assets/GXGame/Scripts/Runtime/Auto/EcsBind/";
-
-        public static string EventBindOutPutPath = "Assets/GXGame/Scripts/Runtime/Event/EventBind.cs";
-
-        public static string EventSendOutPutPath = "Assets/GXGame/Scripts/Runtime/Event/EventSend.cs";
-
-        // ---------------------------------------------------------以下路径最好不要改
-
-        public static string GameFramePath = "Assets/3rd/UnityGXGameFrame/";
-
-        // public static string SystemBindOutPutPath = "Assets/GXGame/Scripts/Runtime/Auto/SystemBindAuto.cs";
-
-        public static string UIScenePath = "Assets/3rd/UnityGXGameFrame/Editor/Tool/Fgui/CreateUIScene.unity";
-
-        public static string[] AssemblyNames = new string[] {"GamePlay.Runtime", "GameFrame.Runtime"};
+            gamePathData = AssetDatabase.LoadAssetAtPath<GamePathData>(AssetDatabase.GUIDToAssetPath(guids[0]));
+            return gamePathData;
+        }
     }
 }

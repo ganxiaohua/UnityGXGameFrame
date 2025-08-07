@@ -38,7 +38,7 @@ public class CreateUICode
     private UIPanel uiPanel;
 
     private string[] exportTypes =
-        {"GButton", "GList", "GRichTextField", "GTextField", "GComponent", "GLoader", "GTextInput", "GProgressBar", "GLabel", "GGroup"};
+            {"GButton", "GList", "GRichTextField", "GTextField", "GComponent", "GLoader", "GTextInput", "GProgressBar", "GLabel", "GGroup"};
 
     private string className;
 
@@ -55,7 +55,7 @@ public class CreateUICode
     public void ButtonBackMain()
     {
         EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
-        EditorSceneManager.OpenScene(EditorString.FirstScenePath);
+        EditorSceneManager.OpenScene(EditorString.GetPath("FirstScenePath"));
     }
 
     private void EditorInit(UIPanel panel)
@@ -63,7 +63,7 @@ public class CreateUICode
         uiPanel = panel;
         string componentName = panel.componentName;
         className = "UI" + componentName;
-        savePath = EditorString.UIScriptsPath + "/" + className;
+        savePath = EditorString.GetPath("UIScriptsPath") + "/" + className;
         BindInit(); //默认进行绑定
     }
 

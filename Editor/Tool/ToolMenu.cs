@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using Sirenix.OdinInspector;
+using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
@@ -41,7 +42,7 @@ namespace GameFrame.Editor
         public static void CreateUI()
         {
             EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
-            EditorSceneManager.OpenScene(EditorString.UIScenePath);
+            EditorSceneManager.OpenScene(EditorString.GetPath("UIScenePath"));
         }
 
 

@@ -28,13 +28,13 @@ namespace GameFrame.Editor
 
         public static void AutoAllScript()
         {
-            OpFile.DeleteFilesInDirectory(EditorString.ECSOutPutPath);
+            OpFile.DeleteFilesInDirectory(EditorString.GetPath("ECSOutPutPath"));
             LoadText();
             var assembly = AppDomain.CurrentDomain.GetAssemblies();
             var number = 0;
             foreach (var item in assembly)
             {
-                foreach (var name in EditorString.AssemblyNames)
+                foreach (var name in EditorString.GetPaths("AssemblyNames"))
                 {
                     if (item.GetName().Name != name) continue;
                     number += FindAllECSCom(item);
@@ -45,17 +45,19 @@ namespace GameFrame.Editor
             CreateEvent();
             CreateCapabiltys();
             AssetDatabase.Refresh();
+            Debugger.Log("生成完毕");
         }
 
         private static void LoadText()
         {
-            string add = EditorString.GameFramePath + "Editor/Text/ECS/Add.txt";
-            string cls = EditorString.GameFramePath + "Editor/Text/ECS/Class.txt";
-            string addparameter = EditorString.GameFramePath + "Editor/Text/ECS/AddParameter.txt";
-            string get = EditorString.GameFramePath + "Editor/Text/ECS/Get.txt";
-            string set = EditorString.GameFramePath + "Editor/Text/ECS/Set.txt";
-            string ECSALLComponents = EditorString.GameFramePath + "Editor/Text/ECS/Components.txt";
-            string ECSALLCapabiltys = EditorString.GameFramePath + "Editor/Text/ECS/Capabiltys.txt";
+            var GameFramePath = EditorString.GetPath("GameFramePath");
+            string add = GameFramePath + "Editor/Text/ECS/Add.txt";
+            string cls = GameFramePath + "Editor/Text/ECS/Class.txt";
+            string addparameter =GameFramePath + "Editor/Text/ECS/AddParameter.txt";
+            string get = GameFramePath + "Editor/Text/ECS/Get.txt";
+            string set = GameFramePath + "Editor/Text/ECS/Set.txt";
+            string ECSALLComponents =GameFramePath + "Editor/Text/ECS/Components.txt";
+            string ECSALLCapabiltys = GameFramePath + "Editor/Text/ECS/Capabiltys.txt";
 
             string stradd = File.ReadAllText(add);
             string strcls = File.ReadAllText(cls);
@@ -172,8 +174,8 @@ namespace GameFrame.Editor
             sb.Append(abGet);
             sb.Append(abSet);
             string lastText = string.Format(abcls, typeName, sb.ToString());
-            CreateDirectory(EditorString.ECSOutPutPath);
-            File.WriteAllText($"{EditorString.ECSOutPutPath}{typeName}Auto.cs", lastText);
+            CreateDirectory(EditorString.GetPath("ECSOutPutPath"));
+            File.WriteAllText($"{EditorString.GetPath("ECSOutPutPath")}{typeName}Auto.cs", lastText);
         }
 
         private static void AddViewBind(Type type, Type bindType)
@@ -190,13 +192,13 @@ namespace GameFrame.Editor
             if (tempStr.Length == 0)
                 return;
             string last = string.Format(s_TextDictionary[CreateAuto.EventClass], tempStr);
-            File.WriteAllText($"{EditorString.ECSOutPutPath}ViewBindEventAuto.cs", last);
+            File.WriteAllText($"{EditorString.GetPath("ECSOutPutPath")}ViewBindEventAuto.cs", last);
         }
 
         private static void CreateComponents(int number)
         {
             var str = string.Format(s_TextDictionary[CreateAuto.ComponentsMain], number);
-            File.WriteAllText($"{EditorString.ECSOutPutPath}Components.cs", str);
+            File.WriteAllText($"{EditorString.GetPath("ECSOutPutPath")}Components.cs", str);
         }
 
         private static void CreateDirectory(string path)

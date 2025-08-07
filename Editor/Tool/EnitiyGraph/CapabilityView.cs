@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using GameFrame.Runtime;
+using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace GameFrame.Editor
 {
@@ -42,15 +44,18 @@ namespace GameFrame.Editor
                 return;
             }
 
-            EditorGUILayout.BeginVertical();
+            EditorGUILayout.BeginHorizontal();
             foreach (var capability in capabilityBaseUpdateMode)
             {
+                EditorGUILayout.BeginHorizontal();
                 var oldColor = GUI.contentColor;
                 GUI.color = capability.IsActive ? Color.cyan : Color.white;
                 if (capability.TagList != null)
                     GUI.color = shWorld.IsBindCapability(effEntity, capability.TagList) ? Color.yellow : GUI.color;
+                EditorGUI.DrawRect(new Rect(0,0,200,50), new Color(0.15f, 0.15f, 0.15f));
                 EditorGUILayout.LabelField(capability.GetType().Name);
-                GUI.color = oldColor;
+                
+                EditorGUILayout.EndHorizontal();
             }
 
             EditorGUILayout.EndVertical();

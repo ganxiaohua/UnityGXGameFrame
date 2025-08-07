@@ -72,7 +72,7 @@ namespace GameFrame.Editor
         {
             base.OnEnable();
 
-            assetsPath = EditorString.FguiConfigAssetPath;
+            assetsPath = EditorString.GetPath("FguiConfigAssetPath");
             assetsPath = new DirectoryInfo(assetsPath).FullName;
 
             packageNameToID.Clear();
