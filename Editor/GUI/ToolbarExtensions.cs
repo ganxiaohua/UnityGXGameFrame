@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
-using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 namespace GameFrame.Editor
@@ -45,39 +43,17 @@ namespace GameFrame.Editor
         private static void OnToolbar()
         {
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Goto Main"))
-                SaveCurrentSceneIfDirty("Assets/GXGame/Main.unity");
+            if (GUILayout.Button("审查器"))
+                DialogueGraphWindow.OpenDialogueGraphWindow();
             foreach (var (content, action) in customButtons)
             {
                 if (GUILayout.Button(content))
                     action.Invoke();
             }
+
             GUILayout.EndHorizontal();
         }
 
-
-        private static void SaveCurrentSceneIfDirty(string gotoScene)
-        {
-            var currentScene = SceneManager.GetActiveScene();
-            if (gotoScene.Contains(currentScene.name))
-                return;
-            if (currentScene.isDirty)
-            {
-                bool shouldSave = EditorUtility.DisplayDialog(
-                        "保存场景",
-                        "检测到场景有修改，是否保存？",
-                        "保存",
-                        "不保存"
-                );
-
-                if (shouldSave)
-                {
-                    EditorSceneManager.SaveScene(currentScene);
-                }
-            }
-
-            EditorSceneManager.OpenScene(gotoScene);
-        }
 
         public static void RegisterButton(string name, Action action)
         {

@@ -15,7 +15,6 @@ namespace GameFrame.Editor
         AddParameter,
         Get,
         Set,
-        EventClass,
         ComponentsMain,
         Capability
     }
@@ -41,8 +40,8 @@ namespace GameFrame.Editor
                     break;
                 }
             }
+
             CreateComponents(number);
-            CreateEvent();
             CreateCapabiltys();
             AssetDatabase.Refresh();
             Debugger.Log("生成完毕");
@@ -53,10 +52,10 @@ namespace GameFrame.Editor
             var GameFramePath = EditorString.GetPath("GameFramePath");
             string add = GameFramePath + "Editor/Text/ECS/Add.txt";
             string cls = GameFramePath + "Editor/Text/ECS/Class.txt";
-            string addparameter =GameFramePath + "Editor/Text/ECS/AddParameter.txt";
+            string addparameter = GameFramePath + "Editor/Text/ECS/AddParameter.txt";
             string get = GameFramePath + "Editor/Text/ECS/Get.txt";
             string set = GameFramePath + "Editor/Text/ECS/Set.txt";
-            string ECSALLComponents =GameFramePath + "Editor/Text/ECS/Components.txt";
+            string ECSALLComponents = GameFramePath + "Editor/Text/ECS/Components.txt";
             string ECSALLCapabiltys = GameFramePath + "Editor/Text/ECS/Capabiltys.txt";
 
             string stradd = File.ReadAllText(add);
@@ -89,7 +88,6 @@ namespace GameFrame.Editor
 
         private static int FindAllECSCom(Assembly assembly)
         {
-            tempStr.Clear();
             Type[] types = assembly.GetTypes();
             int number = 0;
             foreach (var tp in types)
@@ -103,7 +101,7 @@ namespace GameFrame.Editor
                     }
 
                     number++;
-                    CreateCshap(tp);
+                    CreateCompCshap(tp);
                 }
             }
 
@@ -111,7 +109,7 @@ namespace GameFrame.Editor
         }
 
         //创建c#脚本
-        private static void CreateCshap(Type type)
+        private static void CreateCompCshap(Type type)
         {
             if (type.Name == nameof(EffComponent))
             {
@@ -129,7 +127,7 @@ namespace GameFrame.Editor
             PropertyInfo[] propertyInfos = type.GetProperties();
             string typeName = type.Name;
             string typeFullName = type.FullName;
-            StringBuilder sb = new StringBuilder(1024);
+            tempStr.Clear();
             string abcls = s_TextDictionary[CreateAuto.Class];
             string abAdd = string.Format(s_TextDictionary[CreateAuto.Add], typeName, ECSComponentName, typeFullName);
             string abGet = string.Format(s_TextDictionary[CreateAuto.Get], typeName, typeFullName, ECSComponentName);
@@ -169,11 +167,11 @@ namespace GameFrame.Editor
                 abSet = string.Format(s_TextDictionary[CreateAuto.Set], typeName, fieldTypeName, typeFullName, fieldName, evetString, ECSComponentName);
             }
 
-            sb.Append(abAdd);
-            sb.Append(addParameter);
-            sb.Append(abGet);
-            sb.Append(abSet);
-            string lastText = string.Format(abcls, typeName, sb.ToString());
+            tempStr.Append(abAdd);
+            tempStr.Append(addParameter);
+            tempStr.Append(abGet);
+            tempStr.Append(abSet);
+            string lastText = string.Format(abcls, typeName, tempStr.ToString());
             CreateDirectory(EditorString.GetPath("ECSOutPutPath"));
             File.WriteAllText($"{EditorString.GetPath("ECSOutPutPath")}{typeName}Auto.cs", lastText);
         }
@@ -183,17 +181,10 @@ namespace GameFrame.Editor
             MethodInfo[] methods = bindType.GetMethods(BindingFlags.Public | BindingFlags.Instance);
             string funcName = methods[0].Name;
             s_ViewBindDictionary.Add(type, $"View view = effEntity.GetView();\n" +
-                                        $"        if (view == null) return null;\n" +
-                                        $"        (({bindType.FullName}) (view.Value)).{funcName}(p);");
+                                           $"        if (view == null) return null;\n" +
+                                           $"        (({bindType.FullName}) (view.Value)).{funcName}(p);");
         }
 
-        private static void CreateEvent()
-        {
-            if (tempStr.Length == 0)
-                return;
-            string last = string.Format(s_TextDictionary[CreateAuto.EventClass], tempStr);
-            File.WriteAllText($"{EditorString.GetPath("ECSOutPutPath")}ViewBindEventAuto.cs", last);
-        }
 
         private static void CreateComponents(int number)
         {
