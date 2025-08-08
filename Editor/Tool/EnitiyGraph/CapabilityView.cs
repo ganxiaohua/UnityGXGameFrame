@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using GameFrame.Runtime;
-using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace GameFrame.Editor
 {
@@ -44,7 +42,7 @@ namespace GameFrame.Editor
                 return;
             }
 
-            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("蓝色表示激活，白色表示未激活，黄色表示被锁住了");
             foreach (var capability in capabilityBaseUpdateMode)
             {
                 EditorGUILayout.BeginHorizontal();
@@ -52,13 +50,10 @@ namespace GameFrame.Editor
                 GUI.color = capability.IsActive ? Color.cyan : Color.white;
                 if (capability.TagList != null)
                     GUI.color = shWorld.IsBindCapability(effEntity, capability.TagList) ? Color.yellow : GUI.color;
-                EditorGUI.DrawRect(new Rect(0,0,200,50), new Color(0.15f, 0.15f, 0.15f));
+                // EditorGUI.DrawRect(new Rect(0,0,200,50), new Color(0.15f, 0.15f, 0.15f));
                 EditorGUILayout.LabelField(capability.GetType().Name);
-                
-                EditorGUILayout.EndHorizontal();
+                EditorGUILayout.EndVertical();
             }
-
-            EditorGUILayout.EndVertical();
         }
 
         protected override void OnImGUI()

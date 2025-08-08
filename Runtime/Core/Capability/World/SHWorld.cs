@@ -54,9 +54,9 @@ namespace GameFrame.Runtime
             capabilitys.Remove(player, capabilitiyId);
         }
 
-        public bool IsBindCapability(EffEntity player,List<int> tagInts)
+        public bool IsBindCapability(EffEntity player, List<int> tagInts)
         {
-            var capabiltyComponent = (CapabiltyComponent)player.GetComponent(ComponentsID<CapabiltyComponent>.TID);
+            var capabiltyComponent = (CapabiltyComponent) player.GetComponent(ComponentsID<CapabiltyComponent>.TID);
             return capabiltyComponent.IsBlock(tagInts);
         }
 

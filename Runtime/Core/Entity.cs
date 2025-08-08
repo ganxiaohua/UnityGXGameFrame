@@ -14,7 +14,7 @@ namespace GameFrame.Runtime
         public string Name { get; set; }
 
         public int Versions { get; private set; }
-        
+
         public bool IsAction => State == IEntity.EntityState.IsRunning;
 
         public Dictionary<Type, IEntity> Components { get; private set; } = new();

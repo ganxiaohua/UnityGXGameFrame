@@ -24,7 +24,7 @@ namespace GameFrame.Editor
                 rootVisualElement.Clear();
                 graphView = null;
             }
-            else if (EditorApplication.isPlaying && graphView == null && SceneFactory.GetPlayerScene()!=null)
+            else if (EditorApplication.isPlaying && graphView == null && SceneFactory.GetPlayerScene() != null)
             {
                 graphView = new EntityGraphView();
                 graphView.Init(this);
@@ -48,18 +48,16 @@ namespace GameFrame.Editor
             TextField searchField = new TextField();
             searchField.style.width = 150;
             Button refreshBtn = new Button(() => { graphView.FollowNode(null); });
-            Button serchBtn = new Button(() => { graphView.FindNodeComp(searchField.text); });
-            serchBtn.text = "搜索成员组件";
-            var scene = SceneFactory.GetPlayerScene();
-            if (scene.HasComponent<SHWorld>())
-            {
-                serchBtn = new Button(() => { graphView.FindNodecapability(searchField.text); });
-                serchBtn.text = "搜索成员能力";
-            }
+            Button serchComp = new Button(() => { graphView.FindNodeComp(searchField.text); });
+            serchComp.text = "搜索成员组件";
+            // var scene = SceneFactory.GetPlayerScene();
+            var serchcpb = new Button(() => { graphView.FindNodecapability(searchField.text); });
+            serchcpb.text = "搜索成员能力(如果是ECC模式)";
             refreshBtn.text = "刷新";
             toolbar.Add(refreshBtn);
             toolbar.Add(searchField);
-            toolbar.Add(serchBtn);
+            toolbar.Add(serchComp);
+            toolbar.Add(serchcpb);
             rootVisualElement.Add(toolbar);
         }
     }
