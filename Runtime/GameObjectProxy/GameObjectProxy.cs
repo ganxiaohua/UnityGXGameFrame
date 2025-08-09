@@ -1,77 +1,134 @@
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using GameFrame.Runtime;
 using UnityEngine;
 
-namespace Common.Runtime
+namespace GameFrame.Runtime
 {
-    public abstract class GameObjectProxy
+    public partial class GameObjectProxy : IVersions
     {
-        protected GameObjectPoolBaes GoBase { get; private set; }
+        public GameObject gameObject { get; private set; }
 
-        public GameObject Go => GoBase.Obj;
+        public Transform transform { get; private set; }
 
-        public Transform Trans => GoBase.Tra;
-
-        public string Asset { get; private set; }
-
-        public GameObject Prefab { get; private set; }
-
-        public int Version { get; private set; }
-
-        public bool IsBind { get; private set; }
-
-
-        public event Action onBeforeUnbind;
-        public event Action onAfterBind;
-
-        private static GameObject _EmptyPrefab;
-
-        private static GameObject EmptyPrefab
+        public Vector3 LocalPosition
         {
-            get
-            {
-                if (!_EmptyPrefab)
-                {
-                    _EmptyPrefab = new GameObject("_Empty");
-                    _EmptyPrefab.hideFlags = HideFlags.HideAndDontSave;
-                }
-
-                return _EmptyPrefab;
-            }
+            get => transform.localPosition;
+            set => transform.localPosition = value;
         }
 
-        public void BindFromEmpty(Transform parent = null)
+        public Vector3 Position
         {
-            BindFromPrefab(EmptyPrefab, parent);
+            get => transform.position;
+            set => transform.position = value;
+        }
+
+        public Quaternion LocalRotation
+        {
+            get => transform.localRotation;
+            set => transform.localRotation = value;
+        }
+
+        public Quaternion Rotation
+        {
+            get => transform.rotation;
+            set => transform.rotation = value;
+        }
+
+        public Vector3 scale
+        {
+            get => transform.localScale;
+            set => transform.localScale = value;
+        }
+
+        public bool Visible
+        {
+            get => gameObject.activeSelf;
+            set => gameObject.SetActive(value);
+        }
+
+        public bool AutoLayers { get; set; } = true;
+
+        public object Userdata { get; set; }
+
+        public int Versions { get; private set; }
+
+        public object BindingSource { get; private set; }
+
+        public GameObjectState State { get; private set; }
+
+        public Action onBeforeUnbind;
+        public Action<GameObjectProxy> onAfterBind;
+
+        protected GameObjectPoolBaes bindedGameObject { get; private set; }
+
+        public GameObject BindingTarget => bindedGameObject?.Obj;
+
+
+        private UniqueTimer recycleTimer;
+
+        /// <summary>
+        /// 初始化对象基类。
+        /// </summary>
+        public override void Initialize(object initData)
+        {
+            base.Initialize(initData);
+            Init();
+        }
+
+        private void Init()
+        {
+            gameObject = new GameObject();
+            transform = gameObject.transform;
+
+            State = GameObjectState.Unload;
+
+            recycleTimer = new UniqueTimer(OnRequestRecycle);
+
+#if UNITY_EDITOR
+            using (new Profiler("[EditorOnly]GameObjectProxy.RecycleTimer.SetDebugName"))
+                recycleTimer.Name = this.GetType().Name;
+#endif
         }
 
         public void BindFromPrefab(GameObject prefab, Transform parent = null)
         {
-            Version++;
-            Unbind();
+            Assert.AreNotEqual(GameObjectState.Destroy, State, $"GameObjectProxy({this}) already destroyed");
+            if (CheckIdenticalBindingSource(prefab, parent))
+                return;
+
+            Versions++;
+            BindingSource = prefab;
+            Versions++;
             var goBase = GameObjectPool.Instance.InstantiateGameObject(prefab, parent);
             goBase.Obj.hideFlags = HideFlags.None;
-            this.GoBase = goBase;
-            this.IsBind = true;
-            this.Prefab = prefab;
-            OnAfterBind();
-            onAfterBind?.Invoke();
+            BindInternal(goBase, parent);
+        }
+
+
+        public void BindFromPrefab(GameObject prefab)
+        {
+            BindFromPrefab(prefab, transform.parent);
         }
 
         public async UniTask<bool> BindFromAssetAsync(string asset, Transform parent = null,
-                CancellationToken cancelToken = default)
+            CancellationToken cancelToken = default)
         {
-            Version++;
-            int prevVersion = Version;
+            Assert.AreNotEqual(GameObjectState.Destroy, State, $"GameObjectProxy({this}) already destroyed");
+            if (CheckIdenticalBindingSource(asset, parent))
+                return true;
+
+            Versions++;
+            BindingSource = asset;
+
+            var prevVersion = Versions;
+
+            State = GameObjectState.Loading;
 
             var go = default(GameObjectPoolBaes);
             try
             {
-                go = await GameObjectPool.Instance.GetAsync(asset, parent, cancelToken);
-                if (go == null)
-                    return false;
+                go = await GameObjectPool.Instance.GetAsync(asset, transform, cancelToken);
             }
             catch (Exception e)
             {
@@ -81,39 +138,121 @@ namespace Common.Runtime
                 return false;
             }
 
-            if (prevVersion != Version)
+            if (prevVersion != Versions)
             {
+                // operation is obsolete
                 GameObjectPool.Instance.Release(asset, go);
                 return false;
             }
 
-            Unbind();
-            this.GoBase = go;
-            this.Asset = asset;
-            this.IsBind = true;
-            OnAfterBind();
-            onAfterBind?.Invoke();
+            BindInternal(go, parent);
+
             return true;
+        }
+
+        public async UniTask<bool> BindFromAssetAsync(string asset, CancellationToken cancelToken = default)
+        {
+            return await BindFromAssetAsync(asset, transform.parent, cancelToken);
+        }
+
+        public void BindFromAsset(string asset)
+        {
+            BindFromAssetAsync(asset, transform.parent).Forget();
+        }
+
+        public bool BindFromDifferentSource(object source)
+        {
+            if (BindingSource != source)
+            {
+                if (source == null)
+                    Unbind();
+                else if (source is string asset)
+                    BindFromAsset(asset);
+                else
+                    BindFromPrefab((GameObject) source);
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool CheckIdenticalBindingSource(object source, Transform parent)
+        {
+            if (State == GameObjectState.Loaded && source.Equals(BindingSource))
+            {
+                SetParentInternal(parent);
+                OnAfterBind(BindingTarget);
+                onAfterBind?.Invoke(this);
+                return true;
+            }
+
+            return false;
+        }
+
+        private void BindInternal(GameObjectPoolBaes go, Transform parent)
+        {
+            var source = BindingSource;
+
+            Unbind();
+
+            Assert.AreNotEqual(null, go, $"Bind invalid GameObject from source: {source}");
+
+            bindedGameObject = go;
+            BindingSource = source;
+
+            BindingTarget.hideFlags = HideFlags.None;
+
+            SetParentInternal(parent);
+
+            // var trans = BindingTarget.transform;
+            // trans.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+            // trans.localScale = Vector3.one;
+
+            State = GameObjectState.Loaded;
+            OnAfterBind(BindingTarget);
+            onAfterBind?.Invoke(this);
+#if UNITY_EDITOR
+            DebugInspector.Track(this);
+#endif
+        }
+
+        private void SetParentInternal(Transform parent)
+        {
+            if (transform.parent != parent)
+            {
+                transform.SetParent(parent, false);
+            }
+
+            if (!AutoLayers)
+                return;
+
+            if (parent != null && parent.gameObject.layer != gameObject.layer)
+            {
+                transform.SetLayerRecursive(parent.gameObject.layer);
+            }
+
+            if (BindingTarget && BindingTarget.layer != gameObject.layer)
+            {
+                BindingTarget.transform.SetLayerRecursive(gameObject.layer);
+            }
         }
 
         public bool Unbind()
         {
-            Version++;
-            if (!IsBind) return false;
-            onBeforeUnbind?.Invoke();
-            OnBeforeUnbind();
-            if (GoBase != null)
+            Assert.AreNotEqual(GameObjectState.Destroy, State, $"GameObjectProxy({this}) already destroyed");
+            if (State == GameObjectState.Unload) return false;
+            Versions++;
+            if (BindingSource != null && BindingTarget)
             {
-                if (Prefab)
-                    GameObjectPool.Instance.Release(Prefab, GoBase);
-                else
-                    GameObjectPool.Instance.Release(Asset, GoBase);
+                onBeforeUnbind?.Invoke();
+                OnBeforeUnbind();
+
+                GameObjectPool.Instance.Release(BindingSource, bindedGameObject);
             }
 
-            GoBase = null;
-            Asset = null;
-            Prefab = null;
-            IsBind = false;
+            bindedGameObject = null;
+            BindingSource = null;
+            State = GameObjectState.Unload;
             return true;
         }
 
@@ -121,8 +260,30 @@ namespace Common.Runtime
         {
         }
 
-        protected virtual void OnAfterBind()
+        protected virtual void OnAfterBind(GameObject go)
         {
+        }
+
+
+        public void Recycle(float delay)
+        {
+            recycleTimer.Schedule(delay);
+        }
+
+        public void RecycleImmediate()
+        {
+            recycleTimer.Cancel();
+            OnRequestRecycle();
+        }
+
+        public virtual void OnBeforeRecycle()
+        {
+            Versions++;
+        }
+
+        protected virtual void OnRequestRecycle()
+        {
+            Unbind();
         }
     }
 }

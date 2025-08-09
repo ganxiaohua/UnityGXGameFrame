@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace GameFrame.Runtime.Timer
+namespace GameFrame.Runtime
 {
     public class MultiMap<T, K>: SortedDictionary<T, List<K>>
     {

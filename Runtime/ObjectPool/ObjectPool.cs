@@ -9,9 +9,8 @@ namespace GameFrame.Runtime
     public class ObjectPool<T> : IObjectPoolBase where T : ObjectBase
     {
         [ShowInInspector] public TypeNamePair TypeName;
-        
-        [ShowInInspector]
-        private List<T> hideObject = new List<T>();
+
+        [ShowInInspector] private List<T> hideObject = new List<T>();
 
         /// <summary>
         /// 是否是激活的
@@ -22,7 +21,7 @@ namespace GameFrame.Runtime
         /// <summary>
         /// 如果说吐出操作比较耗时们可以使用异步突出
         /// </summary>
-       private Queue<ObjectPoolHandle> spawnAsyncQueue;
+        private Queue<ObjectPoolHandle> spawnAsyncQueue;
 
         /// <summary>
         /// 对象池最大数量
@@ -33,37 +32,31 @@ namespace GameFrame.Runtime
         /// <summary>
         /// 对象池需要携带的内容
         /// </summary>
-        [ShowInInspector]
-        private object userData;
+        [ShowInInspector] private object userData;
 
         /// <summary>
         /// 对象池每一帧吐出的最大数量
         /// </summary>
-        [ShowInInspector]
-        private int maxSpawnCount;
+        [ShowInInspector] private int maxSpawnCount;
 
 
         /// <summary>
         /// 对象池当前自动施法时间
         /// </summary>
-        [ShowInInspector]
-        private float curAutoReleaseTime;
+        [ShowInInspector] private float curAutoReleaseTime;
 
         /// <summary>
         /// 对象池轮训检查时间
         /// </summary>
-        [ShowInInspector]
-        private float autoReleaseInterval;
+        [ShowInInspector] private float autoReleaseInterval;
 
         /// <summary>
         /// 对象池内部对象进入HitObjet列表之后的到期事件
         /// </summary>
-        [ShowInInspector]
-        private float expireTime;
+        [ShowInInspector] private float expireTime;
 
         // private List<ObjectBase> m_ActionObjects;
-        [ShowInInspector]
-        private Type objectType;
+        [ShowInInspector] private Type objectType;
 
         public static ObjectPool<T> Create(TypeNamePair typeName, Type objectType, int maxNum, int expireTime, object userData)
         {
@@ -283,6 +276,11 @@ namespace GameFrame.Runtime
             spawnAsyncQueue.Clear();
             curAutoReleaseTime = 0;
             maxSpawnCount = 0;
+            foreach (var item in hideObject)
+            {
+                ReferencePool.Release(item);
+            }
+
             hideObject.Clear();
         }
     }

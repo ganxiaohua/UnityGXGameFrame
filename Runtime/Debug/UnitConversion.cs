@@ -1,7 +1,14 @@
 ﻿namespace GameFrame.Runtime
 {
-    public static class BytesSize
+    public static class UnitConversion
     {
+        public static string PrettySeconds(this float seconds)
+        {
+            if (float.IsInfinity(seconds))
+                return "INF";
+            return $"{seconds:0.0}s";
+        }
+
         public static string PrettyMemory(this long byteCount)
         {
             double kb = byteCount / 1024.0;

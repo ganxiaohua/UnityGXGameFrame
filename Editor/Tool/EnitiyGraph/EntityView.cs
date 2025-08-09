@@ -58,15 +58,21 @@ namespace GameFrame.Editor
                             return;
                         }
                     }
+
                     if (member.DeclaringType == typeof(World) && member.Name == "Multiple")
                     {
                         attributes.Add<ShowInInspectorAttribute>();
                     }
-                    else if(member.DeclaringType != typeof(World))
+                    else if (member.DeclaringType != typeof(World))
                     {
                         attributes.Add<ShowInInspectorAttribute>();
                         attributes.Add<ReadOnlyAttribute>();
                     }
+                }
+                else if (member is MethodInfo && member.GetCustomAttribute<ButtonAttribute>() != null)
+                {
+                    // attributes.Add<ButtonAttribute>();
+                    attributes.Add<ShowInInspectorAttribute>();
                 }
             }
         }

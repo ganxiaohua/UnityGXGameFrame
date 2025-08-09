@@ -39,7 +39,13 @@ namespace GameFrame.Runtime
         {
             UnityEngine.Assertions.Assert.AreNotEqual(expected, actual, explain);
         }
-        
+
+        [Conditional(ShowAssert)]
+        public static void AreNotEqual<T>(T expected, T actual, string message)
+        {
+            UnityEngine.Assertions.Assert.AreNotEqual(expected, actual, message);
+        }
+
         [Conditional(ShowAssert)]
         public static void AreEqual<T>(T expected, T actual, string message)
         {

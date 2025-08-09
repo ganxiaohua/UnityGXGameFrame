@@ -29,6 +29,7 @@ namespace GameFrame.Runtime
             EntityHouse.Instance.Update(datetime, realtimeSinceStartup);
             ObjectPoolManager.Instance.Update(datetime, realtimeSinceStartup);
             UIManager.Instance.Update(datetime, realtimeSinceStartup);
+            TimerSystem.Instance.Update(datetime);
             ReferencePool.Update(datetime, realtimeSinceStartup);
         }
 
