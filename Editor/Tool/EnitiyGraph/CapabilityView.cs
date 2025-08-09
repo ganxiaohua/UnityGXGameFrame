@@ -12,7 +12,7 @@ namespace GameFrame.Editor
         private static CapabilityView sWindow;
 
         private EffEntity effEntity;
-        private SHWorld shWorld;
+        private ECCWorld eccWorld;
 
         private List<CapabilityBase> capabilityBaseUpdateMode = new List<CapabilityBase>();
         private List<CapabilityBase> capabilityBaseFixUpdateMode = new List<CapabilityBase>();
@@ -22,7 +22,7 @@ namespace GameFrame.Editor
             sWindow ??= GetWindow<CapabilityView>();
             sWindow.titleContent.text = string.IsNullOrEmpty(effEntity.Name) ? "Entity" : effEntity.Name;
             sWindow.effEntity = effEntity;
-            sWindow.shWorld = (SHWorld) effEntity.world;
+            sWindow.eccWorld = (ECCWorld) effEntity.world;
             sWindow.Start();
             sWindow.Show();
         }
@@ -31,7 +31,7 @@ namespace GameFrame.Editor
         {
             capabilityBaseUpdateMode.Clear();
             capabilityBaseFixUpdateMode.Clear();
-            shWorld.GetCapability(effEntity, capabilityBaseUpdateMode, capabilityBaseFixUpdateMode);
+            eccWorld.GetCapability(effEntity, capabilityBaseUpdateMode, capabilityBaseFixUpdateMode);
         }
 
         protected override void OnBeginDrawEditors()
@@ -49,7 +49,7 @@ namespace GameFrame.Editor
                 var oldColor = GUI.contentColor;
                 GUI.color = capability.IsActive ? Color.cyan : Color.white;
                 if (capability.TagList != null)
-                    GUI.color = shWorld.IsBindCapability(effEntity, capability.TagList) ? Color.yellow : GUI.color;
+                    GUI.color = eccWorld.IsBindCapability(effEntity, capability.TagList) ? Color.yellow : GUI.color;
                 // EditorGUI.DrawRect(new Rect(0,0,200,50), new Color(0.15f, 0.15f, 0.15f));
                 EditorGUILayout.LabelField(capability.GetType().Name);
                 EditorGUILayout.EndVertical();

@@ -11,11 +11,11 @@ namespace GameFrame.Runtime
 
         private int estimatedNumberPlayer;
 
-        private SHWorld shWorld;
+        private ECCWorld eccWorld;
 
-        public void Init(SHWorld shWorld, int capabilityCount, int estimatedNumberPlayer)
+        public void Init(ECCWorld eccWorld, int capabilityCount, int estimatedNumberPlayer)
         {
-            this.shWorld = shWorld;
+            this.eccWorld = eccWorld;
             this.estimatedNumberPlayer = estimatedNumberPlayer;
             capabilitiesUpdateList = new JumpIndexArray<CapabilityBase>[capabilityCount];
             capabilitiesFixUpdateList = new JumpIndexArray<CapabilityBase>[capabilityCount];

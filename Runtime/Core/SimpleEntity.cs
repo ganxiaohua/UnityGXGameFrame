@@ -1,6 +1,6 @@
 ﻿namespace GameFrame.Runtime
 {
-    public class InferiorEntity : IEntity
+    public class SimpleEntity : IEntity
     {
         public int ID { get; private set; }
         public IEntity Parent { get; private set; }

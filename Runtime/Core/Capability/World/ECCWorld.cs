@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace GameFrame.Runtime
 {
-    public abstract class SHWorld : World, IFixedUpdateSystem
+    public abstract class ECCWorld : World, IFixedUpdateSystem
     {
         private int maxCapabilityCount;
 

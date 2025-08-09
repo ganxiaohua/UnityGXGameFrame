@@ -224,7 +224,7 @@ namespace GameFrame.Editor
             graphNode.AddButton("组件", (x) => { ShowComponent(node); });
             if (node.Entity is EffEntity effEntity)
             {
-                if (effEntity.world is SHWorld)
+                if (effEntity.world is ECCWorld)
                 {
                     graphNode.AddButton("能力", (x) => { ShowCapability(node); });
                 }

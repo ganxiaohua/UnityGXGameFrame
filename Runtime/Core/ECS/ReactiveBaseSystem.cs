@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace GameFrame.Runtime
 {
-    public abstract class ReactiveBaseSystem : InferiorEntity, IInitializeSystem<World>
+    public abstract class ReactiveBaseSystem : SimpleEntity, IInitializeSystem<World>
     {
         /// <summary>
         /// 挂载的父实体

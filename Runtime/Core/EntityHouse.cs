@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace GameFrame.Runtime
 {
-    public class EntityHouse : Singleton<EntityHouse>
+    public partial class EntityHouse : Singleton<EntityHouse>
     {
         /// <summary>
         /// 不会包含EcsEntity的实体集合
@@ -62,8 +62,7 @@ namespace GameFrame.Runtime
             {
                 throw new Exception($"TypeWithEntitys not have entity:{entity.ID}");
             }
-
-            RemoveAllSystem(entity);
+            updateManager.RemoveUpdateSystem(entity);
             EventData.Instance.RemoveEventEntity(entity);
             entityList.Remove(entity);
         }
@@ -152,16 +151,7 @@ namespace GameFrame.Runtime
 
             updateManager.AddUpdateSystem(entity, system);
         }
-
-        /// <summary>
-        /// 删除一个updatesystem
-        /// </summary>
-        /// <param name="entity"></param>
-        private void RemoveUpdateSystem(IEntity entity, ISystem system = null)
-        {
-            updateManager.RemoveUpdateSystem(entity, system);
-        }
-
+        
         /// <summary>
         /// 运行PreShowsystem
         /// </summary>
@@ -216,16 +206,7 @@ namespace GameFrame.Runtime
                 RunHideSystem((Entity) entity1.Value);
             }
         }
-
-
-        /// <summary>
-        /// 有实体进行销毁
-        /// </summary>
-        /// <param name="entity"></param>
-        private void RemoveAllSystem(IEntity entity)
-        {
-            RemoveUpdateSystem(entity);
-        }
+        
 
         public void Update(float elapseSeconds, float realElapseSeconds)
         {

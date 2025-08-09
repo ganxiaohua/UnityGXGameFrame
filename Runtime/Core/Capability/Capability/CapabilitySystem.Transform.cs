@@ -32,7 +32,7 @@ namespace GameFrame.Runtime
             }
 
             var cap = array.Add(player.ID, capability);
-            cap.Init(id,shWorld, player);
+            cap.Init(id,eccWorld, player);
         }
 
         public void GetCapabilityBaseWithPlayer(EffEntity player, List<CapabilityBase> update, List<CapabilityBase> fixedUpdate)

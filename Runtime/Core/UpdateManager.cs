@@ -76,27 +76,16 @@ namespace GameFrame.Runtime
         /// </summary>
         /// <param name="enitity"></param>
         /// <param name="system"></param>
-        public void RemoveUpdateSystem(IEntity enitity, ISystem system = null)
+        public void RemoveUpdateSystem(IEntity enitity)
         {
             if (!entityUpdateMap.TryGetValue(enitity, out var systems)) return;
-            if (system != null)
+            foreach (var sys in systems)
             {
-                var updateType = system.GetUpdateSystemType();
+                var updateType = sys.GetUpdateSystemType();
                 if (updateType == (int) UpdateType.Node)
                     return;
-                systems.Remove(system);
-                RemoveUpdate(updateType, system);
-            }
-            else
-            {
-                foreach (var sys in systems)
-                {
-                    var updateType = sys.GetUpdateSystemType();
-                    if (updateType == (int) UpdateType.Node)
-                        return;
-                    systems.Remove(sys);
-                    RemoveUpdate(updateType, sys);
-                }
+                systems.Remove(sys);
+                RemoveUpdate(updateType, sys);
             }
         }
 
