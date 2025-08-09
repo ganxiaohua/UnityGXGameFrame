@@ -20,7 +20,7 @@ namespace Common.Runtime
 
         public int Version { get; private set; }
 
-        public bool IsAction { get; private set; }
+        public bool IsBind { get; private set; }
 
 
         public event Action onBeforeUnbind;
@@ -54,14 +54,14 @@ namespace Common.Runtime
             var goBase = GameObjectPool.Instance.InstantiateGameObject(prefab, parent);
             goBase.Obj.hideFlags = HideFlags.None;
             this.GoBase = goBase;
-            this.IsAction = true;
+            this.IsBind = true;
             this.Prefab = prefab;
             OnAfterBind();
             onAfterBind?.Invoke();
         }
 
         public async UniTask<bool> BindFromAssetAsync(string asset, Transform parent = null,
-            CancellationToken cancelToken = default)
+                CancellationToken cancelToken = default)
         {
             Version++;
             int prevVersion = Version;
@@ -90,7 +90,7 @@ namespace Common.Runtime
             Unbind();
             this.GoBase = go;
             this.Asset = asset;
-            this.IsAction = true;
+            this.IsBind = true;
             OnAfterBind();
             onAfterBind?.Invoke();
             return true;
@@ -99,7 +99,7 @@ namespace Common.Runtime
         public bool Unbind()
         {
             Version++;
-            if (!IsAction) return false;
+            if (!IsBind) return false;
             onBeforeUnbind?.Invoke();
             OnBeforeUnbind();
             if (GoBase != null)
@@ -113,7 +113,7 @@ namespace Common.Runtime
             GoBase = null;
             Asset = null;
             Prefab = null;
-            IsAction = false;
+            IsBind = false;
             return true;
         }
 
