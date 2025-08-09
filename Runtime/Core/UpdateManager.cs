@@ -85,18 +85,13 @@ namespace GameFrame.Runtime
                 if (updateType == (int) UpdateType.Node)
                     return;
                 systems.Remove(sys);
-                RemoveUpdate(updateType, sys);
+                if ((updateType & (1 << (int) UpdateType.Update)) != 0)
+                    updateSystemEntityArr[(int) UpdateType.Update].Remove(sys);
+                if ((updateType & (1 << (int) UpdateType.FixedUpdate)) != 0)
+                    updateSystemEntityArr[(int) UpdateType.FixedUpdate].Remove(sys);
+                if ((updateType & (1 << (int) UpdateType.LateUpdate)) != 0)
+                    updateSystemEntityArr[(int) UpdateType.LateUpdate].Remove(sys);
             }
-        }
-
-        private void RemoveUpdate(int updateType, ISystem system)
-        {
-            if ((updateType & (1 << (int) UpdateType.Update)) != 0)
-                updateSystemEntityArr[(int) UpdateType.Update].Remove(system);
-            if ((updateType & (1 << (int) UpdateType.FixedUpdate)) != 0)
-                updateSystemEntityArr[(int) UpdateType.FixedUpdate].Remove(system);
-            if ((updateType & (1 << (int) UpdateType.LateUpdate)) != 0)
-                updateSystemEntityArr[(int) UpdateType.LateUpdate].Remove(system);
         }
     }
 }
