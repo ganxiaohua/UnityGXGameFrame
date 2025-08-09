@@ -10,14 +10,19 @@ namespace GameFrame.Runtime
         public ECCWorld World { get; private set; }
         public EffEntity Owner { get; private set; }
         public bool IsActive { get; private set; }
-
         public virtual CapabilitysUpdateMode UpdateMode { get; protected set; } = CapabilitysUpdateMode.Update;
         public virtual int TickGroupOrder { get; protected set; }
 
-        public virtual void Init(int id,ECCWorld world, EffEntity owner)
+        public void Init(int id, ECCWorld world, EffEntity owner)
         {
             ID = id;
+            World = world;
             Owner = owner;
+            OnInit();
+        }
+
+        protected virtual void OnInit()
+        {
         }
 
         public abstract bool ShouldActivate();
