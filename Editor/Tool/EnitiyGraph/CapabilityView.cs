@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using GameFrame.Runtime;
 using Sirenix.OdinInspector.Editor;
 using UnityEditor;
@@ -43,10 +42,18 @@ namespace GameFrame.Editor
             }
 
             EditorGUILayout.LabelField("蓝色表示激活，白色表示未激活，黄色表示被锁住了");
-            foreach (var capability in capabilityBaseUpdateMode)
+            EditorGUILayout.LabelField("___________________________update");
+            Show(capabilityBaseUpdateMode);
+            EditorGUILayout.LabelField("___________________________fixedUpdate");
+            Show(capabilityBaseFixUpdateMode);
+        }
+
+        private void Show(List<CapabilityBase> baseMode)
+        {
+            var oldColor = GUI.contentColor;
+            foreach (var capability in baseMode)
             {
                 EditorGUILayout.BeginHorizontal();
-                var oldColor = GUI.contentColor;
                 GUI.color = capability.IsActive ? Color.cyan : Color.white;
                 if (capability.TagList != null)
                     GUI.color = eccWorld.IsBindCapability(effEntity, capability.TagList) ? Color.yellow : GUI.color;
@@ -54,7 +61,10 @@ namespace GameFrame.Editor
                 EditorGUILayout.LabelField(capability.GetType().Name);
                 EditorGUILayout.EndVertical();
             }
+
+            GUI.color = oldColor;
         }
+
 
         protected override void OnImGUI()
         {
