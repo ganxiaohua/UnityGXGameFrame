@@ -32,7 +32,7 @@ namespace GameFrame.Runtime
         {
             ObjectCacheArea = new GameObject();
             ObjectCacheArea.name = "ObjectCacheArea";
-            ObjectCacheArea.transform.localScale = Vector3.zero;
+            ObjectCacheArea.transform.localScale = Vector3.one;
             ObjectCacheArea.transform.position = Vector3.zero;
             GameObject.DontDestroyOnLoad(ObjectCacheArea);
         }

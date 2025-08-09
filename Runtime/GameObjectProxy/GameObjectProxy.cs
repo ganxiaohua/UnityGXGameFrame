@@ -204,9 +204,9 @@ namespace GameFrame.Runtime
 
             SetParentInternal(parent);
 
-            // var trans = BindingTarget.transform;
-            // trans.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-            // trans.localScale = Vector3.one;
+            var trans = BindingTarget.transform;
+            trans.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+            trans.localScale = Vector3.one;
 
             State = GameObjectState.Loaded;
             OnAfterBind(BindingTarget);
