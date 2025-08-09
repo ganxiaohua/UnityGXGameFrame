@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace GameFrame.Runtime
 {
-    public abstract class ReactiveBaseSystem : IInitializeSystem<World>
+    public abstract class ReactiveBaseSystem : InferiorEntity, IInitializeSystem<World>
     {
         /// <summary>
         /// 挂载的父实体
@@ -40,12 +40,11 @@ namespace GameFrame.Runtime
                     effEntities.Add(ecsentity);
                 }
             }
+
             collector.CollectedEntities.Clear();
             int count = effEntities.Count;
             Execute(effEntities);
             effEntities.Clear();
         }
-
-        public abstract void Dispose();
     }
 }

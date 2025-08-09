@@ -1,6 +1,6 @@
 ﻿namespace GameFrame.Runtime
 {
-    public enum UpdateType 
+    public enum UpdateType : int
     {
         Node = -1,
         Update = 0,

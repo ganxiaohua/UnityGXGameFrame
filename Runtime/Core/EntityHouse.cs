@@ -3,8 +3,6 @@ using System.Collections.Generic;
 
 namespace GameFrame.Runtime
 {
-    using DDictionaryETC = DDictionary<IEntity, Type, ISystem>;
-
     public class EntityHouse : Singleton<EntityHouse>
     {
         /// <summary>
@@ -14,9 +12,7 @@ namespace GameFrame.Runtime
 
         private Dictionary<SceneType, IScene> sceneEntityDic = new(4);
 
-        private DDictionaryETC entitySysTypeSysDic = new();
-
-        private UpdateSystems updateSystems = new();
+        private UpdateManager updateManager = new();
 
 
         /// <summary>
@@ -142,67 +138,6 @@ namespace GameFrame.Runtime
             sceneEntityDic.Remove(sceneType);
         }
 
-        public void AddSystem<T>(World entity) where T : ISystem
-        {
-            AddSystem(entity, typeof(T));
-        }
-
-        public void AddSystem<T>(World entity, object obj) where T : ISystem
-        {
-            AddSystem(entity, typeof(T), obj);
-        }
-
-
-        /// <summary>
-        /// 创建获得得到一个SystemObject
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <param name="system"> 系统类</param>
-        /// <returns></returns>
-        private ISystem CreateSystem(IEntity entity, Type systemType)
-        {
-            var sys = entitySysTypeSysDic.GetVValue(entity, systemType);
-            Assert.IsNull(sys, $"{systemType.Name}已经加入了过了");
-            sys = (ISystem) ReferencePool.Acquire(systemType);
-            entitySysTypeSysDic.Add(entity, systemType, sys);
-            return sys;
-        }
-
-        private ISystem CreateSystem(IEntity entity, Type systemType, object obj)
-        {
-            var sys = entitySysTypeSysDic.GetVValue(entity, systemType);
-            Assert.IsNull(sys, $"{systemType.Name}已经加入了过了");
-            sys = (ISystem) ReferencePool.Acquire(systemType);
-            entitySysTypeSysDic.Add(entity, systemType, sys);
-            ((ISystemCarryover) sys).Carryover = obj;
-            return sys;
-        }
-
-        /// <summary>
-        /// ecs 加入系统
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <param name="type"></param>
-        public void AddSystem(World entity, Type type)
-        {
-            var sys = CreateSystem(entity, type);
-            sys.SystemInitialize(entity);
-            updateSystems.AddUpdateSystem(entity, sys);
-        }
-
-        /// <summary>
-        /// ecs 加入系统
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <param name="type"></param>
-        public void AddSystem(World entity, Type type, object obj)
-        {
-            var sys = CreateSystem(entity, type, obj);
-            sys.SystemInitialize(entity);
-            updateSystems.AddUpdateSystem(entity, sys);
-        }
-
-
         /// <summary>
         /// 自身又是实体又是Updtae系统
         /// </summary>
@@ -215,24 +150,7 @@ namespace GameFrame.Runtime
                 return;
             }
 
-            void Add(Type type)
-            {
-                entitySysTypeSysDic.Add(entity, type, system);
-                updateSystems.AddUpdateSystem(entity, system);
-            }
-
-            switch (system)
-            {
-                case IUpdateSystem:
-                    Add(typeof(IUpdateSystem));
-                    break;
-                case ILateUpdateSystem:
-                    Add(typeof(ILateUpdateSystem));
-                    break;
-                case IFixedUpdateSystem:
-                    Add(typeof(IFixedUpdateSystem));
-                    break;
-            }
+            updateManager.AddUpdateSystem(entity, system);
         }
 
         /// <summary>
@@ -241,7 +159,7 @@ namespace GameFrame.Runtime
         /// <param name="entity"></param>
         private void RemoveUpdateSystem(IEntity entity, ISystem system = null)
         {
-            updateSystems.RemoveUpdateSystem(entity, system);
+            updateManager.RemoveUpdateSystem(entity, system);
         }
 
         /// <summary>
@@ -264,27 +182,7 @@ namespace GameFrame.Runtime
             ISystem system = (ISystem) entity;
             system?.SystemShow();
             EventData.Instance.AddEventEntity(entity);
-            if (!updateSystems.InUpdateMap(entity))
-            {
-                var sys = entitySysTypeSysDic.GetVValue(entity, typeof(IUpdateSystem));
-                if (sys != null)
-                {
-                    updateSystems.AddUpdateSystem(entity, sys);
-                }
-
-                sys = entitySysTypeSysDic.GetVValue(entity, typeof(ILateUpdateSystem));
-                if (sys != null)
-                {
-                    updateSystems.AddUpdateSystem(entity, sys);
-                }
-
-                sys = entitySysTypeSysDic.GetVValue(entity, typeof(IFixedUpdateSystem));
-                if (sys != null)
-                {
-                    updateSystems.AddUpdateSystem(entity, sys);
-                }
-            }
-
+            updateManager.AddUpdateSystem(entity, system);
             foreach (IEntity entity1 in entity.Children)
             {
                 RunShowSystem((Entity) entity1);
@@ -307,7 +205,7 @@ namespace GameFrame.Runtime
             ISystem system = (ISystem) entity;
             system?.SystemHide();
             EventData.Instance.RemoveEventEntity(entity);
-            updateSystems.RemoveUpdateSystem(entity);
+            updateManager.RemoveUpdateSystem(entity);
             foreach (IEntity entity1 in entity.Children)
             {
                 RunHideSystem((Entity) entity1);
@@ -321,69 +219,32 @@ namespace GameFrame.Runtime
 
 
         /// <summary>
-        /// 删除实体身上的某一个系统
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <typeparam name="T"></typeparam>
-        public void RemoveSystem<T>(IEntity entity)
-        {
-            Type type = typeof(T);
-            var sys = entitySysTypeSysDic.GetVValue(entity, type);
-            if (sys != null)
-            {
-                RemoveUpdateSystem(entity, sys);
-                ReferencePool.Release(sys);
-            }
-        }
-
-        /// <summary>
         /// 有实体进行销毁
         /// </summary>
         /// <param name="entity"></param>
         private void RemoveAllSystem(IEntity entity)
         {
-            Type entityType = entity.GetType();
-            var allSystemDic = entitySysTypeSysDic.GetValue(entity);
-            if (allSystemDic == null)
-            {
-                //这个实体上不存在系统
-                return;
-            }
-
             RemoveUpdateSystem(entity);
-            if (GetEntityCount(entityType) == 0)
-            {
-                var item = entitySysTypeSysDic.RemoveTkey(entity);
-                foreach (KeyValuePair<Type, ISystem> typeSystem in item)
-                {
-                    ReferencePool.Release(typeSystem.Value);
-                }
-            }
         }
 
         public void Update(float elapseSeconds, float realElapseSeconds)
         {
-            updateSystems.UpdateSystemEntityArr[(int) UpdateType.Update].SystemUpdate(elapseSeconds, realElapseSeconds);
+            updateManager.UpdateSystemEntityArr[(int) UpdateType.Update].SystemUpdate(elapseSeconds, realElapseSeconds);
         }
 
         public void LateUpdate(float elapseSeconds, float realElapseSeconds)
         {
-            updateSystems.UpdateSystemEntityArr[(int) UpdateType.LateUpdate].SystemLateUpdate(elapseSeconds, realElapseSeconds);
+            updateManager.UpdateSystemEntityArr[(int) UpdateType.LateUpdate].SystemLateUpdate(elapseSeconds, realElapseSeconds);
         }
 
         public void FixedUpdate(float elapseSeconds, float realElapseSeconds)
         {
-            updateSystems.UpdateSystemEntityArr[(int) UpdateType.FixedUpdate].SystemFixedUpdate(elapseSeconds, realElapseSeconds);
+            updateManager.UpdateSystemEntityArr[(int) UpdateType.FixedUpdate].SystemFixedUpdate(elapseSeconds, realElapseSeconds);
         }
 
 
         public void Disable()
         {
-            foreach (var ts in entitySysTypeSysDic)
-            {
-                if (ts is not IEntity)
-                    ReferencePool.Release(ts);
-            }
         }
     }
 }

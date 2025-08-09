@@ -1,5 +1,4 @@
 ﻿#if UNITY_EDITOR
-using UnityEngine.Profiling;
 #endif
 
 namespace GameFrame.Runtime
@@ -76,22 +75,25 @@ namespace GameFrame.Runtime
         }
 
 
-        public static UpdateType GetUpdateSystemType(this ISystem system)
+        public static int GetUpdateSystemType(this ISystem system)
         {
+            int key = 0;
             if (system is IUpdateSystem)
             {
-                return UpdateType.Update;
-            }
-            else if (system is ILateUpdateSystem)
-            {
-                return UpdateType.LateUpdate;
-            }
-            else if (system is IFixedUpdateSystem)
-            {
-                return UpdateType.FixedUpdate;
+                key += 1 << (int) UpdateType.Update;
             }
 
-            return UpdateType.Node;
+            if (system is ILateUpdateSystem)
+            {
+                key += 1 << (int) UpdateType.LateUpdate;
+            }
+
+            if (system is IFixedUpdateSystem)
+            {
+                key += 1 << (int) UpdateType.FixedUpdate;
+            }
+
+            return key;
         }
 
 

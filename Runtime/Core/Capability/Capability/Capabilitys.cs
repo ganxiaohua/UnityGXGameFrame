@@ -34,6 +34,8 @@ namespace GameFrame.Runtime
         private void ConvenientCapabilitys(JumpIndexArray<CapabilityBase>[] arrays, float delatTime, float realElapseSeconds)
         {
             int count = arrays.Length;
+            if (count == 0)
+                return;
             for (int i = 0; i < count; i++)
             {
                 var capabilityArray = arrays[i];
@@ -56,6 +58,7 @@ namespace GameFrame.Runtime
                 {
                     continue;
                 }
+
                 if (!capability.IsActive)
                 {
                     bool succ = capability.ShouldActivate();
@@ -96,6 +99,7 @@ namespace GameFrame.Runtime
                 {
                     ReferencePool.Release(item);
                 }
+
                 array.Dispose();
             }
         }
