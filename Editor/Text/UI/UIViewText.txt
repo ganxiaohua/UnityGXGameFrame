@@ -1,6 +1,6 @@
 using System;
 using FairyGUI;
-using GameFrame;
+using GameFrame.Runtime;
 using UnityEngine;
 
 namespace GXGame
