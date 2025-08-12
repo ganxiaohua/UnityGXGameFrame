@@ -9,12 +9,12 @@ namespace GameFrame.Runtime
         private const string OutAnimationName = "out";
 
         /// <summary>
-        ///     当前动画的存储
+        ///当前动画的存储
         /// </summary>
-        protected Dictionary<string, Transition[]> AnimationPlayDic;
+        protected Dictionary<string, List<Transition>> AnimationPlayDic;
 
         /// <summary>
-        ///     正在播放动画的数量当value的数值为0时代表播放结束
+        ///正在播放动画的数量当value的数值为0时代表播放结束
         /// </summary>
         protected Dictionary<string, int> AnimationPlayingCount;
 
@@ -43,7 +43,7 @@ namespace GameFrame.Runtime
             m_PlayCompleteCallbackIn = AnimatoinInComplete;
             m_PlayCompleteCallbackOut = AnimatoinOutComplete;
             AnimationPlayingCount = new Dictionary<string, int>();
-            AnimationPlayDic = new Dictionary<string, Transition[]>();
+            AnimationPlayDic = new();
         }
 
         public virtual void OnShow()
@@ -94,15 +94,15 @@ namespace GameFrame.Runtime
         {
             if (!AnimationPlayDic.TryGetValue(animationName, out var Transitions))
             {
-                Transitions = Root.GetTransitionsInChildren(animationName);
+                Transitions = Root.Transitions;
                 AnimationPlayDic.Add(animationName, Transitions);
             }
 
-            AnimationPlayingCount[animationName] = Transitions.Length;
+            AnimationPlayingCount[animationName] = Transitions.Count;
 
             foreach (var animatoin in Transitions) animatoin.Play(compeleFunc);
 
-            return Transitions.Length > 0;
+            return Transitions.Count > 0;
         }
 
         protected void AnimatoinInComplete()
