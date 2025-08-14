@@ -111,8 +111,7 @@ namespace GameFrame.Runtime
             BindFromPrefab(prefab, transform.parent);
         }
 
-        public async UniTask<bool> BindFromAssetAsync(string asset, Transform parent = null,
-            CancellationToken cancelToken = default)
+        public async UniTask<bool> BindFromAssetAsync(string asset, Transform parent = null, CancellationToken cancelToken = default)
         {
             Assert.AreNotEqual(GameObjectState.Destroy, State, $"GameObjectProxy({this}) already destroyed");
             if (CheckIdenticalBindingSource(asset, parent))

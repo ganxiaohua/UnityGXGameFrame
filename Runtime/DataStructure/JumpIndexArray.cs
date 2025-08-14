@@ -37,7 +37,7 @@ namespace GameFrame.Runtime
 
             IndexList = new List<int>(arrayMaxCount);
         }
-        
+
         public T Add(int index, T t)
         {
             if (index >= Items.Length)
@@ -53,6 +53,7 @@ namespace GameFrame.Runtime
                 Debugger.LogWarning($"add {index} error!! type {typeof(T).Name}");
                 return Items[index];
             }
+
             IndexList.Add(index);
             Items[index] = t;
             return t;
@@ -84,8 +85,9 @@ namespace GameFrame.Runtime
         [StructLayout(LayoutKind.Auto)]
         public struct GXEnumerator : IEnumerator<T>
         {
-            private List<int>.Enumerator indexEnumerator;
+            private List<int> indexs;
             private T[] items;
+            private int cur;
 
             internal GXEnumerator(List<int> indexs, T[] items)
             {
@@ -95,29 +97,31 @@ namespace GameFrame.Runtime
                 }
 
                 this.items = items;
-                indexEnumerator = indexs.GetEnumerator();
+                this.indexs = indexs;
+                cur = indexs.Count;
             }
 
             public T Current
             {
-                get { return items[indexEnumerator.Current]; }
+                get { return items[indexs[cur]]; }
             }
 
             object IEnumerator.Current => Current;
 
             public void Dispose()
             {
-                indexEnumerator.Dispose();
+                cur = indexs.Count;
             }
 
             public bool MoveNext()
             {
-                return indexEnumerator.MoveNext();
+                cur--;
+                return cur >= 0;
             }
 
             void IEnumerator.Reset()
             {
-                ((IEnumerator<int>) indexEnumerator).Reset();
+                cur = indexs.Count;
             }
         }
     }
