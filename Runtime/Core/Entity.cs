@@ -218,6 +218,11 @@ namespace GameFrame.Runtime
         {
             Remove(type);
         }
+        
+        public void RemoveComponent(IEntity type)
+        {
+            Remove(type.GetType());
+        }
 
         /// <summary>
         /// 挂载实体
