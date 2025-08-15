@@ -87,7 +87,7 @@ namespace GameFrame.Runtime
         /// </summary>
         /// <param name="sceneType"></param>
         /// <typeparam name="T"></typeparam>
-        public IScene AddSceneEntity<T>(SceneType sceneType, FsmState state) where T : class, IEntity, IScene, new()
+        public IScene AddSceneEntity<T>(SceneType sceneType, Entity state) where T : class, IEntity, IScene, new()
         {
             if (sceneEntityDic.TryGetValue(sceneType, out IScene IScene))
             {

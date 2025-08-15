@@ -7,9 +7,9 @@
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static T ChangePlayerScene<T>(FsmState state) where T : class, IEntity, IScene, new()
+        public static T ChangePlayerScene<T>() where T : class, IEntity, IScene, new()
         {
-            IScene scene = EntityHouse.Instance.AddSceneEntity<T>(SceneType.PlayerScene, state);
+            IScene scene = EntityHouse.Instance.AddSceneEntity<T>(SceneType.PlayerScene, GXGameFrame.Instance.RootEntity);
             return (T) scene;
         }
 
@@ -28,9 +28,9 @@
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static T ChangeOtherPlayerScene<T>(FsmState state) where T : class, IEntity, IScene, new()
+        public static T ChangeOtherPlayerScene<T>() where T : class, IEntity, IScene, new()
         {
-            IScene scene = EntityHouse.Instance.AddSceneEntity<T>(SceneType.OtherPlayerScene, state);
+            IScene scene = EntityHouse.Instance.AddSceneEntity<T>(SceneType.OtherPlayerScene, GXGameFrame.Instance.RootEntity);
             return (T) scene;
         }
 
@@ -49,7 +49,7 @@
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static T ChangePlayBackScene<T>(FsmState state) where T : class, IEntity, IScene, new()
+        public static T ChangePlayBackScene<T>(Entity state) where T : class, IEntity, IScene, new()
         {
             IScene scene = EntityHouse.Instance.AddSceneEntity<T>(SceneType.PlayBackScene, state);
             return (T) scene;
