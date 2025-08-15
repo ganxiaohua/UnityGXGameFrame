@@ -44,8 +44,8 @@ namespace GameFrame.Editor
         {
             base.OnEnable();
 
-            script = EditorPrefs.GetString(HistoryConsoleScript);
-            usings = EditorPrefs.GetString(HistoryConsoleUsings);
+            script = UnityEditor.EditorPrefs.GetString(HistoryConsoleScript);
+            usings = UnityEditor.EditorPrefs.GetString(HistoryConsoleUsings);
 
             HistoryCollectScripts.Init();
 
@@ -197,7 +197,7 @@ namespace GameFrame.Editor
             usingsField.RegisterValueChangedCallback((e) =>
             {
                 usings = e.newValue;
-                EditorPrefs.SetString(HistoryConsoleUsings, usings);
+                UnityEditor.EditorPrefs.SetString(HistoryConsoleUsings, usings);
             });
             body.Add(usingsField);
 
@@ -237,7 +237,7 @@ namespace GameFrame.Editor
             {
                 EditUndo.Record(script);
                 script = e.newValue;
-                EditorPrefs.SetString(HistoryConsoleScript, script);
+                UnityEditor.EditorPrefs.SetString(HistoryConsoleScript, script);
                 RefreshCollectToggle();
             });
             scriptField.RegisterCallback<KeyDownEvent>((e) =>
@@ -248,7 +248,7 @@ namespace GameFrame.Editor
                     {
                         script = EditUndo.PerformUndo(script);
                         scriptField.SetValueWithoutNotify(script);
-                        EditorPrefs.SetString(HistoryConsoleScript, script);
+                        UnityEditor.EditorPrefs.SetString(HistoryConsoleScript, script);
                         RefreshCollectToggle();
                         e.StopImmediatePropagation();
                     }
@@ -257,7 +257,7 @@ namespace GameFrame.Editor
                     {
                         script = EditUndo.PerformRedo(script);
                         scriptField.SetValueWithoutNotify(script);
-                        EditorPrefs.SetString(HistoryConsoleScript, script);
+                        UnityEditor.EditorPrefs.SetString(HistoryConsoleScript, script);
                         RefreshCollectToggle();
                         e.StopImmediatePropagation();
                     }
@@ -324,7 +324,7 @@ namespace GameFrame.Editor
 
             public static void Init()
             {
-                string str = EditorPrefs.GetString(Reg);
+                string str = UnityEditor.EditorPrefs.GetString(Reg);
                 data = JsonUtility.FromJson<Data>(str);
                 if (data == null)
                     data = new Data();
@@ -338,13 +338,13 @@ namespace GameFrame.Editor
             public static void Add(string code)
             {
                 data.list.Add(code);
-                EditorPrefs.SetString(Reg, JsonUtility.ToJson(data));
+                UnityEditor.EditorPrefs.SetString(Reg, JsonUtility.ToJson(data));
             }
 
             public static void Remove(string code)
             {
                 data.list.Remove(code);
-                EditorPrefs.SetString(Reg, JsonUtility.ToJson(data));
+                UnityEditor.EditorPrefs.SetString(Reg, JsonUtility.ToJson(data));
             }
 
             public static string GetCode(int index)

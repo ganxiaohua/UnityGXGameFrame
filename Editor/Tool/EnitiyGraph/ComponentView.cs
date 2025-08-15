@@ -55,7 +55,7 @@ namespace GameFrame.Editor
         private Dictionary<int, PropertyTree> ecsComponentsTree = new();
 
         private List<int> waitRemoveList = new();
-        
+
 
         public static void Init(EffEntity effEntity)
         {
@@ -87,7 +87,7 @@ namespace GameFrame.Editor
                 }
             }
         }
-        
+
 
         protected override void OnBeginDrawEditors()
         {
@@ -97,6 +97,7 @@ namespace GameFrame.Editor
                 Close();
                 return;
             }
+
             var comIndexs = effEntity.ecsComponentArrayEx.IndexList;
             waitRemoveList.Clear();
             foreach (var key in ecsComponentsTree.Keys)
@@ -171,12 +172,12 @@ namespace GameFrame.Editor
             methodInfo.Invoke(null, new object[] {effEntity});
             isShowAllEcsComponents = false;
         }
-        
+
         public static void Destroy()
         {
             sWindow?.Close();
         }
-        
+
         protected override void OnDestroy()
         {
             foreach (var t in ecsComponentsTree.Values) t.Dispose();

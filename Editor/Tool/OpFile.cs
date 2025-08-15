@@ -1,17 +1,28 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using UnityEngine;
 
 namespace GameFrame.Editor
 {
     public static class OpFile
     {
-        public static void CreateDiectory(string path)
+        public static bool CreateDirectory(string path)
         {
-            var directoryName = Path.GetDirectoryName(path);
-            if (!Directory.Exists(directoryName))
+            if (Directory.Exists(path))
+                return false;
+            if (File.Exists(path))
+                return false;
+            try
             {
-                Directory.CreateDirectory(directoryName);
+                Directory.CreateDirectory(path);
             }
+            catch (Exception e)
+            {
+                UnityEngine.Debug.LogException(e);
+                return false;
+            }
+
+            return true;
         }
 
         public static void DeleteFile(string filePath)

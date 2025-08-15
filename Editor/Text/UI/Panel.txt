@@ -1,0 +1,35 @@
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using FairyGUI;
+using GameFrame.Runtime;
+
+
+namespace Eden.Gameplay.Runtime.UI
+{{
+    public partial class {1}Panel : TransitionPanel
+    {{
+        public override string Package => "{0}";
+        public override string Name => "{1}";
+
+        public override async UniTask OnInitializeAsync(GComponent root, CancellationToken cancelToken = default)
+        {{
+            await base.OnInitializeAsync(root, cancelToken);
+            InitializeComponents(root);
+        }}
+
+        public override void OnShow(object args = null)
+        {{
+            base.OnShow(args);
+        }}
+
+        public override void OnHide()
+        {{
+            base.OnHide();
+        }}
+        
+        public override void Dispose()
+        {{
+            base.Dispose();
+        }}
+    }}
+}}

@@ -11,11 +11,12 @@ namespace GameFrame.Runtime
         {
             RootEntity = ReferencePool.Acquire<RootEntity>();
             RootEntity.OnDirty(null, 0);
-            RootEntity.AddComponent<UIComponent>();
+            RootEntity.AddComponent<UIRootComponents>();
             var assetsFsmController = await RootEntity.AddComponent<AssetsFsmController>();
             if (assetsFsmController.TaskState != TaskState.Succ)
             {
                 Debugger.LogError("资源流程失败");
+                return;
             }
 
             RootEntity.RemoveComponent<AssetsFsmController>();
@@ -28,8 +29,8 @@ namespace GameFrame.Runtime
             AssetManager.Instance.Update(datetime);
             EntityHouse.Instance.Update(datetime, realtimeSinceStartup);
             ObjectPoolManager.Instance.Update(datetime, realtimeSinceStartup);
-            UIManager.Instance.Update(datetime, realtimeSinceStartup);
             TimerSystem.Instance.Update(datetime);
+            UISystem.Instance.Update();
             ReferencePool.Update(datetime, realtimeSinceStartup);
         }
 
@@ -50,7 +51,7 @@ namespace GameFrame.Runtime
         public void OnApplicationQuit()
         {
             ReferencePool.Release(RootEntity);
-            UIManager.Instance.Disable();
+            // UISystem.Instance.Dispose();
             EntityHouse.Instance.Disable();
             ObjectPoolManager.Instance.Disable();
             AssetManager.Instance.Dispose();

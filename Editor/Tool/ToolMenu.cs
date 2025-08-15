@@ -1,5 +1,4 @@
-﻿using Sirenix.OdinInspector;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
@@ -25,7 +24,7 @@ namespace GameFrame.Editor
         {
             AutoCreate.AutoAllScript();
         }
-        
+
         [MenuItem("GX框架工具/脚本生成/生成Capabilitys", false, 2)]
         public static void AutoCreateCapabilitysScript()
         {
@@ -45,12 +44,6 @@ namespace GameFrame.Editor
             EditorSceneManager.OpenScene(EditorString.GetPath("UIScenePath"));
         }
 
-
-        [MenuItem("GX框架工具/UI/FGUI检查")]
-        public static void CheckUI()
-        {
-            FGUIChecker.OpenWindow();
-        }
 
         [MenuItem("GX框架工具/路径/Open PersistentDataPath")]
         public static void OpenPersistentDataPath()

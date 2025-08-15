@@ -62,6 +62,7 @@ namespace GameFrame.Runtime
             {
                 throw new Exception($"TypeWithEntitys not have entity:{entity.ID}");
             }
+
             updateManager.RemoveUpdateSystem(entity);
             EventData.Instance.RemoveEventEntity(entity);
             entityList.Remove(entity);
@@ -151,7 +152,7 @@ namespace GameFrame.Runtime
 
             updateManager.AddUpdateSystem(entity, system);
         }
-        
+
         /// <summary>
         /// 运行PreShowsystem
         /// </summary>
@@ -206,21 +207,21 @@ namespace GameFrame.Runtime
                 RunHideSystem((Entity) entity1.Value);
             }
         }
-        
+
 
         public void Update(float elapseSeconds, float realElapseSeconds)
         {
-            updateManager.UpdateSystemEntityArr[(int) UpdateType.Update].SystemUpdate(elapseSeconds, realElapseSeconds);
+            updateManager.UpdateSystemEntityArr[UpdateRunType.Update].SystemUpdate(elapseSeconds, realElapseSeconds);
         }
 
         public void LateUpdate(float elapseSeconds, float realElapseSeconds)
         {
-            updateManager.UpdateSystemEntityArr[(int) UpdateType.LateUpdate].SystemLateUpdate(elapseSeconds, realElapseSeconds);
+            updateManager.UpdateSystemEntityArr[UpdateRunType.LateUpdate].SystemLateUpdate(elapseSeconds, realElapseSeconds);
         }
 
         public void FixedUpdate(float elapseSeconds, float realElapseSeconds)
         {
-            updateManager.UpdateSystemEntityArr[(int) UpdateType.FixedUpdate].SystemFixedUpdate(elapseSeconds, realElapseSeconds);
+            updateManager.UpdateSystemEntityArr[UpdateRunType.FixedUpdate].SystemFixedUpdate(elapseSeconds, realElapseSeconds);
         }
 
 

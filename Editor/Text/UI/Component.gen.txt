@@ -1,0 +1,16 @@
+using FairyGUI;
+
+namespace Eden.Gameplay.Runtime.UI
+{{
+	/// <summary>
+	/// {0}/{1}
+	/// </summary>
+    public partial class {2}
+    {{
+{3}
+        private void InitializeComponents(GComponent root)
+        {{
+{4}
+        }}
+    }}
+}}

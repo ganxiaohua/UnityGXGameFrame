@@ -6,6 +6,7 @@ namespace GameFrame.Editor
     {
         public const string ShowAssert = "ShowAssert";
 
+
         [MenuItem("GX框架工具/宏定义/" + ShowAssert, true, 0)]
         private static bool CommonAssertDisableValidateV()
         {
@@ -25,6 +26,23 @@ namespace GameFrame.Editor
             {
                 MacroDefineHelper.Enable(ShowAssert);
             }
+        }
+
+
+        [MenuItem("Eden/UI/Auto Update Gen Code", true)]
+        private static bool AutoUpdateValidate()
+        {
+            Menu.SetChecked("Eden/UI/Auto Update Gen Code", UnityEditor.EditorPrefs.HasKey(EditorPrefsKey.KeyAuto));
+            return true;
+        }
+
+        [MenuItem("Eden/UI/Auto Update Gen Code")]
+        private static void AutoUpdate()
+        {
+            if (UnityEditor.EditorPrefs.HasKey(EditorPrefsKey.KeyAuto))
+                UnityEditor.EditorPrefs.DeleteKey(EditorPrefsKey.KeyAuto);
+            else
+                UnityEditor.EditorPrefs.SetBool(EditorPrefsKey.KeyAuto, true);
         }
     }
 }

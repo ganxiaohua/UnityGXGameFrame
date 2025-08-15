@@ -12,7 +12,7 @@ namespace GameFrame.Editor
         private static EntityView sEntityPanel;
         private PropertyTree propertyTree;
         private IEntity target;
-        private static List<Type> filterType = new() {typeof(Entity), typeof(FsmController), typeof(UIEntity)};
+        private static List<Type> filterType = new() {typeof(Entity), typeof(FsmController)};
 
         public static void Init(IEntity entity)
         {

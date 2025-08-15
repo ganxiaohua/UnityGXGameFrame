@@ -80,17 +80,17 @@ namespace GameFrame.Runtime
             int key = 0;
             if (system is IUpdateSystem)
             {
-                key += 1 << (int) UpdateType.Update;
+                key += 1 << UpdateRunType.Update;
             }
 
             if (system is ILateUpdateSystem)
             {
-                key += 1 << (int) UpdateType.LateUpdate;
+                key += 1 << UpdateRunType.LateUpdate;
             }
 
             if (system is IFixedUpdateSystem)
             {
-                key += 1 << (int) UpdateType.FixedUpdate;
+                key += 1 << UpdateRunType.FixedUpdate;
             }
 
             return key;

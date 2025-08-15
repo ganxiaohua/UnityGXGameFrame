@@ -1,10 +1,10 @@
 ﻿namespace GameFrame.Runtime
 {
-    public enum UpdateType : int
+    public static class UpdateRunType
     {
-        Node = -1,
-        Update = 0,
-        LateUpdate = 1,
-        FixedUpdate = 2,
+        public const short Node = -1;
+        public const short Update = 0;
+        public const short LateUpdate = 1;
+        public const short FixedUpdate = 2;
     }
 }
