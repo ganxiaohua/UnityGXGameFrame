@@ -78,12 +78,12 @@ namespace GameFrame.Editor
                                 return;
                             }
 
-                            string parameter = "";                                       //{1}
+                            string parameter = ""; //{1}
                             string typex = item.Name.Substring(1, item.Name.Length - 1); //{0}
                             MethodInfo[] ins = item.GetMethods();
                             ParameterInfo[] parmeters = ins[0].GetParameters();
                             string method = ins[0].Name; //{2}
-                            string paremwairte = "";     //{3}
+                            string paremwairte = ""; //{3}
                             foreach (ParameterInfo parmeter in parmeters)
                             {
                                 parameter += parmeter.ParameterType.FullName + " " + parmeter.Name + ",";
@@ -94,7 +94,7 @@ namespace GameFrame.Editor
                                 parameter = parameter.Substring(0, parameter.Length - 1);
                             if (!string.IsNullOrEmpty(paremwairte))
                                 paremwairte = paremwairte.Substring(0, paremwairte.Length - 1);
-                            str = string.Format(AddTextSend, typex, parameter, method, paremwairte,item.FullName);
+                            str = string.Format(AddTextSend, typex, parameter, method, paremwairte, item.FullName);
                             AllAddTextSend.Add(str);
                             SendEventHas.Add(item);
                         }
@@ -118,8 +118,16 @@ namespace GameFrame.Editor
                 sendeventtext += item;
             }
 
-            File.WriteAllText(EditorString.GetPath("EventBindOutPutPath"), string.Format(MainText, bigtext));
-            File.WriteAllText(EditorString.GetPath("EventSendOutPutPath"), string.Format(MainTextSend, sendeventtext));
+            var eventBindOutPutPath = EditorString.GetPath("EventBindOutPutPath");
+            var directory = Path.GetDirectoryName(eventBindOutPutPath);
+            OpFile.CreateDirectory(directory);
+
+            var eventSendOutPutPath = EditorString.GetPath("EventSendOutPutPath");
+            directory = Path.GetDirectoryName(eventBindOutPutPath);
+            OpFile.CreateDirectory(directory);
+
+            File.WriteAllText(eventBindOutPutPath, string.Format(MainText, bigtext));
+            File.WriteAllText(eventSendOutPutPath, string.Format(MainTextSend, sendeventtext));
             AssetDatabase.Refresh();
             Debug.Log("生成系统绑定结束");
         }

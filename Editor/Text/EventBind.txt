@@ -3,15 +3,16 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using GameFrame.Runtime;
-
-public static class AutoBindEvent
+namespace GamePlay.Runtime
 {{
-    public static void AddSystem()
+    public static class AutoBindEvent
     {{
-        var  eventData =  EventData.Instance;
-        {0}
+        public static void AddSystem()
+        {{
+            var  eventData =  EventData.Instance;
+            {0}
+        }}
     }}
 }}
-
 @
         eventData.AddSourceDic(typeof({0}),typeof({1}));

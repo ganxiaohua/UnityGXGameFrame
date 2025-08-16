@@ -56,7 +56,7 @@ namespace GameFrame.Editor
             }
 
             var str = string.Format(s_TextDictionary[CreateAuto.Capability], tempStr, number);
-            File.WriteAllText($"{EditorString.GetPath("ECSOutPutPath")}AllCapabilitys.cs", str);
+            File.WriteAllText($"{EditorString.GetPath("CompOutPutPath")}AllCapabilitys.cs", str);
             tempStr.Clear();
         }
     }

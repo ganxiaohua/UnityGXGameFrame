@@ -51,10 +51,11 @@ namespace GameFrame.Runtime
             return wrapper.gameObject;
         }
 
-        public GoWrapperProxy(GNativeObject nativeObject)
+
+        public override void Initialize(object initData)
         {
-            base.Initialize(nativeObject.Wrapper.gameObject);
-            Wrapper = nativeObject.Wrapper;
+            base.Initialize(initData);
+            Wrapper = (GoWrapper) initData;
 
             AutoLayers = false;
 
@@ -63,15 +64,6 @@ namespace GameFrame.Runtime
 #endif
         }
 
-        public GoWrapperProxy(GGraph graph)
-        {
-            base.Initialize(CreateGoWrapper(graph));
-            Wrapper = (GoWrapper) graph.displayObject;
-
-#if UNITY_EDITOR
-            gameObject.name = $"GoWrapperProxy:{graph.name}";
-#endif
-        }
 
         public override void Dispose()
         {
@@ -93,7 +85,7 @@ namespace GameFrame.Runtime
 
         protected override void OnRequestRecycle()
         {
-            GoWrapperProxyPool.Release(this);
+            GoWrapperProxyPool.Instance.UnSpawn(this);
         }
 
         public void SetParent(GComponent parent)

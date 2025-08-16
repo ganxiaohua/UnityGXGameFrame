@@ -27,7 +27,7 @@ namespace GameFrame.Editor
 
         public static void AutoAllScript()
         {
-            OpFile.DeleteFilesInDirectory(EditorString.GetPath("ECSOutPutPath"));
+            OpFile.DeleteFilesInDirectory(EditorString.GetPath("CompOutPutPath"));
             LoadText();
             var assembly = AppDomain.CurrentDomain.GetAssemblies();
             var number = 0;
@@ -172,8 +172,8 @@ namespace GameFrame.Editor
             tempStr.Append(abGet);
             tempStr.Append(abSet);
             string lastText = string.Format(abcls, typeName, tempStr.ToString());
-            CreateDirectory(EditorString.GetPath("ECSOutPutPath"));
-            File.WriteAllText($"{EditorString.GetPath("ECSOutPutPath")}{typeName}Auto.cs", lastText);
+            CreateDirectory(EditorString.GetPath("CompOutPutPath"));
+            File.WriteAllText($"{EditorString.GetPath("CompOutPutPath")}{typeName}Auto.cs", lastText);
         }
 
         private static void AddViewBind(Type type, Type bindType)
@@ -189,7 +189,7 @@ namespace GameFrame.Editor
         private static void CreateComponents(int number)
         {
             var str = string.Format(s_TextDictionary[CreateAuto.ComponentsMain], number);
-            File.WriteAllText($"{EditorString.GetPath("ECSOutPutPath")}Components.cs", str);
+            File.WriteAllText($"{EditorString.GetPath("CompOutPutPath")}Components.cs", str);
         }
 
         private static void CreateDirectory(string path)

@@ -4,7 +4,7 @@
 //------------------------------------------------------------------------------
 using GameFrame.Runtime;
 
-namespace Gameplay.Runtime
+namespace GamePlay.Runtime
 {{
     public class EventSend : Singleton<EventSend>
     {{
