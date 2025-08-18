@@ -64,7 +64,6 @@ namespace GameFrame.Runtime
 
         public GameObject BindingTarget => bindedGameObject?.Obj;
 
-
         private UniqueTimer recycleTimer;
 
         /// <summary>
