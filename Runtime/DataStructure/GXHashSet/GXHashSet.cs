@@ -34,7 +34,11 @@ namespace GameFrame.Runtime
         {
             bool have = blocks[data.ID];
             if (!have)
+            {
                 datas.Add(data);
+                blocks[data.ID] = true;
+            }
+
             return !have;
         }
 
@@ -44,6 +48,7 @@ namespace GameFrame.Runtime
             if (have)
             {
                 datas.Remove(data);
+                blocks[data.ID] = false;
             }
 
             return have;
