@@ -1,32 +1,33 @@
 ﻿using System;
 
-namespace Common.Runtime
+namespace GameFrame.Runtime
 {
     public class ArrayList<T>
     {
         public T[] Data { get; private set; }
-        
+
         public int Count { get; private set; }
 
         public T this[int index]
         {
             get
             {
-                if ((uint)index >= (uint)Count)
+                if (index >= (uint) Count)
                     throw new IndexOutOfRangeException();
                 return Data[index];
             }
             set
             {
-                if ((uint)index >= (uint)Count)
-                    throw new IndexOutOfRangeException();
+                if (index >= (uint) Count)
+                    EnsureSize(Count * 2);
                 Data[index] = value;
             }
         }
-        
+
         public ArrayList(int capacity = 0)
         {
             Data = new T[capacity == 0 ? 4 : capacity];
+            Count = Data.Length;
         }
 
         public int Add(T item)
@@ -45,10 +46,10 @@ namespace Common.Runtime
             RemoveAt(index);
             return true;
         }
-        
+
         public void RemoveAt(int index)
         {
-            if ((uint)index >= (uint)Count)
+            if ((uint) index >= (uint) Count)
                 throw new IndexOutOfRangeException();
             Count--;
             if (index < Count)
@@ -64,7 +65,7 @@ namespace Common.Runtime
             RemoveAtSwapBack(index);
             return true;
         }
-        
+
         public void RemoveAtSwapBack(int index)
         {
             var tail = Count - 1;
@@ -72,7 +73,7 @@ namespace Common.Runtime
                 Data[index] = Data[tail];
             Data[--Count] = default;
         }
-        
+
         public bool Contains(T item)
         {
             return Array.IndexOf(Data, item, 0, Count) >= 0;
@@ -82,12 +83,12 @@ namespace Common.Runtime
         {
             return Array.IndexOf(Data, item, 0, Count);
         }
-        
+
         public T Peek()
         {
             return Data[Count - 1];
         }
-        
+
         public bool TryPeek(out T item)
         {
             if (Count > 0)
@@ -95,17 +96,18 @@ namespace Common.Runtime
                 item = Data[Count - 1];
                 return true;
             }
+
             item = default;
             return false;
         }
-        
+
         public T Pop()
         {
             var item = Data[--Count];
             Data[Count] = default;
             return item;
         }
-        
+
         public bool TryPop(out T item)
         {
             if (Count > 0)
@@ -114,6 +116,7 @@ namespace Common.Runtime
                 Data[Count] = default;
                 return true;
             }
+
             item = default;
             return false;
         }
@@ -125,7 +128,7 @@ namespace Common.Runtime
             for (var i = Count; i < size; i++)
                 Add(defaultValue);
         }
-        
+
         public void Resize(int size, T defaultValue = default)
         {
             var data = Data;
@@ -140,7 +143,7 @@ namespace Common.Runtime
         {
             Resize(Count);
         }
-        
+
         public void Clear(bool clearMemory = true)
         {
             if (Count > 0)

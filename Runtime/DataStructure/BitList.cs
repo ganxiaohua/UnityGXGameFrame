@@ -1,7 +1,7 @@
 ﻿using System;
 using GameFrame.Runtime;
 
-namespace Common.Runtime
+namespace GameFrame.Runtime
 {
     public class BitList
     {

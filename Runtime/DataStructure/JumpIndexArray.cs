@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace GameFrame.Runtime
 {
-    public class JumpIndexArray<T> : IDisposable
+    public class JumpIndexArray<T> : IDisposable where T : class, IDisposable
     {
         protected T[] Items;
 

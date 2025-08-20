@@ -7,9 +7,9 @@ namespace GameFrame.Runtime
     /// TODO: SHOULD OPT IT
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class GXHashSet<T> : IEnumerable<T>,IEnumerable
+    public class GXHashSet<T> : IEnumerable<T>, IEnumerable where T : IContinuousID
     {
-        private HashSet<T> blocks;
+        private ArrayList<bool> blocks;
 
         private StrongList<T> datas;
 
@@ -20,35 +20,33 @@ namespace GameFrame.Runtime
         public GXHashSet(int capacity)
         {
             datas = new StrongList<T>(capacity);
-            blocks = new HashSet<T>(1);
+            blocks = new(capacity);
             SetCapacity(capacity);
         }
 
         public void SetCapacity(int capacity)
         {
             datas.SetCapacity(capacity);
-            blocks.EnsureCapacity(capacity);
+            blocks.EnsureSize(capacity);
         }
 
         public bool Add(T data)
         {
-            bool succ = blocks.Add(data);
-            if (succ)
+            bool have = blocks[data.ID];
+            if (!have)
                 datas.Add(data);
-
-            return false;
+            return !have;
         }
 
         public bool Remove(T data)
         {
-            var succ = blocks.Remove(data);
-            if (succ)
+            bool have = blocks[data.ID];
+            if (have)
             {
                 datas.Remove(data);
-                return true;
             }
 
-            return false;
+            return have;
         }
 
 
