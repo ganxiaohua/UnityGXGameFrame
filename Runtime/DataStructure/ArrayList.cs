@@ -27,7 +27,6 @@ namespace GameFrame.Runtime
         public ArrayList(int capacity = 0)
         {
             Data = new T[capacity == 0 ? 4 : capacity];
-            Count = Data.Length;
         }
 
         public int Add(T item)
