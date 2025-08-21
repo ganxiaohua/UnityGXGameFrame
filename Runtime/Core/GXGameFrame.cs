@@ -29,7 +29,7 @@ namespace GameFrame.Runtime
             AssetManager.Instance.Update(datetime);
             EntityHouse.Instance.Update(datetime, realtimeSinceStartup);
             ObjectPoolManager.Instance.Update(datetime, realtimeSinceStartup);
-            TimerSystem.Instance.Update(datetime);
+            TimerSystem.Instance.Update(realtimeSinceStartup);
             UISystem.Instance.Update();
             ReferencePool.Update(datetime, realtimeSinceStartup);
         }

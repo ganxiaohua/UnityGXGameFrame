@@ -19,10 +19,12 @@ namespace GameFrame.Runtime
         {
             get
             {
+#if UNITY_EDITOR
                 if (index >= Items.Length || index < 0)
                 {
                     throw new Exception($"ThrowArgumentOutOfRange {index}");
                 }
+#endif
 
                 return Items[index];
             }
