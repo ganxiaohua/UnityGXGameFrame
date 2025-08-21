@@ -6,31 +6,18 @@ namespace GameFrame.Runtime
     /// <summary>
     /// 散装容器
     /// </summary>
-    public class BulkList<K, T> where T : class
+    public class BulkList<K, T> : ArrayEx<T> where T : class
     {
         private Dictionary<K, T> dictionary;
-        private ArrayEx<T> array;
-        public int Count => array.Count;
 
-        public T this[int index]
-        {
-            get { return array[index]; }
-        }
-
-        public BulkList(int count)
+        public BulkList(int count) : base(count)
         {
             dictionary = new Dictionary<K, T>(count);
-            array = new ArrayEx<T>(count);
         }
 
         public T GetForKey(K k)
         {
             return dictionary.GetValueOrDefault(k);
-        }
-
-        public T GetForIndex(int index)
-        {
-            return array[index];
         }
 
         public bool Add(K k, T t)
@@ -41,10 +28,10 @@ namespace GameFrame.Runtime
                 return false;
             }
 
-            for (int i = 0; i < array.Count; i++)
+            for (int i = 0; i < Data.Length; i++)
             {
-                if (array[i] != null) continue;
-                array[i] = t;
+                if (Data[i] != null) continue;
+                Data[i] = t;
                 return true;
             }
 
@@ -59,13 +46,13 @@ namespace GameFrame.Runtime
                 return false;
             }
 
-            if (array[index] != null)
+            if (Data[index] != null)
             {
                 Debugger.LogError($"{k} already exists");
                 return false;
             }
 
-            array[index] = t;
+            Data[index] = t;
             return true;
         }
 
@@ -83,11 +70,11 @@ namespace GameFrame.Runtime
         {
             if (dictionary.TryGetValue(k, out T t))
             {
-                for (int i = 0; i < array.Count; i++)
+                for (int i = 0; i < Data.Length; i++)
                 {
-                    if (array[i] == t)
+                    if (Data[i] == t)
                     {
-                        array[i] = default;
+                        Data[i] = default;
                         return true;
                     }
                 }
@@ -96,13 +83,5 @@ namespace GameFrame.Runtime
             Debugger.LogError($"{k} not exists");
             return false;
         }
-
-        public void SetCapacity(int size)
-        {
-            array.SetCapacity(size);
-        }
-
-
-        public ArrayEx<T>.GXEnumerator GetEnumerator() => array.GetEnumerator();
     }
 }

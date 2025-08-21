@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace GameFrame.Runtime
 {
-    public class JumpIndexArray<T> : IDisposable where T : class, IDisposable
+    public class JumpIndexArray<T> : IEnumerable<T>, IEnumerable, IDisposable where T : class, IDisposable
     {
         protected T[] Items;
 
@@ -80,16 +80,26 @@ namespace GameFrame.Runtime
             IndexList = null;
         }
 
-        public GXEnumerator GetEnumerator() => new GXEnumerator(IndexList, Items);
+        public Enumerator GetEnumerator() => new Enumerator(IndexList, Items);
+
+        IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
 
         [StructLayout(LayoutKind.Auto)]
-        public struct GXEnumerator : IEnumerator<T>
+        public struct Enumerator : IEnumerator<T>, IEnumerator
         {
             private List<int> indexs;
             private T[] items;
             private int cur;
 
-            internal GXEnumerator(List<int> indexs, T[] items)
+            internal Enumerator(List<int> indexs, T[] items)
             {
                 if (indexs == null)
                 {

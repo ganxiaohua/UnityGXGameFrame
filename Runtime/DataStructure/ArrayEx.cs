@@ -5,9 +5,9 @@ using System.Runtime.InteropServices;
 
 namespace GameFrame.Runtime
 {
-    public class ArrayEx<T>
+    public class ArrayEx<T> : IEnumerable<T>, IEnumerable
     {
-        public T[] Data { get; private set; }
+        public T[] Data { get; protected set; }
 
         public int Count => Data.Length;
 
@@ -70,17 +70,27 @@ namespace GameFrame.Runtime
             Data = newArray;
         }
 
+        IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
 
-        public GXEnumerator GetEnumerator() => new GXEnumerator(Data);
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public Enumerator GetEnumerator() => new Enumerator(Data);
 
         [StructLayout(LayoutKind.Auto)]
-        public struct GXEnumerator : IEnumerator<T>, IEnumerator
+        public struct Enumerator : IEnumerator<T>, IEnumerator
         {
             private T[] items;
             private int cur;
             private int max;
 
-            internal GXEnumerator(T[] items)
+            internal Enumerator(T[] items)
             {
                 if (items == null)
                 {

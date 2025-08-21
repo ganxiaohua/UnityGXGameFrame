@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace GameFrame.Runtime
 {
-    public class StrongList<T> : IEnumerator<T>, IEnumerable<T>
+    public class StrongList<T> : IEnumerator<T>, IEnumerable<T>, IEnumerable, IEnumerator
     {
         private readonly List<T> dataList;
         private int currentIndex;
@@ -82,6 +82,7 @@ namespace GameFrame.Runtime
                     {
                         dataList.RemoveAt(index);
                     }
+
                     currentIndex--;
                 }
                 else
