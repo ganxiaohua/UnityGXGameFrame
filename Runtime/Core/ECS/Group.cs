@@ -108,8 +108,6 @@ namespace GameFrame.Runtime
             EditorDisPose();
 #endif
         }
-        
-
         public IEnumerator<EffEntity> GetEnumerator() => EntitiesMap.GetEnumerator();
         
     }

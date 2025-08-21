@@ -60,13 +60,10 @@ namespace GameFrame.Runtime
 
         public void SetCapacity(int size)
         {
-            if (Count > size)
-                throw new ArgumentOutOfRangeException();
-            if (Data.Length == size)
+            if (Count >= size)
                 return;
             var newArray = new T[size];
-            if (Count > 0)
-                Array.Copy(Data, 0, newArray, 0, Count);
+            Array.Copy(Data, 0, newArray, 0, Count);
             Data = newArray;
         }
 
