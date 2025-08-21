@@ -9,7 +9,7 @@ namespace GameFrame.Runtime
     /// <typeparam name="T"></typeparam>
     public class GXHashSet<T> : IEnumerable<T>, IEnumerable where T : IContinuousID
     {
-        private ArrayList<bool> blocks;
+        private ArrayEx<bool> blocks;
 
         private StrongList<T> datas;
 
@@ -20,14 +20,14 @@ namespace GameFrame.Runtime
         public GXHashSet(int capacity)
         {
             datas = new StrongList<T>(capacity);
-            blocks = new(capacity);
+            blocks = new(capacity, true);
             SetCapacity(capacity);
         }
 
         public void SetCapacity(int capacity)
         {
             datas.SetCapacity(capacity);
-            blocks.EnsureSize(capacity);
+            blocks.SetCapacity(capacity);
         }
 
         public bool Add(T data)
