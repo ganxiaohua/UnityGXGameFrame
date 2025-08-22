@@ -222,7 +222,11 @@ namespace GameFrame.Runtime
             }
 
             if (!AutoLayers)
+            {
+                gameObject.layer = BindingTarget.layer;
                 return;
+            }
+            
 
             if (parent != null && parent.gameObject.layer != gameObject.layer)
             {
