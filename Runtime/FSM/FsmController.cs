@@ -60,7 +60,7 @@ namespace GameFrame.Runtime
         {
             Type type = state.GetType();
             bool b = states.Remove(type);
-            Assert.IsTrue(b, $"不包含这个stateP{type.Name}");
+            Assert.IsTrue(b, $"not have state {type.Name}");
             if (CurState == state)
             {
                 state.OnExit();
@@ -72,7 +72,7 @@ namespace GameFrame.Runtime
         public virtual void ChangeState<T>() where T : FsmState
         {
             bool b = states.TryGetValue(typeof(T), out var state);
-            Assert.IsTrue(b, $"不包含这个stateP{typeof(T)}");
+            Assert.IsTrue(b, $"not have state type {typeof(T)}");
             CurState?.OnExit();
             CurState = state;
             CurState.OnEnter(this);
