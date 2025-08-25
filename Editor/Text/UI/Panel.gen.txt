@@ -1,6 +1,6 @@
 using FairyGUI;
 
-namespace Eden.Gameplay.Runtime.UI
+namespace Gameplay.Runtime
 {{
     public partial class {1}Panel
     {{
