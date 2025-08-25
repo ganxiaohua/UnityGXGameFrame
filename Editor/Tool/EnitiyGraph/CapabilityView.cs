@@ -36,6 +36,8 @@ namespace GameFrame.Editor
         protected override void OnBeginDrawEditors()
         {
             base.OnBeginDrawEditors();
+            if(effEntity == null)
+                return;
             if (effEntity.State == IEntity.EntityState.IsClear)
             {
                 return;
