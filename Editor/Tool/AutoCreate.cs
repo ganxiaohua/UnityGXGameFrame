@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using GameFrame.Runtime;
 using UnityEditor;
+using UnityEngine;
 
 namespace GameFrame.Editor
 {
@@ -116,7 +117,7 @@ namespace GameFrame.Editor
                 return;
             }
 
-            string ECSComponentName = "EffEntity";
+            string ECSComponentName = nameof(EffEntity);
             var vb = type.GetCustomAttribute<AssignBindAttribute>();
             if (vb != null)
             {
@@ -138,26 +139,21 @@ namespace GameFrame.Editor
             if (propertyInfos.Length > 0)
             {
                 fieldName = propertyInfos[0].Name;
-                fieldTypeName = propertyInfos[0].PropertyType.FullName;
+                fieldTypeName = propertyInfos[0].PropertyType.ToString();
             }
             else if (variable.Length > 0)
             {
                 fieldName = variable[0].Name;
-                fieldTypeName = variable[0].FieldType.FullName;
+                fieldTypeName = variable[0].FieldType.ToString();
             }
 
+            fieldTypeName = fieldTypeName.Replace("`2[", "<").Replace("`1[", "<").Replace("]", ">");
             if (!string.IsNullOrEmpty(fieldName))
             {
                 if (fieldTypeName == "String")
                 {
                     fieldTypeName = "string";
                 }
-
-                if (fieldTypeName.Contains("List"))
-                {
-                    fieldTypeName = $"System.Collections.Generic.List<{variable[0].FieldType.GenericTypeArguments[0].FullName}>";
-                }
-
                 addParameter = string.Format(s_TextDictionary[CreateAuto.AddParameter], typeName, fieldTypeName, typeFullName, fieldName, ECSComponentName);
                 string evetString = "";
                 if (s_ViewBindDictionary.TryGetValue(type, out evetString))
