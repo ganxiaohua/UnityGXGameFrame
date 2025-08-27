@@ -75,6 +75,7 @@ namespace GameFrame.Runtime
                     if (Data[i] == t)
                     {
                         Data[i] = default;
+                        dictionary.Remove(k);
                         return true;
                     }
                 }

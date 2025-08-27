@@ -31,13 +31,13 @@ namespace GameFrame.Runtime
                 arrays[id] = array;
             }
 
-            var cap = array.Add(player.ID, capability);
-            cap.Init(id,eccWorld, player);
+            var cap = array.Set(player.ID, capability);
+            cap.Init(id, eccWorld, player);
         }
 
         public void GetCapabilityBaseWithPlayer(EffEntity player, List<CapabilityBase> update, List<CapabilityBase> fixedUpdate)
         {
-            void Get(EffEntity player, JumpIndexArray<CapabilityBase>[] scr,List<CapabilityBase> dst )
+            void Get(EffEntity player, JumpIndexArray<CapabilityBase>[] scr, List<CapabilityBase> dst)
             {
                 foreach (var capArray in scr)
                 {
@@ -45,10 +45,12 @@ namespace GameFrame.Runtime
                     {
                         continue;
                     }
+
                     if (capArray[player.ID] != null)
                         dst.Add(capArray[player.ID]);
                 }
             }
+
             Get(player, capabilitiesUpdateList, update);
             Get(player, capabilitiesFixUpdateList, fixedUpdate);
         }
