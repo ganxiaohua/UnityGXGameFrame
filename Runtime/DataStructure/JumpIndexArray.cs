@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace GameFrame.Runtime
 {
-    public class JumpIndexArray<T> : IEnumerable<T>, IEnumerable, IDisposable
+    public class JumpIndexArray<T> : IEnumerable<T>, IEnumerable, IDisposable 
     {
         protected T[] Items;
 
@@ -14,6 +14,8 @@ namespace GameFrame.Runtime
         public int Count => IndexList.Count;
 
         public bool isInit => IndexList != null;
+
+        private bool isClass;
 
         public T this[int index]
         {
@@ -25,18 +27,17 @@ namespace GameFrame.Runtime
                     throw new Exception($"ThrowArgumentOutOfRange {index}");
                 }
 #endif
-
                 return Items[index];
             }
         }
 
         public void Init(int arrayMaxCount)
         {
+            isClass = typeof(T).IsClass;
             if (Items == null || Items.Length != arrayMaxCount)
             {
                 Items = new T[arrayMaxCount];
             }
-
             IndexList = new List<int>(arrayMaxCount);
         }
 
@@ -50,8 +51,17 @@ namespace GameFrame.Runtime
                 Debugger.LogWarning($"{typeof(T).Name} GXArray Expansion!!!");
             }
 
-            if (!IndexList.Contains(index))
-                IndexList.Add(index);
+            if (isClass)
+            {
+                if (Items[index] == null)
+                    IndexList.Add(index);
+            }
+            else
+            {
+                if (Items[index].Equals(default(T)))
+                    IndexList.Add(index);
+            }
+
             Items[index] = t;
             return t;
         }
