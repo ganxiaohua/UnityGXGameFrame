@@ -216,7 +216,7 @@ Transform:
   m_GameObject: {fileID: 1172770065}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.782881, y: -5, z: 0}
+  m_LocalPosition: {x: 8.888889, y: -5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -315,11 +315,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 024553ecf96a65649b929ee08c9214fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  packageName: Main
-  componentName: Main
+  packageName: WorkTools
+  componentName: Workbench
   fitScreen: 1
   sortingOrder: 0
-  packagePath: Assets/Res/UI/Main
+  packagePath: Assets/Res/UI/WorkTools
   renderMode: 0
   renderCamera: {fileID: 0}
   position: {x: 0, y: 0, z: 0}
@@ -340,7 +340,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.0060238345, y: 0.0060238345, z: 0.0060238345}
+  m_LocalScale: {x: 0.009259259, y: 0.009259259, z: 0.009259259}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}

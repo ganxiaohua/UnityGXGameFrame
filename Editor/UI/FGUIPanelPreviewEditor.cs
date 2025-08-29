@@ -22,7 +22,7 @@ namespace FairyGUIEditor
                     EditorGUI.indentLevel++;
                     foreach (var dep in panel.ui.packageItem.owner.dependencies)
                     {
-                        var dPppackageName = UIPackage.GetById(dep["name"]).name;
+                        var dPppackageName = dep["name"];
                         EditorGUILayout.TextField(dPppackageName);
                     }
 

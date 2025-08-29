@@ -29,14 +29,14 @@ namespace GameFrame.Editor
         }
 
 
-        [MenuItem("Eden/UI/Auto Update Gen Code", true)]
+        [MenuItem("GX框架工具/UI/Auto Update Gen Code", true)]
         private static bool AutoUpdateValidate()
         {
-            Menu.SetChecked("Eden/UI/Auto Update Gen Code", UnityEditor.EditorPrefs.HasKey(EditorPrefsKey.KeyAuto));
+            Menu.SetChecked("GX框架工具/UI/Auto Update Gen Code", UnityEditor.EditorPrefs.HasKey(EditorPrefsKey.KeyAuto));
             return true;
         }
 
-        [MenuItem("Eden/UI/Auto Update Gen Code")]
+        [MenuItem("GX框架工具/UI/Auto Update Gen Code")]
         private static void AutoUpdate()
         {
             if (UnityEditor.EditorPrefs.HasKey(EditorPrefsKey.KeyAuto))
