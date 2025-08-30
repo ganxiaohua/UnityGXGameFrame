@@ -38,6 +38,11 @@ namespace GameFrame.Runtime
             return false;
         }
 
+        public T GetTForK(K id)
+        {
+            return dictionary.GetValueOrDefault(id);
+        }
+
         public bool AddForIndex(int index, K k, T t)
         {
             if (!dictionary.TryAdd(k, t))
