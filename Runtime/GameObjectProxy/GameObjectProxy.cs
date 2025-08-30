@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace GameFrame.Runtime
 {
-    public partial class GameObjectProxy : IVersions
+    public partial class GameObjectProxy
     {
         public GameObject gameObject { get; private set; }
 
@@ -50,8 +50,6 @@ namespace GameFrame.Runtime
         public bool AutoLayers { get; set; } = true;
 
         public object Userdata { get; set; }
-
-        public int Versions { get; private set; }
 
         public object BindingSource { get; private set; }
 

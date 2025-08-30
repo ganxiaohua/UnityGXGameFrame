@@ -34,7 +34,7 @@ namespace GameFrame.Runtime
         /// <summary>
         /// 获取对象时的事件。
         /// </summary>
-        public override void OnSpawn()
+        public override void OnSpawn(object obj)
         {
             if (Obj == null)
             {

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace GameFrame.Runtime
 {
-    public class ObjectPool<T> : IObjectPoolBase where T : ObjectBase
+    public class ObjectPool< T> : IObjectPoolBase where T : ObjectBase
     {
         [ShowInInspector] public TypeNamePair TypeName;
 
@@ -61,7 +61,7 @@ namespace GameFrame.Runtime
         public static ObjectPool<T> Create(TypeNamePair typeName, Type objectType, int maxNum, int expireTime, object userData)
         {
             Type objectPoolType = typeof(ObjectPool<>).MakeGenericType(objectType);
-            ObjectPool<T> objectPool = ReferencePool.Acquire(objectPoolType) as ObjectPool<T>;
+            ObjectPool<T> objectPool = (ObjectPool<T>)ReferencePool.Acquire(objectPoolType);
             objectPool.spawnAsyncQueue = new();
             objectPool.Initialize(typeName);
             objectPool.maxCacheCount = maxNum;
@@ -161,7 +161,7 @@ namespace GameFrame.Runtime
         /// 异步吐出
         /// </summary>
         /// <returns></returns>
-        public async UniTask<T> SpawnAsync(System.Threading.CancellationToken token = default)
+        public async UniTask<T> SpawnAsync(object obj=null,System.Threading.CancellationToken token = default)
         {
             ObjectPoolHandle objectPoolHandle = ReferencePool.Acquire<ObjectPoolHandle>();
             objectPoolHandle.SetToken(token);
@@ -171,7 +171,7 @@ namespace GameFrame.Runtime
             ReferencePool.Release(objectPoolHandle);
             if (!spawn)
                 return null;
-            return Spawn();
+            return Spawn(obj);
         }
 
         /// <summary>
@@ -179,16 +179,16 @@ namespace GameFrame.Runtime
         /// </summary>
         /// <param name="t"></param>
         /// <exception cref="Exception"></exception>
-        public T Spawn()
+        public T Spawn(object obj = null)
         {
-            return SpawnKey();
+            return SpawnKey(obj);
         }
 
         /// <summary>
         /// 吐出
         /// </summary>
         /// <param name="key">同一种类型可以存在不同的对象池快</param>
-        public T SpawnKey()
+        public T SpawnKey(object obj = null)
         {
             // m_CurWaitSpawnCount++;
             T poolobject = null;
@@ -200,11 +200,12 @@ namespace GameFrame.Runtime
 
             if (poolobject == null)
             {
-                poolobject = ReferencePool.Acquire(objectType) as T;
+                poolobject = (T)ReferencePool.Acquire(objectType);
+                poolobject.Pool = this;
                 poolobject.Initialize(userData);
             }
 
-            poolobject.OnSpawn();
+            poolobject.OnSpawn(obj);
             return poolobject;
         }
 

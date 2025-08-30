@@ -107,7 +107,7 @@ namespace GameFrame.Runtime
             System.Threading.CancellationToken token = default)
         {
             pool.SetUserData(prefab);
-            GameObjectPoolBaes gameObjectPoolBaes = await pool.SpawnAsync(token);
+            GameObjectPoolBaes gameObjectPoolBaes = await pool.SpawnAsync(null,token);
             if (gameObjectPoolBaes == null)
             {
                 return null;

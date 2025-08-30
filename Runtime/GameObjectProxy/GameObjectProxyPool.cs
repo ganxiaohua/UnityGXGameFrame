@@ -8,7 +8,7 @@ namespace GameFrame.Runtime
 
         public GameObjectProxyPool()
         {
-            objectPool = ObjectPoolManager.Instance.CreateObjectPool<GameObjectProxy>("GameObjectProxyPool", 128, 10);
+            objectPool = ObjectPoolManager.Instance.CreateObjectPool<GameObjectProxy>("GameObjectProxyPool", 128, 20);
         }
 
         public GameObjectProxy Spawn()
