@@ -4,14 +4,15 @@ namespace GameFrame.Runtime
 {
     public partial class GameObjectProxy : ObjectBase
     {
-
         /// <summary>
         /// 回收对象时的事件。
         /// </summary>
         public override void OnUnspawn()
         {
             Unbind();
-            var goCacheParent = GameObjectPool.ObjectCacheArea.transform.Find("ComGameObject");
+            Transform goCacheParent = null;
+#if UNITY_EDITOR
+            goCacheParent = GameObjectPool.ObjectCacheArea.transform.Find("ComGameObject");
             if (goCacheParent == null)
             {
                 var go = new GameObject();
@@ -19,6 +20,11 @@ namespace GameFrame.Runtime
                 goCacheParent.name = "ComGameObject";
                 goCacheParent.transform.SetParent(GameObjectPool.ObjectCacheArea.transform);
             }
+#else
+            goCacheParent = GameObjectPool.ObjectCacheArea.transform;
+#endif
+
+
             gameObject.transform.SetParent(goCacheParent);
             base.OnUnspawn();
         }
