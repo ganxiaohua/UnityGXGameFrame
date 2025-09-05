@@ -147,7 +147,7 @@ namespace GameFrame.Editor
                 fieldTypeName = variable[0].FieldType.ToString();
             }
 
-            fieldTypeName = fieldTypeName.Replace("`2[", "<").Replace("`1[", "<").Replace("]", ">");
+            fieldTypeName = fieldTypeName.Replace("`3[", "<").Replace("`2[", "<").Replace("`1[", "<").Replace("]", ">");
             if (!string.IsNullOrEmpty(fieldName))
             {
                 if (fieldTypeName == "String")

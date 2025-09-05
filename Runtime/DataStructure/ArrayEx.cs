@@ -2,12 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using Sirenix.OdinInspector;
 
 namespace GameFrame.Runtime
 {
     public class ArrayEx<T> : IEnumerable<T>, IEnumerable
     {
-        public T[] Data { get; protected set; }
+        [ShowInInspector]
+        protected  T[] Data;
 
         public int Count => Data.Length;
 
