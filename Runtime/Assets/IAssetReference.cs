@@ -4,8 +4,6 @@ namespace GameFrame.Runtime
 {
     public interface IAssetReference : IDisposable
     {
-        bool IsDisposed { get; }
-
         float PercentComplete { get; }
 
         bool RefInitialize();

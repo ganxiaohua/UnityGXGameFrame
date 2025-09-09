@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Common.Runtime;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -13,8 +12,6 @@ namespace GameFrame.Runtime
 
         [SerializeField, HideInPlayMode] private List<string> refAssets;
         private HashSet<string> refAssetSet;
-
-        public bool IsDisposed { get; private set; }
 
         public float PercentComplete
         {
@@ -54,7 +51,6 @@ namespace GameFrame.Runtime
 
         public bool RefInitialize()
         {
-            Assert.IsFalse(IsDisposed, "AssetReference already disposed");
             if (refAssets == null) return true;
             var assetSystem = AssetManager.Instance;
             foreach (var asset in refAssets)
@@ -73,7 +69,6 @@ namespace GameFrame.Runtime
 
         public bool RefAsset(string asset)
         {
-            Assert.IsFalse(IsDisposed, "AssetReference already disposed");
             if (refAssets == null) refAssets = new List<string>();
             if (refAssets.Count < MinHashSetCount)
             {
@@ -95,7 +90,6 @@ namespace GameFrame.Runtime
 
         public void UnrefAsset(string asset, bool releaseImmediately = false)
         {
-            Assert.IsFalse(IsDisposed, "AssetReference already disposed");
             if (refAssets == null) return;
             if (!refAssets.RemoveSwapBack(asset)) return;
             if (refAssetSet != null)
@@ -110,7 +104,6 @@ namespace GameFrame.Runtime
 
         public void UnrefAssets(bool releaseImmediately = false)
         {
-            Assert.IsFalse(IsDisposed, "AssetReference already disposed");
             if (refAssets == null) return;
             var assetSystem = AssetManager.Instance;
             foreach (var asset in refAssets)
@@ -124,9 +117,7 @@ namespace GameFrame.Runtime
 
         public void Dispose()
         {
-            Assert.IsFalse(IsDisposed, "AssetReference already disposed");
             UnrefAssets();
-            IsDisposed = true;
         }
     }
 }

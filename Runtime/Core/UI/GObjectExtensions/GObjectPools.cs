@@ -31,10 +31,11 @@ namespace GameFrame.Runtime
         {
             Type t = typeof(T);
             var succ = dictionary.TryGetValue(t, out var poolData);
-            Assert.IsTrue(succ,$"GObjectPools not have {t.Name}");
+            if (!succ)
+                return;
             if (--poolData.Count == 0)
             {
-                ObjectPoolManager.Instance.DeleteObjectPool((ObjectPool<T>)poolData.Pool);
+                ObjectPoolManager.Instance.DeleteObjectPool((ObjectPool<T>) poolData.Pool);
                 dictionary.Remove(t);
             }
         }

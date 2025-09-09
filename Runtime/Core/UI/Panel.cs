@@ -5,7 +5,7 @@ using FairyGUI;
 
 namespace GameFrame.Runtime
 {
-    public abstract partial class Panel : SimpleEntity, IVersions
+    public abstract partial class Panel : SimpleEntity, IVersions, IInitializeSystem
     {
         public abstract string Package { get; }
 
@@ -21,7 +21,7 @@ namespace GameFrame.Runtime
 
         public virtual string AudioOnShow => null;
 
-        public virtual float LifetimeAfterHide => (Flags & PanelFlag.Persistent) != 0 || Parent != null ? float.PositiveInfinity : 30;
+        public virtual float LifetimeAfterHide => (Flags & PanelFlag.Persistent) != 0 || Parent != null ? float.PositiveInfinity : 5;
 
         public new PanelState State { get; private set; }
 
@@ -31,7 +31,7 @@ namespace GameFrame.Runtime
 
         public List<Panel> Childs { get; private set; } = new List<Panel>();
 
-        public DefaultAssetReference AssetReference { get; private set; } = new DefaultAssetReference();
+        public DefaultAssetReference AssetReference { get; private set; }
 
         public GComponent Root { get; private set; }
 
@@ -53,6 +53,12 @@ namespace GameFrame.Runtime
 
                 return _DestroyTimer;
             }
+        }
+
+        public void OnInitialize()
+        {
+            State = PanelState.UnInitialize;
+            AssetReference = ReferencePool.Acquire<DefaultAssetReference>();
         }
 
         public void SetParent(Panel parent, GComponent holdComponent = null)
@@ -98,7 +104,7 @@ namespace GameFrame.Runtime
         public virtual async UniTask OnInitializeAsync(GComponent root, CancellationToken cancelToken = default)
         {
             Assert.AreNotEqual(null, root, $"GComponent root is null");
-            Assert.AreEqual(PanelState.UnInitialize, State, $"Panel({this}) already initialized");
+            Assert.AreEqual(PanelState.UnInitialize, State, $"Panel({this}) not initialized");
 
             GRoot.inst.AddChild(root);
             if (Mode != PanelMode.Embed && Mode != PanelMode.Pop)
@@ -202,8 +208,7 @@ namespace GameFrame.Runtime
             _DestroyTimer?.Cancel();
             SetParent(null);
             Assert.AreEqual(0, Childs.Count, $"Panel({this}) must destroyed by UISystem.DestroyPanel");
-            AssetReference.Dispose();
-            AssetReference = null;
+            ReferencePool.Release(AssetReference);
             Root.Dispose();
             Root = null;
             State = PanelState.Destroy;
