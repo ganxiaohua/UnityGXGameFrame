@@ -315,11 +315,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 024553ecf96a65649b929ee08c9214fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  packageName: WorkTools
-  componentName: Workbench
+  packageName: Main
+  componentName: Main
   fitScreen: 1
   sortingOrder: 0
-  packagePath: Assets/Res/UI/WorkTools
+  packagePath: Assets/Res/UI/Main
   renderMode: 0
   renderCamera: {fileID: 0}
   position: {x: 0, y: 0, z: 0}
