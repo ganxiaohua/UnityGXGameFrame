@@ -58,6 +58,7 @@ namespace GameFrame.Runtime
         public void OnInitialize()
         {
             State = PanelState.UnInitialize;
+            Versions = 0;
             AssetReference = ReferencePool.Acquire<DefaultAssetReference>();
         }
 
