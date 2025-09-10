@@ -67,7 +67,7 @@ namespace GameFrame.Runtime
         /// <summary>
         /// 初始化对象基类。
         /// </summary>
-        public override void Initialize(object initData)
+        public override void Initialize(object initData = null)
         {
             base.Initialize(initData);
             Init();
@@ -224,7 +224,7 @@ namespace GameFrame.Runtime
                 gameObject.layer = BindingTarget.layer;
                 return;
             }
-            
+
 
             if (parent != null && parent.gameObject.layer != gameObject.layer)
             {

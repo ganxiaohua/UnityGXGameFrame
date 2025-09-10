@@ -15,7 +15,7 @@ namespace GameFrame.Runtime
         /// <summary>
         /// 初始化对象基类。
         /// </summary>
-        public virtual void Initialize(object initData)
+        public virtual void Initialize(object initData = null)
         {
         }
 
