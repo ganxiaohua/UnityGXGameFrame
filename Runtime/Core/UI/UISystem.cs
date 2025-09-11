@@ -49,7 +49,7 @@ namespace GameFrame.Runtime
 
         public async UniTask<Panel> CreatePanelAsync(Type type, CancellationToken cancelToken = default)
         {
-            var panel = (Panel) GXGameFrame.Instance.RootEntity.GetComponent<UIRootComponents>().AddComponent(type);
+            var panel = GXGameFrame.Instance.AddUIComponents(type);
             panels.Add(panel);
             var reference = panel.AssetReference;
             var fromResources = (panel.Flags & PanelFlag.Builtin) != 0;
@@ -180,7 +180,7 @@ namespace GameFrame.Runtime
                 visiblePanels.RemoveSwapBack(panel);
             }
 
-            GXGameFrame.Instance.RootEntity.GetComponent<UIRootComponents>().RemoveComponent(panel.GetType());
+            GXGameFrame.Instance.RemoveUIComponents(panel);
         }
 
         /// <summary>

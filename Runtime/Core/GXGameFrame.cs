@@ -12,6 +12,7 @@ namespace GameFrame.Runtime
             RootEntity = ReferencePool.Acquire<RootEntity>();
             RootEntity.OnDirty(null, 0);
             RootEntity.AddComponent<UIRootComponents>();
+            RootEntity.AddComponent<FsmComponents>();
             var assetsFsmController = await RootEntity.AddComponent<AssetsFsmController>();
             if (assetsFsmController.TaskState != TaskState.Succ)
             {

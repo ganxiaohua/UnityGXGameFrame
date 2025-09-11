@@ -3,4 +3,8 @@
     public class UIRootComponents : Entity
     {
     }
+
+    public class FsmComponents : Entity
+    {
+    }
 }
