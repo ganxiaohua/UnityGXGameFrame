@@ -3,13 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Sirenix.OdinInspector;
+using UnityEngine;
 
 namespace GameFrame.Runtime
 {
+    [Serializable]
     public class ArrayEx<T> : IEnumerable<T>, IEnumerable
     {
-        [ShowInInspector]
-        protected  T[] Data;
+        [SerializeField] [ShowInInspector] protected T[] Data;
 
         public int Count => Data.Length;
 
