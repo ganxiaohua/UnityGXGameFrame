@@ -18,7 +18,7 @@ namespace GameFrame.Runtime
 
         public IReadOnlyList<T> DataList => dataList;
 
-        public int Count => dataList.Count;
+        public int Count;
 
         private bool keepOrder;
 
@@ -32,6 +32,7 @@ namespace GameFrame.Runtime
             currentIndex = -1;
             currentElement = default;
             this.keepOrder = keepOrder;
+            Count = 0;
         }
 
         public void SetCapacity(int capacity)
@@ -52,6 +53,7 @@ namespace GameFrame.Runtime
             }
 #endif
             dataList.Add(val);
+            Count = dataList.Count;
         }
 
         public bool Remove(T val)
@@ -97,16 +99,21 @@ namespace GameFrame.Runtime
                     currentIndex--;
                 }
 
+                Count = dataList.Count;
                 return true;
             }
             else
             {
+                bool succ;
                 if (!keepOrder)
-                    return dataList.RemoveSwapBack(val);
+                    succ = dataList.RemoveSwapBack(val);
                 else
                 {
-                    return dataList.Remove(val);
+                    succ = dataList.Remove(val);
                 }
+
+                Count = dataList.Count;
+                return succ;
             }
         }
 
@@ -117,7 +124,7 @@ namespace GameFrame.Runtime
 
         public bool MoveNext()
         {
-            if (currentIndex == dataList.Count)
+            if (currentIndex == Count)
             {
                 currentElement = default;
                 currentIndex = -1;
@@ -145,6 +152,7 @@ namespace GameFrame.Runtime
 
         public void Clear()
         {
+            Count = 0;
             currentIndex = -1;
             currentElement = default;
             dataList.Clear();
