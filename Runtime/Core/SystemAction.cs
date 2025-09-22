@@ -95,45 +95,5 @@ namespace GameFrame.Runtime
 
             return key;
         }
-
-
-        public static void SystemUpdate(this StrongList<ISystem> systems, float elapseSeconds, float realElapseSeconds)
-        {
-            foreach (var system in systems)
-            {
-#if UNITY_EDITOR
-                using (new Profiler(system.GetType().Name))
-#endif
-                {
-                    ((IUpdateSystem) system).OnUpdate(elapseSeconds, realElapseSeconds);
-                }
-            }
-        }
-
-        public static void SystemLateUpdate(this StrongList<ISystem> systems, float elapseSeconds, float realElapseSeconds)
-        {
-            foreach (var system in systems)
-            {
-#if UNITY_EDITOR
-                using (new Profiler(system.GetType().Name))
-#endif
-                {
-                    ((ILateUpdateSystem) system).LateUpdate(elapseSeconds, realElapseSeconds);
-                }
-            }
-        }
-
-        public static void SystemFixedUpdate(this StrongList<ISystem> systems, float elapseSeconds, float realElapseSeconds)
-        {
-            foreach (var system in systems)
-            {
-#if UNITY_EDITOR
-                using (new Profiler(system.GetType().Name))
-#endif
-                {
-                    ((IFixedUpdateSystem) system).OnFixedUpdate(elapseSeconds, realElapseSeconds);
-                }
-            }
-        }
     }
 }

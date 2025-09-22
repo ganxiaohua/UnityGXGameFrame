@@ -15,6 +15,21 @@ namespace GameFrame.Runtime
         private UpdateManager updateManager = new();
 
 
+        private StrongList<ISystem> onUpdate;
+
+        private StrongList<ISystem> onFixedUpdate;
+
+        private StrongList<ISystem> onLateUpdate;
+
+        public EntityHouse()
+        {
+            updateManager = new UpdateManager();
+            onUpdate = updateManager.UpdateSystemEntityArr[UpdateRunType.Update];
+            onFixedUpdate = updateManager.UpdateSystemEntityArr[UpdateRunType.FixedUpdate];
+            onLateUpdate = updateManager.UpdateSystemEntityArr[UpdateRunType.LateUpdate];
+        }
+
+
         /// <summary>
         /// 增加实体 所有的实体都会加入到这里
         /// </summary>
@@ -211,17 +226,41 @@ namespace GameFrame.Runtime
 
         public void Update(float elapseSeconds, float realElapseSeconds)
         {
-            updateManager.UpdateSystemEntityArr[UpdateRunType.Update].SystemUpdate(elapseSeconds, realElapseSeconds);
+            foreach (var system in onUpdate)
+            {
+#if UNITY_EDITOR
+                using (new Profiler(system.GetType().Name))
+#endif
+                {
+                    ((IUpdateSystem) system).OnUpdate(elapseSeconds, realElapseSeconds);
+                }
+            }
         }
 
         public void LateUpdate(float elapseSeconds, float realElapseSeconds)
         {
-            updateManager.UpdateSystemEntityArr[UpdateRunType.LateUpdate].SystemLateUpdate(elapseSeconds, realElapseSeconds);
+            foreach (var system in onLateUpdate)
+            {
+#if UNITY_EDITOR
+                using (new Profiler(system.GetType().Name))
+#endif
+                {
+                    ((ILateUpdateSystem) system).LateUpdate(elapseSeconds, realElapseSeconds);
+                }
+            }
         }
 
         public void FixedUpdate(float elapseSeconds, float realElapseSeconds)
         {
-            updateManager.UpdateSystemEntityArr[UpdateRunType.FixedUpdate].SystemFixedUpdate(elapseSeconds, realElapseSeconds);
+            foreach (var system in onFixedUpdate)
+            {
+#if UNITY_EDITOR
+                using (new Profiler(system.GetType().Name))
+#endif
+                {
+                    ((IFixedUpdateSystem) system).OnFixedUpdate(elapseSeconds, realElapseSeconds);
+                }
+            }
         }
 
 
