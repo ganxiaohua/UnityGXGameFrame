@@ -10,7 +10,8 @@ namespace GameFrame.Runtime
     [Serializable]
     public class ArrayEx<T> : IEnumerable<T>, IEnumerable
     {
-        [SerializeField] [ShowInInspector] protected T[] Data;
+        [SerializeField] [ShowInInspector]
+        protected T[] Data;
 
         public int Count => Data.Length;
 
@@ -20,30 +21,12 @@ namespace GameFrame.Runtime
         {
             get
             {
-                if (index >= (uint) Count)
-                {
-                    if (selfExpansion)
-                        SetCapacity((index / Count + 1) * Count);
-                    else
-                    {
-                        throw new IndexOutOfRangeException();
-                    }
-                }
-
+                Expansion(index);
                 return Data[index];
             }
             set
             {
-                if (index >= (uint) Count)
-                {
-                    if (selfExpansion)
-                        SetCapacity((index / Count + 1) * Count);
-                    else
-                    {
-                        throw new IndexOutOfRangeException();
-                    }
-                }
-
+                Expansion(index);
                 Data[index] = value;
             }
         }
@@ -59,6 +42,19 @@ namespace GameFrame.Runtime
         {
             Array.Clear(Data, 0, Count);
             this.selfExpansion = false;
+        }
+
+        private void Expansion(int index)
+        {
+            if (index >= Count)
+            {
+                if (selfExpansion)
+                    SetCapacity((index / Count + 1) * Count);
+                else
+                {
+                    throw new IndexOutOfRangeException();
+                }
+            }
         }
 
         public void SetCapacity(int size)
