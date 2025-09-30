@@ -74,6 +74,18 @@ namespace GameFrame.Runtime
             return t;
         }
 
+        public void Clear()
+        {
+            if (!isInit)
+                return;
+            int count = IndexList.Count;
+            for (int i = 0; i < count; i++)
+            {
+                Items[IndexList[i]] = default(T);
+            }
+            IndexList.Clear();
+        }
+
         public bool Contains(int index)
         {
             if (index >= Items.Length || index < 0)

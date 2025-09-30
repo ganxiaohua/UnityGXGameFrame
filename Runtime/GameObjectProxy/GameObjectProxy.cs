@@ -71,6 +71,7 @@ namespace GameFrame.Runtime
         {
             base.Initialize(initData);
             Init();
+            
         }
 
         private void Init()
