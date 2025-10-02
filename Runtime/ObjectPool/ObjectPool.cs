@@ -6,16 +6,19 @@ using UnityEngine;
 
 namespace GameFrame.Runtime
 {
-    public class ObjectPool< T> : IObjectPoolBase where T : ObjectBase
+    public class ObjectPool<T> : IObjectPoolBase where T : ObjectBase
     {
-        [ShowInInspector] public TypeNamePair TypeName;
+        [ShowInInspector]
+        public TypeNamePair TypeName;
 
-        [ShowInInspector] private List<T> hideObject = new List<T>();
+        [ShowInInspector]
+        private List<T> hideObject = new List<T>();
 
         /// <summary>
         /// 是否是激活的
         /// </summary>
-        [ShowInInspector] public bool Activate;
+        [ShowInInspector]
+        public bool Activate;
 
 
         /// <summary>
@@ -26,49 +29,56 @@ namespace GameFrame.Runtime
         /// <summary>
         /// 对象池最大数量
         /// </summary>
-        [ShowInInspector] private int maxCacheCount;
+        [ShowInInspector]
+        private int maxCacheCount;
 
 
         /// <summary>
         /// 对象池需要携带的内容
         /// </summary>
-        [ShowInInspector] private object userData;
+        [ShowInInspector]
+        private object userData;
 
         /// <summary>
         /// 对象池每一帧吐出的最大数量
         /// </summary>
-        [ShowInInspector] private int maxSpawnCount;
+        [ShowInInspector]
+        private int maxSpawnCount;
 
 
         /// <summary>
         /// 对象池当前自动施法时间
         /// </summary>
-        [ShowInInspector] private float curAutoReleaseTime;
+        [ShowInInspector]
+        private float curAutoReleaseTime;
 
         /// <summary>
         /// 对象池轮训检查时间
         /// </summary>
-        [ShowInInspector] private float autoReleaseInterval;
+        [ShowInInspector]
+        private float autoReleaseInterval;
 
         /// <summary>
         /// 对象池内部对象进入HitObjet列表之后的到期事件
         /// </summary>
-        [ShowInInspector] private float expireTime;
+        [ShowInInspector]
+        private float expireTime;
 
         // private List<ObjectBase> m_ActionObjects;
-        [ShowInInspector] private Type objectType;
+        [ShowInInspector]
+        private Type objectType;
 
         public static ObjectPool<T> Create(TypeNamePair typeName, Type objectType, int maxNum, int expireTime, object userData)
         {
             Type objectPoolType = typeof(ObjectPool<>).MakeGenericType(objectType);
-            ObjectPool<T> objectPool = (ObjectPool<T>)ReferencePool.Acquire(objectPoolType);
+            ObjectPool<T> objectPool = (ObjectPool<T>) ReferencePool.Acquire(objectPoolType);
             objectPool.spawnAsyncQueue = new();
             objectPool.Initialize(typeName);
             objectPool.maxCacheCount = maxNum;
             objectPool.userData = userData;
             objectPool.expireTime = expireTime;
             objectPool.autoReleaseInterval = 5;
-            objectPool.curAutoReleaseTime = 0;
+            objectPool.curAutoReleaseTime = Time.realtimeSinceStartup + objectPool.autoReleaseInterval;
             objectPool.Activate = true;
             objectPool.maxSpawnCount = 0;
             return objectPool;
@@ -127,11 +137,10 @@ namespace GameFrame.Runtime
 
         public void Update(float elapseSeconds, float realElapseSeconds)
         {
-            curAutoReleaseTime += elapseSeconds;
-            if (curAutoReleaseTime > autoReleaseInterval)
+            if (realElapseSeconds > curAutoReleaseTime)
             {
                 TimeCheck();
-                curAutoReleaseTime = 0;
+                curAutoReleaseTime = realElapseSeconds + autoReleaseInterval;
             }
 
             FrameSpawn();
@@ -161,7 +170,7 @@ namespace GameFrame.Runtime
         /// 异步吐出
         /// </summary>
         /// <returns></returns>
-        public async UniTask<T> SpawnAsync(object obj=null,System.Threading.CancellationToken token = default)
+        public async UniTask<T> SpawnAsync(object obj = null, System.Threading.CancellationToken token = default)
         {
             ObjectPoolHandle objectPoolHandle = ReferencePool.Acquire<ObjectPoolHandle>();
             objectPoolHandle.SetToken(token);
@@ -200,7 +209,7 @@ namespace GameFrame.Runtime
 
             if (poolobject == null)
             {
-                poolobject = (T)ReferencePool.Acquire(objectType);
+                poolobject = (T) ReferencePool.Acquire(objectType);
                 poolobject.Pool = this;
                 poolobject.Initialize(userData);
             }

@@ -50,9 +50,9 @@ namespace GameFrame.Runtime
                 foreach (KeyValuePair<Type, ReferenceCollection> referenceCollection in sReferenceCollections)
                 {
                     results[index++] = new ReferencePoolInfo(referenceCollection.Key, referenceCollection.Value.UnusedReferenceCount,
-                        referenceCollection.Value.UsingReferenceCount, referenceCollection.Value.AcquireReferenceCount,
-                        referenceCollection.Value.ReleaseReferenceCount, referenceCollection.Value.AddReferenceCount,
-                        referenceCollection.Value.RemoveReferenceCount);
+                            referenceCollection.Value.UsingReferenceCount, referenceCollection.Value.AcquireReferenceCount,
+                            referenceCollection.Value.ReleaseReferenceCount, referenceCollection.Value.AddReferenceCount,
+                            referenceCollection.Value.RemoveReferenceCount);
                 }
             }
 
@@ -61,19 +61,21 @@ namespace GameFrame.Runtime
 
         public static void Update(float elapseSeconds, float realElapseSeconds)
         {
-            sCurAutoReleaseTime += realElapseSeconds;
-            if (sCurAutoReleaseTime >= AutoReleaseInterval)
+            if (realElapseSeconds >= sCurAutoReleaseTime)
             {
                 sWaitDestroyList.Clear();
-                sCurAutoReleaseTime = 0;
-                foreach (ReferenceCollection referencepool in sReferenceCollections.Values)
+                sCurAutoReleaseTime = realElapseSeconds + AutoReleaseInterval;
+                lock (sReferenceCollections)
                 {
-                    if (referencepool.UnusedCheck())
+                    foreach (ReferenceCollection referencepool in sReferenceCollections.Values)
                     {
-                        sWaitDestroyList.Add(referencepool.ReferenceType);
-                        if (sWaitDestroyList.Count == 10)
+                        if (referencepool.UnusedCheck())
                         {
-                            break;
+                            sWaitDestroyList.Add(referencepool.ReferenceType);
+                            if (sWaitDestroyList.Count == 10)
+                            {
+                                break;
+                            }
                         }
                     }
                 }
@@ -83,6 +85,8 @@ namespace GameFrame.Runtime
                     Debugger.Log($"clear {type.Name} ReleasePool");
                     RemoveAll(type);
                 }
+
+                sWaitDestroyList.Clear();
             }
         }
 
