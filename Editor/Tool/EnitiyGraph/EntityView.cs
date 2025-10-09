@@ -59,11 +59,11 @@ namespace GameFrame.Editor
                         }
                     }
 
-                    if (member.DeclaringType == typeof(World) && member.Name == "Multiple")
+                    if (member.DeclaringType == typeof(World) && member.Name == "Multiple" || (member.GetCustomAttribute<ShowInInspectorAttribute>() != null))
                     {
                         attributes.Add<ShowInInspectorAttribute>();
                     }
-                    else if (member.DeclaringType != typeof(World))
+                    else
                     {
                         attributes.Add<ShowInInspectorAttribute>();
                         attributes.Add<ReadOnlyAttribute>();
