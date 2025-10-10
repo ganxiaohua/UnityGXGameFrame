@@ -28,6 +28,8 @@ namespace GameFrame.Editor
 
         public static void AutoAllScript()
         {
+            if (EditorApplication.isPlaying)
+                return;
             OpFile.DeleteFilesInDirectory(EditorString.GetPath("CompOutPutPath"));
             LoadText();
             var assembly = AppDomain.CurrentDomain.GetAssemblies();
@@ -154,6 +156,7 @@ namespace GameFrame.Editor
                 {
                     fieldTypeName = "string";
                 }
+
                 addParameter = string.Format(s_TextDictionary[CreateAuto.AddParameter], typeName, fieldTypeName, typeFullName, fieldName, ECSComponentName);
                 string evetString = "";
                 if (s_ViewBindDictionary.TryGetValue(type, out evetString))
