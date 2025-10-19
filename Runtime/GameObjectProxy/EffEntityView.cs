@@ -1,20 +1,38 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace GameFrame.Runtime
 {
     public class EffEntityView : GameObjectProxy
     {
+        public class Input : IDisposable
+        {
+            public EffEntity Entity;
+            public Transform Parent;
+
+            public void Dispose()
+            {
+                Entity = null;
+                Parent = null;
+            }
+        }
+
+        public Transform parent { get; private set; }
         public EffEntity BindEntity { get; private set; }
         private ViewEffBindEnitiy viewEffBindEnitiy;
+
         public override void Initialize(object initData)
         {
+            var input = (Input) initData;
             base.Initialize(initData);
             AutoLayers = false;
-            BindEntity = (EffEntity) initData;
+            BindEntity = input.Entity;
+            parent = input.Parent;
             viewEffBindEnitiy = gameObject.AddComponent<ViewEffBindEnitiy>();
             viewEffBindEnitiy.Entity = BindEntity;
         }
-        
+
         public override void Dispose()
         {
             Object.Destroy(viewEffBindEnitiy);
