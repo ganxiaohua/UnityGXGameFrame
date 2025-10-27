@@ -32,12 +32,14 @@ namespace GameFrame.Runtime
         public void MarkRemove(T t)
         {
             var index = Data.IndexOf(t);
+            if (index == -1)
+                return;
             MarkRemoveAt(index);
         }
 
         public void MarkRemoveAt(int index)
         {
-            if (index == -1)
+            if (index == -1 && waitRemoveIndex.Contains(index))
                 return;
             DataMark[index] = false;
             waitRemoveIndex.Add(index);

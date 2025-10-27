@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace GameFrame.Runtime
 {
-    public class JumpIndexArray<T> : IEnumerable<T>, IEnumerable, IDisposable 
+    public class JumpIndexArray<T> : IEnumerable<T>, IEnumerable, IDisposable
     {
         protected T[] Items;
 
@@ -38,6 +38,7 @@ namespace GameFrame.Runtime
             {
                 Items = new T[arrayMaxCount];
             }
+
             IndexList = new List<int>(arrayMaxCount);
         }
 
@@ -83,6 +84,7 @@ namespace GameFrame.Runtime
             {
                 Items[IndexList[i]] = default(T);
             }
+
             IndexList.Clear();
         }
 
@@ -120,13 +122,8 @@ namespace GameFrame.Runtime
 
             internal Enumerator(List<int> indexs, T[] items)
             {
-                if (indexs == null)
-                {
-                    throw new Exception("Linked list is invalid.");
-                }
-
                 this.items = items;
-                this.indexs = indexs;
+                this.indexs = indexs ?? throw new Exception("Linked list is invalid.");
                 cur = indexs.Count;
             }
 
@@ -144,8 +141,7 @@ namespace GameFrame.Runtime
 
             public bool MoveNext()
             {
-                cur--;
-                return cur >= 0;
+                return --cur >= 0;
             }
 
             void IEnumerator.Reset()
