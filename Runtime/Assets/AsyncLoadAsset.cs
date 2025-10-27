@@ -7,15 +7,15 @@ namespace GameFrame.Runtime
 {
     public class AsyncLoadAsset<T> where T : Object
     {
-        private ArrayEx<T> assets;
+        private List<T> assets;
         private IAssetReference assetReference;
-        private Action<ArrayEx<T>> onAfterLoad;
+        private Action<List<T>> onAfterLoad;
         private int remainCount;
         private int version;
 
-        public AsyncLoadAsset(Action<ArrayEx<T>> func)
+        public AsyncLoadAsset(Action<List<T>> func)
         {
-            assets = new ArrayEx<T>(16);
+            assets = new List<T>(16);
             assetReference = new DefaultAssetReference();
             onAfterLoad = func;
             version = 0;
@@ -41,7 +41,8 @@ namespace GameFrame.Runtime
         private async UniTask Load(string assetPath)
         {
             var preVersion = version;
-            var index = assets.Count;
+            int index = assets.Count;
+            assets.Add(null);
             var asset = await AssetManager.Instance.LoadAsync<T>(assetPath, assetReference);
             if (preVersion != version)
                 return;
