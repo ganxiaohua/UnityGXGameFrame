@@ -5,21 +5,17 @@ namespace GameFrame.Runtime
 {
     public partial class EntityHouse : Singleton<EntityHouse>
     {
-        /// <summary>
-        /// 不会包含EcsEntity的实体集合
-        /// </summary>
         private Dictionary<Type, List<IEntity>> typeWithEntityDic = new();
 
         private Dictionary<SceneType, IScene> sceneEntityDic = new(4);
 
         private UpdateManager updateManager = new();
 
+        private MarkDieList<ISystem> onUpdate;
 
-        private StrongList<ISystem> onUpdate;
+        private MarkDieList<ISystem> onFixedUpdate;
 
-        private StrongList<ISystem> onFixedUpdate;
-
-        private StrongList<ISystem> onLateUpdate;
+        private MarkDieList<ISystem> onLateUpdate;
 
         public EntityHouse()
         {
@@ -78,7 +74,7 @@ namespace GameFrame.Runtime
                 throw new Exception($"TypeWithEntitys not have entity:{entity.ID}");
             }
 
-            updateManager.RemoveUpdateSystem(entity);
+            updateManager.MarkRemoveUpdateSystem(entity);
             EventData.Instance.RemoveEventEntity(entity);
             entityList.Remove(entity);
         }
@@ -168,14 +164,6 @@ namespace GameFrame.Runtime
             updateManager.AddUpdateSystem(entity, system);
         }
 
-        /// <summary>
-        /// 运行PreShowsystem
-        /// </summary>
-        /// <param name="entity"></param>
-        public void RunPreShowSystem(ISystem entity, bool IsFirstShow)
-        {
-            entity?.SystemPreShow(IsFirstShow);
-        }
 
         /// <summary>
         /// 运行showsystem
@@ -211,7 +199,7 @@ namespace GameFrame.Runtime
             ISystem system = (ISystem) entity;
             system?.SystemHide();
             EventData.Instance.RemoveEventEntity(entity);
-            updateManager.RemoveUpdateSystem(entity);
+            updateManager.MarkRemoveUpdateSystem(entity);
             foreach (IEntity entity1 in entity.Children)
             {
                 RunHideSystem((Entity) entity1);
@@ -226,41 +214,62 @@ namespace GameFrame.Runtime
 
         public void Update(float elapseSeconds, float realElapseSeconds)
         {
-            foreach (var system in onUpdate)
+            var data = onUpdate.Data;
+            var dataMark = onUpdate.DataMark;
+            int count = data.Count;
+            for (int i = 0; i < count; i++)
             {
+                var system = data[i];
 #if UNITY_EDITOR
                 using (new Profiler(system.GetType().Name))
 #endif
                 {
-                    ((IUpdateSystem) system).OnUpdate(elapseSeconds, realElapseSeconds);
+                    if (dataMark[i])
+                        ((IUpdateSystem) system).OnUpdate(elapseSeconds, realElapseSeconds);
                 }
             }
+
+            onUpdate.Remove();
         }
 
         public void LateUpdate(float elapseSeconds, float realElapseSeconds)
         {
-            foreach (var system in onLateUpdate)
+            var data = onLateUpdate.Data;
+            var dataMark = onLateUpdate.DataMark;
+            int count = data.Count;
+            for (int i = 0; i < count; i++)
             {
+                var system = data[i];
 #if UNITY_EDITOR
                 using (new Profiler(system.GetType().Name))
 #endif
                 {
-                    ((ILateUpdateSystem) system).LateUpdate(elapseSeconds, realElapseSeconds);
+                    if (dataMark[i])
+                        ((ILateUpdateSystem) system).LateUpdate(elapseSeconds, realElapseSeconds);
                 }
             }
+
+            onLateUpdate.Remove();
         }
 
         public void FixedUpdate(float elapseSeconds, float realElapseSeconds)
         {
-            foreach (var system in onFixedUpdate)
+            var data = onFixedUpdate.Data;
+            var dataMark = onFixedUpdate.DataMark;
+            int count = data.Count;
+            for (int i = 0; i < count; i++)
             {
+                var system = data[i];
 #if UNITY_EDITOR
                 using (new Profiler(system.GetType().Name))
 #endif
                 {
-                    ((IFixedUpdateSystem) system).OnFixedUpdate(elapseSeconds, realElapseSeconds);
+                    if (dataMark[i])
+                        ((IFixedUpdateSystem) system).OnFixedUpdate(elapseSeconds, realElapseSeconds);
                 }
             }
+
+            onFixedUpdate.Remove();
         }
 
 

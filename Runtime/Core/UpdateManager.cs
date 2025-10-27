@@ -4,15 +4,15 @@ namespace GameFrame.Runtime
 {
     public class UpdateManager
     {
-        private StrongList<ISystem>[] updateSystemEntityArr;
+        private MarkDieList<ISystem>[] updateSystemEntityArr;
 
-        public StrongList<ISystem>[] UpdateSystemEntityArr => updateSystemEntityArr;
+        public MarkDieList<ISystem>[] UpdateSystemEntityArr => updateSystemEntityArr;
 
-        private Dictionary<IEntity, StrongList<ISystem>> entityUpdateMap = new();
+        private Dictionary<IEntity, List<ISystem>> entityUpdateMap = new();
 
         public UpdateManager()
         {
-            updateSystemEntityArr = new[] {new StrongList<ISystem>(256, true), new StrongList<ISystem>(256, true), new StrongList<ISystem>(256, true)};
+            updateSystemEntityArr = new[] {new MarkDieList<ISystem>(256), new MarkDieList<ISystem>(256), new MarkDieList<ISystem>(256)};
         }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace GameFrame.Runtime
             {
                 if (!entityUpdateMap.TryGetValue(entity, out var updateSystem))
                 {
-                    updateSystem = new StrongList<ISystem>();
+                    updateSystem = new List<ISystem>();
                     entityUpdateMap.Add(entity, updateSystem);
                 }
 
@@ -76,21 +76,23 @@ namespace GameFrame.Runtime
         /// </summary>
         /// <param name="enitity"></param>
         /// <param name="system"></param>
-        public void RemoveUpdateSystem(IEntity enitity)
+        public void MarkRemoveUpdateSystem(IEntity enitity)
         {
-            if (!entityUpdateMap.TryGetValue(enitity, out var systems)) return;
-            foreach (var sys in systems)
+            if (!entityUpdateMap.TryGetValue(enitity, out List<ISystem> systems)) return;
+
+            for (int i = systems.Count - 1; i >= 0; i--)
             {
+                var sys = systems[i];
                 var updateType = sys.GetUpdateSystemType();
                 if (updateType == UpdateRunType.Node)
                     return;
                 systems.Remove(sys);
                 if ((updateType & (1 << UpdateRunType.Update)) != 0)
-                    updateSystemEntityArr[UpdateRunType.Update].Remove(sys);
+                    updateSystemEntityArr[UpdateRunType.Update].MarkRemove(sys);
                 if ((updateType & (1 << UpdateRunType.FixedUpdate)) != 0)
-                    updateSystemEntityArr[UpdateRunType.FixedUpdate].Remove(sys);
+                    updateSystemEntityArr[UpdateRunType.FixedUpdate].MarkRemove(sys);
                 if ((updateType & (1 << UpdateRunType.LateUpdate)) != 0)
-                    updateSystemEntityArr[UpdateRunType.LateUpdate].Remove(sys);
+                    updateSystemEntityArr[UpdateRunType.LateUpdate].MarkRemove(sys);
             }
         }
     }
