@@ -3,91 +3,76 @@ using System.Collections.Generic;
 
 namespace GameFrame.Runtime
 {
+    public class BulkListIndex : IDisposable
+    {
+        public int Index { get; internal set; }
+        public int key { get; internal set; }
+
+        public virtual void Dispose()
+        {
+            Index = 0;
+            key = 0;
+        }
+    }
+
     /// <summary>
     /// 散装容器
     /// </summary>
-    public class BulkList<K, T> : ArrayEx<T> where T : class
+    public class BulkList<T> where T : BulkListIndex
     {
-        private Dictionary<K, T> dictionary;
+        private T[] datas;
+        public int Count { get; private set; }
 
-        public BulkList(int count) : base(count)
+        public T this[int index]
         {
-            dictionary = new Dictionary<K, T>(count);
+            get { return datas[index]; }
+            set { datas[index] = value; }
         }
 
-        public T GetForKey(K k)
+        public BulkList(int count)
         {
-            return dictionary.GetValueOrDefault(k);
+            datas = new T[count];
+            Count = count;
         }
 
-        public bool Add(K k, T t)
+        public bool Add(int key, T t)
         {
-            if (!dictionary.TryAdd(k, t))
+            for (int i = 0; i < datas.Length; i++)
             {
-                Debugger.LogError($"{k} already exists");
-                return false;
-            }
-
-            for (int i = 0; i < Data.Length; i++)
-            {
-                if (Data[i] != null) continue;
-                Data[i] = t;
+                if (datas[i] != null) continue;
+                datas[i] = t;
+                t.Index = i;
+                t.key = key;
                 return true;
             }
 
             return false;
         }
 
-        public T GetTForK(K id)
+        public T GetAt(int index)
         {
-            return dictionary.GetValueOrDefault(id);
+            return datas[index];
         }
 
-        public bool AddForIndex(int index, K k, T t)
+        public void Get(int key, ref List<T> list)
         {
-            if (!dictionary.TryAdd(k, t))
+            list.Clear();
+            for (int i = 0; i < datas.Length; i++)
             {
-                Debugger.LogError($"{k} already exists");
-                return false;
-            }
-
-            if (Data[index] != null)
-            {
-                Debugger.LogError($"{k} already exists");
-                return false;
-            }
-
-            Data[index] = t;
-            return true;
-        }
-
-        public bool Contains(K k)
-        {
-            return dictionary.ContainsKey(k);
-        }
-
-        public bool TryGetValue(K k, out T t)
-        {
-            return dictionary.TryGetValue(k, out t);
-        }
-
-        public bool Remove(K k)
-        {
-            if (dictionary.TryGetValue(k, out T t))
-            {
-                for (int i = 0; i < Data.Length; i++)
+                var item = datas[i];
+                if (item != null && datas[i].key == key)
                 {
-                    if (Data[i] == t)
-                    {
-                        Data[i] = default;
-                        dictionary.Remove(k);
-                        return true;
-                    }
+                    list.Add(datas[i]);
                 }
             }
+        }
 
-            Debugger.LogError($"{k} not exists");
-            return false;
+        public T RemoveAt(int index)
+        {
+            Assert.IsTrue(index < datas.Length, $"array out {index}");
+            var t = datas[index];
+            datas[index] = null;
+            return t;
         }
     }
 }
