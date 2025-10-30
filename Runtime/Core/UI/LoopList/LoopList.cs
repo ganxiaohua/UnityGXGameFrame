@@ -1,5 +1,4 @@
 ﻿using System;
-using Common.Runtime;
 using FairyGUI;
 
 namespace GameFrame.Runtime
@@ -48,7 +47,7 @@ namespace GameFrame.Runtime
             this.Owner = owner;
             this.glist = glist;
             this.glist.itemRenderer = OnItemShow;
-            this.items = new T[8];
+            this.items = new T[16];
             this.itemSize = 0;
             this.selects = new BitList();
             this.dataGetter = dataGetter;

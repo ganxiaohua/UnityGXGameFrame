@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace GameFrame.Runtime
 {
@@ -21,6 +22,10 @@ namespace GameFrame.Runtime
     public class BulkList<T> where T : BulkListIndex
     {
         private T[] datas;
+
+        private Dictionary<int, List<T>> itemsWithKey;
+
+        private List<int> nullIndex;
         public int Count { get; private set; }
 
         public T this[int index]
@@ -33,20 +38,58 @@ namespace GameFrame.Runtime
         {
             datas = new T[count];
             Count = count;
+            itemsWithKey = new();
+            nullIndex = new List<int>();
+            for (int i = count - 1; i >= 0; i--)
+            {
+                nullIndex.Add(i);
+            }
+        }
+
+        public int GetNullCount()
+        {
+            return nullIndex.Count;
         }
 
         public bool Add(int key, T t)
         {
-            for (int i = 0; i < datas.Length; i++)
+            if (nullIndex.Count <= 0)
             {
-                if (datas[i] != null) continue;
-                datas[i] = t;
-                t.Index = i;
-                t.key = key;
-                return true;
+                Debug.LogWarning("array count out");
+                return false;
             }
 
-            return false;
+            var index = nullIndex[^1];
+            nullIndex.RemoveAt(nullIndex.Count - 1);
+            datas[index] = t;
+            t.Index = index;
+            t.key = key;
+            if (!itemsWithKey.TryGetValue(key, out var keys))
+            {
+                keys = ListPool<T>.Get();
+                itemsWithKey.Add(key, keys);
+            }
+
+            keys.Add(t);
+            return true;
+        }
+
+        public bool AddAt(int index, int key, T t)
+        {
+            if (datas[index] != null)
+                return false;
+            datas[index] = t;
+            t.Index = index;
+            t.key = key;
+            nullIndex.Remove(index);
+            if (!itemsWithKey.TryGetValue(t.key, out var keys))
+            {
+                keys = ListPool<T>.Get();
+                itemsWithKey.Add(t.key, keys);
+            }
+
+            keys.Add(t);
+            return true;
         }
 
         public T GetAt(int index)
@@ -54,24 +97,31 @@ namespace GameFrame.Runtime
             return datas[index];
         }
 
-        public void Get(int key, ref List<T> list)
+        public List<T> Get(int key)
         {
-            list.Clear();
-            for (int i = 0; i < datas.Length; i++)
-            {
-                var item = datas[i];
-                if (item != null && datas[i].key == key)
-                {
-                    list.Add(datas[i]);
-                }
-            }
+            return itemsWithKey.GetValueOrDefault(key);
         }
 
         public T RemoveAt(int index)
         {
+            if (datas[index] == null)
+                return null;
             Assert.IsTrue(index < datas.Length, $"array out {index}");
             var t = datas[index];
             datas[index] = null;
+            if (itemsWithKey.TryGetValue(t.key, out var keys))
+            {
+                keys.Remove(t);
+            }
+
+            if (keys.Count == 0)
+            {
+                ListPool<T>.Release(keys);
+                itemsWithKey.Remove(t.key);
+            }
+
+            nullIndex.Add(index);
+            nullIndex.Sort((a, b) => b.CompareTo(a));
             return t;
         }
     }

@@ -47,7 +47,8 @@ namespace GameFrame.Runtime
                     eventEntityDic.Add(eventType, entities);
                 }
 
-                entities.Add(entity);
+                if (!entities.Contains(entity))
+                    entities.Add(entity);
             }
         }
 

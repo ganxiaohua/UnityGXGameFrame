@@ -143,7 +143,7 @@ namespace GameFrame.Runtime
             Versions++;
             _DestroyTimer?.Cancel();
             State = PanelState.Open;
-            // EventSystem.Instance.Subscribe(this);
+            // EventData.Instance.AddEventEntity(this);
 
             DoShowAnimation();
             //
@@ -166,7 +166,7 @@ namespace GameFrame.Runtime
             Versions++;
             _DestroyTimer?.Cancel();
             State = PanelState.Open;
-            // EventSystem.Instance.Subscribe(this);
+            // EventData.Instance.AddEventEntity(this);
 
             DoRestoreAnimation();
         }
@@ -186,7 +186,7 @@ namespace GameFrame.Runtime
             // StackTraceVisualize.Register(Root.displayObject.gameObject);
             Versions++;
             State = PanelState.Hide;
-            // EventSystem.Instance.Unsubscribe(this);
+            // EventData.Instance.RemoveEventEntity(this);
 
             DoHideAnimation();
         }
@@ -204,7 +204,7 @@ namespace GameFrame.Runtime
         {
             base.Dispose();
             Assert.AreNotEqual(PanelState.Destroy, State, $"Panel({this}) already destroyed");
-            // if (Visible) EventSystem.Instance.Unsubscribe(this);
+            // EventData.Instance.RemoveEventEntity(this);
             Versions++;
             _DestroyTimer?.Cancel();
             SetParent(null);
