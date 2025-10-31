@@ -5,7 +5,6 @@ using Cysharp.Threading.Tasks;
 using Eden.Core.Runtime.UI.Platform;
 using FairyGUI;
 using UnityEngine;
-using UnityEngine.Pool;
 
 namespace GameFrame.Runtime
 {
@@ -77,8 +76,8 @@ namespace GameFrame.Runtime
         public void ShowPanel(Panel panel, object args = null)
         {
             // hide panel first if panel is open
-            if (panel.State == PanelState.Open) HidePanel(panel);
-            Assert.IsFalse(visiblePanels.Contains(panel), $"Bad Panel({panel}, state:{panel.State}) OnShow|OnHide Call");
+            if (panel.PanelState == PanelState.Open) HidePanel(panel);
+            Assert.IsFalse(visiblePanels.Contains(panel), $"Bad Panel({panel}, state:{panel.PanelState}) OnShow|OnHide Call");
             panel.OnBeforeShow();
             if (panel.Mode == PanelMode.Mono)
             {
@@ -118,17 +117,17 @@ namespace GameFrame.Runtime
 
         public void HidePanel(Panel panel)
         {
-            if (panel.State == PanelState.Hide) return;
-            Assert.IsTrue(visiblePanels.Contains(panel), $"Bad Panel({panel}, state:{panel.State}) OnShow|OnHide Call");
+            if (panel.PanelState == PanelState.Hide) return;
+            Assert.IsTrue(visiblePanels.Contains(panel), $"Bad Panel({panel}, state:{panel.PanelState}) OnShow|OnHide Call");
             visiblePanels.RemoveSwapBack(panel);
             panel.OnHide();
             if (panel.Mode == PanelMode.Mono)
             {
-                Assert.IsTrue(monoPanelStack.Count > 0 && monoPanelStack.Peek() == panel, $"Bad Mono Panel({panel}, state:{panel.State}) OnShow|OnHide Call");
+                Assert.IsTrue(monoPanelStack.Count > 0 && monoPanelStack.Peek() == panel, $"Bad Mono Panel({panel}, state:{panel.PanelState}) OnShow|OnHide Call");
                 monoPanelStack.Pop();
                 if (monoPanelStack.TryPeek(out var topPanel))
                 {
-                    Assert.IsFalse(visiblePanels.Contains(topPanel), $"Bad Mono Panel({topPanel}, state:{topPanel.State}) OnShow|OnHide Call");
+                    Assert.IsFalse(visiblePanels.Contains(topPanel), $"Bad Mono Panel({topPanel}, state:{topPanel.PanelState}) OnShow|OnHide Call");
                     visiblePanels.Add(topPanel);
                     topPanel.OnRestore();
                 }
@@ -145,15 +144,15 @@ namespace GameFrame.Runtime
 
             while (visiblePanels.TryPeek(out var panel))
             {
-                Assert.IsTrue(panel.Visible, $"Bad Panel({panel}, state:{panel.State}) OnShow|OnHide Call");
+                Assert.IsTrue(panel.Visible, $"Bad Panel({panel}, state:{panel.PanelState}) OnShow|OnHide Call");
                 HidePanel(panel);
             }
         }
 
         public void DestroyPanel(Panel panel)
         {
-            if (panel.State == PanelState.Destroy) return;
-            if (panel.State == PanelState.UnInitialize)
+            if (panel.PanelState == PanelState.Destroy) return;
+            if (panel.PanelState == PanelState.UnInitialize)
             {
                 panel.SetVersionDirty();
                 // remove first, then add again with latest version
@@ -170,7 +169,7 @@ namespace GameFrame.Runtime
             // destroy childs here
             while (panel.Childs.TryPeek(out var child))
             {
-                Assert.AreNotEqual(PanelState.Destroy, child.State, $"Bad Panel({child}, state:{child.State}) OnDestroy Call");
+                Assert.AreNotEqual(PanelState.Destroy, child.PanelState, $"Bad Panel({child}, state:{child.PanelState}) OnDestroy Call");
                 DestroyPanel(child);
             }
 
@@ -191,7 +190,7 @@ namespace GameFrame.Runtime
             var tmpList = ListPool<Panel>.Get();
             while (panels.TryPop(out var panel))
             {
-                if (panel.State == PanelState.Destroy)
+                if (panel.PanelState == PanelState.Destroy)
                     continue;
                 if ((panel.Flags & PanelFlag.Persistent) != 0 || IsInsideStashStack(panel))
                     tmpList.Add(panel);
@@ -201,7 +200,7 @@ namespace GameFrame.Runtime
 
             foreach (var panel in tmpList)
             {
-                if (panel.State != PanelState.Destroy)
+                if (panel.PanelState != PanelState.Destroy)
                 {
                     panels.Add(panel);
                 }
@@ -297,7 +296,7 @@ namespace GameFrame.Runtime
                     // destroy operation was abort
                     delayDestroyPanels.RemoveAtSwapBack(i);
                 }
-                else if (panel.State != PanelState.UnInitialize)
+                else if (panel.PanelState != PanelState.UnInitialize)
                 {
                     // initialize finish, could safely destroy immediately
                     delayDestroyPanels.RemoveAtSwapBack(i);

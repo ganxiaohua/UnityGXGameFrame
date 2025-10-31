@@ -26,5 +26,6 @@ namespace GamePlay.Runtime
                     (({4}) entity).{2}({3});
                 }}
             }}
+            HashSetPool<IEntity>.Release(allEntity);
         }}
         

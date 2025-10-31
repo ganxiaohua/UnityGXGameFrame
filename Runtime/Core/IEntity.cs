@@ -8,6 +8,7 @@ namespace GameFrame.Runtime
         {
             None = 0,
             IsRunning,
+            IsHide,
             IsClear
         }
 

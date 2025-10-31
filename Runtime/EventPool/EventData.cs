@@ -13,7 +13,7 @@ namespace GameFrame.Runtime
         /// <summary>
         /// 标记事件和对应的实体
         /// </summary>
-        private Dictionary<Type, StrongList<IEntity>> eventEntityDic = new();
+        private Dictionary<Type, HashSet<IEntity>> eventEntityDic = new();
 
         public void AddSourceDic(Type key, Type vale)
         {
@@ -43,12 +43,11 @@ namespace GameFrame.Runtime
             {
                 if (!eventEntityDic.TryGetValue(eventType, out var entities))
                 {
-                    entities = new StrongList<IEntity>();
+                    entities = new HashSet<IEntity>();
                     eventEntityDic.Add(eventType, entities);
                 }
 
-                if (!entities.Contains(entity))
-                    entities.Add(entity);
+                entities.Add(entity);
             }
         }
 
@@ -75,9 +74,13 @@ namespace GameFrame.Runtime
             }
         }
 
-        public StrongList<IEntity> GetEntity(Type eventType)
+        public HashSet<IEntity> GetEntity(Type eventType)
         {
-            return eventEntityDic.GetValueOrDefault(eventType);
+            var hashset = eventEntityDic.GetValueOrDefault(eventType);
+            var tempHashset = HashSetPool<IEntity>.Get();
+            foreach (var obj in hashset)
+                tempHashset.Add(obj);
+            return tempHashset;
         }
     }
 }

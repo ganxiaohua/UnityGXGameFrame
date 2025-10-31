@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Pool;
 
 namespace GameFrame.Runtime
 {
@@ -62,14 +61,14 @@ namespace GameFrame.Runtime
 
             foreach (var panel in stashPanels)
             {
-                if (panel.State != PanelState.Destroy)
+                if (panel.PanelState != PanelState.Destroy)
                 {
                     panel.DestroyTimer.Cancel();
                     if (panel.Mode == PanelMode.Mono)
                     {
                         monoPanelStack.Add(panel);
                     }
-                    else if (panel.State != PanelState.Open)
+                    else if (panel.PanelState != PanelState.Open)
                     {
                         visiblePanels.Add(panel);
                         panel.OnRestore();
@@ -79,7 +78,7 @@ namespace GameFrame.Runtime
 
             ListPool<Panel>.Release(stashPanels);
 
-            if (top != null && top != GetCurrentMonoPanel() && top.State == PanelState.Open)
+            if (top != null && top != GetCurrentMonoPanel() && top.PanelState == PanelState.Open)
             {
                 visiblePanels.RemoveSwapBack(top);
                 top.OnHide();
@@ -87,7 +86,7 @@ namespace GameFrame.Runtime
             }
 
             top = GetCurrentMonoPanel();
-            if (top != null && top.State != PanelState.Open)
+            if (top != null && top.PanelState != PanelState.Open)
             {
                 visiblePanels.Add(top);
                 top.OnRestore();

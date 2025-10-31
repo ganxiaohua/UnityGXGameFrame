@@ -23,9 +23,9 @@ namespace GameFrame.Runtime
 
         public virtual float LifetimeAfterHide => (Flags & PanelFlag.Persistent) != 0 || Parent != null ? float.PositiveInfinity : 5;
 
-        public new PanelState State { get; private set; }
+        public PanelState PanelState { get; private set; }
 
-        public bool Visible => State == PanelState.Open;
+        public bool Visible => PanelState == PanelState.Open;
 
         public new Panel Parent { get; private set; }
 
@@ -57,14 +57,14 @@ namespace GameFrame.Runtime
 
         public void OnInitialize()
         {
-            State = PanelState.UnInitialize;
+            PanelState = PanelState.UnInitialize;
             Versions = 0;
             AssetReference = ReferencePool.Acquire<DefaultAssetReference>();
         }
 
         public void SetParent(Panel parent, GComponent holdComponent = null)
         {
-            Assert.AreNotEqual(PanelState.Destroy, State, $"Panel({this}) already destroyed");
+            Assert.AreNotEqual(PanelState.Destroy, PanelState, $"Panel({this}) already destroyed");
             if (holdComponent == null && parent != null) holdComponent = parent.Root;
             if (parent == Parent && holdComponent == ParentHoldComponent) return;
             if (Parent != null)
@@ -75,7 +75,7 @@ namespace GameFrame.Runtime
 
             if (parent != null)
             {
-                Assert.AreNotEqual(PanelState.Destroy, parent.State, $"Panel({parent}) already destroyed");
+                Assert.AreNotEqual(PanelState.Destroy, parent.PanelState, $"Panel({parent}) already destroyed");
                 Assert.AreNotEqual(PanelMode.Mono, Mode, $"Child Panel({this}) Mode can't be Mono");
                 parent.Childs.Add(this);
                 Assert.IsTrue(parent.Root == holdComponent || parent.Root.IsAncestorOf(holdComponent), $"Panel({parent}) is not ancestor of hold component");
@@ -88,14 +88,14 @@ namespace GameFrame.Runtime
 
         public void AddChild(Panel child, GComponent holdComponent = null)
         {
-            Assert.AreNotEqual(PanelState.Destroy, State, $"Panel({this}) already destroyed");
+            Assert.AreNotEqual(PanelState.Destroy, PanelState, $"Panel({this}) already destroyed");
             Assert.IsFalse(Childs.Contains(child), $"Panel({this}) already contain Child({child})");
             child.SetParent(this, holdComponent);
         }
 
         public void SetVersionDirty()
         {
-            Assert.AreNotEqual(PanelState.Destroy, State, $"Panel({this}) already destroyed");
+            Assert.AreNotEqual(PanelState.Destroy, PanelState, $"Panel({this}) already destroyed");
             Versions++;
         }
 
@@ -105,7 +105,7 @@ namespace GameFrame.Runtime
         public virtual async UniTask OnInitializeAsync(GComponent root, CancellationToken cancelToken = default)
         {
             Assert.AreNotEqual(null, root, $"GComponent root is null");
-            Assert.AreEqual(PanelState.UnInitialize, State, $"Panel({this}) not initialized");
+            Assert.AreEqual(PanelState.UnInitialize, PanelState, $"Panel({this}) not initialized");
 
             GRoot.inst.AddChild(root);
             if (Mode != PanelMode.Embed && Mode != PanelMode.Pop)
@@ -127,8 +127,8 @@ namespace GameFrame.Runtime
 
         public virtual void OnInitializeComplete()
         {
-            Assert.AreEqual(PanelState.UnInitialize, State, $"Panel({this}) already initialized");
-            State = PanelState.Hide;
+            Assert.AreEqual(PanelState.UnInitialize, PanelState, $"Panel({this}) already initialized");
+            PanelState = PanelState.Hide;
         }
 
         public virtual void OnBeforeShow()
@@ -137,13 +137,13 @@ namespace GameFrame.Runtime
 
         public virtual void OnShow(object args = null)
         {
-            Assert.AreNotEqual(PanelState.UnInitialize, State, $"Panel({this}) not initialized");
-            Assert.AreNotEqual(PanelState.Destroy, State, $"Panel({this}) already destroyed");
+            Assert.AreNotEqual(PanelState.UnInitialize, PanelState, $"Panel({this}) not initialized");
+            Assert.AreNotEqual(PanelState.Destroy, PanelState, $"Panel({this}) already destroyed");
             // StackTraceVisualize.Register(Root.displayObject.gameObject);
             Versions++;
             _DestroyTimer?.Cancel();
-            State = PanelState.Open;
-            // EventData.Instance.AddEventEntity(this);
+            PanelState = PanelState.Open;
+            State = IEntity.EntityState.IsRunning;
 
             DoShowAnimation();
             //
@@ -161,13 +161,12 @@ namespace GameFrame.Runtime
 
         public virtual void OnRestore()
         {
-            Assert.AreNotEqual(PanelState.UnInitialize, State, $"Panel({this}) not initialized");
-            Assert.AreNotEqual(PanelState.Destroy, State, $"Panel({this}) already destroyed");
+            Assert.AreNotEqual(PanelState.UnInitialize, PanelState, $"Panel({this}) not initialized");
+            Assert.AreNotEqual(PanelState.Destroy, PanelState, $"Panel({this}) already destroyed");
             Versions++;
             _DestroyTimer?.Cancel();
-            State = PanelState.Open;
-            // EventData.Instance.AddEventEntity(this);
-
+            PanelState = PanelState.Open;
+            State = IEntity.EntityState.IsRunning;
             DoRestoreAnimation();
         }
 
@@ -181,11 +180,12 @@ namespace GameFrame.Runtime
 
         public virtual void OnHide()
         {
-            Assert.AreNotEqual(PanelState.UnInitialize, State, $"Panel({this}) not initialized");
-            Assert.AreNotEqual(PanelState.Destroy, State, $"Panel({this}) already destroyed");
+            Assert.AreNotEqual(PanelState.UnInitialize, PanelState, $"Panel({this}) not initialized");
+            Assert.AreNotEqual(PanelState.Destroy, PanelState, $"Panel({this}) already destroyed");
             // StackTraceVisualize.Register(Root.displayObject.gameObject);
             Versions++;
-            State = PanelState.Hide;
+            PanelState = PanelState.Hide;
+            State = IEntity.EntityState.IsHide;
             // EventData.Instance.RemoveEventEntity(this);
 
             DoHideAnimation();
@@ -203,7 +203,7 @@ namespace GameFrame.Runtime
         public override void Dispose()
         {
             base.Dispose();
-            Assert.AreNotEqual(PanelState.Destroy, State, $"Panel({this}) already destroyed");
+            Assert.AreNotEqual(PanelState.Destroy, PanelState, $"Panel({this}) already destroyed");
             // EventData.Instance.RemoveEventEntity(this);
             Versions++;
             _DestroyTimer?.Cancel();
@@ -212,7 +212,7 @@ namespace GameFrame.Runtime
             ReferencePool.Release(AssetReference);
             Root.Dispose();
             Root = null;
-            State = PanelState.Destroy;
+            PanelState = PanelState.Destroy;
         }
 
         /// <summary>

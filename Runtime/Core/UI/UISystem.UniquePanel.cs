@@ -11,13 +11,13 @@ namespace GameFrame.Runtime
             var panel = FindFirstOfPanel(type);
             if (panel != null)
             {
-                while (panel.State == PanelState.UnInitialize)
+                while (panel.PanelState == PanelState.UnInitialize)
                 {
                     await UniTask.Yield();
                 }
             }
 
-            if (panel == null || panel.State == PanelState.Destroy)
+            if (panel == null || panel.PanelState == PanelState.Destroy)
             {
                 panel = await CreatePanelAsync(type, cancelToken);
             }
@@ -36,14 +36,14 @@ namespace GameFrame.Runtime
             var panel = FindFirstOfPanel(type);
             if (panel != null)
             {
-                Assert.AreNotEqual(PanelState.Destroy, panel.State, $"Panel({panel}) already destroyed");
+                Assert.AreNotEqual(PanelState.Destroy, panel.PanelState, $"Panel({panel}) already destroyed");
 
-                if (panel.State == PanelState.UnInitialize)
+                if (panel.PanelState == PanelState.UnInitialize)
                 {
                     panel.SetVersionDirty();
 
                     var version = panel.Versions;
-                    while (panel.State == PanelState.UnInitialize)
+                    while (panel.PanelState == PanelState.UnInitialize)
                     {
                         await UniTask.Yield();
                         if (cancelToken.IsCancellationRequested)
@@ -89,7 +89,7 @@ namespace GameFrame.Runtime
             var panel = FindFirstOfPanel(type);
             if (panel != null)
             {
-                Assert.AreNotEqual(PanelState.Destroy, panel.State, $"Panel({panel}) already destroyed");
+                Assert.AreNotEqual(PanelState.Destroy, panel.PanelState, $"Panel({panel}) already destroyed");
                 if (panel.Visible)
                 {
                     HidePanel(panel);
@@ -112,7 +112,7 @@ namespace GameFrame.Runtime
             var panel = FindFirstOfPanel(type);
             if (panel != null)
             {
-                Assert.AreNotEqual(PanelState.Destroy, panel.State, $"Panel({panel}) already destroyed");
+                Assert.AreNotEqual(PanelState.Destroy, panel.PanelState, $"Panel({panel}) already destroyed");
                 DestroyPanel(panel);
             }
         }
