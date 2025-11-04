@@ -10,6 +10,7 @@ namespace GameFrame.Runtime
         {
             public EffEntity Entity;
             public Transform Parent;
+            public object UserData;
 
             public void Dispose()
             {
@@ -20,6 +21,7 @@ namespace GameFrame.Runtime
 
         public Transform parent { get; private set; }
         public EffEntity BindEntity { get; private set; }
+
         private ViewEffBindEnitiy viewEffBindEnitiy;
 
         public override void Initialize(object initData)
@@ -29,6 +31,7 @@ namespace GameFrame.Runtime
             AutoLayers = false;
             BindEntity = input.Entity;
             parent = input.Parent;
+            Userdata = input.UserData;
             viewEffBindEnitiy = gameObject.AddComponent<ViewEffBindEnitiy>();
             viewEffBindEnitiy.Entity = BindEntity;
         }

@@ -24,6 +24,14 @@ namespace GameFrame.Runtime
             goCacheParent = GameObjectPool.ObjectCacheArea.transform;
 #endif
 
+            Component[] components = gameObject.GetComponents<Component>();
+            foreach (Component component in components)
+            {
+                if (!(component is Transform))
+                {
+                    Object.Destroy(component);
+                }
+            }
 
             gameObject.transform.SetParent(goCacheParent);
             base.OnUnspawn();

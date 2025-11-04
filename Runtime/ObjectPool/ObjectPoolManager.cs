@@ -11,15 +11,15 @@ namespace GameFrame.Runtime
         [ShowInInspector]
         private Dictionary<TypeNamePair, IObjectPoolBase> s_ObjectPoolBase = new Dictionary<TypeNamePair, IObjectPoolBase>();
 
-        
-        public void Update(float elapseSeconds,float realElapseSeconds)
+
+        public void Update(float elapseSeconds, float realElapseSeconds)
         {
             foreach (IObjectPoolBase objectpool in s_ObjectPoolBase.Values)
             {
-                objectpool.Update(elapseSeconds,realElapseSeconds);
+                objectpool.Update(elapseSeconds, realElapseSeconds);
             }
         }
-        
+
         /// <summary>
         /// 创建一个对象池
         /// </summary>
@@ -28,7 +28,7 @@ namespace GameFrame.Runtime
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public ObjectPool<T> CreateObjectPool<T>(string name, int maxNum,int expireTime,object initObject = null) where T : ObjectBase, new()
+        public ObjectPool<T> CreateObjectPool<T>(string name, int maxNum, int expireTime, object initObject = null) where T : ObjectBase, new()
         {
             Type type = typeof(T);
             TypeNamePair typeNamePair = new TypeNamePair(type, name);
@@ -37,7 +37,7 @@ namespace GameFrame.Runtime
                 throw new Exception($"has {name} {type}");
             }
 
-            ObjectPool<T> objectPoolBase = ObjectPool<T>.Create(typeNamePair, type, maxNum,expireTime,initObject);
+            ObjectPool<T> objectPoolBase = ObjectPool<T>.Create(typeNamePair, type, maxNum, expireTime, initObject);
             s_ObjectPoolBase.Add(typeNamePair, objectPoolBase);
             return objectPoolBase;
         }
@@ -49,7 +49,7 @@ namespace GameFrame.Runtime
         /// <param name="name"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public ObjectPool<T> GetObjectPool<T>(string name) where T :ObjectBase, new()
+        public ObjectPool<T> GetObjectPool<T>(string name) where T : ObjectBase, new()
         {
             Type type = typeof(T);
             TypeNamePair typeNamePair = new TypeNamePair(type, name);
@@ -57,6 +57,7 @@ namespace GameFrame.Runtime
             {
                 return objectbase as ObjectPool<T>;
             }
+
             return null;
         }
 
@@ -68,7 +69,7 @@ namespace GameFrame.Runtime
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public void DeleteObjectPool<T>(ObjectPool<T> objectpool) where T : ObjectBase,new()
+        public void DeleteObjectPool<T>(ObjectPool<T> objectpool) where T : ObjectBase, new()
         {
             if (objectpool == null)
             {
@@ -78,7 +79,7 @@ namespace GameFrame.Runtime
             ReferencePool.Release(objectpool);
             s_ObjectPoolBase.Remove(objectpool.TypeName);
         }
-        
+
         /// <summary>
         /// 删除一个对象池
         /// </summary>
@@ -87,13 +88,14 @@ namespace GameFrame.Runtime
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public void DeleteObjectPool<T>(string name) where T :ObjectBase,new()
+        public void DeleteObjectPool<T>(string name) where T : ObjectBase, new()
         {
             var objectPool = GetObjectPool<T>(name);
             if (objectPool == null)
             {
                 throw new Exception($"objectpool {name} null");
             }
+
             DeleteObjectPool(objectPool);
         }
 
@@ -106,9 +108,9 @@ namespace GameFrame.Runtime
             {
                 ReferencePool.Release(objectPool.Value);
             }
+
             s_ObjectPoolBase.Clear();
         }
-        
 
 
         public bool HasPool(TypeNamePair typeNamePair)
@@ -117,8 +119,8 @@ namespace GameFrame.Runtime
             {
                 return true;
             }
+
             return false;
         }
-        
     }
 }
