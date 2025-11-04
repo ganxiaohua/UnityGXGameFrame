@@ -85,7 +85,7 @@ namespace GameFrame.Runtime
 
         protected override void OnRequestRecycle()
         {
-            GoWrapperProxyPool.Instance.UnSpawn(this);
+            base.OnRequestRecycle();
         }
 
         public void SetParent(GComponent parent)

@@ -2,17 +2,26 @@
 
 namespace GameFrame.Runtime
 {
-    public partial class GameObjectProxy : ObjectBase
+    public class UnityGameObjectItem : ObjectBase
     {
-        /// <summary>
-        /// 回收对象时的事件。
-        /// </summary>
+        public GameObject gameObject { get; private set; }
+
+        public override void Initialize(object initData = null)
+        {
+            base.Initialize(initData);
+            gameObject = new GameObject();
+        }
+
+        public override void OnSpawn(object obj)
+        {
+            base.OnSpawn(obj);
+            gameObject.transform.SetParent(null);
+        }
+
         public override void OnUnspawn()
         {
-            Unbind();
-            Transform goCacheParent = null;
 #if UNITY_EDITOR
-            goCacheParent = GameObjectPool.ObjectCacheArea.transform.Find("ComGameObject");
+            var goCacheParent = GameObjectPool.ObjectCacheArea.transform.Find("ComGameObject");
             if (goCacheParent == null)
             {
                 var go = new GameObject();
@@ -23,7 +32,6 @@ namespace GameFrame.Runtime
 #else
             goCacheParent = GameObjectPool.ObjectCacheArea.transform;
 #endif
-
             Component[] components = gameObject.GetComponents<Component>();
             foreach (Component component in components)
             {
@@ -39,13 +47,7 @@ namespace GameFrame.Runtime
 
         public override void Dispose()
         {
-            Unbind();
-            recycleTimer.Cancel();
-            GameObject.Destroy(gameObject);
-            gameObject = null;
-            transform = null;
-            State = GameObjectState.Destroy;
-            Userdata = null;
+            Object.Destroy(gameObject);
             base.Dispose();
         }
     }

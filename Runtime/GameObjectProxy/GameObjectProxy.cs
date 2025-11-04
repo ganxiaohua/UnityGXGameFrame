@@ -5,11 +5,13 @@ using UnityEngine;
 
 namespace GameFrame.Runtime
 {
-    public partial class GameObjectProxy
+    public partial class GameObjectProxy : IVersions, IDisposable
     {
         public GameObject gameObject { get; private set; }
 
         public Transform transform { get; private set; }
+
+        public int Versions { get; private set; }
 
         public Vector3 LocalPosition
         {
@@ -49,8 +51,6 @@ namespace GameFrame.Runtime
 
         public bool AutoLayers { get; set; } = true;
 
-        public object Userdata { get; set; }
-
         public object BindingSource { get; private set; }
 
         public GameObjectState State { get; private set; }
@@ -64,19 +64,12 @@ namespace GameFrame.Runtime
 
         private UniqueTimer recycleTimer;
 
-        /// <summary>
-        /// 初始化对象基类。
-        /// </summary>
-        public override void Initialize(object initData = null)
-        {
-            base.Initialize(initData);
-            Init();
-            
-        }
+        private UnityGameObjectItem unityGameObjectItem;
 
-        private void Init()
+        public virtual void Initialize(object initData = null)
         {
-            gameObject = new GameObject();
+            unityGameObjectItem = UnitGoPool.Instance.Spawn();
+            gameObject = unityGameObjectItem.gameObject;
             transform = gameObject.transform;
 
             State = GameObjectState.Unload;
@@ -84,8 +77,7 @@ namespace GameFrame.Runtime
             recycleTimer = new UniqueTimer(OnRequestRecycle);
 
 #if UNITY_EDITOR
-            using (new Profiler("[EditorOnly]GameObjectProxy.RecycleTimer.SetDebugName"))
-                recycleTimer.Name = this.GetType().Name;
+            recycleTimer.Name = this.GetType().Name;
 #endif
         }
 
@@ -285,6 +277,16 @@ namespace GameFrame.Runtime
         protected virtual void OnRequestRecycle()
         {
             Unbind();
+        }
+
+        public virtual void Dispose()
+        {
+            Unbind();
+            UnitGoPool.Instance.UnSpawn(unityGameObjectItem);
+            recycleTimer.Cancel();
+            gameObject = null;
+            transform = null;
+            State = GameObjectState.Destroy;
         }
     }
 }

@@ -22,6 +22,8 @@ namespace GameFrame.Runtime
         public Transform parent { get; private set; }
         public EffEntity BindEntity { get; private set; }
 
+        public object UserData;
+
         private ViewEffBindEnitiy viewEffBindEnitiy;
 
         public override void Initialize(object initData)
@@ -31,7 +33,7 @@ namespace GameFrame.Runtime
             AutoLayers = false;
             BindEntity = input.Entity;
             parent = input.Parent;
-            Userdata = input.UserData;
+            UserData = input.UserData;
             viewEffBindEnitiy = gameObject.AddComponent<ViewEffBindEnitiy>();
             viewEffBindEnitiy.Entity = BindEntity;
         }
