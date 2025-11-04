@@ -31,9 +31,15 @@ namespace GameFrame.Editor
                 File.Delete(filePath);
         }
 
+        public static void DeleteDirectory(string path)
+        {
+            if (Directory.Exists(path))
+                Directory.Delete(path, true);
+        }
+
         public static string[] GetSubDirectories(string filePath)
         {
-           return Directory.GetDirectories(filePath);
+            return Directory.GetDirectories(filePath);
         }
 
         public static void DeleteFilesInDirectory(string directoryPath)
