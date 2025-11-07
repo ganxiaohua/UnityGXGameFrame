@@ -20,11 +20,13 @@ namespace GameFrame.Runtime
         }
 
         public Transform parent { get; private set; }
-        public EffEntity BindEntity { get; private set; }
+        protected EffEntity BindEntity { get; private set; }
 
-        public object UserData;
+        protected object UserData;
 
         private ViewEffBindEnitiy viewEffBindEnitiy;
+
+        public virtual bool notNeedBuind => false;
 
         public override void Initialize(object initData)
         {
