@@ -19,11 +19,13 @@ namespace GameFrame.Runtime
 
         private AssetHandle bufferHandle;
         private UIPackage package;
+        private int loadNum = 0;
 
         public void Initialize(object key, Type type)
         {
             IsValid = true;
             IsDone = false;
+            loadNum = 0;
             AssetReference = new DefaultAssetReference();
             try
             {
@@ -44,18 +46,26 @@ namespace GameFrame.Runtime
 
         public UniTask GetTask(CancellationToken cancellationToken)
         {
+            loadNum++;
             return bufferHandle.ToUniTask(cancellationToken: cancellationToken);
         }
 
         public void Finish()
         {
-            IsDone = true;
+            if (!IsDone)
+            {
+                Assert.AreNotEqual(null, bufferHandle.AssetObject, $"no addressable asset '{bufferHandle}' found");
+                var buffer = ((TextAsset) bufferHandle.AssetObject).bytes;
+                package = UIPackage.AddPackage(buffer, string.Empty, UIPackageHelper.OnLoadResFromBundleAsync);
+            }
 
-            Assert.AreNotEqual(null, bufferHandle.AssetObject, $"no addressable asset '{bufferHandle}' found");
-            var buffer = ((TextAsset) bufferHandle.AssetObject).bytes;
-            bufferHandle.Release();
-            bufferHandle = default;
-            package = UIPackage.AddPackage(buffer, string.Empty, UIPackageHelper.OnLoadResFromBundleAsync);
+            if (--loadNum == 0)
+            {
+                bufferHandle.Release();
+                bufferHandle = default;
+            }
+
+            IsDone = true;
         }
 
         public void Release()

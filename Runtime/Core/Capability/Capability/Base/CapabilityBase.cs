@@ -25,8 +25,13 @@ namespace GameFrame.Runtime
         {
         }
 
+
         public abstract bool ShouldActivate();
         public abstract bool ShouldDeactivate();
+
+        public virtual void OnBlock(bool block)
+        {
+        }
 
         public virtual void OnActivated()
         {
@@ -40,7 +45,6 @@ namespace GameFrame.Runtime
 
         public virtual void TickActive(float delatTime, float realElapseSeconds)
         {
-            
         }
 
         public virtual void Dispose()

@@ -10,7 +10,7 @@ namespace GameFrame.Runtime
         public string Name;
         public bool FromResources;
 
-        public GObjectBaseData(string package,string name,bool forResources)
+        public GObjectBaseData(string package, string name, bool forResources)
         {
             Package = package;
             Name = name;
@@ -20,9 +20,10 @@ namespace GameFrame.Runtime
 
     public class GObjectBase : ObjectBase
     {
-        protected GObjectBaseData gObjectBaseData; 
+        protected GObjectBaseData gObjectBaseData;
         protected GObject Obj;
         protected object spawnData;
+
         /// <summary>
         /// 初始化对象基类。
         /// </summary>
@@ -63,9 +64,8 @@ namespace GameFrame.Runtime
         private async UniTask LoadObject()
         {
             var ver = Versions;
-            if (Obj == null)
-                Obj = await UISystem.Instance.CreateGObjectAsync(gObjectBaseData.Package, gObjectBaseData.Name, gObjectBaseData.FromResources);
-            if (ver != Versions)
+            Obj ??= await UISystem.Instance.CreateGObjectAsync(gObjectBaseData.Package, gObjectBaseData.Name, gObjectBaseData.FromResources);
+            if (Obj != null && ver != Versions)
             {
                 Obj.Dispose();
                 Obj = null;

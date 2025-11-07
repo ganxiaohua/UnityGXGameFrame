@@ -21,7 +21,9 @@ namespace GameFrame.Runtime
                 Debugger.LogError($"{Instigators.GetType().Name} already block {index}");
                 return false;
             }
+
             list.Add(index);
+            Instigators.OnBlock(true);
             return true;
         }
 
@@ -38,6 +40,8 @@ namespace GameFrame.Runtime
                 Debugger.LogError($"{Instigators.GetType().Name} not Block {index}");
                 return false;
             }
+
+            Instigators.OnBlock(false);
             list.Remove(index);
             return true;
         }
