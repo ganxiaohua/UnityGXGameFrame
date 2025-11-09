@@ -41,6 +41,9 @@ namespace GameFrame.Runtime
                 }
             }
 
+            gameObject.transform.localScale = Vector3.one;
+            gameObject.transform.localPosition = Vector3.zero;
+            gameObject.transform.localRotation = Quaternion.identity;
             gameObject.transform.SetParent(goCacheParent);
             base.OnUnspawn();
         }
