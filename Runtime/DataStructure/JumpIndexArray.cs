@@ -59,7 +59,7 @@ namespace GameFrame.Runtime
             }
             else
             {
-                if (Items[index].Equals(default(T)))
+                if (!IndexList.Contains(index))
                     IndexList.Add(index);
             }
 

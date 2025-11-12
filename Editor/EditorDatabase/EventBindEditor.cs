@@ -75,15 +75,15 @@ namespace GameFrame.Editor
                             //获得事件的方法 和参数
                             if (SendEventHas.Contains(item))
                             {
-                                return;
+                                continue;
                             }
 
-                            string parameter = ""; //{1}
+                            string parameter = "";                                       //{1}
                             string typex = item.Name.Substring(1, item.Name.Length - 1); //{0}
                             MethodInfo[] ins = item.GetMethods();
                             ParameterInfo[] parmeters = ins[0].GetParameters();
                             string method = ins[0].Name; //{2}
-                            string paremwairte = ""; //{3}
+                            string paremwairte = "";     //{3}
                             foreach (ParameterInfo parmeter in parmeters)
                             {
                                 parameter += parmeter.ParameterType.FullName + " " + parmeter.Name + ",";
