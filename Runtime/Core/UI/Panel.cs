@@ -5,7 +5,7 @@ using FairyGUI;
 
 namespace GameFrame.Runtime
 {
-    public abstract partial class Panel : SimpleEntity, IVersions, IInitializeSystem
+    public abstract partial class Panel : SimpleEntity, IVersions, IInitializeSystem, IUpdateSystem
     {
         public abstract string Package { get; }
 
@@ -214,6 +214,17 @@ namespace GameFrame.Runtime
             Root.Dispose();
             Root = null;
             PanelState = PanelState.Destroy;
+        }
+
+        public void OnUpdate(float elapseSeconds, float realElapseSeconds)
+        {
+            if (!Visible)
+                return;
+            Update(elapseSeconds, realElapseSeconds);
+        }
+
+        protected virtual void Update(float elapseSeconds, float realElapseSeconds)
+        {
         }
 
         /// <summary>
