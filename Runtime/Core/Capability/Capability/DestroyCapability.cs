@@ -4,6 +4,11 @@
     {
         public override int TickGroupOrder { get; protected set; } = int.MaxValue;
 
+        protected override void OnInit()
+        {
+            Filter(ComponentsID<DestroyComp>.TID);
+        }
+
         public override bool ShouldActivate()
         {
             return Owner.GetComponent(ComponentsID<DestroyComp>.TID) != null;

@@ -114,7 +114,7 @@ namespace GameFrame.Runtime
 
             State = GameObjectState.Loading;
 
-            var go = default(GameObjectPoolBaes);
+            GameObjectPoolBaes go = null;
             try
             {
                 go = await GameObjectPool.Instance.GetAsync(asset, transform, cancelToken);
@@ -130,7 +130,8 @@ namespace GameFrame.Runtime
             if (prevVersion != Versions)
             {
                 // operation is obsolete
-                GameObjectPool.Instance.Release(asset, go);
+                if (go != null)
+                    GameObjectPool.Instance.Release(asset, go);
                 return false;
             }
 

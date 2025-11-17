@@ -53,26 +53,30 @@ namespace GameFrame.Runtime
             foreach (var capability in capabilityBaseArrayEx)
             {
                 var owner = capability.Owner;
-                var capailty = (CapabiltyComponent) owner.GetComponent(ComponentsID<CapabiltyComponent>.TID);
-                if (capability.TagList != null && capailty.IsBlock(capability.TagList))
+                if (capability.TagList != null)
                 {
-                    continue;
+                    var capailty = (CapabiltyComponent) owner.GetComponent(ComponentsID<CapabiltyComponent>.TID);
+                    if (capailty.IsBlock(capability.TagList))
+                        continue;
                 }
 
-                if (!capability.IsActive)
+                if (capability.TryComponentChanges)
                 {
-                    bool succ = capability.ShouldActivate();
-                    if (succ)
+                    if (!capability.IsActive)
                     {
-                        capability.OnActivated();
+                        bool succ = capability.ShouldActivate();
+                        if (succ)
+                        {
+                            capability.OnActivated();
+                        }
                     }
-                }
-                else
-                {
-                    bool succ = capability.ShouldDeactivate();
-                    if (succ)
+                    else
                     {
-                        capability.OnDeactivated();
+                        bool succ = capability.ShouldDeactivate();
+                        if (succ)
+                        {
+                            capability.OnDeactivated();
+                        }
                     }
                 }
 

@@ -12,7 +12,7 @@ namespace GameFrame.Runtime
         {
             if (!instigatorsDic.TryGetValue(Instigators, out var list))
             {
-                list ??= new List<int>();
+                list = ListPool<int>.Get();
                 instigatorsDic.Add(Instigators, list);
             }
 
@@ -23,7 +23,6 @@ namespace GameFrame.Runtime
             }
 
             list.Add(index);
-            Instigators.OnBlock(true);
             return true;
         }
 
@@ -41,7 +40,6 @@ namespace GameFrame.Runtime
                 return false;
             }
 
-            Instigators.OnBlock(false);
             list.Remove(index);
             return true;
         }
