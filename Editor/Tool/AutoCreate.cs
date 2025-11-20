@@ -126,6 +126,11 @@ namespace GameFrame.Editor
                 ECSComponentName = vb.BindType.FullName;
             }
 
+            if (type.FullName.Contains("GamePlay.Runtime.BeUseFuncComp"))
+            {
+                Debug.Log("xxxxxx");
+            }
+
             FieldInfo[] variable = type.GetFields(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance);
             PropertyInfo[] propertyInfos = type.GetProperties();
             string typeName = type.Name;
@@ -149,7 +154,9 @@ namespace GameFrame.Editor
                 fieldTypeName = variable[0].FieldType.ToString();
             }
 
+            fieldTypeName = fieldTypeName.Replace("[]", "!!");
             fieldTypeName = fieldTypeName.Replace("`3[", "<").Replace("`2[", "<").Replace("`1[", "<").Replace("]", ">");
+            fieldTypeName = fieldTypeName.Replace("!!", "[]");
             if (!string.IsNullOrEmpty(fieldName))
             {
                 if (fieldTypeName == "String")
