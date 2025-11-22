@@ -26,7 +26,7 @@ namespace GameFrame.Runtime
 #if UNITY_EDITOR
             CanUnBlock(index, instigators);
 #endif
-            tags[index]--;
+            tags[index] = Mathf.Max(0, --tags[index]);
         }
 
         public bool IsBlock(List<int> indexs)
@@ -38,6 +38,7 @@ namespace GameFrame.Runtime
                     return true;
                 }
             }
+
             return false;
         }
     }

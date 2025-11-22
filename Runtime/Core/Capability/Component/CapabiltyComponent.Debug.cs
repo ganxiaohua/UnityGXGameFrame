@@ -30,13 +30,13 @@ namespace GameFrame.Runtime
         {
             if (!instigatorsDic.TryGetValue(Instigators, out var list))
             {
-                Debugger.LogError($"{Instigators.GetType().Name}  not block {index}");
+                // Debugger.LogError($"{Instigators.GetType().Name}  not block {index}");
                 return false;
             }
 
             if (!list.Contains(index))
             {
-                Debugger.LogError($"{Instigators.GetType().Name} not Block {index}");
+                // Debugger.LogError($"{Instigators.GetType().Name} not Block {index}");
                 return false;
             }
 

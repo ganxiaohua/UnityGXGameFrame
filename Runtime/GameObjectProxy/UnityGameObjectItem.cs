@@ -15,7 +15,10 @@ namespace GameFrame.Runtime
         public override void OnSpawn(object obj)
         {
             base.OnSpawn(obj);
-            gameObject.transform.SetParent(null);
+            gameObject.transform.SetParent((Transform) obj);
+            gameObject.transform.localPosition = Vector3.zero;
+            gameObject.transform.localScale = Vector3.one;
+            gameObject.transform.localRotation = Quaternion.identity;
         }
 
         public override void OnUnspawn()
@@ -41,9 +44,6 @@ namespace GameFrame.Runtime
                 }
             }
 
-            gameObject.transform.localScale = Vector3.one;
-            gameObject.transform.localPosition = Vector3.zero;
-            gameObject.transform.localRotation = Quaternion.identity;
             gameObject.transform.SetParent(goCacheParent);
             base.OnUnspawn();
         }

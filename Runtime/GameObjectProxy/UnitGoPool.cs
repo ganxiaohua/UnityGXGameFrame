@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace GameFrame.Runtime
 {
@@ -11,9 +12,9 @@ namespace GameFrame.Runtime
             objectPool = ObjectPoolManager.Instance.CreateObjectPool<UnityGameObjectItem>("UnitGoPool", 128, 30);
         }
 
-        public UnityGameObjectItem Spawn()
+        public UnityGameObjectItem Spawn(Transform parent)
         {
-            return objectPool.Spawn();
+            return objectPool.Spawn(parent);
         }
 
         public void UnSpawn(UnityGameObjectItem go)

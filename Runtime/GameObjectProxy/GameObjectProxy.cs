@@ -68,7 +68,7 @@ namespace GameFrame.Runtime
 
         public virtual void Initialize(object initData = null)
         {
-            unityGameObjectItem = UnitGoPool.Instance.Spawn();
+            unityGameObjectItem = UnitGoPool.Instance.Spawn(null);
             gameObject = unityGameObjectItem.gameObject;
             transform = gameObject.transform;
 
