@@ -1,11 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace GameFrame.Runtime
 {
-    public class DDictionary<T, K, V> : IEnumerable
+    public class DDictionary<T, K, V>
     {
         private readonly Dictionary<T, Dictionary<K, V>> DDTKV = new();
+
+        public Dictionary<T, Dictionary<K, V>> Value => DDTKV;
 
         public void Add(T t, K k, V v)
         {
@@ -74,23 +75,6 @@ namespace GameFrame.Runtime
             }
 
             return true;
-        }
-
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        public IEnumerator<V> GetEnumerator()
-        {
-            foreach (var kv in DDTKV.Values)
-            {
-                foreach (var value in kv.Values)
-                {
-                    yield return value;
-                }
-            }
         }
     }
 }
