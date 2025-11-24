@@ -33,7 +33,7 @@ namespace GameFrame.Runtime
                 goCacheParent.transform.SetParent(GameObjectPool.ObjectCacheArea.transform);
             }
 #else
-            goCacheParent = GameObjectPool.ObjectCacheArea.transform;
+          var  goCacheParent = GameObjectPool.ObjectCacheArea.transform;
 #endif
             Component[] components = gameObject.GetComponents<Component>();
             foreach (Component component in components)

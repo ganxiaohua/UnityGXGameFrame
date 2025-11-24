@@ -29,7 +29,7 @@ namespace GameFrame.Runtime
 #elif UNITY_WEBGL
                 playMode = EPlayMode.WebPlayMode,
 #else
-                playMode = EPlayMode.HostPlayMode,
+                playMode = EPlayMode.OfflinePlayMode,
 #endif
                 },
         };
