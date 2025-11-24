@@ -14,4 +14,9 @@
     {
         void OnInitialize(TP1 p1, TP2 p2);
     }
+
+    public interface IInitializeSystem<in TP1, in TP2, in TP3> : ISystem
+    {
+        void OnInitialize(TP1 p1, TP2 p2, TP3 p3);
+    }
 }
