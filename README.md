@@ -12,10 +12,9 @@
 ECS特点:
 
   1.可以做到逻辑和渲染完全分离,逻辑端只需要关注数据即可,即便是像是位移这种需求,也不需要等待模型加载完成,直接设置位置即可,模型创建完成会自动修改为你设置的位置，这是游戏中的一个主角,他的拥有那些组件，以及拥有的能力一览无余
-
-      <img width="1228" height="510" alt="image" src="https://github.com/user-attachments/assets/28d3f9ca-e8cc-4240-b928-977e8a50960e" />
-      <img width="822" height="567" alt="image" src="https://github.com/user-attachments/assets/ce654ffe-181e-4830-9f2e-72c4a3b61488" />
-      <img width="416" height="353" alt="image" src="https://github.com/user-attachments/assets/df3ce69e-d41f-4bdd-873c-bf5986e31f46" />
+    <img width="1228" height="510" alt="image" src="https://github.com/user-attachments/assets/28d3f9ca-e8cc-4240-b928-977e8a50960e" />
+    <img width="822" height="567" alt="image" src="https://github.com/user-attachments/assets/ce654ffe-181e-4830-9f2e-72c4a3b61488" />
+    <img width="416" height="353" alt="image" src="https://github.com/user-attachments/assets/df3ce69e-d41f-4bdd-873c-bf5986e31f46" />
 
   2.全游戏只有一份的GameObject数据类,WorldPos ,LocalPos ,LocalScale,WorldScale,WorldRot,localRot 等等只有一个源头.
 
