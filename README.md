@@ -12,27 +12,8 @@
 ECS特点:
 
   1.可以做到逻辑和渲染完全分离,逻辑端只需要关注数据即可,即便是像是位移这种需求,也不需要等待模型加载完成,直接设置位置即可,模型创建完成会自动修改为你设置的位置.
-    ```
-            var map = AddChild();
-            map.AddViewType(typeof(GoBaseView));
-            map.AddAssetPath("Map");
-            map.AddWorldPos(Vector3.zero);
-
-            var palyer = AddChild();
-            palyer.AddViewType(typeof(Go2DView));
-            palyer.AddAssetPath("Assets/GXGame/Art/Runtime/Role/Player/Prefab/Player.prefab");
-            palyer.AddWorldPos(new Vector3(-0.5f,0,0));
-            palyer.AddMoveDirection();
-            palyer.AddMoveSpeed(1);
-            palyer.AddInputDirection();
-
-            var monster = AddChild();
-            monster.AddViewType(typeof(Go2DView));
-            monster.AddAssetPath("Assets/GXGame/Art/Runtime/Role/Monster_002/Prefab/Monster_002.prefab");
-            monster.AddWorldPos(new Vector3(5,0,-1));
-            monster.AddMoveDirection();
-            monster.AddMoveSpeed(1);
-    ```
+      这是游戏中的一个主角,他的拥有那些组件，已经拥有的能力一览无余
+      <img width="1228" height="510" alt="image" src="https://github.com/user-attachments/assets/28d3f9ca-e8cc-4240-b928-977e8a50960e" />
 
   2.全游戏只有一份的GameObject数据类,WorldPos ,LocalPos ,LocalScale,WorldScale,WorldRot,localRot 等等只有一个源头.
 
@@ -52,38 +33,6 @@ ECS特点:
    7.全方面的editor工具提供,包含打包,事件绑定,ecs绑定,实体审查工具,如果你使用rider就可以在ilviewer中查看c#的il代码或者 低等高等代码.
 
    8.如果你实在不想用ecs部分的系统,可以使用行为机(内置)
-   
-ECC特点：
-   实体和组件的方式和ecs模式相同，但是将system拆开分给每个实体，让他们自己控制自己，而不是统一控制。
-   ```
-            var palyer = AddChild();
-            palyer.Name = "主角";
-            palyer.AddViewType(typeof(Go2DView));
-            palyer.AddAssetPath("Player/Prefab/Player");
-            BindCapabilityUpdate<ViewCapability>(palyer);
-            BindCapabilityUpdate<MoveCapability>(palyer);
-            BindCapabilityUpdate<AtkStartCapability>(palyer);
-            BindCapabilityUpdate<AtkingCapability>(palyer);
-            BindCapabilityUpdate<SearchMonsterCapability>(palyer);
-```
-  每个能力组件都包含如下配置，一眼懂
-  ```
-     public interface ICapability : IDisposable
-    {
-        int ID { get; }
-        SHWorld World { get; }
-        EffEntity Owner { get; }
-        bool IsActive { get; }
-        int TickGroupOrder { get; }
-        void Init(SHWorld world,EffEntity owner, int id);
-        bool ShouldActivate();
-        bool ShouldDeactivate();
-        void OnActivated();
-        void OnDeactivated();
-        void TickActive(float delatTime,float realElapseSeconds);
-    }
-```
-  同样的所有的能力都是数组，操作极快，缺点就是浪费点内存。
 
  编辑器功能 看图识功能:
  
