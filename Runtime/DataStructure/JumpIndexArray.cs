@@ -2,10 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using UnityEngine;
 
 namespace GameFrame.Runtime
 {
-    public class JumpIndexArray<T> : IEnumerable<T>, IEnumerable, IDisposable
+    public partial class JumpIndexArray<T> : IEnumerable<T>, IEnumerable, IDisposable
     {
         protected T[] Items;
 
@@ -99,6 +100,7 @@ namespace GameFrame.Runtime
         {
             IndexList.Clear();
             IndexList = null;
+            Items = null;
         }
 
         public Enumerator GetEnumerator() => new Enumerator(IndexList, Items);
