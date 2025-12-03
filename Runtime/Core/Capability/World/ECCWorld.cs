@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace GameFrame.Runtime
 {
-    public abstract class ECCWorld : World, IFixedUpdateSystem
+    public abstract class ECCWorld : World
     {
         private int maxCapabilityCount;
 
@@ -68,10 +68,12 @@ namespace GameFrame.Runtime
             capabilitys.OnUpdate(DeltaTime, realElapseSeconds);
         }
 
-        public void OnFixedUpdate(float elapseSeconds, float realElapseSeconds)
+        public override void OnFixedUpdate(float elapseSeconds, float realElapseSeconds)
         {
-            capabilitys.OnFixedUpdate(elapseSeconds * Multiple, realElapseSeconds);
+            base.OnFixedUpdate(elapseSeconds, realElapseSeconds);
+            capabilitys.OnFixedUpdate(FixedDeltaTime, realElapseSeconds);
         }
+
 
         public override void Dispose()
         {

@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace GameFrame.Runtime
 {
-    public abstract partial class World : IEntity, IVersions, IInitializeSystem<int>, IUpdateSystem
+    public abstract partial class World : IEntity, IVersions, IInitializeSystem<int>, IUpdateSystem, IFixedUpdateSystem
     {
         public IEntity Parent { get; private set; }
 
@@ -13,23 +14,25 @@ namespace GameFrame.Runtime
         public int Versions { get; private set; }
 
         public IEntity.EntityState State { get; private set; }
-        
+
         public bool IsAction => State == IEntity.EntityState.IsRunning;
 
         public int MaxComponentCount { get; private set; }
-        
+
         private int ecsSerialId;
-        
-        public float DeltaTime { get; private set; }
+
+        protected float DeltaTime { get; private set; }
+
+        protected float FixedDeltaTime { get; private set; }
 
         public float Multiple { get; private set; }
 
-        private Dictionary<Matcher, Group> groups = new();
+        private Dictionary<Matcher, Group> groups;
 
         private List<Group>[] groupsList;
-        
+
         private int sIndex;
-        
+
 
         public void OnDirty(IEntity parent, int id)
         {
@@ -39,20 +42,21 @@ namespace GameFrame.Runtime
             ID = id;
             Versions++;
         }
-        
+
         public virtual void OnInitialize(int maxComponentCount)
         {
             MaxComponentCount = maxComponentCount;
+            groupsList = new List<Group>[MaxComponentCount];
+            groups = new();
             InitializeChilds();
             SetMultiple(1);
-            groupsList = new List<Group>[MaxComponentCount];
         }
-        
+
         protected virtual void SetMultiple(float mul)
         {
             Multiple = mul;
         }
-        
+
         public Group GetGroup(Matcher matcher)
         {
             if (groups.TryGetValue(matcher, out Group group))
@@ -91,7 +95,6 @@ namespace GameFrame.Runtime
         }
 
 
-
         public virtual void Dispose()
         {
             DisposeChilds();
@@ -105,8 +108,14 @@ namespace GameFrame.Runtime
             ecsSerialId = 0;
             groupsList = null;
             groups.Clear();
+            groups = null;
         }
-        
+
+        public virtual void OnFixedUpdate(float elapseSeconds, float realElapseSeconds)
+        {
+            FixedDeltaTime = elapseSeconds * Multiple;
+        }
+
         public virtual void OnUpdate(float elapseSeconds, float realElapseSeconds)
         {
             DeltaTime = elapseSeconds * Multiple;

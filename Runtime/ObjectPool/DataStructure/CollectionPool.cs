@@ -23,8 +23,7 @@ namespace GameFrame.Runtime
             if (list != null)
             {
                 list.Clear();
-                if (pool.Count <= 20)
-                    pool.Push(list);
+                pool.Push(list);
             }
         }
     }
@@ -47,8 +46,7 @@ namespace GameFrame.Runtime
             if (q != null)
             {
                 q.Clear();
-                if (pool.Count <= 20)
-                    pool.Push(q);
+                pool.Push(q);
             }
         }
     }
@@ -71,8 +69,7 @@ namespace GameFrame.Runtime
             if (q != null)
             {
                 q.Clear();
-                if (pool.Count <= 20)
-                    pool.Push(q);
+                pool.Push(q);
             }
         }
     }
@@ -95,8 +92,7 @@ namespace GameFrame.Runtime
             if (dict != null)
             {
                 dict.Clear();
-                if (pool.Count <= 20)
-                    pool.Push(dict);
+                pool.Push(dict);
             }
         }
     }
@@ -119,8 +115,7 @@ namespace GameFrame.Runtime
             if (hs != null)
             {
                 hs.Clear();
-                if (pool.Count <= 20)
-                    pool.Push(hs);
+                pool.Push(hs);
             }
         }
     }
