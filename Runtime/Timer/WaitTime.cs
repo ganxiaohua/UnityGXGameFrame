@@ -18,6 +18,8 @@ namespace GameFrame.Runtime.Runtime.Timer
             {
                 if (e is not OperationCanceledException)
                     Debugger.LogError(e);
+                else
+                    throw;
             }
         }
 
@@ -42,6 +44,8 @@ namespace GameFrame.Runtime.Runtime.Timer
             {
                 if (e is not OperationCanceledException)
                     Debugger.LogError(e);
+                else
+                    throw;
             }
         }
 
