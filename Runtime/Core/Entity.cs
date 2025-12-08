@@ -73,24 +73,12 @@ namespace GameFrame.Runtime
             Remove(entity);
         }
 
-
-        /// <summary>
-        /// 删除组件
-        /// </summary>
-        /// <param name="entity"></param>
         private void Remove(IEntity entity)
         {
             EntityHouse.Instance.RemoveEntity(entity);
             ReferencePool.Release(entity);
         }
 
-
-        /// <summary>
-        /// 创建一个组件
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
         private IEntity CreateComponent<T>() where T : IEntity
         {
             Type type = typeof(T);
@@ -108,12 +96,6 @@ namespace GameFrame.Runtime
             return component;
         }
 
-        /// <summary>
-        /// 加入entity
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
         public T AddComponent<T>() where T : class, IEntity
         {
             Type type = typeof(T);
@@ -204,11 +186,6 @@ namespace GameFrame.Runtime
             }
         }
 
-
-        /// <summary>
-        /// 删除组件
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
         public void RemoveComponent<T>() where T : class, IEntity
         {
             Remove<T>();
@@ -218,17 +195,12 @@ namespace GameFrame.Runtime
         {
             Remove(type);
         }
-        
+
         public void RemoveComponent(IEntity type)
         {
             Remove(type.GetType());
         }
 
-        /// <summary>
-        /// 挂载实体
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
         public T AddChild<T>() where T : class, IEntity
         {
             Type type = typeof(T);
@@ -284,11 +256,6 @@ namespace GameFrame.Runtime
         }
 
 
-        /// <summary>
-        /// 删除实体
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
         public void RemoveChild(IEntity entity)
         {
             if (!Children.Remove(entity))
@@ -299,9 +266,6 @@ namespace GameFrame.Runtime
             Remove(entity);
         }
 
-        /// <summary>
-        /// 清理所有的子对象
-        /// </summary>
         public void ClearAllChild()
         {
             foreach (var item in Children)
@@ -318,10 +282,6 @@ namespace GameFrame.Runtime
             Children.Clear();
         }
 
-
-        /// <summary>
-        /// 清理所有的组件
-        /// </summary>
         public void ClearAllComponent()
         {
             foreach (var item in Components)
@@ -339,10 +299,6 @@ namespace GameFrame.Runtime
             Components.Clear();
         }
 
-
-        /// <summary>
-        /// 清除
-        /// </summary>
         public virtual void Dispose()
         {
             State = IEntity.EntityState.IsClear;

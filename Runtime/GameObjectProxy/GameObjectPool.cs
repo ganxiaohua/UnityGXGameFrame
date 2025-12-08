@@ -47,7 +47,8 @@ namespace GameFrame.Runtime
         {
             if (!objectPools.TryGetValue(assetName, out var objectPool))
             {
-                Debugger.LogError("not have");
+                Debugger.LogError($"not have {assetName}");
+                return null;
             }
 
             objectPool.SetAsyncMaxCount(frameMaxInstanceCount);
@@ -74,7 +75,7 @@ namespace GameFrame.Runtime
 
             DefaultAssetReference defaultAssetReference = new DefaultAssetReference();
             var prefab = await AssetManager.Instance.LoadAsync<GameObject>(assetName, defaultAssetReference,
-                token);
+                    token);
             if (prefab == null)
             {
                 defaultAssetReference.UnrefAsset(assetName);
@@ -82,7 +83,6 @@ namespace GameFrame.Runtime
             }
 
             var go = await InstantiateGameObjectAsync(objectPool, assetName, prefab, defaultAssetReference, parent, token);
-            //如果这个阶段发现被取消了,那就unload资源.
             if (go == null)
             {
                 defaultAssetReference.UnrefAsset(assetName);
@@ -102,12 +102,12 @@ namespace GameFrame.Runtime
         /// <param name="token"></param>
         /// <returns></returns>
         private async UniTask<GameObjectPoolBaes> InstantiateGameObjectAsync(ObjectPool<GameObjectPoolBaes> pool, string assetName, GameObject prefab,
-            DefaultAssetReference assetReference,
-            Transform parent = null,
-            System.Threading.CancellationToken token = default)
+                DefaultAssetReference assetReference,
+                Transform parent = null,
+                System.Threading.CancellationToken token = default)
         {
             pool.SetUserData(prefab);
-            GameObjectPoolBaes gameObjectPoolBaes = await pool.SpawnAsync(null,token);
+            GameObjectPoolBaes gameObjectPoolBaes = await pool.SpawnAsync(null, token);
             if (gameObjectPoolBaes == null)
             {
                 return null;
