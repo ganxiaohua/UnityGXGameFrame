@@ -8,12 +8,12 @@ using UnityEngine.SceneManagement;
 
 namespace GameFrame.Runtime
 {
-    public sealed partial class AssetManager : Singleton<AssetManager>  , IDisposable
+    public sealed partial class AssetManager : Singleton<AssetManager>, IDisposable
     {
         private const float InfinityLifeTime = float.PositiveInfinity;
 
         private const float DefaultDelayReleaseTime = 30;
-        
+
         private float unloadUnusedAssetsTime;
 
         private float delayReleaseTime = DefaultDelayReleaseTime;
@@ -289,7 +289,6 @@ namespace GameFrame.Runtime
 
         public void Update(float deltaTime)
         {
-
             for (int i = dyingAssetCaches.Count - 1; i >= 0; i--)
             {
                 var cache = dyingAssetCaches[i];
@@ -314,6 +313,5 @@ namespace GameFrame.Runtime
             assetCaches.Clear();
             isAlive = false;
         }
-        
     }
 }

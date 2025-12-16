@@ -30,7 +30,7 @@ namespace GameFrame.Editor
             CalculateData(headFrame);
         }
 
-        //TODO: 等待优化,先能用再说
+        //TODO: wiat opt...
         private List<ArrayExSimilarData> CalculateData(int headFrame)
         {
             returnData.Clear();

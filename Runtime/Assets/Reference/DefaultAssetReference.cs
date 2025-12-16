@@ -10,7 +10,9 @@ namespace GameFrame.Runtime
     {
         private const int MinHashSetCount = 8;
 
-        [SerializeField, HideInPlayMode] private List<string> refAssets;
+        [SerializeField, HideInPlayMode]
+        private List<string> refAssets;
+
         private HashSet<string> refAssetSet;
 
         public float PercentComplete
@@ -113,6 +115,13 @@ namespace GameFrame.Runtime
 
             refAssets = null;
             refAssetSet = null;
+        }
+
+        public bool Has(string path)
+        {
+            if (refAssetSet == null)
+                return false;
+            return refAssetSet.Contains(path);
         }
 
         public void Dispose()

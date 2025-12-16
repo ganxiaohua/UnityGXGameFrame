@@ -71,10 +71,12 @@ namespace GameFrame.Editor
 
             scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
             EditorGUILayout.LabelField("___________________________update");
-            Draw(updateMode);
+            if (updateMode != null)
+                Draw(updateMode);
             EditorGUILayout.Space(2 * updateMode.Length);
             EditorGUILayout.LabelField("___________________________fixedUpdate");
-            Draw(fixUpdateMode);
+            if (fixUpdateMode != null)
+                Draw(fixUpdateMode);
             EditorGUILayout.EndScrollView();
         }
 
@@ -98,6 +100,8 @@ namespace GameFrame.Editor
             for (int j = 0; j < capabilityTypes.Length; j++)
             {
                 var exSimilar = capabilityTypes[j];
+                if (exSimilar == null)
+                    continue;
                 var datas = exSimilar.GetData();
                 EditorGUILayout.BeginHorizontal();
                 var pos = EditorGUILayout.GetControlRect();

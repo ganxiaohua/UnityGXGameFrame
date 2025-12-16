@@ -89,7 +89,6 @@ namespace GameFrame.Runtime
 
             Versions++;
             BindingSource = prefab;
-            Versions++;
             var goBase = GameObjectPool.Instance.InstantiateGameObject(prefab, parent);
             goBase.Obj.hideFlags = HideFlags.None;
             BindInternal(goBase, parent);
