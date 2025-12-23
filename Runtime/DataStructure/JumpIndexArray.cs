@@ -70,7 +70,7 @@ namespace GameFrame.Runtime
 
         public T Remove(int index)
         {
-            IndexList.RemoveSwapBack(index);
+            IndexList.Remove(index);
             var t = Items[index];
             Items[index] = default;
             return t;
