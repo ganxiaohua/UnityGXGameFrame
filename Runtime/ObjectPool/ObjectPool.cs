@@ -68,9 +68,16 @@ namespace GameFrame.Runtime
         [ShowInInspector]
         private Type objectType;
 
+        private static Dictionary<Type, Type> cacheType = new();
+
         public static ObjectPool<T> Create(TypeNamePair typeName, Type objectType, int maxNum, int expireTime, object userData)
         {
-            Type objectPoolType = typeof(ObjectPool<>).MakeGenericType(objectType);
+            if (!cacheType.TryGetValue(objectType, out var objectPoolType))
+            {
+                objectPoolType = typeof(ObjectPool<>).MakeGenericType(objectType);
+                cacheType.Add(objectType, objectPoolType);
+            }
+
             ObjectPool<T> objectPool = (ObjectPool<T>) ReferencePool.Acquire(objectPoolType);
             objectPool.spawnAsyncQueue = new();
             objectPool.Initialize(typeName);
@@ -164,7 +171,6 @@ namespace GameFrame.Runtime
                 objectPoolHandle.Complete();
             }
         }
-
 
         /// <summary>
         /// 异步吐出
