@@ -11,7 +11,7 @@
 
         public override bool ShouldActivate()
         {
-            return Owner.GetComponent(ComponentsID<DestroyComp>.TID) != null;
+            return Owner.HasComponent<DestroyComp>();
         }
 
         public override void OnActivated()
@@ -22,7 +22,7 @@
 
         public override bool ShouldDeactivate()
         {
-            return Owner.GetComponent(ComponentsID<DestroyComp>.TID) == null;
+            return Owner.HasComponent<DestroyComp>();
         }
 
         public override void TickActive(float delatTime, float realElapseSeconds)

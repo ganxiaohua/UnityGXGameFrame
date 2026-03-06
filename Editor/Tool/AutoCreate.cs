@@ -22,9 +22,10 @@ namespace GameFrame.Editor
 
     public partial class AutoCreate
     {
-        private static Dictionary<CreateAuto, string> s_TextDictionary;
-        private static Dictionary<Type, string> s_ViewBindDictionary;
-        private static StringBuilder tempStr = new StringBuilder(1024);
+        private static Dictionary<CreateAuto, string> sTextDictionary;
+        private static Dictionary<Type, string> sViewBindDictionary;
+        private static List<Type> sEcsComList;
+        private static StringBuilder sTempStr = new StringBuilder(1024);
 
         public static void AutoAllScript()
         {
@@ -33,19 +34,22 @@ namespace GameFrame.Editor
             OpFile.DeleteFilesInDirectory(EditorString.GetPath("CompOutPutPath"));
             LoadText();
             var assembly = AppDomain.CurrentDomain.GetAssemblies();
-            var number = 0;
             foreach (var item in assembly)
             {
                 foreach (var name in EditorString.GetPaths("AssemblyNames"))
                 {
                     if (item.GetName().Name != name) continue;
-                    number += FindAllECSCom(item);
+                    FindAllECSCom(item);
                     break;
                 }
             }
 
-            CreateComponents(number);
+            CreateComponents();
             CreateCapabiltys();
+            sViewBindDictionary.Clear();
+            sTextDictionary.Clear();
+            sTempStr.Clear();
+            sEcsComList.Clear();
             AssetDatabase.Refresh();
             Debugger.Log("生成完毕");
         }
@@ -68,34 +72,28 @@ namespace GameFrame.Editor
             string strset = File.ReadAllText(set);
             string strAllComponents = File.ReadAllText(ECSALLComponents);
             string strAllCapabiltys = File.ReadAllText(ECSALLCapabiltys);
-            if (s_ViewBindDictionary == null)
-            {
-                s_ViewBindDictionary = new Dictionary<Type, string>();
-            }
-
-            s_ViewBindDictionary.Clear();
-            if (s_TextDictionary == null)
-            {
-                s_TextDictionary = new Dictionary<CreateAuto, string>();
-            }
-
-            s_TextDictionary.Clear();
-            s_TextDictionary.Add(CreateAuto.Class, strcls);
-            s_TextDictionary.Add(CreateAuto.Add, stradd);
-            s_TextDictionary.Add(CreateAuto.AddParameter, straddparameter);
-            s_TextDictionary.Add(CreateAuto.Get, strget);
-            s_TextDictionary.Add(CreateAuto.Set, strset);
-            s_TextDictionary.Add(CreateAuto.ComponentsMain, strAllComponents);
-            s_TextDictionary.Add(CreateAuto.Capability, strAllCapabiltys);
+            sViewBindDictionary ??= new Dictionary<Type, string>();
+            sViewBindDictionary.Clear();
+            sEcsComList ??= new List<Type>();
+            sEcsComList.Clear();
+            sTextDictionary ??= new Dictionary<CreateAuto, string>();
+            sTextDictionary.Clear();
+            sTextDictionary.Add(CreateAuto.Class, strcls);
+            sTextDictionary.Add(CreateAuto.Add, stradd);
+            sTextDictionary.Add(CreateAuto.AddParameter, straddparameter);
+            sTextDictionary.Add(CreateAuto.Get, strget);
+            sTextDictionary.Add(CreateAuto.Set, strset);
+            sTextDictionary.Add(CreateAuto.ComponentsMain, strAllComponents);
+            sTextDictionary.Add(CreateAuto.Capability, strAllCapabiltys);
         }
 
-        private static int FindAllECSCom(Assembly assembly)
+        private static void FindAllECSCom(Assembly assembly)
         {
             Type[] types = assembly.GetTypes();
-            int number = 0;
+
             foreach (var tp in types)
             {
-                if (typeof(EffComponent).IsAssignableFrom(tp) && tp.IsClass)
+                if (typeof(EffComponent).IsAssignableFrom(tp))
                 {
                     var vb = tp.GetCustomAttribute<ViewBindAttribute>();
                     if (vb != null)
@@ -103,15 +101,11 @@ namespace GameFrame.Editor
                         AddViewBind(tp, vb.BindType);
                     }
 
-                    number++;
                     CreateCompCshap(tp);
                 }
             }
-
-            return number;
         }
 
-        //创建c#脚本
         private static void CreateCompCshap(Type type)
         {
             if (type.Name == nameof(EffComponent))
@@ -126,19 +120,15 @@ namespace GameFrame.Editor
                 ECSComponentName = vb.BindType.FullName;
             }
 
-            if (type.FullName.Contains("GamePlay.Runtime.BeUseFuncComp"))
-            {
-                Debug.Log("xxxxxx");
-            }
-
+            sEcsComList.Add(type);
             FieldInfo[] variable = type.GetFields(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance);
             PropertyInfo[] propertyInfos = type.GetProperties();
             string typeName = type.Name;
             string typeFullName = type.FullName;
-            tempStr.Clear();
-            string abcls = s_TextDictionary[CreateAuto.Class];
-            string abAdd = string.Format(s_TextDictionary[CreateAuto.Add], typeName, ECSComponentName, typeFullName);
-            string abGet = string.Format(s_TextDictionary[CreateAuto.Get], typeName, typeFullName, ECSComponentName);
+            sTempStr.Clear();
+            string abcls = sTextDictionary[CreateAuto.Class];
+            string abAdd = string.Format(sTextDictionary[CreateAuto.Add], typeName, ECSComponentName, typeFullName);
+            string abGet = string.Format(sTextDictionary[CreateAuto.Get], typeName, typeFullName, ECSComponentName);
             string abSet = "";
             string addParameter = "";
             string fieldName = "";
@@ -164,20 +154,20 @@ namespace GameFrame.Editor
                     fieldTypeName = "string";
                 }
 
-                addParameter = string.Format(s_TextDictionary[CreateAuto.AddParameter], typeName, fieldTypeName, typeFullName, fieldName, ECSComponentName);
+                addParameter = string.Format(sTextDictionary[CreateAuto.AddParameter], typeName, fieldTypeName, typeFullName, fieldName, ECSComponentName);
                 string evetString = "";
-                if (s_ViewBindDictionary.TryGetValue(type, out evetString))
+                if (sViewBindDictionary.TryGetValue(type, out evetString))
                 {
                 }
 
-                abSet = string.Format(s_TextDictionary[CreateAuto.Set], typeName, fieldTypeName, typeFullName, fieldName, evetString, ECSComponentName);
+                abSet = string.Format(sTextDictionary[CreateAuto.Set], typeName, fieldTypeName, typeFullName, fieldName, evetString, ECSComponentName);
             }
 
-            tempStr.Append(abAdd);
-            tempStr.Append(addParameter);
-            tempStr.Append(abGet);
-            tempStr.Append(abSet);
-            string lastText = string.Format(abcls, typeName, tempStr.ToString());
+            sTempStr.Append(abAdd);
+            sTempStr.Append(addParameter);
+            sTempStr.Append(abGet);
+            sTempStr.Append(abSet);
+            string lastText = string.Format(abcls, typeName, sTempStr.ToString());
             CreateDirectory(EditorString.GetPath("CompOutPutPath"));
             File.WriteAllText($"{EditorString.GetPath("CompOutPutPath")}{typeName}Auto.cs", lastText);
         }
@@ -186,15 +176,24 @@ namespace GameFrame.Editor
         {
             MethodInfo[] methods = bindType.GetMethods(BindingFlags.Public | BindingFlags.Instance);
             string funcName = methods[0].Name;
-            s_ViewBindDictionary.Add(type, $"View view = effEntity.GetView();\n" +
-                                           $"        if (view == null) return null;\n" +
-                                           $"        (({bindType.FullName}) (view.Value)).{funcName}(p);");
+            sViewBindDictionary.Add(type, $"View view = effEntity.GetView();\n" +
+                                          $"        if (view == null) return null;\n" +
+                                          $"        (({bindType.FullName}) (view.Value)).{funcName}(p);");
         }
 
 
-        private static void CreateComponents(int number)
+        private static void CreateComponents()
         {
-            var str = string.Format(s_TextDictionary[CreateAuto.ComponentsMain], number);
+            var str = sTextDictionary[CreateAuto.ComponentsMain];
+            var c = str.Split("@");
+            string b = "";
+            foreach (var kv in sEcsComList)
+            {
+                b += string.Format(c[1], kv.FullName);
+            }
+
+            str = string.Format(c[0], sEcsComList.Count, b);
+            CreateDirectory(EditorString.GetPath("CompOutPutPath"));
             File.WriteAllText($"{EditorString.GetPath("CompOutPutPath")}Components.cs", str);
         }
 

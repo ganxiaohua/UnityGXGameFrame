@@ -58,7 +58,7 @@ namespace GameFrame.Runtime
 
         public bool IsBindCapability(EffEntity player, List<int> tagInts)
         {
-            var capabiltyComponent = (CapabiltyComponent) player.GetComponent(ComponentsID<CapabiltyComponent>.TID);
+            var capabiltyComponent = player.GetComponent<CapabiltyComponent>();
             return capabiltyComponent.IsBlock(tagInts);
         }
 

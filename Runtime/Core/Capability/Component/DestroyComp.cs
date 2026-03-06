@@ -1,6 +1,11 @@
-﻿namespace GameFrame.Runtime
+﻿using System;
+
+namespace GameFrame.Runtime
 {
-    public class DestroyComp : EffComponent
+    public struct DestroyComp : EffComponent
     {
+        public void Dispose()
+        {
+        }
     }
 }

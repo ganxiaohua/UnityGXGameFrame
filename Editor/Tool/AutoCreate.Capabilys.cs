@@ -17,14 +17,14 @@ namespace GameFrame.Editor
             AssetDatabase.Refresh();
             Debugger.Log("生成完毕");
         }
-        
+
         //asd
 
         private static void CreateCapabiltys()
         {
             var assemblys = AppDomain.CurrentDomain.GetAssemblies();
             var number = 0;
-            tempStr.Clear();
+            sTempStr.Clear();
             capabilitylist.Clear();
             foreach (var assembly in assemblys)
             {
@@ -49,15 +49,15 @@ namespace GameFrame.Editor
             foreach (var item in capabilitylist)
             {
                 string updateMode = item.UpdateMode == CapabilitysUpdateMode.Update ? "IUpdateSystem" : "IFixedUpdateSystem";
-                tempStr.Append(index == 0
+                sTempStr.Append(index == 0
                         ? $" var orderTid =  CapabilityID<{item.GetType().FullName},{updateMode}>.TID;\n"
                         : $"        orderTid =  CapabilityID<{item.GetType().FullName},{updateMode}>.TID;\n");
                 index++;
             }
 
-            var str = string.Format(s_TextDictionary[CreateAuto.Capability], tempStr, number);
+            var str = string.Format(sTextDictionary[CreateAuto.Capability], sTempStr, number);
             File.WriteAllText($"{EditorString.GetPath("CompOutPutPath")}AllCapabilitys.cs", str);
-            tempStr.Clear();
+            sTempStr.Clear();
         }
     }
 }

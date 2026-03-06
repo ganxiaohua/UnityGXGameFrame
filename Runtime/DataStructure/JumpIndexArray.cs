@@ -14,6 +14,8 @@ namespace GameFrame.Runtime
 
         public int Count => IndexList.Count;
 
+        public int AllCount => Items.Length;
+
         public bool isInit => IndexList != null;
 
         private bool isClass;

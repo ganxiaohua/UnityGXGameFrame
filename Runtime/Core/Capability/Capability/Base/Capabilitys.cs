@@ -55,7 +55,7 @@ namespace GameFrame.Runtime
                 var owner = capability.Owner;
                 if (capability.TagList != null)
                 {
-                    var capailty = (CapabiltyComponent) owner.GetComponent(ComponentsID<CapabiltyComponent>.TID);
+                    var capailty = owner.GetComponent<CapabiltyComponent>();
                     if (capailty.IsBlock(capability.TagList))
                         continue;
                 }

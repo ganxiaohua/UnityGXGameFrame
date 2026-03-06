@@ -1,10 +1,38 @@
 ﻿namespace GameFrame.Runtime
 {
-    public class UIRootComponents : Entity
+    /// <summary>
+    /// only
+    /// </summary>
+    public class UIRootComponents : Entity, IInitializeSystem
     {
+        public static UIRootComponents sInstance;
+
+        public void OnInitialize()
+        {
+            sInstance = this;
+        }
+
+        public override void Dispose()
+        {
+            sInstance = null;
+        }
     }
 
-    public class FsmComponents : Entity
+    /// <summary>
+    /// only
+    /// </summary>
+    public class FsmComponents : Entity, IInitializeSystem
     {
+        public static FsmComponents sInstance;
+
+        public void OnInitialize()
+        {
+            sInstance = this;
+        }
+
+        public override void Dispose()
+        {
+            sInstance = null;
+        }
     }
 }

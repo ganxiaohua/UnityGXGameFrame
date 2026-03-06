@@ -1,15 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace GameFrame.Runtime
 {
-    public partial class CapabiltyComponent : EffComponent
+    public partial struct CapabiltyComponent : EffComponent
     {
-        private int[] tags;
+        private int arrayIndex;
 
         public void Init(int maxCount)
         {
-            tags = new int[maxCount];
+            arrayIndex = ArrayDatas<int>.Instance.AddArrayDatas(maxCount);
+#if UNITY_EDITOR
+            InitDebug();
+#endif
         }
 
         public void Block(int index, CapabilityBase instigators)
@@ -18,6 +22,7 @@ namespace GameFrame.Runtime
             if (!CanBlock(index, instigators))
                 return;
 #endif
+            var tags = ArrayDatas<int>.Instance.GetArrayDatas(arrayIndex);
             tags[index]++;
         }
 
@@ -26,11 +31,13 @@ namespace GameFrame.Runtime
 #if UNITY_EDITOR
             CanUnBlock(index, instigators);
 #endif
+            var tags = ArrayDatas<int>.Instance.GetArrayDatas(arrayIndex);
             tags[index] = Mathf.Max(0, --tags[index]);
         }
 
         public bool IsBlock(List<int> indexs)
         {
+            var tags = ArrayDatas<int>.Instance.GetArrayDatas(arrayIndex);
             foreach (var index in indexs)
             {
                 if (tags[index] > 0)
@@ -40,6 +47,14 @@ namespace GameFrame.Runtime
             }
 
             return false;
+        }
+
+        public void Dispose()
+        {
+            ArrayDatas<int>.Instance.RemoveDatas(arrayIndex);
+#if UNITY_EDITOR
+            DisposeDebug();
+#endif
         }
     }
 }

@@ -2,16 +2,9 @@
 
 namespace GameFrame.Runtime
 {
-    [Serializable]
-    public partial class EffComponent : IDisposable
+    public partial interface EffComponent : IDisposable
     {
-        public EffEntity Owner;
-
-        public virtual void Dispose()
-        {
-        }
     }
-
 
     /// <summary>
     /// ECSEntity挂载的一定是Context
@@ -32,17 +25,23 @@ namespace GameFrame.Runtime
 
         public bool IsAction => State == IEntity.EntityState.IsRunning;
 
-        public JumpIndexArrayEx<EffComponent> ecsComponentArrayEx { get; private set; }
+
+        public bool[] ComponentIds;
 
         public void OnDirty(IEntity parent, int id)
         {
-            ecsComponentArrayEx = ReferencePool.Acquire<JumpIndexArrayEx<EffComponent>>();
-            ecsComponentArrayEx.Init(world.MaxComponentCount);
+            ComponentIds = new bool[world.MaxComponentCount];
             State = IEntity.EntityState.IsRunning;
             Parent = parent;
             ID = id;
             Versions++;
         }
+
+        public void SetContext(World world)
+        {
+            this.world = world;
+        }
+
 
         /// <summary>
         /// 加入组件
@@ -50,61 +49,55 @@ namespace GameFrame.Runtime
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public T AddComponent<T>() where T : EffComponent
+        public T AddComponent<T>() where T : unmanaged, EffComponent
         {
             var cid = ComponentsID<T>.TID;
-            if (ecsComponentArrayEx[cid] != null)
+            if (ComponentIds[cid])
             {
                 var type = typeof(T);
                 throw new Exception($"entity already has component: {type.FullName}");
             }
 
-            T entity = ecsComponentArrayEx.Add<T>(cid);
-            entity.Owner = this;
+            ComponentIds[cid] = true;
             world.Reactive(cid, this);
-            return entity;
+            return world.GetComp<T>(ID, cid);
         }
 
 
-        /// <summary>
-        /// 删除组件
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <exception cref="Exception"></exception>
         public void RemoveComponent(int cid)
         {
-            var component = ecsComponentArrayEx[cid];
-            if (component == null)
+            var component = ComponentIds[cid];
+            if (!component)
             {
                 return;
             }
 
-            component.Owner = null;
-            ecsComponentArrayEx.Remove(cid);
+            world.ClearComp(ID, cid);
+            ComponentIds[cid] = false;
             world.Reactive(cid, this);
         }
 
-        /// <summary>
-        /// 获得组件
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public EffComponent GetComponent(int cid)
+
+        public T GetComponent<T>() where T : unmanaged, EffComponent
         {
-            var component = ecsComponentArrayEx[cid];
+            var cid = ComponentsID<T>.TID;
+            var component = world.GetComp<T>(ID, cid);
             return component;
         }
 
-        /// <summary>
-        /// 全部包含
-        /// </summary>
-        /// <param name="hascode"></param>
-        /// <returns></returns>
+        public unsafe T* GetComponentPtr<T>() where T : unmanaged, EffComponent
+        {
+            var cid = ComponentsID<T>.TID;
+            var component = world.GetCompPtr<T>(ID, cid);
+            return component;
+        }
+
+
         public bool HasComponents(int[] cids)
         {
             for (int index = 0; index < cids.Length; ++index)
             {
-                if (ecsComponentArrayEx[cids[index]] == null)
+                if (!ComponentIds[cids[index]])
                 {
                     return false;
                 }
@@ -113,14 +106,15 @@ namespace GameFrame.Runtime
             return true;
         }
 
-        public void SetContext(World world)
+        public bool HasComponent<T>() where T : unmanaged, EffComponent
         {
-            this.world = world;
+            var cid = ComponentsID<T>.TID;
+            return HasComponent(cid);
         }
 
         public bool HasComponent(int cid)
         {
-            return ecsComponentArrayEx[cid] != null;
+            return ComponentIds[cid];
         }
 
 
@@ -133,7 +127,7 @@ namespace GameFrame.Runtime
         {
             for (int index = 0; index < cids.Length; ++index)
             {
-                if (ecsComponentArrayEx[cids[index]] != null)
+                if (ComponentIds[cids[index]])
                 {
                     return true;
                 }
@@ -142,19 +136,9 @@ namespace GameFrame.Runtime
             return false;
         }
 
-
-        /// <summary>
-        /// 清除所有组件
-        /// </summary>
         private void ClearAllComponent()
         {
-            var list = ecsComponentArrayEx.IndexList;
-            for (int i = list.Count - 1; i >= 0; i--)
-            {
-                RemoveComponent(list[i]);
-            }
-
-            ReferencePool.Release(ecsComponentArrayEx);
+            world.ClearEntityAllComponent(ID);
         }
 
         public void Dispose()

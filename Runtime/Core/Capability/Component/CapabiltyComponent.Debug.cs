@@ -4,12 +4,18 @@ using GameFrame.Runtime;
 
 namespace GameFrame.Runtime
 {
-    public partial class CapabiltyComponent
+    public partial struct CapabiltyComponent
     {
-        private Dictionary<CapabilityBase, List<int>> instigatorsDic = new();
+        private int dicIndex;
+
+        public void InitDebug()
+        {
+            dicIndex = DicDatas<CapabilityBase, List<int>>.Instance.AddArrayDatas();
+        }
 
         private bool CanBlock(int index, CapabilityBase Instigators)
         {
+            var instigatorsDic = DicDatas<CapabilityBase, List<int>>.Instance.GetArrayDatas(index);
             if (!instigatorsDic.TryGetValue(Instigators, out var list))
             {
                 list = ListPool<int>.Get();
@@ -28,6 +34,7 @@ namespace GameFrame.Runtime
 
         private bool CanUnBlock(int index, CapabilityBase Instigators)
         {
+            var instigatorsDic = DicDatas<CapabilityBase, List<int>>.Instance.GetArrayDatas(index);
             if (!instigatorsDic.TryGetValue(Instigators, out var list))
             {
                 // Debugger.LogError($"{Instigators.GetType().Name}  not block {index}");
@@ -42,6 +49,11 @@ namespace GameFrame.Runtime
 
             list.Remove(index);
             return true;
+        }
+
+        private void DisposeDebug()
+        {
+            DicDatas<CapabilityBase, List<int>>.Instance.RemoveDatas(dicIndex);
         }
     }
 }

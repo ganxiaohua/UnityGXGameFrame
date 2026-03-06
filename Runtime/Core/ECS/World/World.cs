@@ -109,6 +109,7 @@ namespace GameFrame.Runtime
             groupsList = null;
             groups.Clear();
             groups = null;
+            DestroyComp();
         }
 
         public virtual void OnFixedUpdate(float elapseSeconds, float realElapseSeconds)

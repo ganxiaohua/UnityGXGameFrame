@@ -6,7 +6,7 @@ namespace GameFrame.Runtime
     public partial class World
     {
         public JumpIndexArrayEx<EffEntity> Children { get; private set; }
-        
+
         public int ChildsCount => Children.Count;
 
         private Stack<int> heritageId = new();
@@ -19,11 +19,12 @@ namespace GameFrame.Runtime
         public void EstimateChildsCount(int count)
         {
             Children.Init(count);
+            InitComponents(count);
         }
 
         public virtual T AddChild<T>() where T : EffEntity
         {
-            return (T)CreateChild(typeof(T));
+            return (T) CreateChild(typeof(T));
         }
 
         public virtual EffEntity AddChild()
@@ -39,9 +40,10 @@ namespace GameFrame.Runtime
                 id = ecsSerialId++;
             }
 
-            var entity = Children.Add(id,type);
+            var entity = Children.Add(id, type);
             entity.SetContext(this);
             entity.OnDirty(this, id);
+            Expansion();
             return entity;
         }
 
