@@ -4,3 +4,17 @@
         return effEntity.GetComponent<{1}>();
     }}
     
+    public static (bool have, {1} data) Get{0}WithHave(this {2} effEntity)
+    {{
+       var have = effEntity.HasComponent<{1}>();
+       if(have)
+           return (have,effEntity.GetComponent<{1}>());
+       else
+           return(have,default);
+    }}
+    
+    public static void Reactive{0}(this {2} effEntity)
+    {{
+        ((World)effEntity.Parent).Reactive(ComponentsID<{1}>.TID, effEntity);
+    }} 
+    

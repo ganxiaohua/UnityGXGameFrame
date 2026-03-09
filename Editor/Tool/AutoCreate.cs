@@ -13,6 +13,7 @@ namespace GameFrame.Editor
     {
         Class,
         Add,
+        AddInit,
         AddParameter,
         Get,
         Set,
@@ -58,6 +59,7 @@ namespace GameFrame.Editor
         {
             var GameFramePath = EditorString.GetPath("GameFramePath");
             string add = GameFramePath + "Editor/Text/ECS/Add.txt";
+            string addInit = GameFramePath + "Editor/Text/ECS/AddInit.txt";
             string cls = GameFramePath + "Editor/Text/ECS/Class.txt";
             string addparameter = GameFramePath + "Editor/Text/ECS/AddParameter.txt";
             string get = GameFramePath + "Editor/Text/ECS/Get.txt";
@@ -66,6 +68,7 @@ namespace GameFrame.Editor
             string ECSALLCapabiltys = GameFramePath + "Editor/Text/ECS/Capabiltys.txt";
 
             string stradd = File.ReadAllText(add);
+            string straddInit = File.ReadAllText(addInit);
             string strcls = File.ReadAllText(cls);
             string straddparameter = File.ReadAllText(addparameter);
             string strget = File.ReadAllText(get);
@@ -80,6 +83,7 @@ namespace GameFrame.Editor
             sTextDictionary.Clear();
             sTextDictionary.Add(CreateAuto.Class, strcls);
             sTextDictionary.Add(CreateAuto.Add, stradd);
+            sTextDictionary.Add(CreateAuto.AddInit, straddInit);
             sTextDictionary.Add(CreateAuto.AddParameter, straddparameter);
             sTextDictionary.Add(CreateAuto.Get, strget);
             sTextDictionary.Add(CreateAuto.Set, strset);
@@ -123,13 +127,17 @@ namespace GameFrame.Editor
             sEcsComList.Add(type);
             FieldInfo[] variable = type.GetFields(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance);
             PropertyInfo[] propertyInfos = type.GetProperties();
+            MethodInfo[] methods = type.GetMethods(BindingFlags.Public |
+                                                   BindingFlags.Instance |
+                                                   BindingFlags.DeclaredOnly);
+            string abSet = "";
             string typeName = type.Name;
             string typeFullName = type.FullName;
             sTempStr.Clear();
             string abcls = sTextDictionary[CreateAuto.Class];
             string abAdd = string.Format(sTextDictionary[CreateAuto.Add], typeName, ECSComponentName, typeFullName);
+            string adAddInit = string.Empty;
             string abGet = string.Format(sTextDictionary[CreateAuto.Get], typeName, typeFullName, ECSComponentName);
-            string abSet = "";
             string addParameter = "";
             string fieldName = "";
             string fieldTypeName = "";
@@ -144,9 +152,7 @@ namespace GameFrame.Editor
                 fieldTypeName = variable[0].FieldType.ToString();
             }
 
-            fieldTypeName = fieldTypeName.Replace("[]", "!!");
-            fieldTypeName = fieldTypeName.Replace("`3[", "<").Replace("`2[", "<").Replace("`1[", "<").Replace("]", ">");
-            fieldTypeName = fieldTypeName.Replace("!!", "[]");
+            fieldTypeName = FileTypeNameChange(fieldTypeName);
             if (!string.IsNullOrEmpty(fieldName))
             {
                 if (fieldTypeName == "String")
@@ -163,7 +169,24 @@ namespace GameFrame.Editor
                 abSet = string.Format(sTextDictionary[CreateAuto.Set], typeName, fieldTypeName, typeFullName, fieldName, evetString, ECSComponentName);
             }
 
+            foreach (MethodInfo method in methods)
+            {
+                if (method.Name.Contains("Init"))
+                {
+                    ParameterInfo[] parameters = method.GetParameters();
+
+                    foreach (ParameterInfo param in parameters)
+                    {
+                        var fileType = param.ParameterType.FullName;
+                        fileType = FileTypeNameChange(fileType);
+                        adAddInit = string.Format(sTextDictionary[CreateAuto.AddInit], typeName, ECSComponentName, typeFullName, fileType);
+                        break;
+                    }
+                }
+            }
+
             sTempStr.Append(abAdd);
+            sTempStr.Append(adAddInit);
             sTempStr.Append(addParameter);
             sTempStr.Append(abGet);
             sTempStr.Append(abSet);
@@ -204,6 +227,14 @@ namespace GameFrame.Editor
             {
                 Directory.CreateDirectory(path);
             }
+        }
+
+        private static string FileTypeNameChange(string str)
+        {
+            str = str.Replace("[]", "!!");
+            str = str.Replace("`3[", "<").Replace("`2[", "<").Replace("`1[", "<").Replace("]", ">");
+            str = str.Replace("!!", "[]");
+            return str;
         }
     }
 }

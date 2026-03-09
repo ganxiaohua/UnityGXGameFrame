@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace GameFrame.Runtime
 {
-    public class ArrayDatas<T> : SingletonInit<ArrayDatas<T>>, DatasBase
+    public class ArrayDatas<T> : SingletonInit<ArrayDatas<T>>, IDatasBase
     {
         private List<T[]> intArrayList = new List<T[]>(64);
         private Queue<int> arrayDatasListIndex = new Queue<int>(64);

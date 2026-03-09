@@ -2,7 +2,7 @@
 
 namespace GameFrame.Runtime
 {
-    public class DicDatas<K, T> : Singleton<DicDatas<K, T>>, DatasBase
+    public class DicDatas<K, T> : Singleton<DicDatas<K, T>>, IDatasBase
     {
         private List<Dictionary<K, T>> intArrayList = new List<Dictionary<K, T>>(64);
         private Queue<int> arrayDatasListIndex = new Queue<int>(64);

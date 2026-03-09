@@ -1,8 +1,14 @@
 
-    public static {2}* Add{0}(this {4} effEntity,{1} param)
+    public static {2}* Add{0}Return(this {4} effEntity,{1} param)
     {{
         var p  =  effEntity.AddComponent<{2}>();
         p->{3} = param;
         return p;
+    }}
+    
+    public static void Add{0}(this {4} effEntity,{1} param)
+    {{
+        var p  =  effEntity.AddComponent<{2}>();
+        p->{3} = param;
     }}
     

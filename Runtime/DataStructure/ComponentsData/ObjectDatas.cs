@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace GameFrame.Runtime
 {
-    public class ReferenceDatas<T> : SingletonInit<ReferenceDatas<T>>, IDatasBase where T : class, IDisposable
+    public class ObjectDatas : SingletonInit<ObjectDatas>, IDisposable, IDatasBase
     {
-        private List<T> arrayList = new List<T>(64);
+        private List<object> arrayList = new List<object>(64);
         private Queue<int> arrayDatasListIndex = new Queue<int>(64);
 
         public void OnInitialize()
@@ -13,35 +13,33 @@ namespace GameFrame.Runtime
             ContainerDatasManager.Instance.Add(this);
         }
 
-        public int AddArrayDatas(int size)
+        public int AddData(object obj)
         {
-            if (arrayList.Capacity != size)
-            {
-                arrayList.Capacity = size;
-            }
-
-            T t = ReferencePool.Acquire<T>();
             var succ = arrayDatasListIndex.TryDequeue(out var index);
             if (succ)
             {
-                arrayList[index] = t;
+                arrayList[index] = obj;
                 return index;
             }
             else
             {
-                arrayList.Add(t);
+                arrayList.Add(string.Empty);
                 return arrayList.Count - 1;
             }
         }
 
-        public T GetArrayDatas(int index)
+        public object GetData(int index)
         {
             return arrayList[index];
         }
 
-        public void RemoveDatas(int index)
+        public void SetData(int index, string data)
         {
-            ReferencePool.Release(arrayList[index]);
+            arrayList[index] = data;
+        }
+
+        public void RemoveData(int index)
+        {
             arrayList[index] = null;
             arrayDatasListIndex.Enqueue(index);
         }

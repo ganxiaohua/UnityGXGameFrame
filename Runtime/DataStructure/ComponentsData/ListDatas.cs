@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace GameFrame.Runtime
 {
-    public class ListDatas<T> : SingletonInit<ListDatas<T>>, DatasBase
+    public class ListDatas<T> : SingletonInit<ListDatas<T>>, IDatasBase
     {
         private List<List<T>> intArrayList = new List<List<T>>(64);
         private Queue<int> arrayDatasListIndex = new Queue<int>(64);
@@ -15,7 +15,7 @@ namespace GameFrame.Runtime
 
         public int AddArrayDatas(int size = 64)
         {
-            List<T> t = ListPool<T>.Get();
+            List<T> t = ListPool<T>.Get(size);
             var succ = arrayDatasListIndex.TryDequeue(out var index);
             if (succ)
             {

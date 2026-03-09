@@ -63,6 +63,19 @@ namespace GameFrame.Runtime
             return world.GetCompPtr<T>(ID, cid);
         }
 
+        public void AddComponentNoGet<T>() where T : unmanaged, EffComponent
+        {
+            var cid = ComponentsID<T>.TID;
+            if (ComponentIds[cid])
+            {
+                var type = typeof(T);
+                throw new Exception($"entity already has component: {type.FullName}");
+            }
+
+            ComponentIds[cid] = true;
+            world.Reactive(cid, this);
+        }
+
 
         public void RemoveComponent(int cid)
         {
