@@ -9,7 +9,7 @@ namespace GameFrame.Runtime
     /// <summary>
     /// ECSEntity挂载的一定是Context
     /// </summary>
-    public class EffEntity : IEntity, IVersions
+    public unsafe class EffEntity : IEntity, IVersions
     {
         public IEntity.EntityState State { get; private set; }
 
@@ -49,7 +49,7 @@ namespace GameFrame.Runtime
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public T AddComponent<T>() where T : unmanaged, EffComponent
+        public T* AddComponent<T>() where T : unmanaged, EffComponent
         {
             var cid = ComponentsID<T>.TID;
             if (ComponentIds[cid])
@@ -60,7 +60,7 @@ namespace GameFrame.Runtime
 
             ComponentIds[cid] = true;
             world.Reactive(cid, this);
-            return world.GetComp<T>(ID, cid);
+            return world.GetCompPtr<T>(ID, cid);
         }
 
 
@@ -85,7 +85,7 @@ namespace GameFrame.Runtime
             return component;
         }
 
-        public unsafe T* GetComponentPtr<T>() where T : unmanaged, EffComponent
+        public T* GetComponentPtr<T>() where T : unmanaged, EffComponent
         {
             var cid = ComponentsID<T>.TID;
             var component = world.GetCompPtr<T>(ID, cid);

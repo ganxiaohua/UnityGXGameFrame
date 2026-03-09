@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 namespace GameFrame.Runtime
 {
+    [StructLayout(LayoutKind.Auto)]
     public partial struct CapabiltyComponent : EffComponent
     {
-        private int arrayIndex;
+        public int arrayIndex;
 
         public void Init(int maxCount)
         {

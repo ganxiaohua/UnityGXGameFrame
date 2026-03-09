@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace GameFrame.Runtime
 {
-    public abstract class ECCWorld : World
+    public abstract unsafe class ECCWorld : World
     {
         private int maxCapabilityCount;
 
@@ -24,7 +24,7 @@ namespace GameFrame.Runtime
             var child = base.AddChild();
             BindCapability<DestroyCapability>(child);
             var capabiltyComponet = child.AddComponent<CapabiltyComponent>();
-            capabiltyComponet.Init(maxCapabilityTag);
+            capabiltyComponet->Init(maxCapabilityTag);
             return child;
         }
 

@@ -9,7 +9,7 @@ namespace GameFrame.Runtime
         private void*[] components;
         private int[] structSizes;
         private int[] structAlign;
-        private int componetsChildsSize;
+        private int componentsChildrenSize;
 
 
         private void InitComponents(int childCount)
@@ -17,7 +17,7 @@ namespace GameFrame.Runtime
             components = new void*[MaxComponentCount];
             structSizes = new int[MaxComponentCount];
             structAlign = new int[MaxComponentCount];
-            componetsChildsSize = childCount;
+            componentsChildrenSize = childCount;
 #if UNITY_EDITOR
             InitCompSize();
 #endif
@@ -32,7 +32,7 @@ namespace GameFrame.Runtime
             int alignment = UnsafeUtility.AlignOf<T>();
             structSizes[cid] = structSize;
             structAlign[cid] = alignment;
-            long size = structSize * componetsChildsSize;
+            long size = structSize * componentsChildrenSize;
             void* ptr = UnsafeUtility.Malloc(size, alignment, Allocator.Persistent);
             UnsafeUtility.MemClear(ptr, size);
             components[cid] = ptr;
@@ -43,7 +43,7 @@ namespace GameFrame.Runtime
 
         private void Expansion()
         {
-            if (ChildsCount <= componetsChildsSize)
+            if (ChildsCount <= componentsChildrenSize)
                 return;
             int count = components.Length;
 #if UNITY_EDITOR
@@ -56,7 +56,7 @@ namespace GameFrame.Runtime
                 void* ptr = UnsafeUtility.Malloc(size, structAlign[i], Allocator.Persistent);
                 UnsafeUtility.MemClear(ptr, size);
                 var compPtr = components[i];
-                UnsafeUtility.MemCpy(ptr, compPtr, structsize * componetsChildsSize);
+                UnsafeUtility.MemCpy(ptr, compPtr, structsize * componentsChildrenSize);
                 UnsafeUtility.Free(compPtr, Allocator.Persistent);
                 components[i] = ptr;
 #if UNITY_EDITOR
@@ -66,7 +66,7 @@ namespace GameFrame.Runtime
 #if UNITY_EDITOR
             OutputSize();
 #endif
-            componetsChildsSize = Children.AllCount;
+            componentsChildrenSize = Children.AllCount;
         }
 
         public T GetComp<T>(int entityIndex, int id) where T : unmanaged, EffComponent
@@ -78,7 +78,7 @@ namespace GameFrame.Runtime
         public T* GetCompPtr<T>(int entityIndex, int id) where T : unmanaged, EffComponent
         {
             T* ptr = (T*) components[id];
-            ptr += structSizes[id] * entityIndex;
+            ptr += entityIndex;
             return ptr;
         }
 
@@ -107,10 +107,12 @@ namespace GameFrame.Runtime
             foreach (var item in components)
             {
                 if (item != null)
-                    UnsafeUtility.Free(item, Allocator.Persistent);
+                    UnsafeUtility.FreeTracked(item, Allocator.Persistent);
             }
 
             components = null;
+            structSizes = null;
+            structAlign = null;
         }
     }
 }

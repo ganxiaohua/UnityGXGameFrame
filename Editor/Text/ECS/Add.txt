@@ -1,5 +1,5 @@
 
-    public static {2} Add{0}(this {1} effEntity)
+    public static {2}* Add{0}(this {1} effEntity)
     {{
         return effEntity.AddComponent<{2}>();
     }}

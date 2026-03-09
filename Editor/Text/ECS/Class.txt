@@ -4,7 +4,7 @@
 //------------------------------------------------------------------------------
 using GameFrame.Runtime;
 using UnityEngine;
-public static partial class Auto{0}
+public unsafe static partial class Auto{0}
 {{
     {1}     
 }}
