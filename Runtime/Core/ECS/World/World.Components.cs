@@ -33,7 +33,11 @@ namespace GameFrame.Runtime
             structSizes[cid] = structSize;
             structAlign[cid] = alignment;
             long size = structSize * componentsChildrenSize;
+#if !Tracked
             void* ptr = UnsafeUtility.Malloc(size, alignment, Allocator.Persistent);
+#else
+            void* ptr = UnsafeUtility.MallocTracked(size, alignment, Allocator.Persistent, ConstTrackEdId.Components);
+#endif
             UnsafeUtility.MemClear(ptr, size);
             components[cid] = ptr;
 #if UNITY_EDITOR
@@ -53,11 +57,18 @@ namespace GameFrame.Runtime
             {
                 var structsize = structSizes[i];
                 long size = structsize * Children.AllCount;
+                var compPtr = components[i];
+#if !Tracked
                 void* ptr = UnsafeUtility.Malloc(size, structAlign[i], Allocator.Persistent);
                 UnsafeUtility.MemClear(ptr, size);
-                var compPtr = components[i];
                 UnsafeUtility.MemCpy(ptr, compPtr, structsize * componentsChildrenSize);
                 UnsafeUtility.Free(compPtr, Allocator.Persistent);
+#else
+                void* ptr = UnsafeUtility.MallocTracked(size, structAlign[i], Allocator.Persistent, ConstTrackEdId.Components);
+                UnsafeUtility.MemClear(ptr, size);
+                UnsafeUtility.MemCpy(ptr, compPtr, structsize * componentsChildrenSize);
+                UnsafeUtility.FreeTracked(compPtr, Allocator.Persistent);
+#endif
                 components[i] = ptr;
 #if UNITY_EDITOR
                 CalculateSize(size);
@@ -107,7 +118,11 @@ namespace GameFrame.Runtime
             foreach (var item in components)
             {
                 if (item != null)
+#if !Tracked
+                    UnsafeUtility.Free(item, Allocator.Persistent);
+#else
                     UnsafeUtility.FreeTracked(item, Allocator.Persistent);
+#endif
             }
 
             components = null;

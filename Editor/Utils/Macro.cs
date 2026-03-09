@@ -5,7 +5,7 @@ namespace GameFrame.Editor
     public static class Macro
     {
         public const string ShowAssert = "ShowAssert";
-
+        public const string Tracked = "Tracked";
 
         [MenuItem("GX框架工具/宏定义/" + ShowAssert, true, 0)]
         private static bool CommonAssertDisableValidateV()
@@ -25,6 +25,28 @@ namespace GameFrame.Editor
             else
             {
                 MacroDefineHelper.Enable(ShowAssert);
+            }
+        }
+
+
+        [MenuItem("GX框架工具/宏定义/" + Tracked, true, 2)]
+        private static bool TrackedDisableValidateV()
+        {
+            Menu.SetChecked("GX框架工具/宏定义/" + Tracked, MacroDefineHelper.Contains(Tracked));
+            return true;
+        }
+
+
+        [MenuItem("GX框架工具/宏定义/" + Tracked, priority = 2)]
+        private static void TrackedDisableValidate()
+        {
+            if (MacroDefineHelper.Contains(Tracked))
+            {
+                MacroDefineHelper.Disable(Tracked);
+            }
+            else
+            {
+                MacroDefineHelper.Enable(Tracked);
             }
         }
 
