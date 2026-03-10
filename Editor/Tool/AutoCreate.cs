@@ -7,6 +7,7 @@ using GameFrame.Runtime;
 using UnityEditor;
 using UnityEngine;
 
+
 namespace GameFrame.Editor
 {
     enum CreateAuto
@@ -15,6 +16,7 @@ namespace GameFrame.Editor
         Add,
         AddInit,
         AddParameter,
+        SetExternal,
         Get,
         Set,
         ComponentsMain,
@@ -59,7 +61,8 @@ namespace GameFrame.Editor
         {
             var GameFramePath = EditorString.GetPath("GameFramePath");
             string add = GameFramePath + "Editor/Text/ECS/Add.txt";
-            string addInit = GameFramePath + "Editor/Text/ECS/AddInit.txt";
+            string addExternal = GameFramePath + "Editor/Text/ECS/AddExternal.txt";
+            string setExternal = GameFramePath + "Editor/Text/ECS/SetExternal.txt";
             string cls = GameFramePath + "Editor/Text/ECS/Class.txt";
             string addparameter = GameFramePath + "Editor/Text/ECS/AddParameter.txt";
             string get = GameFramePath + "Editor/Text/ECS/Get.txt";
@@ -68,11 +71,12 @@ namespace GameFrame.Editor
             string ECSALLCapabiltys = GameFramePath + "Editor/Text/ECS/Capabiltys.txt";
 
             string stradd = File.ReadAllText(add);
-            string straddInit = File.ReadAllText(addInit);
+            string straddaddExternal = File.ReadAllText(addExternal);
             string strcls = File.ReadAllText(cls);
             string straddparameter = File.ReadAllText(addparameter);
             string strget = File.ReadAllText(get);
             string strset = File.ReadAllText(set);
+            string strsetExternal = File.ReadAllText(setExternal);
             string strAllComponents = File.ReadAllText(ECSALLComponents);
             string strAllCapabiltys = File.ReadAllText(ECSALLCapabiltys);
             sViewBindDictionary ??= new Dictionary<Type, string>();
@@ -83,10 +87,11 @@ namespace GameFrame.Editor
             sTextDictionary.Clear();
             sTextDictionary.Add(CreateAuto.Class, strcls);
             sTextDictionary.Add(CreateAuto.Add, stradd);
-            sTextDictionary.Add(CreateAuto.AddInit, straddInit);
+            sTextDictionary.Add(CreateAuto.AddInit, straddaddExternal);
             sTextDictionary.Add(CreateAuto.AddParameter, straddparameter);
             sTextDictionary.Add(CreateAuto.Get, strget);
             sTextDictionary.Add(CreateAuto.Set, strset);
+            sTextDictionary.Add(CreateAuto.SetExternal, strsetExternal);
             sTextDictionary.Add(CreateAuto.ComponentsMain, strAllComponents);
             sTextDictionary.Add(CreateAuto.Capability, strAllCapabiltys);
         }
@@ -136,23 +141,25 @@ namespace GameFrame.Editor
             sTempStr.Clear();
             string abcls = sTextDictionary[CreateAuto.Class];
             string abAdd = string.Format(sTextDictionary[CreateAuto.Add], typeName, ECSComponentName, typeFullName);
-            string adAddInit = string.Empty;
+            string adAddEx = string.Empty;
+            string setAddEx = string.Empty;
             string abGet = string.Format(sTextDictionary[CreateAuto.Get], typeName, typeFullName, ECSComponentName);
             string addParameter = "";
             string fieldName = "";
             string fieldTypeName = "";
+            Type fieldType = null;
             if (propertyInfos.Length > 0)
             {
                 fieldName = propertyInfos[0].Name;
-                fieldTypeName = propertyInfos[0].PropertyType.ToString();
+                fieldType = propertyInfos[0].PropertyType;
             }
             else if (variable.Length > 0)
             {
                 fieldName = variable[0].Name;
-                fieldTypeName = variable[0].FieldType.ToString();
+                fieldType = variable[0].FieldType;
             }
 
-            fieldTypeName = FileTypeNameChange(fieldTypeName);
+            fieldTypeName = TypeNameHelper.GetFullNameWithoutAssemblyDetails(fieldType);
             if (!string.IsNullOrEmpty(fieldName))
             {
                 if (fieldTypeName == "String")
@@ -178,18 +185,30 @@ namespace GameFrame.Editor
                     foreach (ParameterInfo param in parameters)
                     {
                         var fileType = param.ParameterType.FullName;
-                        fileType = FileTypeNameChange(fileType);
-                        adAddInit = string.Format(sTextDictionary[CreateAuto.AddInit], typeName, ECSComponentName, typeFullName, fileType);
+                        fileType = TypeNameHelper.GetFullNameWithoutAssemblyDetails(param.ParameterType);
+                        adAddEx = string.Format(sTextDictionary[CreateAuto.AddInit], typeName, ECSComponentName, typeFullName, fileType);
+                        break;
+                    }
+                }
+                else if (method.Name.Contains("Set"))
+                {
+                    ParameterInfo[] parameters = method.GetParameters();
+                    foreach (ParameterInfo param in parameters)
+                    {
+                        var fileType = param.ParameterType.FullName;
+                        fileType = TypeNameHelper.GetFullNameWithoutAssemblyDetails(param.ParameterType);
+                        setAddEx = string.Format(sTextDictionary[CreateAuto.SetExternal], typeName, ECSComponentName, typeFullName, fileType);
                         break;
                     }
                 }
             }
 
             sTempStr.Append(abAdd);
-            sTempStr.Append(adAddInit);
+            sTempStr.Append(adAddEx);
             sTempStr.Append(addParameter);
             sTempStr.Append(abGet);
             sTempStr.Append(abSet);
+            sTempStr.Append(setAddEx);
             string lastText = string.Format(abcls, typeName, sTempStr.ToString());
             CreateDirectory(EditorString.GetPath("CompOutPutPath"));
             File.WriteAllText($"{EditorString.GetPath("CompOutPutPath")}{typeName}Auto.cs", lastText);
@@ -229,12 +248,12 @@ namespace GameFrame.Editor
             }
         }
 
-        private static string FileTypeNameChange(string str)
-        {
-            str = str.Replace("[]", "!!");
-            str = str.Replace("`3[", "<").Replace("`2[", "<").Replace("`1[", "<").Replace("]", ">");
-            str = str.Replace("!!", "[]");
-            return str;
-        }
+        // private static string FileTypeNameChange(string str)
+        // {
+        //     str = str.Replace("[]", "!!");
+        //     str = str.Replace("`3[", "<").Replace("`2[", "<").Replace("`1[", "<").Replace("]", ">");
+        //     str = str.Replace("!!", "[]");
+        //     return str;
+        // }
     }
 }

@@ -1,0 +1,26 @@
+ 
+    public static void Set{0}External(this {1} effEntity,{3} param)
+    {{
+        var data =  effEntity.AddComponent<{2}>();
+        data->Set(param);
+         ((World)effEntity.Parent).Reactive(ComponentsID<{2}>.TID, effEntity);
+    }}
+    
+    public static void AddOrSet{0}External(this {1} effEntity,{3} param)
+    {{
+        var have = effEntity.HasComponent<{2}>();
+        {2}* p;
+        if(!have)
+        {{
+           p = effEntity.AddComponent<{2}>();
+           p->Init(param);
+        }}else{{
+           p = effEntity.GetComponentPtr<{2}>();
+           p->Set(param);
+           ((World)effEntity.Parent).Reactive(ComponentsID<{2}>.TID, effEntity);
+        }}
+    }} 
+   
+    
+    
+    

@@ -77,6 +77,8 @@ namespace GameFrame.Runtime
         public HashSet<IEntity> GetEntity(Type eventType)
         {
             var hashset = eventEntityDic.GetValueOrDefault(eventType);
+            if (hashset == null)
+                return null;
             var tempHashset = HashSetPool<IEntity>.Get();
             foreach (var obj in hashset)
                 tempHashset.Add(obj);

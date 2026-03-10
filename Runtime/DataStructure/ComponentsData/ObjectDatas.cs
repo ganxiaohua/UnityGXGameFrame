@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace GameFrame.Runtime
 {
-    public class ObjectDatas : SingletonInit<ObjectDatas>, IDisposable, IDatasBase
+    public class ObjectDatas<T> : SingletonInit<ObjectDatas<T>>, IDisposable, IDatasBase where T : class
     {
-        private List<object> arrayList = new List<object>(64);
+        private List<T> arrayList = new List<T>(64);
         private Queue<int> arrayDatasListIndex = new Queue<int>(64);
 
         public void OnInitialize()
@@ -13,27 +13,27 @@ namespace GameFrame.Runtime
             ContainerDatasManager.Instance.Add(this);
         }
 
-        public int AddData(object obj)
+        public int AddData(T obj)
         {
             var succ = arrayDatasListIndex.TryDequeue(out var index);
             if (succ)
             {
-                arrayList[index] = obj;
+                SetData(index, obj);
                 return index;
             }
             else
             {
-                arrayList.Add(string.Empty);
+                arrayList.Add(obj);
                 return arrayList.Count - 1;
             }
         }
 
-        public object GetData(int index)
+        public T GetData(int index)
         {
             return arrayList[index];
         }
 
-        public void SetData(int index, string data)
+        public void SetData(int index, T data)
         {
             arrayList[index] = data;
         }

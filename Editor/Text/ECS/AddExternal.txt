@@ -1,6 +1,6 @@
 
   
-    public static void Add{0}Init(this {1} effEntity,{3} param)
+    public static void Add{0}External(this {1} effEntity,{3} param)
     {{
         var data =  effEntity.AddComponent<{2}>();
         data->Init(param);

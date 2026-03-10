@@ -17,9 +17,9 @@
            p = effEntity.AddComponent<{2}>();
         }}else{{
            p = effEntity.GetComponentPtr<{2}>();
+           ((World)effEntity.Parent).Reactive(ComponentsID<{2}>.TID, effEntity);
         }}
         p->{3} = param;
-        ((World)effEntity.Parent).Reactive(ComponentsID<{2}>.TID, effEntity);
         {4}
         return effEntity;
     }} 
