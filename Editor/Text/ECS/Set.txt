@@ -1,14 +1,14 @@
  
-    public static EffEntity Set{0}(this {5} effEntity,{1} param)
+    public static EffEntity Set{0}(this {4} effEntity,{1} param)
     {{
         var p = effEntity.GetComponentPtr<{2}>();
         p->{3} = param;
+        {5}
         ((World)effEntity.Parent).Reactive(ComponentsID<{2}>.TID, effEntity);
-        {4}
         return effEntity;
     }}
     
-    public static EffEntity AddOrSet{0}(this {5} effEntity,{1} param)
+    public static EffEntity AddOrSet{0}(this {4} effEntity,{1} param)
     {{
         var has = effEntity.HasComponent<{2}>();
         {2}* p;
@@ -20,7 +20,6 @@
            ((World)effEntity.Parent).Reactive(ComponentsID<{2}>.TID, effEntity);
         }}
         p->{3} = param;
-        {4}
         return effEntity;
     }} 
    

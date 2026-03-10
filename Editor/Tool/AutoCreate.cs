@@ -26,7 +26,8 @@ namespace GameFrame.Editor
     public partial class AutoCreate
     {
         private static Dictionary<CreateAuto, string> sTextDictionary;
-        private static Dictionary<Type, string> sViewBindDictionary;
+
+        // private static Dictionary<Type, string> sViewBindDictionary;
         private static List<Type> sEcsComList;
         private static StringBuilder sTempStr = new StringBuilder(1024);
 
@@ -49,7 +50,7 @@ namespace GameFrame.Editor
 
             CreateComponents();
             CreateCapabiltys();
-            sViewBindDictionary.Clear();
+            // sViewBindDictionary.Clear();
             sTextDictionary.Clear();
             sTempStr.Clear();
             sEcsComList.Clear();
@@ -79,8 +80,8 @@ namespace GameFrame.Editor
             string strsetExternal = File.ReadAllText(setExternal);
             string strAllComponents = File.ReadAllText(ECSALLComponents);
             string strAllCapabiltys = File.ReadAllText(ECSALLCapabiltys);
-            sViewBindDictionary ??= new Dictionary<Type, string>();
-            sViewBindDictionary.Clear();
+            //sViewBindDictionary ??= new Dictionary<Type, string>();
+            //sViewBindDictionary.Clear();
             sEcsComList ??= new List<Type>();
             sEcsComList.Clear();
             sTextDictionary ??= new Dictionary<CreateAuto, string>();
@@ -104,11 +105,11 @@ namespace GameFrame.Editor
             {
                 if (typeof(EffComponent).IsAssignableFrom(tp))
                 {
-                    var vb = tp.GetCustomAttribute<ViewBindAttribute>();
-                    if (vb != null)
-                    {
-                        AddViewBind(tp, vb.BindType);
-                    }
+                    // var vb = tp.GetCustomAttribute<ViewBindAttribute>();
+                    // if (vb != null)
+                    // {
+                    //     AddViewBind(tp, vb.BindType);
+                    // }
 
                     CreateCompCshap(tp);
                 }
@@ -147,35 +148,9 @@ namespace GameFrame.Editor
             string addParameter = "";
             string fieldName = "";
             string fieldTypeName = "";
+            bool equatable = false;
             Type fieldType = null;
-            if (propertyInfos.Length > 0)
-            {
-                fieldName = propertyInfos[0].Name;
-                fieldType = propertyInfos[0].PropertyType;
-            }
-            else if (variable.Length > 0)
-            {
-                fieldName = variable[0].Name;
-                fieldType = variable[0].FieldType;
-            }
-
-            fieldTypeName = TypeNameHelper.GetFullNameWithoutAssemblyDetails(fieldType);
-            if (!string.IsNullOrEmpty(fieldName))
-            {
-                if (fieldTypeName == "String")
-                {
-                    fieldTypeName = "string";
-                }
-
-                addParameter = string.Format(sTextDictionary[CreateAuto.AddParameter], typeName, fieldTypeName, typeFullName, fieldName, ECSComponentName);
-                string evetString = "";
-                if (sViewBindDictionary.TryGetValue(type, out evetString))
-                {
-                }
-
-                abSet = string.Format(sTextDictionary[CreateAuto.Set], typeName, fieldTypeName, typeFullName, fieldName, evetString, ECSComponentName);
-            }
-
+            /***/
             foreach (MethodInfo method in methods)
             {
                 if (method.Name.Contains("Init"))
@@ -201,6 +176,45 @@ namespace GameFrame.Editor
                         break;
                     }
                 }
+                else if (method.Name.Contains("Equatable"))
+                {
+                    equatable = true;
+                }
+            }
+
+            /***/
+            if (propertyInfos.Length > 0)
+            {
+                fieldName = propertyInfos[0].Name;
+                fieldType = propertyInfos[0].PropertyType;
+            }
+            else if (variable.Length > 0)
+            {
+                fieldName = variable[0].Name;
+                fieldType = variable[0].FieldType;
+            }
+
+            fieldTypeName = TypeNameHelper.GetFullNameWithoutAssemblyDetails(fieldType);
+            if (!string.IsNullOrEmpty(fieldName))
+            {
+                if (fieldTypeName == "String")
+                {
+                    fieldTypeName = "string";
+                }
+
+                addParameter = string.Format(sTextDictionary[CreateAuto.AddParameter], typeName, fieldTypeName, typeFullName, fieldName, ECSComponentName);
+                // string evetString = "";
+                // if (sViewBindDictionary.TryGetValue(type, out evetString))
+                // {
+                // }
+
+                string equatable1 = string.Empty;
+                if (equatable)
+                {
+                    equatable1 = "if (p->Equatable(param))";
+                }
+
+                abSet = string.Format(sTextDictionary[CreateAuto.Set], typeName, fieldTypeName, typeFullName, fieldName, ECSComponentName, equatable1);
             }
 
             sTempStr.Append(abAdd);
@@ -214,14 +228,14 @@ namespace GameFrame.Editor
             File.WriteAllText($"{EditorString.GetPath("CompOutPutPath")}{typeName}Auto.cs", lastText);
         }
 
-        private static void AddViewBind(Type type, Type bindType)
-        {
-            MethodInfo[] methods = bindType.GetMethods(BindingFlags.Public | BindingFlags.Instance);
-            string funcName = methods[0].Name;
-            sViewBindDictionary.Add(type, $"View view = effEntity.GetView();\n" +
-                                          $"        if (view == null) return null;\n" +
-                                          $"        (({bindType.FullName}) (view.Value)).{funcName}(p);");
-        }
+        // private static void AddViewBind(Type type, Type bindType)
+        // {
+        //     MethodInfo[] methods = bindType.GetMethods(BindingFlags.Public | BindingFlags.Instance);
+        //     string funcName = methods[0].Name;
+        //     sViewBindDictionary.Add(type, $"View view = effEntity.GetView();\n" +
+        //                                   $"        if (view == null) return null;\n" +
+        //                                   $"        (({bindType.FullName}) (view.Value)).{funcName}(p);");
+        // }
 
 
         private static void CreateComponents()

@@ -18,6 +18,7 @@ namespace GameFrame.Runtime
 #endif
         }
 
+
         public void Block(int index, CapabilityBase instigators)
         {
 #if UNITY_EDITOR
@@ -57,6 +58,16 @@ namespace GameFrame.Runtime
 #if UNITY_EDITOR
             DisposeDebug();
 #endif
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is CapabiltyComponent other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(arrayIndex, dicIndex);
         }
     }
 }
