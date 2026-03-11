@@ -191,16 +191,8 @@ namespace GameFrame.Editor
 
             if (method != null)
             {
-                try
-                {
-                    // 调用方法
-                    object result = method.Invoke(target, parameters);
-                    return result;
-                }
-                catch (TargetInvocationException ex)
-                {
-                    throw ex.InnerException ?? ex;
-                }
+                object result = method.Invoke(target, parameters);
+                return result;
             }
             else
             {

@@ -12,14 +12,14 @@ namespace GameFrame.Editor
             base.OnInspectorGUI();
 
             var viewEffBindEnitiy = (ViewEffBindEnitiy) target;
-            if (GUILayout.Button($"capailityView"))
+            if (GUILayout.Button($"CapailityView"))
             {
-                CapabilityView.Init(viewEffBindEnitiy.Entity);  
+                CapabilityView.Init(viewEffBindEnitiy.Entity);
             }
-            
+
             if (GUILayout.Button($"ComponentView"))
             {
-                ComponentView.Init(viewEffBindEnitiy.Entity);  
+                ComponentView.Init(viewEffBindEnitiy.Entity);
             }
         }
     }

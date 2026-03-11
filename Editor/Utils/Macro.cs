@@ -6,6 +6,7 @@ namespace GameFrame.Editor
     {
         public const string ShowAssert = "ShowAssert";
         public const string Tracked = "Tracked";
+        public const string ShowEditorLine = "ShowEditorLine";
 
         [MenuItem("GX框架工具/宏定义/" + ShowAssert, true, 0)]
         private static bool CommonAssertDisableValidateV()
@@ -47,6 +48,28 @@ namespace GameFrame.Editor
             else
             {
                 MacroDefineHelper.Enable(Tracked);
+            }
+        }
+
+
+        [MenuItem("GX框架工具/宏定义/" + ShowEditorLine, true, 3)]
+        private static bool ShowEditorLineDisableValidateV()
+        {
+            Menu.SetChecked("GX框架工具/宏定义/" + ShowEditorLine, MacroDefineHelper.Contains(ShowEditorLine));
+            return true;
+        }
+
+
+        [MenuItem("GX框架工具/宏定义/" + ShowEditorLine, priority = 3)]
+        private static void ShowEditorLineDisableValidate()
+        {
+            if (MacroDefineHelper.Contains(ShowEditorLine))
+            {
+                MacroDefineHelper.Disable(ShowEditorLine);
+            }
+            else
+            {
+                MacroDefineHelper.Enable(ShowEditorLine);
             }
         }
 
