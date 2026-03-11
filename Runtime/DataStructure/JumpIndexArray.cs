@@ -98,9 +98,7 @@ namespace GameFrame.Runtime
 
         public bool Contains(int index)
         {
-            if (index >= Items.Length || index < 0)
-                return false;
-            return Items[index] != null;
+            return RealItemIndex[index];
         }
 
         public virtual void Dispose()
