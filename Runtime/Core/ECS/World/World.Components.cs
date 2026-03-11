@@ -11,7 +11,6 @@ namespace GameFrame.Runtime
         private int[] structAlign;
         private int componentsChildrenSize;
 
-
         private void InitComponents(int childCount)
         {
             components = new void*[MaxComponentCount];
@@ -20,6 +19,9 @@ namespace GameFrame.Runtime
             componentsChildrenSize = childCount;
 #if UNITY_EDITOR
             InitCompSize();
+#endif
+#if Tracked
+            UnsafeUtility.SetLeakDetectionMode(NativeLeakDetectionMode.EnabledWithStackTrace);
 #endif
         }
 
@@ -93,10 +95,16 @@ namespace GameFrame.Runtime
             return ptr;
         }
 
-        public void ClearComp(int entityIndex, int id)
+        public byte* GetCompBytes(int entityIndex, int id)
         {
             var ptr = (byte*) components[id];
             ptr += structSizes[id] * entityIndex;
+            return ptr;
+        }
+
+        public void ClearComp(int entityIndex, int id)
+        {
+            var ptr = GetCompBytes(entityIndex, id);
             UnsafeUtility.MemClear(ptr, structSizes[id]);
         }
 

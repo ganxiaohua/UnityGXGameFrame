@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace GameFrame.Runtime
 {
@@ -25,12 +26,14 @@ namespace GameFrame.Runtime
 
         public bool IsAction => State == IEntity.EntityState.IsRunning;
 
+        private bool[] componentIds;
 
-        public bool[] ComponentIds;
+        public List<int> ComponentsList { get; private set; }
 
         public void OnDirty(IEntity parent, int id)
         {
-            ComponentIds = new bool[world.MaxComponentCount];
+            componentIds = new bool[world.MaxComponentCount];
+            ComponentsList = new List<int>(world.MaxComponentCount);
             State = IEntity.EntityState.IsRunning;
             Parent = parent;
             ID = id;
@@ -52,41 +55,45 @@ namespace GameFrame.Runtime
         public T* AddComponent<T>() where T : unmanaged, EffComponent
         {
             var cid = ComponentsID<T>.TID;
-            if (ComponentIds[cid])
+            if (componentIds[cid])
             {
                 var type = typeof(T);
                 throw new Exception($"entity already has component: {type.FullName}");
             }
 
-            ComponentIds[cid] = true;
+            componentIds[cid] = true;
             world.Reactive(cid, this);
-            return world.GetCompPtr<T>(ID, cid);
+            ComponentsList.Add(cid);
+            var t = world.GetCompPtr<T>(ID, cid);
+            return t;
         }
 
         public void AddComponentNoGet<T>() where T : unmanaged, EffComponent
         {
             var cid = ComponentsID<T>.TID;
-            if (ComponentIds[cid])
+            if (componentIds[cid])
             {
                 var type = typeof(T);
                 throw new Exception($"entity already has component: {type.FullName}");
             }
 
-            ComponentIds[cid] = true;
+            ComponentsList.Add(cid);
+            componentIds[cid] = true;
             world.Reactive(cid, this);
         }
 
 
         public void RemoveComponent(int cid)
         {
-            var component = ComponentIds[cid];
+            var component = componentIds[cid];
             if (!component)
             {
                 return;
             }
 
+            ComponentsList.RemoveSwapBack(cid);
             world.ClearComp(ID, cid);
-            ComponentIds[cid] = false;
+            componentIds[cid] = false;
             world.Reactive(cid, this);
         }
 
@@ -110,7 +117,7 @@ namespace GameFrame.Runtime
         {
             for (int index = 0; index < cids.Length; ++index)
             {
-                if (!ComponentIds[cids[index]])
+                if (!componentIds[cids[index]])
                 {
                     return false;
                 }
@@ -127,7 +134,7 @@ namespace GameFrame.Runtime
 
         public bool HasComponent(int cid)
         {
-            return ComponentIds[cid];
+            return componentIds[cid];
         }
 
 
@@ -140,7 +147,7 @@ namespace GameFrame.Runtime
         {
             for (int index = 0; index < cids.Length; ++index)
             {
-                if (ComponentIds[cids[index]])
+                if (componentIds[cids[index]])
                 {
                     return true;
                 }
@@ -152,6 +159,7 @@ namespace GameFrame.Runtime
         private void ClearAllComponent()
         {
             world.ClearEntityAllComponent(ID);
+            ComponentsList.Clear();
         }
 
         public void Dispose()
@@ -159,6 +167,8 @@ namespace GameFrame.Runtime
             State = IEntity.EntityState.IsClear;
             Versions++;
             ClearAllComponent();
+            componentIds = null;
+            ComponentsList = null;
         }
     }
 }

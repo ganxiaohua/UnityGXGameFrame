@@ -20,6 +20,7 @@ namespace GameFrame.Editor
         Get,
         Set,
         ComponentsMain,
+        ComponentsDispose,
         Capability
     }
 
@@ -68,8 +69,9 @@ namespace GameFrame.Editor
             string addparameter = GameFramePath + "Editor/Text/ECS/AddParameter.txt";
             string get = GameFramePath + "Editor/Text/ECS/Get.txt";
             string set = GameFramePath + "Editor/Text/ECS/Set.txt";
-            string ECSALLComponents = GameFramePath + "Editor/Text/ECS/Components.txt";
-            string ECSALLCapabiltys = GameFramePath + "Editor/Text/ECS/Capabiltys.txt";
+            string allComponents = GameFramePath + "Editor/Text/ECS/Components.txt";
+            string allCapabiltys = GameFramePath + "Editor/Text/ECS/Capabiltys.txt";
+            string componentsDispose = GameFramePath + "Editor/Text/ECS/ComponentsDispose.txt";
 
             string stradd = File.ReadAllText(add);
             string straddaddExternal = File.ReadAllText(addExternal);
@@ -78,8 +80,9 @@ namespace GameFrame.Editor
             string strget = File.ReadAllText(get);
             string strset = File.ReadAllText(set);
             string strsetExternal = File.ReadAllText(setExternal);
-            string strAllComponents = File.ReadAllText(ECSALLComponents);
-            string strAllCapabiltys = File.ReadAllText(ECSALLCapabiltys);
+            string strAllComponents = File.ReadAllText(allComponents);
+            string strAllCapabiltys = File.ReadAllText(allCapabiltys);
+            string strComponentsDispose = File.ReadAllText(componentsDispose);
             //sViewBindDictionary ??= new Dictionary<Type, string>();
             //sViewBindDictionary.Clear();
             sEcsComList ??= new List<Type>();
@@ -94,6 +97,7 @@ namespace GameFrame.Editor
             sTextDictionary.Add(CreateAuto.Set, strset);
             sTextDictionary.Add(CreateAuto.SetExternal, strsetExternal);
             sTextDictionary.Add(CreateAuto.ComponentsMain, strAllComponents);
+            sTextDictionary.Add(CreateAuto.ComponentsDispose, strComponentsDispose);
             sTextDictionary.Add(CreateAuto.Capability, strAllCapabiltys);
         }
 
@@ -240,17 +244,26 @@ namespace GameFrame.Editor
 
         private static void CreateComponents()
         {
-            var str = sTextDictionary[CreateAuto.ComponentsMain];
-            var c = str.Split("@");
-            string b = "";
+            var stra = sTextDictionary[CreateAuto.ComponentsMain];
+            var strb = sTextDictionary[CreateAuto.ComponentsDispose];
+            var astrings = stra.Split("@");
+            var bstrings = strb.Split("@");
+            string a = "";
+            string b1 = "";
+            string b2 = "";
+            // bstrings[1] = bstrings[1].Substring(0, bstrings[1].Length - 1);
             foreach (var kv in sEcsComList)
             {
-                b += string.Format(c[1], kv.FullName);
+                a += string.Format(astrings[1], kv.FullName);
+                b1 += string.Format(bstrings[1], kv.Name, kv.FullName);
+                b2 += string.Format(bstrings[2], kv.Name, kv.FullName);
             }
 
-            str = string.Format(c[0], sEcsComList.Count, b);
+            stra = string.Format(astrings[0], sEcsComList.Count, a);
+            strb = string.Format(bstrings[0], b1, b2);
             CreateDirectory(EditorString.GetPath("CompOutPutPath"));
-            File.WriteAllText($"{EditorString.GetPath("CompOutPutPath")}Components.cs", str);
+            File.WriteAllText($"{EditorString.GetPath("CompOutPutPath")}Components.cs", stra);
+            File.WriteAllText($"{EditorString.GetPath("CompOutPutPath")}Components.DisposeComps.cs", strb);
         }
 
         private static void CreateDirectory(string path)

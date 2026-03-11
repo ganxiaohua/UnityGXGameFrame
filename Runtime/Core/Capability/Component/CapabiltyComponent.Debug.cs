@@ -4,7 +4,7 @@ using GameFrame.Runtime;
 
 namespace GameFrame.Runtime
 {
-    public partial struct CapabiltyComponent
+    public partial struct CapabilityComponent
     {
         private int dicIndex;
 

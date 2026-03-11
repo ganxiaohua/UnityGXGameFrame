@@ -6,9 +6,9 @@ using UnityEngine;
 namespace GameFrame.Runtime
 {
     [StructLayout(LayoutKind.Auto)]
-    public partial struct CapabiltyComponent : EffComponent
+    public partial struct CapabilityComponent : EffComponent
     {
-        public int arrayIndex;
+        private int arrayIndex;
 
         public void Init(int maxCount)
         {
@@ -62,7 +62,7 @@ namespace GameFrame.Runtime
 
         public override bool Equals(object obj)
         {
-            return obj is CapabiltyComponent other && Equals(other);
+            return obj is CapabilityComponent other && Equals(other);
         }
 
         public override int GetHashCode()

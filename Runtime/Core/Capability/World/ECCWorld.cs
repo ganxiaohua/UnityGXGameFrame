@@ -23,7 +23,7 @@ namespace GameFrame.Runtime
         {
             var child = base.AddChild();
             BindCapability<DestroyCapability>(child);
-            var capabiltyComponet = child.AddComponent<CapabiltyComponent>();
+            var capabiltyComponet = child.AddComponent<CapabilityComponent>();
             capabiltyComponet->Init(maxCapabilityTag);
             return child;
         }
@@ -58,7 +58,7 @@ namespace GameFrame.Runtime
 
         public bool IsBindCapability(EffEntity player, List<int> tagInts)
         {
-            var capabiltyComponent = player.GetComponent<CapabiltyComponent>();
+            var capabiltyComponent = player.GetComponent<CapabilityComponent>();
             return capabiltyComponent.IsBlock(tagInts);
         }
 

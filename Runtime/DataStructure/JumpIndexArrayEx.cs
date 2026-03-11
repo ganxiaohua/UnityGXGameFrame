@@ -11,15 +11,9 @@ namespace GameFrame.Runtime
 
         public T Add(int index, Type type)
         {
-            if (index >= Items.Length)
-            {
-                var newArray = new T[Items.Length * (index / Items.Length + 1)];
-                Array.Copy(Items, 0, newArray, 0, Items.Length);
-                Items = newArray;
-                Debugger.LogWarning($"{type.Name} GXArray Expansion!!!");
-            }
+            Expansion(index);
 
-            if (Items[index] != null)
+            if (RealItemIndex[index])
             {
                 return Items[index];
             }
@@ -27,6 +21,7 @@ namespace GameFrame.Runtime
             var t = (T) ReferencePool.Acquire(type);
             IndexList.Add(index);
             Items[index] = t;
+            RealItemIndex[index] = true;
             return t;
         }
 
@@ -38,8 +33,9 @@ namespace GameFrame.Runtime
             }
 
             ReferencePool.Release(Items[index]);
-            IndexList.RemoveSwapBack(index);
+            IndexList.Remove(index);
             Items[index] = null;
+            RealItemIndex[index] = false;
             return true;
         }
 
@@ -48,8 +44,10 @@ namespace GameFrame.Runtime
             foreach (var index in IndexList)
             {
                 ReferencePool.Release(Items[index]);
-                Items[index] = default(T);
+                Items[index] = null;
             }
+
+            base.Dispose();
         }
     }
 }

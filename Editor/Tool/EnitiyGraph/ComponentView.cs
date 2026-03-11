@@ -1,9 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using GameFrame.Runtime;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
+using UnityEditor;
 using UnityEngine;
 using Enumerable = System.Linq.Enumerable;
 using OdinEditorWindow = Sirenix.OdinInspector.Editor.OdinEditorWindow;
@@ -90,7 +92,7 @@ namespace GameFrame.Editor
         }
 
 
-        protected override void OnBeginDrawEditors()
+        protected override unsafe void OnBeginDrawEditors()
         {
             base.OnBeginDrawEditors();
             if (effEntity.State == IEntity.EntityState.IsClear)
@@ -99,46 +101,36 @@ namespace GameFrame.Editor
                 return;
             }
 
-            var comIndexs = effEntity.ComponentIds;
-            waitRemoveList.Clear();
-            foreach (var key in ecsComponentsTree.Keys)
-                if (!comIndexs[key])
-                    waitRemoveList.Add(key);
-
-            foreach (var key in waitRemoveList)
+            for (var i = effEntity.world.MaxComponentCount - 1; i >= 0; i--)
             {
-                ecsComponentsTree[key].Dispose();
-                ecsComponentsTree.Remove(key);
-            }
+                if (ComponentsID2Type.ComponentsTypes[i] == typeof(CapabilityComponent) || !effEntity.HasComponent(i))
+                    continue;
+                var cid = i;
+                var comID = $"Com_{cid}";
+                var t = EditorPrefs.GetBool(comID, false);
+                byte* dataPtr = effEntity.world.GetCompBytes(effEntity.ID, i);
+                object ecsComponent = Marshal.PtrToStructure(new IntPtr(dataPtr), ComponentsID2Type.ComponentsTypes[i]);
+                var lineRect = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, GUILayout.Height(1));
+                EditorGUI.DrawRect(lineRect, new Color(1, 1, 1, 0.1f));
+                EditorGUILayout.BeginHorizontal();
+                t = EditorGUILayout.Foldout(t, ecsComponent.GetType().Name, true);
+                EditorPrefs.SetBool(comID, t);
+                if (GUILayout.Button("删除", GUILayout.Width(60))) RemoveComponent(cid);
+                EditorGUILayout.EndHorizontal();
+                if (t)
+                {
+                    if (!ecsComponentsTree.TryGetValue(cid, out var tree))
+                    {
+                        tree = PropertyTree.Create(ecsComponent);
+                        tree.OnPropertyValueChanged += ChangeComponent;
+                        ecsComponentsTree.Add(cid, tree);
+                    }
 
-            // for (var i = effEntity.world.MaxComponentCount - 1; i >= 0; i--)
-            // {
-            //     var cid = i;
-            //     var comID = $"Com_{cid}";
-            //     var t = EditorPrefs.GetBool(comID, false);
-            //     var ecsComponent = effEntity.GetComponent(cid);
-            //     var lineRect = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, GUILayout.Height(1));
-            //     EditorGUI.DrawRect(lineRect, new Color(1, 1, 1, 0.1f));
-            //     EditorGUILayout.BeginHorizontal();
-            //     t = EditorGUILayout.Foldout(t, ecsComponent.GetType().Name, true);
-            //     EditorPrefs.SetBool(comID, t);
-            //     if (GUILayout.Button("删除", GUILayout.Width(60))) RemoveComponent(cid);
-            //
-            //     EditorGUILayout.EndHorizontal();
-            //     if (t)
-            //     {
-            //         if (!ecsComponentsTree.TryGetValue(cid, out var tree))
-            //         {
-            //             tree = PropertyTree.Create(ecsComponent);
-            //             tree.OnPropertyValueChanged += ChangeComponent;
-            //             ecsComponentsTree.Add(cid, tree);
-            //         }
-            //
-            //         tree.Draw(false);
-            //     }
-            //
-            //     EditorGUILayout.Space(5);
-            // }
+                    tree.Draw(false);
+                }
+
+                EditorGUILayout.Space(5);
+            }
 
             if (GUILayout.Button("Add  Component")) isShowAllEcsComponents = true;
         }

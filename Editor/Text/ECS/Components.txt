@@ -3,12 +3,13 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using GameFrame.Runtime;
-public static class AllComponents {{
+public static partial class  AllComponents {{
     
     public const int TotalComponents = {0};
     public static void AddComponents(World world)
     {{
         {1}
+        SetDisEffEntityAction();
     }}
 }}
 @

@@ -9,7 +9,7 @@ namespace GameFrame.Runtime
     public partial class JumpIndexArray<T> : IEnumerable<T>, IEnumerable, IDisposable
     {
         protected T[] Items;
-
+        protected bool[] RealItemIndex;
         public List<int> IndexList { get; private set; }
 
         public int Count => IndexList.Count;
@@ -36,44 +36,43 @@ namespace GameFrame.Runtime
 
         public void Init(int arrayMaxCount)
         {
-            isClass = typeof(T).IsClass;
             if (Items == null || Items.Length != arrayMaxCount)
             {
                 Items = new T[arrayMaxCount];
             }
 
             IndexList = new List<int>(arrayMaxCount);
+            RealItemIndex = new bool[arrayMaxCount];
         }
 
         public T Set(int index, T t)
         {
-            if (index >= Items.Length)
-            {
-                var newArray = new T[Items.Length * (index / Items.Length + 1)];
-                Array.Copy(Items, 0, newArray, 0, Items.Length);
-                Items = newArray;
-                Debugger.LogWarning($"{typeof(T).Name} GXArray Expansion!!!");
-            }
-
-            if (isClass)
-            {
-                if (Items[index] == null)
-                    IndexList.Add(index);
-            }
-            else
-            {
-                if (!IndexList.Contains(index))
-                    IndexList.Add(index);
-            }
-
+            Expansion(index);
+            if (!RealItemIndex[index])
+                IndexList.Add(index);
+            RealItemIndex[index] = true;
             Items[index] = t;
             return t;
+        }
+
+        protected void Expansion(int index)
+        {
+            if (index < Items.Length) return;
+            int newSize = Items.Length * (index / Items.Length + 1);
+            var newArray = new T[newSize];
+            var newRealItemIndex = new bool[newSize];
+            Array.Copy(Items, 0, newArray, 0, Items.Length);
+            Array.Copy(RealItemIndex, 0, newRealItemIndex, 0, RealItemIndex.Length);
+            Items = newArray;
+            RealItemIndex = newRealItemIndex;
+            Debugger.LogWarning($"{typeof(T).Name} GXArray Expansion!!!");
         }
 
         public T Remove(int index)
         {
             IndexList.Remove(index);
             var t = Items[index];
+            RealItemIndex[index] = false;
             Items[index] = default;
             return t;
         }
@@ -86,6 +85,12 @@ namespace GameFrame.Runtime
             for (int i = 0; i < count; i++)
             {
                 Items[IndexList[i]] = default(T);
+            }
+
+            count = RealItemIndex.Length;
+            for (int i = 0; i < count; i++)
+            {
+                RealItemIndex[i] = false;
             }
 
             IndexList.Clear();
@@ -103,6 +108,7 @@ namespace GameFrame.Runtime
             IndexList.Clear();
             IndexList = null;
             Items = null;
+            RealItemIndex = null;
         }
 
         public Enumerator GetEnumerator() => new Enumerator(IndexList, Items);
