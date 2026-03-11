@@ -17,4 +17,3 @@
     {{
         ((World)effEntity.Parent).Reactive(ComponentsID<{1}>.TID, effEntity);
     }} 
-    

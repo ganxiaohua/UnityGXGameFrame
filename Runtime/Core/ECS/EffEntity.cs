@@ -91,10 +91,11 @@ namespace GameFrame.Runtime
                 return;
             }
 
-            ComponentsList.RemoveSwapBack(cid);
+            ComponentDisposeAction.ComponentDisposeActions[cid](world, ID);
             world.ClearComp(ID, cid);
             componentIds[cid] = false;
             world.Reactive(cid, this);
+            ComponentsList.RemoveSwapBack(cid);
         }
 
 
@@ -158,6 +159,12 @@ namespace GameFrame.Runtime
 
         private void ClearAllComponent()
         {
+            int count = ComponentsList.Count;
+            for (int i = 0; i < count; i++)
+            {
+                ComponentDisposeAction.ComponentDisposeActions[ComponentsList[i]](world, ID);
+            }
+
             world.ClearEntityAllComponent(ID);
             ComponentsList.Clear();
         }

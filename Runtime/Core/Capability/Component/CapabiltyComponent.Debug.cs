@@ -13,18 +13,20 @@ namespace GameFrame.Runtime
             dicIndex = DicDatas<CapabilityBase, List<int>>.Instance.AddArrayDatas();
         }
 
-        private bool CanBlock(int index, CapabilityBase Instigators)
+        private bool CanBlock(int index, CapabilityBase instigators)
         {
+            if (instigators == null)
+                return true;
             var instigatorsDic = DicDatas<CapabilityBase, List<int>>.Instance.GetArrayDatas(index);
-            if (!instigatorsDic.TryGetValue(Instigators, out var list))
+            if (!instigatorsDic.TryGetValue(instigators, out var list))
             {
                 list = ListPool<int>.Get();
-                instigatorsDic.Add(Instigators, list);
+                instigatorsDic.Add(instigators, list);
             }
 
             if (list.Contains(index))
             {
-                Debugger.LogError($"{Instigators.GetType().Name} already block {index}");
+                Debugger.LogError($"{instigators.GetType().Name} already block {index}");
                 return false;
             }
 
@@ -32,10 +34,12 @@ namespace GameFrame.Runtime
             return true;
         }
 
-        private bool CanUnBlock(int index, CapabilityBase Instigators)
+        private bool CanUnBlock(int index, CapabilityBase instigators)
         {
+            if (instigators == null)
+                return true;
             var instigatorsDic = DicDatas<CapabilityBase, List<int>>.Instance.GetArrayDatas(index);
-            if (!instigatorsDic.TryGetValue(Instigators, out var list))
+            if (!instigatorsDic.TryGetValue(instigators, out var list))
             {
                 // Debugger.LogError($"{Instigators.GetType().Name}  not block {index}");
                 return false;

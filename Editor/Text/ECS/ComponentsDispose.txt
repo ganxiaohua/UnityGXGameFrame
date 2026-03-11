@@ -8,34 +8,22 @@ using GameFrame.Runtime;
 
 public static partial class AllComponents
 {{
-    private static Action[] sDisposeEntityAction = new Action[TotalComponents];
-    private static ECCWorld sWorld;
-    private static int sEffEntityId;
-
+    private static bool initDisEffEntityAction = false;
     private static void SetDisEffEntityAction()
     {{
+        if (initDisEffEntityAction)
+            return;
+        ComponentDisposeAction.ComponentDisposeActions =  new Action<World,int>[TotalComponents];
         {0}
+        initDisEffEntityAction = true;
     }}
-
-    public static void DisposeEntity(ECCWorld world, int effentityid, List<int> needDispose)
-    {{
-        sWorld = world;
-        sEffEntityId = effentityid;
-        int count = needDispose.Count;
-        for (int i = 0; i < count; i++)
-        {{
-            sDisposeEntityAction[i]();
-        }}
-        sWorld = null;
-    }}
-    
         {1}
 }}
 @
-        sDisposeEntityAction[ComponentsID<{1}>.TID] = Dis{0};
+        ComponentDisposeAction.ComponentDisposeActions[ComponentsID<{1}>.TID] = Dis{0};
 @
-    private static void Dis{0}()
+    private static void Dis{0}(World world,int effEntityId)
     {{
-        var v = sWorld.GetComp<{1}>(sEffEntityId, ComponentsID<{1}>.TID);
+        var v = world.GetComp<{1}>(effEntityId, ComponentsID<{1}>.TID);
         v.Dispose();
     }}

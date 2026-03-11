@@ -50,7 +50,7 @@ namespace GameFrame.Editor
         private static ComponentView sWindow;
 
         [ShowInInspector] [ShowIf("isShowAllEcsComponents")] [Searchable]
-        private static List<ComponentInfo> allEcsComponents = new();
+        private static List<ComponentInfo> sAllEcsComponents = new();
 
         private EffEntity effEntity;
 
@@ -71,14 +71,14 @@ namespace GameFrame.Editor
                 return;
             Action<Type> action = sWindow.AddComponent;
             var baseType = typeof(EffComponent);
-            if (allEcsComponents.Count == 0)
+            if (sAllEcsComponents.Count == 0)
             {
                 var derivedTypes = Enumerable.ToList(Enumerable.Where(GamePlayAssembly.GetAssembly().GetTypes(), type => type.IsSubclassOf(baseType)));
                 foreach (var item in derivedTypes)
                 {
                     var componet = new ComponentInfo();
                     componet.Init(item, action);
-                    allEcsComponents.Add(componet);
+                    sAllEcsComponents.Add(componet);
                 }
 
                 derivedTypes = Enumerable.ToList(Enumerable.Where(typeof(GXGameFrame).Assembly.GetTypes(), type => type.IsSubclassOf(baseType)));
@@ -86,7 +86,7 @@ namespace GameFrame.Editor
                 {
                     var componet = new ComponentInfo();
                     componet.Init(item, action);
-                    allEcsComponents.Add(componet);
+                    sAllEcsComponents.Add(componet);
                 }
             }
         }
@@ -110,6 +110,7 @@ namespace GameFrame.Editor
                 var t = EditorPrefs.GetBool(comID, false);
                 byte* dataPtr = effEntity.world.GetCompBytes(effEntity.ID, i);
                 object ecsComponent = Marshal.PtrToStructure(new IntPtr(dataPtr), ComponentsID2Type.ComponentsTypes[i]);
+                object ecsComponentExternal = InvokeGetDataIfExists(ecsComponent);
                 var lineRect = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, GUILayout.Height(1));
                 EditorGUI.DrawRect(lineRect, new Color(1, 1, 1, 0.1f));
                 EditorGUILayout.BeginHorizontal();
@@ -121,7 +122,7 @@ namespace GameFrame.Editor
                 {
                     if (!ecsComponentsTree.TryGetValue(cid, out var tree))
                     {
-                        tree = PropertyTree.Create(ecsComponent);
+                        tree = PropertyTree.Create(ecsComponentExternal ?? ecsComponent);
                         tree.OnPropertyValueChanged += ChangeComponent;
                         ecsComponentsTree.Add(cid, tree);
                     }
@@ -177,6 +178,34 @@ namespace GameFrame.Editor
 
             sWindow = null;
             waitRemoveList.Clear();
+        }
+
+        public static object InvokeGetDataIfExists(object target, params object[] parameters)
+        {
+            if (target == null)
+                throw new ArgumentNullException(nameof(target));
+
+            Type type = target.GetType();
+
+            MethodInfo method = type.GetMethod("GetData", BindingFlags.Public | BindingFlags.Instance);
+
+            if (method != null)
+            {
+                try
+                {
+                    // 调用方法
+                    object result = method.Invoke(target, parameters);
+                    return result;
+                }
+                catch (TargetInvocationException ex)
+                {
+                    throw ex.InnerException ?? ex;
+                }
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

@@ -22,7 +22,3 @@
         p->{3} = param;
         return effEntity;
     }} 
-   
-    
-    
-    

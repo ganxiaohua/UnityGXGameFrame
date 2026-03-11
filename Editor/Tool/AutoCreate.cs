@@ -14,7 +14,7 @@ namespace GameFrame.Editor
     {
         Class,
         Add,
-        AddInit,
+        AddExternal,
         AddParameter,
         SetExternal,
         Get,
@@ -91,7 +91,7 @@ namespace GameFrame.Editor
             sTextDictionary.Clear();
             sTextDictionary.Add(CreateAuto.Class, strcls);
             sTextDictionary.Add(CreateAuto.Add, stradd);
-            sTextDictionary.Add(CreateAuto.AddInit, straddaddExternal);
+            sTextDictionary.Add(CreateAuto.AddExternal, straddaddExternal);
             sTextDictionary.Add(CreateAuto.AddParameter, straddparameter);
             sTextDictionary.Add(CreateAuto.Get, strget);
             sTextDictionary.Add(CreateAuto.Set, strset);
@@ -146,7 +146,7 @@ namespace GameFrame.Editor
             sTempStr.Clear();
             string abcls = sTextDictionary[CreateAuto.Class];
             string abAdd = string.Format(sTextDictionary[CreateAuto.Add], typeName, ECSComponentName, typeFullName);
-            string adAddEx = string.Empty;
+            string addExternal = string.Empty;
             string setAddEx = string.Empty;
             string abGet = string.Format(sTextDictionary[CreateAuto.Get], typeName, typeFullName, ECSComponentName);
             string addParameter = "";
@@ -165,7 +165,7 @@ namespace GameFrame.Editor
                     {
                         var fileType = param.ParameterType.FullName;
                         fileType = TypeNameHelper.GetFullNameWithoutAssemblyDetails(param.ParameterType);
-                        adAddEx = string.Format(sTextDictionary[CreateAuto.AddInit], typeName, ECSComponentName, typeFullName, fileType);
+                        addExternal = string.Format(sTextDictionary[CreateAuto.AddExternal], typeName, ECSComponentName, typeFullName, fileType);
                         break;
                     }
                 }
@@ -221,12 +221,20 @@ namespace GameFrame.Editor
                 abSet = string.Format(sTextDictionary[CreateAuto.Set], typeName, fieldTypeName, typeFullName, fieldName, ECSComponentName, equatable1);
             }
 
-            sTempStr.Append(abAdd);
-            sTempStr.Append(adAddEx);
-            sTempStr.Append(addParameter);
+            if (string.IsNullOrEmpty(addExternal))
+            {
+                sTempStr.Append(abAdd);
+                sTempStr.Append(addParameter);
+            }
+            else
+            {
+                sTempStr.Append(addExternal);
+            }
+
             sTempStr.Append(abGet);
             sTempStr.Append(abSet);
-            sTempStr.Append(setAddEx);
+            if (!string.IsNullOrEmpty(setAddEx))
+                sTempStr.Append(setAddEx);
             string lastText = string.Format(abcls, typeName, sTempStr.ToString());
             CreateDirectory(EditorString.GetPath("CompOutPutPath"));
             File.WriteAllText($"{EditorString.GetPath("CompOutPutPath")}{typeName}Auto.cs", lastText);
