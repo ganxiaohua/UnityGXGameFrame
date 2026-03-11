@@ -132,7 +132,7 @@ namespace GameFrame.Runtime
         /// <returns>引用。</returns>
         public static T Acquire<T>() where T : class, IDisposable
         {
-            return GetReferenceCollection(typeof(T)).Acquire<T>();
+            return GetReferenceCollection(typeof(T)).OnAcquire<T>();
         }
 
         /// <summary>
@@ -160,7 +160,7 @@ namespace GameFrame.Runtime
 
             Type referenceType = disposable.GetType();
             InternalCheckReferenceType(referenceType);
-            GetReferenceCollection(referenceType).Release(disposable);
+            GetReferenceCollection(referenceType).OnRelease(disposable);
         }
 
         /// <summary>
@@ -170,7 +170,7 @@ namespace GameFrame.Runtime
         /// <param name="count">追加数量。</param>
         public static void Add<T>(int count) where T : class, IDisposable, new()
         {
-            GetReferenceCollection(typeof(T)).Add<T>(count);
+            GetReferenceCollection(typeof(T)).OnAdd<T>(count);
         }
 
         /// <summary>
@@ -181,7 +181,7 @@ namespace GameFrame.Runtime
         public static void Add(Type referenceType, int count)
         {
             InternalCheckReferenceType(referenceType);
-            GetReferenceCollection(referenceType).Add(count);
+            GetReferenceCollection(referenceType).OnAdd(count);
         }
 
         /// <summary>
@@ -264,6 +264,5 @@ namespace GameFrame.Runtime
 
             return referenceCollection;
         }
-        //
     }
 }

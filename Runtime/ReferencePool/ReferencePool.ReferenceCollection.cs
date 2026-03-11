@@ -86,14 +86,14 @@ namespace GameFrame.Runtime
                 maxAcquireReferenceCount = count;
             }
 
-            public T Acquire<T>() where T : class, IDisposable
+            public T OnAcquire<T>() where T : class, IDisposable
             {
                 if (typeof(T) != referenceType)
                 {
                     throw new Exception("Type is invalid.");
                 }
 
-                return (T)Acquire();
+                return (T) Acquire();
             }
 
             public IDisposable Acquire()
@@ -113,7 +113,7 @@ namespace GameFrame.Runtime
             }
 
 
-            public void Release(IDisposable disposable)
+            public void OnRelease(IDisposable disposable)
             {
                 lock (references)
                 {
@@ -137,7 +137,7 @@ namespace GameFrame.Runtime
                 ExpiredTime = Time.realtimeSinceStartup + expireTime;
             }
 
-            public void Add<T>(int count) where T : class, IDisposable, new()
+            public void OnAdd<T>(int count) where T : class, IDisposable, new()
             {
                 if (typeof(T) != referenceType)
                 {
@@ -154,7 +154,7 @@ namespace GameFrame.Runtime
                 }
             }
 
-            public void Add(int count)
+            public void OnAdd(int count)
             {
                 lock (references)
                 {
