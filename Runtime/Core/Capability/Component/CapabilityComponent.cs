@@ -60,14 +60,14 @@ namespace GameFrame.Runtime
 #endif
         }
 
-        public override bool Equals(object obj)
-        {
-            return obj is CapabilityComponent other && Equals(other);
-        }
+        // public override bool Equals(object obj)
+        // {
+        //     return obj is CapabilityComponent other && Equals(other);
+        // }
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(arrayIndex, dicIndex);
-        }
+        // public override int GetHashCode()
+        // {
+        //     return HashCode.Combine(arrayIndex);
+        // }
     }
 }

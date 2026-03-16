@@ -38,23 +38,24 @@ namespace GameFrame.Editor
                 return;
             OpFile.DeleteFilesInDirectory(EditorString.GetPath("CompOutPutPath"));
             LoadText();
-            var assembly = AppDomain.CurrentDomain.GetAssemblies();
-            foreach (var item in assembly)
+            DynamicAssemblyBuilder dynamicAssemblyBuilder = new DynamicAssemblyBuilder();
+            var paths = EditorString.GetPaths("ComponentsPath");
+            foreach (var path in paths)
             {
-                foreach (var name in EditorString.GetPaths("AssemblyNames"))
-                {
-                    if (item.GetName().Name != name) continue;
-                    FindAllECSCom(item);
-                    break;
-                }
+                dynamicAssemblyBuilder.AddSourceFromDirectory(path);
             }
 
+            var buildResult = dynamicAssemblyBuilder.Build();
+            if (buildResult == null)
+                return;
+            FindAllECSCom(buildResult.CompiledAssembly);
             CreateComponents();
             CreateCapabiltys();
             // sViewBindDictionary.Clear();
             sTextDictionary.Clear();
             sTempStr.Clear();
             sEcsComList.Clear();
+            dynamicAssemblyBuilder.Destroy();
             AssetDatabase.Refresh();
             Debugger.Log("生成完毕");
         }
@@ -109,12 +110,6 @@ namespace GameFrame.Editor
             {
                 if (typeof(EffComponent).IsAssignableFrom(tp))
                 {
-                    // var vb = tp.GetCustomAttribute<ViewBindAttribute>();
-                    // if (vb != null)
-                    // {
-                    //     AddViewBind(tp, vb.BindType);
-                    // }
-
                     CreateCompCshap(tp);
                 }
             }
