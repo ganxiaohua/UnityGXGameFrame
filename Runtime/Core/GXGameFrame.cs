@@ -7,7 +7,7 @@ namespace GameFrame.Runtime
     {
         public RootEntity RootEntity { get; private set; }
 
-        public async UniTask Init()
+        public async UniTask<bool> Init()
         {
             RootEntity = ReferencePool.Acquire<RootEntity>();
             RootEntity.OnDirty(null, 0);
@@ -17,10 +17,11 @@ namespace GameFrame.Runtime
             if (assetsFsmController.TaskState != TaskState.Succ)
             {
                 Debugger.LogError("资源流程失败");
-                return;
+                return false;
             }
 
             RootEntity.RemoveComponent<AssetsFsmController>();
+            return true;
         }
 
         public void Update()
