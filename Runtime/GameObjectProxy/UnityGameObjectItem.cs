@@ -35,6 +35,8 @@ namespace GameFrame.Runtime
 #else
           var  goCacheParent = GameObjectPool.ObjectCacheArea.transform;
 #endif
+            if (gameObject == null)
+                return;
             Component[] components = gameObject.GetComponents<Component>();
             foreach (Component component in components)
             {

@@ -36,8 +36,6 @@ namespace GameFrame.Editor
         {
             if (EditorApplication.isPlaying)
                 return;
-            OpFile.DeleteFilesInDirectory(EditorString.GetPath("CompOutPutPath"));
-            LoadText();
             DynamicAssemblyBuilder dynamicAssemblyBuilder = new DynamicAssemblyBuilder();
             var paths = EditorString.GetPaths("ComponentsPath");
             foreach (var path in paths)
@@ -46,8 +44,10 @@ namespace GameFrame.Editor
             }
 
             var buildResult = dynamicAssemblyBuilder.Build();
-            if (buildResult == null)
+            if (buildResult == null || buildResult.Errors.Count!=0  || buildResult.CompiledAssembly == null)
                 return;
+            LoadText();
+            OpFile.DeleteFilesInDirectory(EditorString.GetPath("CompOutPutPath"));
             FindAllECSCom(buildResult.CompiledAssembly);
             CreateComponents();
             CreateCapabiltys();
