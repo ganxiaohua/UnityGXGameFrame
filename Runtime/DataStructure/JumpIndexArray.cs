@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using UnityEngine;
 
 namespace GameFrame.Runtime
 {
@@ -18,7 +17,6 @@ namespace GameFrame.Runtime
 
         public bool isInit => IndexList != null;
 
-        private bool isClass;
 
         public T this[int index]
         {
@@ -58,7 +56,7 @@ namespace GameFrame.Runtime
         protected void Expansion(int index)
         {
             if (index < Items.Length) return;
-            int newSize = Items.Length * (index / Items.Length + 1);
+            int newSize = Math.Max(Items.Length * 2, index + 1);
             var newArray = new T[newSize];
             var newRealItemIndex = new bool[newSize];
             Array.Copy(Items, 0, newArray, 0, Items.Length);
@@ -77,22 +75,13 @@ namespace GameFrame.Runtime
             return t;
         }
 
-        public void Clear()
+        public virtual void Clear()
         {
             if (!isInit)
                 return;
-            int count = IndexList.Count;
-            for (int i = 0; i < count; i++)
-            {
-                Items[IndexList[i]] = default(T);
-            }
-
-            count = RealItemIndex.Length;
-            for (int i = 0; i < count; i++)
-            {
-                RealItemIndex[i] = false;
-            }
-
+            foreach (int index in IndexList)
+                Items[index] = default;
+            Array.Clear(RealItemIndex, 0, RealItemIndex.Length);
             IndexList.Clear();
         }
 

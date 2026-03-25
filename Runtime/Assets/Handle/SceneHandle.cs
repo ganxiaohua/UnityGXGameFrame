@@ -45,7 +45,7 @@ namespace GameFrame.Runtime
             this.priority = priority;
         }
 
-        public void Initialize(object key,Type type)
+        public void Initialize(object key, Type type)
         {
             try
             {
@@ -53,8 +53,8 @@ namespace GameFrame.Runtime
                 using (new Profiler("SceneHandle.Initialize"))
 #endif
                 {
-                    var package = PackageSearcher.SearchByAssetLocation((string) key, out var info,type);
-                    internalHandle = package.LoadSceneAsync(info, loadMode,LocalPhysicsMode.None, !activateOnLoad, (uint) priority);
+                    var package = PackageSearcher.SearchByAssetLocation((string) key, out var info, type);
+                    internalHandle = package.LoadSceneAsync(info, loadMode, LocalPhysicsMode.None, !activateOnLoad, (uint) priority);
                 }
             }
             catch (Exception e)
@@ -77,9 +77,7 @@ namespace GameFrame.Runtime
         {
             if (internalHandle != null && internalHandle.IsValid)
             {
-                //当加载新的主场景的时候，会自动释放之前加载的主场景以及附加场景。
-                if (!internalHandle.IsMainScene())
-                    internalHandle.UnloadAsync();
+                internalHandle.UnloadAsync();
                 internalHandle = default;
             }
         }

@@ -2,7 +2,7 @@
 {
     public abstract class FsmState : Entity
     {
-        private FsmController fsmController;
+        protected FsmController fsmController;
 
         public virtual void OnEnter(FsmController fsmController)
         {

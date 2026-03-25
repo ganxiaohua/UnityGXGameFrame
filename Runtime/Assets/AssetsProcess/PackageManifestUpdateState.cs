@@ -4,19 +4,18 @@ using YooAsset;
 
 namespace GameFrame.Runtime
 {
-    public class PackageManifestUpdateState:FsmState
+    public class PackageManifestUpdateState : FsmState
     {
         public override void OnEnter(FsmController fsmController)
         {
             base.OnEnter(fsmController);
             UpdateManifest().Forget();
         }
-        
+
         private async UniTask UpdateManifest()
         {
-
-            var packageName = (string)GetData("packageName");
-            var packageVersion = (string)GetData("packageVersion");
+            var packageName = (string) GetData("packageName");
+            var packageVersion = (string) GetData("packageVersion");
             var package = YooAssets.GetPackage(packageName);
             var operation = package.UpdatePackageManifestAsync(packageVersion);
             await operation.ToUniTask();
@@ -24,6 +23,7 @@ namespace GameFrame.Runtime
             if (operation.Status != EOperationStatus.Succeed)
             {
                 Debug.LogWarning(operation.Error);
+                EventData.Instance.FireAssetEvent(AssetEventType.PackageManifestFail);
             }
             else
             {

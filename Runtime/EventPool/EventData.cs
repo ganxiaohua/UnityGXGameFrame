@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace GameFrame.Runtime
 {
-    public class EventData : Singleton<EventData>
+    public partial class EventData : Singleton<EventData>
     {
         /// <summary>
         /// 标记实体组件和和对应的事件类型

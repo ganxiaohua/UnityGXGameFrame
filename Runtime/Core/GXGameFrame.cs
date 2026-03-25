@@ -1,5 +1,4 @@
-﻿using Cysharp.Threading.Tasks;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace GameFrame.Runtime
 {
@@ -7,21 +6,12 @@ namespace GameFrame.Runtime
     {
         public RootEntity RootEntity { get; private set; }
 
-        public async UniTask<bool> Init()
+        public void Init()
         {
             RootEntity = ReferencePool.Acquire<RootEntity>();
             RootEntity.OnDirty(null, 0);
             RootEntity.AddComponent<UIRootComponents>();
             RootEntity.AddComponent<FsmComponents>();
-            var assetsFsmController = await RootEntity.AddComponent<AssetsFsmController>();
-            if (assetsFsmController.TaskState != TaskState.Succ)
-            {
-                Debugger.LogError("资源流程失败");
-                return false;
-            }
-
-            RootEntity.RemoveComponent<AssetsFsmController>();
-            return true;
         }
 
         public void Update()

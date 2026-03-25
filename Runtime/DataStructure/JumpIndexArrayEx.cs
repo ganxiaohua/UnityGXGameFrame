@@ -39,6 +39,7 @@ namespace GameFrame.Runtime
             return true;
         }
 
+
         public override void Dispose()
         {
             foreach (var index in IndexList)

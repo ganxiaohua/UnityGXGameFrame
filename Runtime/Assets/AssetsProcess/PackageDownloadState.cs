@@ -14,11 +14,12 @@ namespace GameFrame.Runtime
         private async UniTask BeginDownload()
         {
             var downloader = (ResourceDownloaderOperation) GetData("downloader");
-            downloader.OnDownloadErrorCallback = (string fileName, string error) => { Debugger.Log($"{fileName}下载失败 :error:{error}"); };
-            downloader.OnDownloadProgressCallback = (int totalDownloadCount, int currentDownloadCount, long totalDownloadBytes, long currentDownloadBytes) =>
+            downloader.DownloadErrorCallback = (DownloadErrorData data) =>
             {
-                Debugger.Log($"{totalDownloadCount}/{currentDownloadCount}  |  {totalDownloadBytes}/{currentDownloadBytes}");
+                Debugger.Log($"{data.FileName}下载失败 :error:{data.ErrorInfo}");
+                EventData.Instance.FireAssetEvent(AssetEventType.PackageDownloadFail);
             };
+            downloader.DownloadUpdateCallback = (DownloadUpdateData data) => { EventData.Instance.FireAssetDownEvent(data); };
             downloader.BeginDownload();
             await downloader.ToUniTask();
             // 检测下载结果
@@ -26,7 +27,7 @@ namespace GameFrame.Runtime
                 return;
             var packageName = (string) GetData("packageName");
             var package = YooAssets.GetPackage(packageName);
-            var operation = package.ClearUnusedBundleFilesAsync();
+            var operation = package.ClearCacheFilesAsync(EFileClearMode.ClearUnusedBundleFiles);
             operation.Completed += Operation_Completed;
         }
 

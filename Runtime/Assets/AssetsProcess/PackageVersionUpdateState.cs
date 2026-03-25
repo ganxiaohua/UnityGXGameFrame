@@ -4,23 +4,25 @@ using YooAsset;
 
 namespace GameFrame.Runtime
 {
-    public class PackageVersionUpdateState :FsmState
+    public class PackageVersionUpdateState : FsmState
     {
         public override void OnEnter(FsmController fsmController)
         {
             base.OnEnter(fsmController);
             UpdatePackageVersion().Forget();
         }
-        
+
         private async UniTask UpdatePackageVersion()
         {
-            var packageName = (string)GetData("packageName");
+            var packageName = (string) GetData("packageName");
             var package = YooAssets.GetPackage(packageName);
             var operation = package.RequestPackageVersionAsync();
             await operation.ToUniTask();
+
             if (operation.Status != EOperationStatus.Succeed)
             {
-                Debugger.LogWarning(operation.Error);
+                Debug.LogWarning(operation.Error);
+                EventData.Instance.FireAssetEvent(AssetEventType.LoadVersionFail);
             }
             else
             {

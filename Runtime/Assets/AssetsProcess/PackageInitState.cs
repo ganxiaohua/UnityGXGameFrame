@@ -9,20 +9,27 @@ namespace GameFrame.Runtime
         public override void OnEnter(FsmController fsmController)
         {
             base.OnEnter(fsmController);
+            InitializationOperation().Forget();
+        }
+
+        private async UniTask InitializationOperation()
+        {
             var playMode = (EPlayMode) GetData("playMode");
-            var buildPipeline = (EDefaultBuildPipeline) GetData("pipeline");
             var packageName = (string) GetData("packageName");
 
+            // 创建资源包裹类
             var package = YooAssets.TryGetPackage(packageName);
             if (package == null)
                 package = YooAssets.CreatePackage(packageName);
-            YooAssets.SetDefaultPackage(package);
+
+            // 编辑器下的模拟模式
             InitializationOperation initializationOperation = null;
             if (playMode == EPlayMode.EditorSimulateMode)
             {
-                var simulateBuildResult = EditorSimulateModeHelper.SimulateBuild(buildPipeline, packageName);
+                var buildResult = EditorSimulateModeHelper.SimulateBuild(packageName);
+                var packageRoot = buildResult.PackageRootDirectory;
                 var createParameters = new EditorSimulateModeParameters();
-                createParameters.EditorFileSystemParameters = FileSystemParameters.CreateDefaultEditorFileSystemParameters(simulateBuildResult);
+                createParameters.EditorFileSystemParameters = FileSystemParameters.CreateDefaultEditorFileSystemParameters(packageRoot);
                 initializationOperation = package.InitializeAsync(createParameters);
             }
 
@@ -49,24 +56,33 @@ namespace GameFrame.Runtime
             // WebGL运行模式
             if (playMode == EPlayMode.WebPlayMode)
             {
+#if UNITY_WEBGL && WEIXINMINIGAME && !UNITY_EDITOR
+            var createParameters = new WebPlayModeParameters();
+			string defaultHostServer = GetHostServerURL();
+            string fallbackHostServer = GetHostServerURL();
+            string packageRoot = $"{WeChatWASM.WX.env.USER_DATA_PATH}/__GAME_FILE_CACHE"; //注意：如果有子目录，请修改此处！
+            IRemoteServices remoteServices = new RemoteServices(defaultHostServer, fallbackHostServer);
+            createParameters.WebServerFileSystemParameters = WechatFileSystemCreater.CreateFileSystemParameters(packageRoot, remoteServices);
+            initializationOperation = package.InitializeAsync(createParameters);
+#else
                 var createParameters = new WebPlayModeParameters();
-                createParameters.WebFileSystemParameters = FileSystemParameters.CreateDefaultWebFileSystemParameters();
+                createParameters.WebServerFileSystemParameters = FileSystemParameters.CreateDefaultWebServerFileSystemParameters();
                 initializationOperation = package.InitializeAsync(createParameters);
+#endif
             }
 
-            InitializationOperation(initializationOperation).Forget();
-        }
-
-        private async UniTask InitializationOperation(InitializationOperation initializationOperation)
-        {
             await initializationOperation.ToUniTask();
+
+            // 如果初始化失败弹出提示界面
             if (initializationOperation.Status != EOperationStatus.Succeed)
             {
-                Debugger.LogError("初始化资源文件失败");
-                return;
+                Debug.LogWarning($"{initializationOperation.Error}");
+                EventData.Instance.FireAssetEvent(AssetEventType.InitFail);
             }
-
-            ChangeState<PackageVersionUpdateState>();
+            else
+            {
+                ChangeState<PackageVersionUpdateState>();
+            }
         }
 
 

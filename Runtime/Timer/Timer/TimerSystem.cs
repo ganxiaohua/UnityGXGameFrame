@@ -1,8 +1,10 @@
-﻿namespace GameFrame.Runtime
+﻿using System.Collections.Generic;
+
+namespace GameFrame.Runtime
 {
     public sealed partial class TimerSystem : Singleton<TimerSystem>
     {
-        private readonly MutablePriorityQueue<UniqueTimer> timers = new MutablePriorityQueue<UniqueTimer>(CompareTimer);
+        private readonly MutablePriorityQueue<UniqueTimer> timers = new MutablePriorityQueue<UniqueTimer>(Comparer<UniqueTimer>.Create(CompareTimer));
 
 
         private static int CompareTimer(UniqueTimer left, UniqueTimer right)

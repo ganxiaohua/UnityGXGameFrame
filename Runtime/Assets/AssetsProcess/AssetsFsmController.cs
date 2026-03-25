@@ -1,10 +1,10 @@
-﻿using YooAsset;
+using YooAsset;
 
 namespace GameFrame.Runtime
 {
     public class AssetsFsmController : FsmTaskController
     {
-        private EDefaultBuildPipeline pipeline = EDefaultBuildPipeline.ScriptableBuildPipeline;
+        // private EDefaultBuildPipeline pipeline = EDefaultBuildPipeline.ScriptableBuildPipeline;
 
         public override void OnInitialize()
         {
@@ -13,7 +13,6 @@ namespace GameFrame.Runtime
             var defPackage = YooConst.PackageSettings[0];
             SetData("packageName", defPackage.name);
             SetData("playMode", defPackage.playMode);
-            SetData("pipeline", pipeline);
             AddState<PackageInitState>();
             AddState<PackageVersionUpdateState>();
             AddState<PackageManifestUpdateState>();
@@ -23,5 +22,15 @@ namespace GameFrame.Runtime
             ChangeState<PackageInitState>();
             SetCompleteTypes(typeof(PackageDoneState));
         }
+
+        // public void OnAssetEvent(AssetEventType assetEvent, object obj)
+        // {
+        //     switch (assetEvent)
+        //     {
+        //         case AssetEventType.PackageDownloader:
+        //              
+        //             break;
+        //     }
+        // }
     }
 }

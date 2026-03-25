@@ -18,7 +18,7 @@ namespace GameFrame.Runtime
             int downloadingMaxNum = 10;
             int failedTryAgain = 3;
             var downloader = package.CreateResourceDownloader(downloadingMaxNum, failedTryAgain);
-
+            SetData("downloader", downloader);
             if (downloader.TotalDownloadCount == 0)
             {
                 Debug.Log("Not found any download files !");
@@ -30,9 +30,7 @@ namespace GameFrame.Runtime
                 // 注意：开发者需要在下载前检测磁盘空间不足
                 int totalDownloadCount = downloader.TotalDownloadCount;
                 long totalDownloadBytes = downloader.TotalDownloadBytes;
-                SetData("downloader", downloader);
-                ChangeState<PackageDownloadState>();
-                // PatchEventDefine.FoundUpdateFiles.SendEventMessage(totalDownloadCount, totalDownloadBytes);
+                EventData.Instance.FireAssetEvent(new DownLoadSize() {Count = totalDownloadCount, Size = totalDownloadBytes});
             }
         }
     }

@@ -11,51 +11,81 @@ namespace GameFrame.Runtime
     public sealed class MutablePriorityQueue<T> where T : class, IMutablePriorityQueueItem
     {
         private readonly List<T> list;
-        private readonly Func<T, T, int> compare;
+        private readonly IComparer<T> comparer;
 
         public int Count => list.Count;
 
         public T this[int index] => list[index];
 
-        public MutablePriorityQueue(Func<T, T, int> compare, int capacity = 8)
+
+        public MutablePriorityQueue(IComparer<T> comparer, int capacity = 8)
         {
             this.list = new(capacity);
-            this.compare = compare;
+            this.comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));
+        }
+
+        private int Compare(T a, T b)
+        {
+            return comparer.Compare(a, b);
         }
 
         private void Swap(int i, int j)
         {
-            var idata = list[i];
-            var jdata = list[j];
+            var heap = list;
+            var idata = heap[i];
+            var jdata = heap[j];
             idata.MutableIndex = j;
             jdata.MutableIndex = i;
-            list[i] = jdata;
-            list[j] = idata;
+            heap[i] = jdata;
+            heap[j] = idata;
         }
 
         private void ShiftUp(int index)
         {
+            var heap = list;
+            var item = heap[index];
             while (index > 0)
             {
                 var parent = (index - 1) >> 1;
-                if (compare(list[index], list[parent]) >= 0) break;
-                Swap(index, parent);
+                if (Compare(item, heap[parent]) >= 0) break;
+
+                var parentItem = heap[parent];
+                parentItem.MutableIndex = index;
+                heap[index] = parentItem;
+
                 index = parent;
             }
+
+            item.MutableIndex = index;
+            heap[index] = item;
         }
 
         private void ShiftDown(int index)
         {
-            var size = list.Count;
+            var heap = list;
+            var size = heap.Count;
+            var item = heap[index];
+
             while (true)
             {
                 var child = (index << 1) + 1;
                 if (child >= size) break;
-                if (child + 1 < size && compare(list[child + 1], list[child]) < 0) child++;
-                if (compare(list[index], list[child]) <= 0) break;
-                Swap(index, child);
+
+                var right = child + 1;
+                if (right < size && Compare(heap[right], heap[child]) < 0)
+                    child = right;
+
+                if (Compare(item, heap[child]) <= 0) break;
+
+                var childItem = heap[child];
+                childItem.MutableIndex = index;
+                heap[index] = childItem;
+
                 index = child;
             }
+
+            item.MutableIndex = index;
+            heap[index] = item;
         }
 
         public void Enqueue(T item)
@@ -67,12 +97,15 @@ namespace GameFrame.Runtime
 
         public T Dequeue()
         {
-            var head = list[0];
-            var tail = list.Pop();
-            if (head != tail)
+            var heap = list;
+            var head = heap[0];
+            head.MutableIndex = -1;
+
+            var tail = heap.Pop();
+            if (heap.Count > 0)
             {
                 tail.MutableIndex = 0;
-                list[0] = tail;
+                heap[0] = tail;
                 ShiftDown(0);
             }
 
@@ -82,40 +115,48 @@ namespace GameFrame.Runtime
         public bool Contains(T item)
         {
             var index = item.MutableIndex;
-            if (index >= 0 && index < list.Count && list[index] == item)
-                return true;
-            return false;
+            return index >= 0 && index < list.Count && list[index] == item;
         }
 
         public bool Update(T item)
         {
             var index = item.MutableIndex;
-            if (index >= 0 && index < list.Count && list[index] == item)
+            if (index < 0 || index >= list.Count || list[index] != item)
+                return false;
+
+            // 记录原索引用于判断是否真的移动了
+            var oldIndex = index;
+            ShiftUp(index);
+            if (item.MutableIndex == oldIndex)
             {
-                ShiftUp(item.MutableIndex);
-                ShiftDown(item.MutableIndex);
+                ShiftDown(index);
             }
 
-            return index != item.MutableIndex;
+            return item.MutableIndex != oldIndex;
         }
 
         public bool Remove(T item)
         {
             var index = item.MutableIndex;
-            if (index >= 0 && index < list.Count && list[index] == item)
-            {
-                while (index > 0)
-                {
-                    var parent = (index - 1) >> 1;
-                    Swap(index, parent);
-                    index = parent;
-                }
+            if (index < 0 || index >= list.Count || list[index] != item)
+                return false;
 
-                Dequeue();
-                return true;
+            item.MutableIndex = -1;
+
+            var last = list.Pop();
+            if (index < list.Count)
+            {
+                last.MutableIndex = index;
+                list[index] = last;
+
+                // 判断需要向上还是向下调整
+                if (index > 0 && Compare(last, list[(index - 1) >> 1]) < 0)
+                    ShiftUp(index);
+                else
+                    ShiftDown(index);
             }
 
-            return false;
+            return true;
         }
 
         public bool TryDequeue(out T val)
@@ -144,6 +185,11 @@ namespace GameFrame.Runtime
 
         public void Clear()
         {
+            foreach (var item in list)
+            {
+                item.MutableIndex = -1;
+            }
+
             list.Clear();
         }
     }
