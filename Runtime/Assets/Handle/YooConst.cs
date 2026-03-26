@@ -1,38 +1,39 @@
 using System.Collections.Generic;
-using YooAsset;
+using UnityEngine;
 
 namespace GameFrame.Runtime
 {
-    public class PackageSetting
-    {
-        public string name;
-        public EPlayMode playMode;
-        public string copyFromName; // 是哪个包裹的复制
-        public bool needCopy;
-    }
-
     public static class YooConst
     {
+        private static YooPackageSettingList sDataList;
 #if REMOTE_SERVICE
-        public const string ResUrl = "https://127.0.0.1";
+        public static string ResUrl
+        {
+            get
+            {
+                GetDataList();
+                return dataList.RemoteResUrl;
+            }
+        }
 #else
-        public const string ResUrl = "http://127.0.0.1";
+        public static string ResUrl
+        {
+            get
+            {
+                GetDataList();
+                return sDataList.DebugResUrl;
+            }
+        }
 #endif
 
-        public static readonly List<PackageSetting> PackageSettings = new List<PackageSetting>()
+        public static List<PackageSetting> PackageSettings
         {
-                new PackageSetting()
-                {
-                        name = "DefaultPackage",
-#if UNITY_EDITOR
-                        playMode = EPlayMode.EditorSimulateMode,
-#elif UNITY_WEBGL
-                playMode = EPlayMode.WebPlayMode,
-#else
-                playMode = EPlayMode.OfflinePlayMode,
-#endif
-                },
-        };
+            get
+            {
+                GetDataList();
+                return sDataList.Datas;
+            }
+        }
 
         public enum PlatformName
         {
@@ -43,16 +44,23 @@ namespace GameFrame.Runtime
             WxWebGL
         }
 
+        public static void GetDataList()
+        {
+            if (sDataList != null)
+                return;
+            sDataList = Resources.Load<YooPackageSettingList>("YooAssetsData");
+        }
+
         public static string GetPlatformName()
         {
 #if UNITY_EDITOR
             var activeBuildTarget = UnityEditor.EditorUserBuildSettings.activeBuildTarget;
             return activeBuildTarget switch
             {
-                    UnityEditor.BuildTarget.Android => PlatformName.Android.ToString(),
-                    UnityEditor.BuildTarget.iOS => PlatformName.iOS.ToString(),
-                    UnityEditor.BuildTarget.WebGL => PlatformName.WebGL.ToString(),
-                    _ => PlatformName.Windows.ToString(),
+                UnityEditor.BuildTarget.Android => PlatformName.Android.ToString(),
+                UnityEditor.BuildTarget.iOS => PlatformName.iOS.ToString(),
+                UnityEditor.BuildTarget.WebGL => PlatformName.WebGL.ToString(),
+                _ => PlatformName.Windows.ToString(),
             };
 #else
             var platform = UnityEngine.Application.platform;

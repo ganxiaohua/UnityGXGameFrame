@@ -11,8 +11,8 @@ namespace GameFrame.Runtime
             base.OnInitialize();
             YooAssets.Initialize();
             var defPackage = YooConst.PackageSettings[0];
-            SetData("packageName", defPackage.name);
-            SetData("playMode", defPackage.playMode);
+            SetData("packageName", defPackage.Name);
+            SetData("playMode", defPackage.PlayMode);
             AddState<PackageInitState>();
             AddState<PackageVersionUpdateState>();
             AddState<PackageManifestUpdateState>();

@@ -6,15 +6,15 @@ namespace GameFrame.Runtime
 {
     public static class PackageSearcher
     {
-        public static ResourcePackage SearchByAssetLocation(string location, out AssetInfo info,Type type, bool raiseError = true)
+        public static ResourcePackage SearchByAssetLocation(string location, out AssetInfo info, Type type, bool raiseError = true)
         {
             info = default;
             foreach (var packageSetting in YooConst.PackageSettings)
             {
-                var package = YooAssets.GetPackage(packageSetting.name);
+                var package = YooAssets.GetPackage(packageSetting.Name);
                 if (package.CheckLocationValid(location))
                 {
-                    info = package.GetAssetInfo(location,type);
+                    info = package.GetAssetInfo(location, type);
                     return package;
                 }
             }
@@ -23,18 +23,19 @@ namespace GameFrame.Runtime
                 Debug.LogError($"[YooAssets] Search package by location fail: {location}");
             return null;
         }
-        
-        
+
+
         public static ResourcePackage SearchByAssetLocation(string location)
         {
             foreach (var packageSetting in YooConst.PackageSettings)
             {
-                var package = YooAssets.GetPackage(packageSetting.name);
+                var package = YooAssets.GetPackage(packageSetting.Name);
                 if (package.CheckLocationValid(location))
                 {
                     return package;
                 }
             }
+
             return null;
         }
 
@@ -43,7 +44,7 @@ namespace GameFrame.Runtime
             infos = default;
             foreach (var packageSetting in YooConst.PackageSettings)
             {
-                var package = YooAssets.GetPackage(packageSetting.name);
+                var package = YooAssets.GetPackage(packageSetting.Name);
                 infos = package.GetAssetInfos(tag);
                 if (infos != null && infos.Length > 0)
                 {
