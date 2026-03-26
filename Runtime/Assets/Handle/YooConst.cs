@@ -6,25 +6,19 @@ namespace GameFrame.Runtime
     public static class YooConst
     {
         private static YooPackageSettingList sDataList;
+
+        public static string ResUrl
+        {
+            get
+            {
+                GetDataList();
 #if REMOTE_SERVICE
-        public static string ResUrl
-        {
-            get
-            {
-                GetDataList();
-                return dataList.RemoteResUrl;
-            }
-        }
+                return sDataList.RemoteResUrl;
 #else
-        public static string ResUrl
-        {
-            get
-            {
-                GetDataList();
                 return sDataList.DebugResUrl;
+#endif
             }
         }
-#endif
 
         public static List<PackageSetting> PackageSettings
         {
@@ -49,6 +43,10 @@ namespace GameFrame.Runtime
             if (sDataList != null)
                 return;
             sDataList = Resources.Load<YooPackageSettingList>("YooAssetsData");
+            if (sDataList == null)
+            {
+                Debug.LogError("Please go to Resources to generate assets GX框架工具/YooAssetsData");
+            }
         }
 
         public static string GetPlatformName()
