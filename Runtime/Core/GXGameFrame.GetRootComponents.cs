@@ -20,6 +20,16 @@ namespace GameFrame.Runtime
         {
             return (FsmController) RootEntity.GetComponent<FsmComponents>().AddComponent(type);
         }
+        
+        public FsmController AddFsmChild(Type type)
+        {
+            return (FsmController) RootEntity.GetComponent<FsmComponents>().AddChild(type);
+        }
+        
+        public void RemoveFsmChild(FsmController child)
+        {
+              RootEntity.GetComponent<FsmComponents>().RemoveChild(child);
+        }
 
         public void RemoveFsmComponents(FsmController fsm)
         {

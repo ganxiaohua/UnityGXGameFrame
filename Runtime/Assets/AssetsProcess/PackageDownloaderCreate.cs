@@ -18,19 +18,14 @@ namespace GameFrame.Runtime
             int downloadingMaxNum = 10;
             int failedTryAgain = 3;
             var downloader = package.CreateResourceDownloader(downloadingMaxNum, failedTryAgain);
-            SetData("downloader", downloader);
             if (downloader.TotalDownloadCount == 0)
             {
-                Debug.Log("Not found any download files !");
-                ChangeState<PackageDoneState>();
+                EventData.Instance.FireAssetEvent(AssetEventType.PackageDownloaderNoMsg);
             }
             else
             {
-                // 发现新更新文件后，挂起流程系统
-                // 注意：开发者需要在下载前检测磁盘空间不足
-                int totalDownloadCount = downloader.TotalDownloadCount;
-                long totalDownloadBytes = downloader.TotalDownloadBytes;
-                EventData.Instance.FireAssetEvent(new DownLoadSize() {Count = totalDownloadCount, Size = totalDownloadBytes});
+                EventData.Instance.FireAssetEvent(downloader);
+                EventData.Instance.FireAssetEvent(AssetEventType.PackageDownloaderMsgGetOver);
             }
         }
     }

@@ -86,14 +86,10 @@ namespace GameFrame.Runtime
         }
 
 
-        /// <summary>
-        /// 获取资源服务器地址
-        /// </summary>
-        /// <summary>
-        /// 获取资源服务器地址
-        /// </summary>
+        
         private string GetHostServerURL()
         {
+            //不同的流程组合不同.
             return $"{YooConst.ResUrl}/{YooConst.GetPlatformName()}";
         }
 

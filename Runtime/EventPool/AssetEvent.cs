@@ -7,29 +7,24 @@ namespace GameFrame.Runtime
         InitFail,
         LoadVersionFail,
         PackageManifestFail,
-        PackageDownloader,
+        PackageDownloaderNoMsg,
+        PackageDownloaderMsgGetOver,
         PackageDownloadFail,
-        DownloadUpdateCallback,
         Succ,
     }
-
-    public struct DownLoadSize
-    {
-        public int Count;
-        public long Size;
-    }
+    
 
     public interface IAssetEvent : IEvent
     {
-        public void OnAssetEvent(AssetEventType assetEvent);
-        public void OnAssetEvent(DownLoadSize obj);
+        public void OnAssetEvent(AssetEventType assetEvent,object obj);
+        public void OnAssetEvent(ResourceDownloaderOperation obj);
 
         public void OnAssetEvent(DownloadUpdateData obj);
     }
 
     public partial class EventData
     {
-        public void FireAssetEvent(AssetEventType eventType)
+        public void FireAssetEvent(AssetEventType eventType,object obj =null)
         {
             var allEntity = GetEntity(typeof(IAssetEvent));
             if (allEntity == null)
@@ -41,14 +36,14 @@ namespace GameFrame.Runtime
             {
                 if (entity.State == IEntity.EntityState.IsRunning)
                 {
-                    ((IAssetEvent) entity).OnAssetEvent(eventType);
+                    ((IAssetEvent) entity).OnAssetEvent(eventType,obj);
                 }
             }
 
             HashSetPool<IEntity>.Release(allEntity);
         }
 
-        public void FireAssetEvent(DownLoadSize obj)
+        public void FireAssetEvent(ResourceDownloaderOperation obj)
         {
             var allEntity = GetEntity(typeof(IAssetEvent));
             if (allEntity == null)
