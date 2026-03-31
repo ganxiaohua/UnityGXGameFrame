@@ -27,7 +27,7 @@ GameFrame 是一个基于 Unity 的数据驱动的游戏开发框架，提供了
 | `IEntity` / `Entity` | 实体基类，支持组件模式和子实体模式 |
 | `EffEntity` | 用于高性能场景，支持非托管组件 |
 | `World` |理实体和组件的生命周期 |
-| `ComponentArray` | 组件数组，高效存储和访问组件数据 |
+| `ComponentArray` | 组件数组，高效存储和访问组件数据 UnsafeUtility.Malloc的方式创建内存连续 |
 
 **特性：**
 - 支持两种实体模式：普通 `Entity` 和 ECS `EffEntity`
