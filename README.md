@@ -30,7 +30,7 @@ GameFrame 是一个基于 Unity 的数据驱动的游戏开发框架，提供了
 | `ComponentArray` | 组件数组，高效存储和访问组件数据 UnsafeUtility.Malloc的方式创建内存连续 |
 
 **特性：**
-- 支持两种实体模式：普通 `Entity` 和 ECS `EffEntity`
+- 支持两种实体模式：普通 `Entity` 和 高性能 `EffEntity`
 - 组件可嵌套（Entity 可以包含其他 Entity 作为组件）
 - 支持实体版本控制（Versions），防止过期引用
 - 自动生命周期管理（通过 `ReferencePool`）
@@ -373,7 +373,7 @@ Assets/3rd/UnityGXGameFrame/
     ├── Arena/                       # 竞技场/战斗场景
     ├── Assets/                      # 资源管理
     ├── Config/                      # 配置管理
-    ├── Core/                        # 核心 ECS
+    ├── Core/                        # 核心内容
     ├── DataStructure/               # 数据结构
     ├── Debug/                       # 调试工具
     ├── EventPool/                   # 事件池
@@ -394,7 +394,7 @@ Assets/3rd/UnityGXGameFrame/
 
 ## 六、总结
 
-GameFrame 是一个功能完善、架构清晰的 Unity 游戏框架，提供了从资源管理、实体系统、UI 系统到 AI 系统的完整解决方案。数据驱动架构设计兼顾了性能和灵活性，配套的编辑器工具也大大提高了开发效率。适合用于中大型游戏项目的开发。
+GameFrame 是一个功能完善、架构清晰的 Unity 游戏框架，提供了从资源管理、实体系统、UI 系统到 AI 系统的完整解决方案。数据驱动架构设计兼顾了性能和灵活性，配套的编辑器工具也大大提高了开发效率。适合用于中大型游戏项目的开发(毕竟小游戏不需要框架~)。
 
 
  
