@@ -42,11 +42,11 @@ namespace GameFrame.Runtime
 
         public void OnApplicationQuit()
         {
-            ReferencePool.Release(RootEntity);
+            // ReferencePool.Release(RootEntity);
             // UISystem.Instance.Dispose();
-            EntityHouse.Instance.Disable();
-            ObjectPoolManager.Instance.Disable();
-            AssetManager.Instance.Dispose();
+            // EntityHouse.Instance.Disable();
+            // ObjectPoolManager.Instance.Disable();
+            // AssetManager.Instance.Dispose();
         }
     }
 }
