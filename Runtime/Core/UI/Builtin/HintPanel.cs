@@ -6,9 +6,9 @@ namespace GameFrame.Runtime
 {
     public sealed partial class HintPanel : TransitionPanel
     {
-        public override string Package => "BuiltinMessage";
-        public override string Name => "Hint";
-        public override PanelFlag Flags => PanelFlag.Builtin | PanelFlag.Persistent | PanelFlag.NonTopmost;
+        public override string Package => "Common";
+        public override string Name => "AreaText";
+        public override PanelFlag Flags =>   PanelFlag.Persistent;
         public override int SortingOrder => BuiltinPanelOrder.Hint;
 
         public class Input
@@ -18,7 +18,7 @@ namespace GameFrame.Runtime
             public bool touchable = false;
         }
 
-        private GRichTextField content;
+        private GTextField content;
 
         private Input input;
 
@@ -26,7 +26,7 @@ namespace GameFrame.Runtime
         {
             await base.OnInitializeAsync(root, cancelToken);
 
-            content = (GRichTextField) root.GetChild("Content");
+            content = (GTextField) root.GetChild("Content");
         }
 
         public override void OnShow(object args = null)
