@@ -6,10 +6,7 @@ namespace GameFrame.Runtime
     public partial interface EffComponent : IDisposable
     {
     }
-
-    /// <summary>
-    /// ECSEntity挂载的一定是Context
-    /// </summary>
+    
     public unsafe class EffEntity : IEntity, IVersions
     {
         public IEntity.EntityState State { get; private set; }

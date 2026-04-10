@@ -11,7 +11,6 @@ namespace GameFrame.Runtime
 
         public virtual void OnInitialize()
         {
-      
         }
 
         public void OnUpdate(float elapseSeconds, float realElapseSeconds)
@@ -56,6 +55,12 @@ namespace GameFrame.Runtime
             return state;
         }
 
+        protected T GetState<T>() where T : FsmState
+        {
+            return states.GetValueOrDefault(typeof(T)) as T;
+        }
+
+
         protected void RemoveState(FsmState state)
         {
             Type type = state.GetType();
@@ -68,7 +73,7 @@ namespace GameFrame.Runtime
 
             RemoveChild(state);
         }
-        
+
         public virtual void ChangeState<T>() where T : FsmState
         {
             bool b = states.TryGetValue(typeof(T), out var state);
