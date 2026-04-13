@@ -6,7 +6,7 @@ namespace GameFrame.Runtime
     public partial interface EffComponent : IDisposable
     {
     }
-    
+
     public unsafe class EffEntity : IEntity, IVersions
     {
         public IEntity.EntityState State { get; private set; }
@@ -99,6 +99,14 @@ namespace GameFrame.Runtime
         public T GetComponent<T>() where T : unmanaged, EffComponent
         {
             var cid = ComponentsID<T>.TID;
+#if UNITY_EDITOR
+            if (!componentIds[cid])
+            {
+                var type = typeof(T);
+                throw new Exception($"entity  dont have component: {type.FullName}");
+            }
+#endif
+
             var component = world.GetComp<T>(ID, cid);
             return component;
         }
@@ -106,6 +114,13 @@ namespace GameFrame.Runtime
         public T* GetComponentPtr<T>() where T : unmanaged, EffComponent
         {
             var cid = ComponentsID<T>.TID;
+#if UNITY_EDITOR
+            if (!componentIds[cid])
+            {
+                var type = typeof(T);
+                throw new Exception($"entity  dont have component: {type.FullName}");
+            }
+#endif
             var component = world.GetCompPtr<T>(ID, cid);
             return component;
         }
