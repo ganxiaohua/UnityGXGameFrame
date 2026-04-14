@@ -1,13 +1,11 @@
-﻿using UnityEngine;
-using YooAsset;
+﻿using YooAsset;
 
 namespace GameFrame.Runtime
 {
     public class PackageDownloaderCreate : FsmState
     {
-        public override void OnEnter(FsmController fsmController)
+        public override void OnEnter()
         {
-            base.OnEnter(fsmController);
             CreateDownloader();
         }
 

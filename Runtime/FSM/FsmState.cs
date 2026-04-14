@@ -4,9 +4,13 @@
     {
         protected FsmController fsmController;
 
-        public virtual void OnEnter(FsmController fsmController)
+        public virtual void OnInit(FsmController fsmController)
         {
             this.fsmController = fsmController;
+        }
+
+        public virtual void OnEnter()
+        {
         }
 
         public virtual void OnExit()

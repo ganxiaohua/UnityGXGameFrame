@@ -6,9 +6,9 @@ namespace GameFrame.Runtime
 {
     public class PackageInitState : FsmState
     {
-        public override void OnEnter(FsmController fsmController)
+        public override void OnEnter()
         {
-            base.OnEnter(fsmController);
+            base.OnEnter();
             InitializationOperation().Forget();
         }
 
@@ -86,7 +86,6 @@ namespace GameFrame.Runtime
         }
 
 
-        
         private string GetHostServerURL()
         {
             //不同的流程组合不同.

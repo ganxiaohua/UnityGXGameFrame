@@ -38,6 +38,7 @@ namespace GameFrame.Runtime
         {
             var state = AddChild<T>();
             states.Add(typeof(T), state);
+            state.OnInit(this);
             return state;
         }
 
@@ -45,6 +46,7 @@ namespace GameFrame.Runtime
         {
             var state = AddChild<T, TP1>(p1);
             states.Add(typeof(T), state);
+            state.OnInit(this);
             return state;
         }
 
@@ -52,6 +54,7 @@ namespace GameFrame.Runtime
         {
             var state = AddChild<T, TP1, TP2>(p1, p2);
             states.Add(typeof(T), state);
+            state.OnInit(this);
             return state;
         }
 
@@ -80,7 +83,7 @@ namespace GameFrame.Runtime
             Assert.IsTrue(b, $"not have state type {typeof(T)}");
             CurState?.OnExit();
             CurState = state;
-            CurState.OnEnter(this);
+            CurState.OnEnter();
         }
     }
 }

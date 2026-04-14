@@ -6,9 +6,9 @@ namespace GameFrame.Runtime
 {
     public class PackageVersionUpdateState : FsmState
     {
-        public override void OnEnter(FsmController fsmController)
+        public override void OnEnter()
         {
-            base.OnEnter(fsmController);
+            base.OnEnter();
             UpdatePackageVersion().Forget();
         }
 
