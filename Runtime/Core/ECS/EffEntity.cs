@@ -58,9 +58,9 @@ namespace GameFrame.Runtime
                 throw new Exception($"entity already has component: {type.FullName}");
             }
 
+            ComponentsList.Add(cid);
             componentIds[cid] = true;
             world.Reactive(cid, this);
-            ComponentsList.Add(cid);
             var t = world.GetCompPtr<T>(ID, cid);
             return t;
         }
@@ -91,8 +91,8 @@ namespace GameFrame.Runtime
             ComponentDisposeAction.ComponentDisposeActions[cid](world, ID);
             world.ClearComp(ID, cid);
             componentIds[cid] = false;
-            world.Reactive(cid, this);
             ComponentsList.RemoveSwapBack(cid);
+            world.Reactive(cid, this);
         }
 
 

@@ -28,6 +28,7 @@ namespace GameFrame.Runtime
 
         public virtual bool notNeedBuind => false;
 
+
         public override void Initialize(object initData)
         {
             var input = (Input) initData;
@@ -40,9 +41,17 @@ namespace GameFrame.Runtime
             viewEffBindEnitiy.Entity = BindEntity;
         }
 
+        protected override void OnAfterBind(GameObject go)
+        {
+            base.OnAfterBind(go);
+            if (BindEntity.IsAction)
+                BindEntity.AddComponentNoGet<BindingTargetOverComp>();
+        }
+
         public override void Dispose()
         {
             Object.Destroy(viewEffBindEnitiy);
+            BindEntity.RemoveComponent(ComponentsID<BindingTargetOverComp>.TID);
             base.Dispose();
         }
 
