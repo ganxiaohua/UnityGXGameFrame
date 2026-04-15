@@ -48,10 +48,15 @@ namespace GameFrame.Runtime
                 BindEntity.AddComponentNoGet<BindingTargetOverComp>();
         }
 
+        protected override void OnBeforeUnbind()
+        {
+            if (BindEntity.IsAction)
+                BindEntity.RemoveComponent(ComponentsID<BindingTargetOverComp>.TID);
+        }
+
         public override void Dispose()
         {
             Object.Destroy(viewEffBindEnitiy);
-            BindEntity.RemoveComponent(ComponentsID<BindingTargetOverComp>.TID);
             base.Dispose();
         }
 
