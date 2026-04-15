@@ -49,7 +49,7 @@ namespace GameFrame.Runtime
             set => gameObject.SetActive(value);
         }
 
-        public bool AutoLayers { get; set; } = true;
+        public virtual bool AutoLayers { get; set; } = true;
 
         public object BindingSource { get; private set; }
 

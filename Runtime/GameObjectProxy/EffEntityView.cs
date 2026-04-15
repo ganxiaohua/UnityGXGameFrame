@@ -22,6 +22,8 @@ namespace GameFrame.Runtime
         public Transform parent { get; private set; }
         protected EffEntity BindEntity { get; private set; }
 
+        public override bool AutoLayers { get; set; } = false;
+
         protected object UserData;
 
         private ViewEffBindEnitiy viewEffBindEnitiy;
@@ -33,7 +35,6 @@ namespace GameFrame.Runtime
         {
             var input = (Input) initData;
             base.Initialize(initData);
-            AutoLayers = false;
             BindEntity = input.Entity;
             parent = input.Parent;
             UserData = input.UserData;
