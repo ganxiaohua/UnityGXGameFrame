@@ -1,7 +1,7 @@
 ﻿namespace GameFrame.Runtime
 {
-    public interface ILateUpdateSystem:ISystem
+    public interface ILateUpdateSystem : ISystem
     {
-        void LateUpdate(float elapseSeconds, float realElapseSeconds);
+        void OnLateUpdate(float elapseSeconds, float realElapseSeconds);
     }
 }

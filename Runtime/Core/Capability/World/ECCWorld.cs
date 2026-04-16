@@ -2,7 +2,7 @@
 
 namespace GameFrame.Runtime
 {
-    public abstract unsafe class ECCWorld : World
+    public abstract unsafe partial class ECCWorld : World
     {
         private int maxCapabilityCount;
 
@@ -65,18 +65,20 @@ namespace GameFrame.Runtime
         {
             base.OnUpdate(elapseSeconds, realElapseSeconds);
             capabilitys.OnUpdate(DeltaTime, realElapseSeconds);
+            OnUpdateSystem(DeltaTime, realElapseSeconds);
         }
 
         public override void OnFixedUpdate(float elapseSeconds, float realElapseSeconds)
         {
             base.OnFixedUpdate(elapseSeconds, realElapseSeconds);
             capabilitys.OnFixedUpdate(FixedDeltaTime, realElapseSeconds);
+            OnFixedUpdateSystem(FixedDeltaTime, realElapseSeconds);
         }
-
 
         public override void Dispose()
         {
             capabilitys.Dispose();
+            DisposeSystem();
             base.Dispose();
         }
     }

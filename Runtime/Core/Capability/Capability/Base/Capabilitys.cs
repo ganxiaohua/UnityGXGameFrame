@@ -1,14 +1,10 @@
-﻿using System.Collections.Generic;
-using GameFrame.Runtime;
-
-namespace GameFrame.Runtime
+﻿namespace GameFrame.Runtime
 {
     public partial class Capabilitys
     {
         private JumpIndexArray<CapabilityBase>[] capabilitiesUpdateList;
 
         private JumpIndexArray<CapabilityBase>[] capabilitiesFixUpdateList;
-
         private int estimatedNumberPlayer;
 
         private ECCWorld eccWorld;

@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 namespace GameFrame.Runtime
 {
-    public abstract partial class World : IEntity, IVersions, IInitializeSystem<int>, IUpdateSystem, IFixedUpdateSystem
+    public abstract partial class World : IEntity, IVersions, IInitializeSystem<int>, IUpdateSystem, IFixedUpdateSystem, ILateUpdateSystem
     {
         public IEntity Parent { get; private set; }
 
@@ -21,9 +20,11 @@ namespace GameFrame.Runtime
 
         private int ecsSerialId;
 
-        protected float DeltaTime { get; private set; }
+        public float DeltaTime { get; private set; }
 
-        protected float FixedDeltaTime { get; private set; }
+        public float FixedDeltaTime { get; private set; }
+
+        public float LateDeltaTime { get; private set; }
 
         public float Multiple { get; private set; }
 
@@ -112,14 +113,19 @@ namespace GameFrame.Runtime
             DestroyComp();
         }
 
+        public virtual void OnUpdate(float elapseSeconds, float realElapseSeconds)
+        {
+            DeltaTime = elapseSeconds * Multiple;
+        }
+
         public virtual void OnFixedUpdate(float elapseSeconds, float realElapseSeconds)
         {
             FixedDeltaTime = elapseSeconds * Multiple;
         }
 
-        public virtual void OnUpdate(float elapseSeconds, float realElapseSeconds)
+        public virtual void OnLateUpdate(float elapseSeconds, float realElapseSeconds)
         {
-            DeltaTime = elapseSeconds * Multiple;
+            LateDeltaTime = elapseSeconds * Multiple;
         }
     }
 }

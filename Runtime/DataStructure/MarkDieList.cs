@@ -8,6 +8,7 @@ namespace GameFrame.Runtime
         public List<T> Data;
         public bool[] DataMark;
         private List<int> waitRemoveIndex;
+        private Comparison<int> comparison;
         public int count => Data.Count;
 
         public MarkDieList(int cap = 16)
@@ -15,6 +16,7 @@ namespace GameFrame.Runtime
             Data = new List<T>(cap);
             DataMark = new bool[cap];
             waitRemoveIndex = new List<int>(cap);
+            comparison = MarkRemoveAtSort;
         }
 
         public void Add(T t)
@@ -37,21 +39,26 @@ namespace GameFrame.Runtime
             MarkRemoveAt(index);
         }
 
-        public void MarkRemoveAt(int index)
+        private void MarkRemoveAt(int index)
         {
             if (index == -1 && waitRemoveIndex.Contains(index))
                 return;
             DataMark[index] = false;
             waitRemoveIndex.Add(index);
-            waitRemoveIndex.Sort((p1, p2) => p2.CompareTo(p1));
+        }
+
+        private int MarkRemoveAtSort(int left, int right)
+        {
+            return right.CompareTo(left);
         }
 
         public void Remove()
         {
-            int cou = waitRemoveIndex.Count;
-            if (cou == 0)
+            int count = waitRemoveIndex.Count;
+            if (count == 0)
                 return;
-            for (int i = 0; i < cou; i++)
+            waitRemoveIndex.Sort(comparison);
+            for (int i = 0; i < count; i++)
             {
                 int index = waitRemoveIndex[i];
                 Data.RemoveAt(index);
@@ -65,7 +72,7 @@ namespace GameFrame.Runtime
         {
             if (DataMark.Length >= size)
                 return;
-            var newArray = new bool[size];
+            var newArray = new bool[size * 2];
             Array.Copy(DataMark, 0, newArray, 0, DataMark.Length);
             DataMark = newArray;
         }

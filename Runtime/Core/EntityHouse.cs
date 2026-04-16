@@ -245,7 +245,7 @@ namespace GameFrame.Runtime
 #endif
                 {
                     if (dataMark[i])
-                        ((ILateUpdateSystem) system).LateUpdate(elapseSeconds, realElapseSeconds);
+                        ((ILateUpdateSystem) system).OnLateUpdate(elapseSeconds, realElapseSeconds);
                 }
             }
 

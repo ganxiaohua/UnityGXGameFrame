@@ -1,27 +1,20 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 namespace GameFrame.Runtime
 {
-    public abstract class ReactiveBaseSystem : SimpleEntity, IInitializeSystem<World>
+    public abstract class ReactiveBaseSystem : SimpleEntity, IInitializeSystem
     {
-        /// <summary>
-        /// 挂载的父实体
-        /// </summary>
-        protected World World;
-
         /// <summary>
         /// 我想要关注的实体
         /// </summary>
         private Collector collector;
 
-        public virtual void OnInitialize(World world)
-        {
-            World = world;
-            collector = this.GetTrigger(world);
-        }
-
         private List<EffEntity> effEntities = new(64);
+
+        public virtual void OnInitialize()
+        {
+            collector = this.GetTrigger((World) Parent);
+        }
 
         protected abstract Collector GetTrigger(World world);
 
@@ -45,6 +38,12 @@ namespace GameFrame.Runtime
             int count = effEntities.Count;
             Execute(effEntities);
             effEntities.Clear();
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            collector?.Dispose();
         }
     }
 }
