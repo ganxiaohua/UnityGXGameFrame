@@ -37,7 +37,7 @@ namespace GameFrame.Runtime
             }
         }
 
-        public void OnUpdateSystem(float elapseSeconds, float realElapseSeconds)
+        private void OnUpdateSystem(float elapseSeconds, float realElapseSeconds)
         {
             int count = updateSystems.Count;
             for (int i = 0; i < count; i++)
@@ -46,7 +46,7 @@ namespace GameFrame.Runtime
             }
         }
 
-        public void OnFixedUpdateSystem(float elapseSeconds, float realElapseSeconds)
+        private void OnFixedUpdateSystem(float elapseSeconds, float realElapseSeconds)
         {
             int count = fixedUpdateSystems.Count;
             for (int i = 0; i < count; i++)

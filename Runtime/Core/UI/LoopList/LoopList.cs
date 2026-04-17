@@ -33,11 +33,14 @@ namespace GameFrame.Runtime
         private GList glist;
 
         private T[] items;
+
         private int itemSize;
 
         private BitList selects;
 
         private Func<int, T_Data> dataGetter;
+
+        public int Mark { get; set; }
 
         /// <summary>
         /// T_Data data = dataGetter(globalIndex);
@@ -61,6 +64,7 @@ namespace GameFrame.Runtime
 
         public void Dispose()
         {
+            Mark = 0;
             LastSelectItemGlobalIndex = -1;
             OnSelectItem = null;
             for (var i = 0; i < itemSize; i++)

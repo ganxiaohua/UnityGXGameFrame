@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace GameFrame.Runtime
 {
@@ -9,7 +8,7 @@ namespace GameFrame.Runtime
         public event GroupChanged GroupAdd;
         public event GroupChanged GroupRomve;
         public event GroupChanged GroupUpdate;
-        public GXHashSet<EffEntity> EntitiesMap { get; private set; }
+        public IndexHashSet<EffEntity> EntitiesMap { get; private set; }
 
         public static Group CreateGroup(int childsCount, Matcher matcher)
         {
@@ -53,11 +52,19 @@ namespace GameFrame.Runtime
 
         private int DoEntity(EffEntity entity, bool silently)
         {
-            bool match = this.matcher.Match(entity);
-            if (match)
-                this.AddOrUpdateComponent(entity, silently);
+            if (entity.IsAction)
+            {
+                bool match = this.matcher.Match(entity);
+                if (match)
+                    this.AddOrUpdateComponent(entity, silently);
+                else
+                    this.RemoveComponent(entity, silently);
+            }
             else
+            {
                 this.RemoveComponent(entity, silently);
+            }
+
             return EntitiesMap.Count;
         }
 
@@ -107,7 +114,5 @@ namespace GameFrame.Runtime
             EditorDisPose();
 #endif
         }
-        public IEnumerator<EffEntity> GetEnumerator() => EntitiesMap.GetEnumerator();
-        
     }
 }

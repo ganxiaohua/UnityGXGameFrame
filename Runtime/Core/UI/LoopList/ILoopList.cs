@@ -19,6 +19,8 @@ namespace GameFrame.Runtime
 
         int LastSelectItemGlobalIndex { get; }
 
+        public int Mark { get; set; }
+
         void ScrollToView(int globalIndex, bool smooth = true, bool setFirst = false);
 
         void Select(int globalIndex, bool mono = true);

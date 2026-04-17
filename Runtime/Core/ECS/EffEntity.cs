@@ -172,9 +172,13 @@ namespace GameFrame.Runtime
         private void ClearAllComponent()
         {
             int count = ComponentsList.Count;
-            for (int i = 0; i < count; i++)
+            for (int i = count - 1; i >= 0; i--)
             {
-                ComponentDisposeAction.ComponentDisposeActions[ComponentsList[i]](world, ID);
+                int comid = ComponentsList[i];
+                componentIds[comid] = false;
+                ComponentsList.RemoveAtSwapBack(i);
+                world.Reactive(comid, this);
+                ComponentDisposeAction.ComponentDisposeActions[comid](world, ID);
             }
 
             world.ClearEntityAllComponent(ID);
@@ -183,8 +187,8 @@ namespace GameFrame.Runtime
 
         public void Dispose()
         {
-            State = IEntity.EntityState.IsClear;
             Versions++;
+            State = IEntity.EntityState.IsClear;
             ClearAllComponent();
             componentIds = null;
             ComponentsList = null;
