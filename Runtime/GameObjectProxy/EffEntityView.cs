@@ -19,7 +19,7 @@ namespace GameFrame.Runtime
             }
         }
 
-        public Transform parent { get; private set; }
+        public Transform Parent { get; private set; }
         protected EffEntity BindEntity { get; private set; }
 
         public override bool AutoLayers { get; set; } = false;
@@ -28,7 +28,9 @@ namespace GameFrame.Runtime
 
         private ViewEffBindEnitiy viewEffBindEnitiy;
 
-        public virtual bool notNeedBuind => false;
+        private Action bindOver;
+
+        public virtual bool NotNeedBuind => false;
 
 
         public override void Initialize(object initData)
@@ -36,7 +38,7 @@ namespace GameFrame.Runtime
             var input = (Input) initData;
             base.Initialize(initData);
             BindEntity = input.Entity;
-            parent = input.Parent;
+            Parent = input.Parent;
             UserData = input.UserData;
             viewEffBindEnitiy = gameObject.AddComponent<ViewEffBindEnitiy>();
             viewEffBindEnitiy.Entity = BindEntity;
@@ -47,6 +49,7 @@ namespace GameFrame.Runtime
             base.OnAfterBind(go);
             if (BindEntity.IsAction)
                 BindEntity.AddComponentNoGet<BindingTargetOverComp>();
+            bindOver?.Invoke();
         }
 
         protected override void OnBeforeUnbind()
@@ -55,9 +58,15 @@ namespace GameFrame.Runtime
                 BindEntity.RemoveComponent(ComponentsID<BindingTargetOverComp>.TID);
         }
 
+        public void SetBindOver(Action action)
+        {
+            bindOver = action;
+        }
+
         public override void Dispose()
         {
             Object.Destroy(viewEffBindEnitiy);
+            bindOver = null;
             base.Dispose();
         }
 
