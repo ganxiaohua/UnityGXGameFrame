@@ -30,7 +30,7 @@ namespace GameFrame.Runtime
         }
 
         public async UniTask<GObject> CreateGObjectAsync(string packageName, string name,
-                bool fromResources = false, CancellationToken cancelToken = default)
+            bool fromResources = false, CancellationToken cancelToken = default)
         {
             var reference = new DefaultAssetReference();
             var assetHandleType = fromResources ? typeof(UIPackageResourcesHandle) : typeof(UIPackageAddressableHandle);
@@ -48,7 +48,7 @@ namespace GameFrame.Runtime
 
         public async UniTask<Panel> CreatePanelAsync(Type type, CancellationToken cancelToken = default)
         {
-            var panel = GXGameFrame.Instance.AddUIComponents(type);
+            var panel = GXGameFrame.Instance.AddUIComponent(type);
             panels.Add(panel);
             var reference = panel.AssetReference;
             var fromResources = (panel.Flags & PanelFlag.Builtin) != 0;
@@ -123,7 +123,8 @@ namespace GameFrame.Runtime
             panel.OnHide();
             if (panel.Mode == PanelMode.Mono)
             {
-                Assert.IsTrue(monoPanelStack.Count > 0 && monoPanelStack.Peek() == panel, $"Bad Mono Panel({panel}, state:{panel.PanelState}) OnShow|OnHide Call");
+                Assert.IsTrue(monoPanelStack.Count > 0 && monoPanelStack.Peek() == panel,
+                    $"Bad Mono Panel({panel}, state:{panel.PanelState}) OnShow|OnHide Call");
                 monoPanelStack.Pop();
                 if (monoPanelStack.TryPeek(out var topPanel))
                 {
@@ -179,7 +180,7 @@ namespace GameFrame.Runtime
                 visiblePanels.RemoveSwapBack(panel);
             }
 
-            GXGameFrame.Instance.RemoveUIComponents(panel);
+            GXGameFrame.Instance.RemoveUIComponent(panel);
         }
 
         /// <summary>
