@@ -19,22 +19,22 @@ namespace GameFrame.Editor
         // }
 
 
-        [MenuItem("GX框架工具/脚本生成/生成所有绑定脚本", false, 2)]
+        [MenuItem("GX框架工具/脚本生成/生成组件绑定脚本", false, 2)]
         public static void AutoCreateAllScript()
         {
-            AutoCreate.AutoAllScript();
+            AutoCreate.AutoBindingComponentsScript();
         }
 
-        [MenuItem("GX框架工具/脚本生成/生成Capabilitys", false, 2)]
+        [MenuItem("GX框架工具/脚本生成/生成Capabilitys绑定脚本", false, 2)]
         public static void AutoCreateCapabilitysScript()
         {
-            AutoCreate.AutoCapabilityScript();
+            AutoCreate.AutoBindingCapabilityScript();
         }
 
-        [MenuItem("GX框架工具/脚本生成/事件绑定", false, 3)]
+        [MenuItem("GX框架工具/脚本生成/生成事件绑定脚本", false, 3)]
         public static void AutoEventBind()
         {
-            MakeAutoEventBind.AutoCreateScript();
+            MakeAutoEventBind.AutoBindingEventScript();
         }
 
         [MenuItem("GX框架工具/UI/UI创建", false, 3)]

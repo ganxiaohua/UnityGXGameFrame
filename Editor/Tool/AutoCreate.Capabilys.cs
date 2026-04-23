@@ -10,8 +10,10 @@ namespace GameFrame.Editor
     {
         private static List<CapabilityBase> capabilitylist = new();
 
-        public static void AutoCapabilityScript()
+        public static void AutoBindingCapabilityScript()
         {
+            if (EditorApplication.isPlaying)
+                return;
             LoadText();
             CreateCapabiltys();
             AssetDatabase.Refresh();
@@ -50,8 +52,8 @@ namespace GameFrame.Editor
             {
                 string updateMode = item.UpdateMode == CapabilitysUpdateMode.Update ? "IUpdateSystem" : "IFixedUpdateSystem";
                 sTempStr.Append(index == 0
-                        ? $" var orderTid =  CapabilityID<{item.GetType().FullName},{updateMode}>.TID;\n"
-                        : $"        orderTid =  CapabilityID<{item.GetType().FullName},{updateMode}>.TID;\n");
+                    ? $" var orderTid =  CapabilityID<{item.GetType().FullName},{updateMode}>.TID;\n"
+                    : $"        orderTid =  CapabilityID<{item.GetType().FullName},{updateMode}>.TID;\n");
                 index++;
             }
 

@@ -5,8 +5,6 @@ using System.Reflection;
 using System.Text;
 using GameFrame.Runtime;
 using UnityEditor;
-using UnityEngine;
-
 
 namespace GameFrame.Editor
 {
@@ -32,7 +30,7 @@ namespace GameFrame.Editor
         private static List<Type> sEcsComList;
         private static StringBuilder sTempStr = new StringBuilder(1024);
 
-        public static void AutoAllScript()
+        public static void AutoBindingComponentsScript()
         {
             if (EditorApplication.isPlaying)
                 return;
@@ -44,7 +42,7 @@ namespace GameFrame.Editor
             }
 
             var buildResult = dynamicAssemblyBuilder.Build();
-            if (buildResult == null || buildResult.Errors.Count!=0  || buildResult.CompiledAssembly == null)
+            if (buildResult == null || buildResult.Errors.Count != 0 || buildResult.CompiledAssembly == null)
                 return;
             LoadText();
             OpFile.DeleteFilesInDirectory(EditorString.GetPath("CompOutPutPath"));

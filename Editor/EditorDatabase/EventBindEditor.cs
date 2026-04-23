@@ -19,8 +19,10 @@ namespace GameFrame.Editor
         private static List<string> AllAddTextSend = new();
         private static HashSet<Type> SendEventHas = new();
 
-        public static void AutoCreateScript()
+        public static void AutoBindingEventScript()
         {
+            if (EditorApplication.isPlaying)
+                return;
             LoadText();
             LoadText2();
             AllAddText.Clear();
@@ -78,12 +80,12 @@ namespace GameFrame.Editor
                                 continue;
                             }
 
-                            string parameter = "";                                       //{1}
+                            string parameter = ""; //{1}
                             string typex = item.Name.Substring(1, item.Name.Length - 1); //{0}
                             MethodInfo[] ins = item.GetMethods();
                             ParameterInfo[] parmeters = ins[0].GetParameters();
                             string method = ins[0].Name; //{2}
-                            string paremwairte = "";     //{3}
+                            string paremwairte = ""; //{3}
                             foreach (ParameterInfo parmeter in parmeters)
                             {
                                 parameter += parmeter.ParameterType.FullName + " " + parmeter.Name + ",";
