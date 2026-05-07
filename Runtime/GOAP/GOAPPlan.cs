@@ -1,61 +1,95 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Jobs;
 
 namespace GameFrame.Runtime
 {
-    public struct GOAPPlan
+    public class GOAPPlan : IDisposable
     {
-        public IGOAPGoal Goal;
-        public NativeArray<GOAPState> Preconditions;
-        public NativeArray<GOAPState> Effects;
-        public NativeArray<float> Cost;
+        public static int MaxSearchNodes = 64;
+        private NativeArray<GOAPState> preconditions;
+        private NativeArray<GOAPState> effects;
+        private List<int> availableActionsIndex;
+        private NativeArray<float> cost;
+        public Action FinishAction;
 
-        public void Plan(GOAPState worldState, IGOAPGoal goal, List<IGOAPAction> availableActions)
+        public void Init(Action finishAction)
         {
-            if (goal.DesiredState == GOAPState.Empty)
-                return;
+            FinishAction = finishAction;
+        }
+
+        public void Plan(GOAPState worldState, IGOAPGoal goal, List<GOAPActionBase> availableActions, List<GOAPActionBase> result)
+        {
             if (worldState.Satisfies(goal.DesiredState))
             {
                 return;
             }
 
+            preconditions = new NativeArray<GOAPState>(availableActions.Count, Allocator.TempJob);
+            effects = new NativeArray<GOAPState>(availableActions.Count, Allocator.TempJob);
+            cost = new NativeArray<float>(availableActions.Count, Allocator.TempJob);
+            var openList = new NativeList<GOAPPlanNode>(MaxSearchNodes, Allocator.TempJob);
+            var closeList = new NativeHashSet<int>(MaxSearchNodes, Allocator.TempJob);
+            var actionPathIndexList = new NativeList<int>(availableActions.Count * 2, Allocator.TempJob);
+            availableActionsIndex = ListPool<int>.Get();
             bool succ = FilterAction(availableActions);
             if (!succ)
                 return;
             SearchAlgorithms job = new SearchAlgorithms
             {
-                Preconditions = this.Preconditions,
-                Effects = this.Effects,
-                Cost = this.Cost,
+                Preconditions = preconditions,
+                Effects = effects,
+                Cost = cost,
+                OpenList = openList,
+                CloseList = closeList,
+                ActionPathIndex = actionPathIndexList,
                 WorldState = worldState,
                 GoalState = goal.DesiredState,
             };
             JobHandle handle = job.Schedule();
             handle.Complete();
+            foreach (var index in job.ActionPathIndex)
+            {
+                result.Add(availableActions[availableActionsIndex[index]]);
+            }
+
+            ListPool<int>.Release(availableActionsIndex);
+            preconditions.Dispose();
+            effects.Dispose();
+            cost.Dispose();
+            openList.Dispose();
+            closeList.Dispose();
+            actionPathIndexList.Dispose();
+            FinishAction?.Invoke();
         }
 
-        private bool FilterAction(List<IGOAPAction> availableActions)
+        private bool FilterAction(List<GOAPActionBase> availableActions)
         {
             bool hasAction = false;
-            Preconditions = new NativeArray<GOAPState>(availableActions.Count, Allocator.Temp);
-            Effects = new NativeArray<GOAPState>(availableActions.Count, Allocator.Temp);
-            Cost = new NativeArray<float>(availableActions.Count, Allocator.Temp);
             int newIndex = 0;
             for (var index = 0; index < availableActions.Count; index++)
             {
                 var availableAction = availableActions[index];
                 if (availableAction.CheckProceduralPrecondition())
                 {
-                    Preconditions[newIndex] = availableAction.Preconditions;
-                    Effects[newIndex] = availableAction.Effects;
-                    Cost[newIndex] = availableAction.Cost;
+                    preconditions[newIndex] = availableAction.Preconditions;
+                    effects[newIndex] = availableAction.Effects;
+                    cost[newIndex] = availableAction.Cost;
                     newIndex++;
                     hasAction = true;
+                    availableActionsIndex.Add(index);
                 }
             }
 
             return hasAction;
+        }
+
+        public void Dispose()
+        {
+            preconditions.Dispose();
+            effects.Dispose();
+            cost.Dispose();
         }
     }
 }

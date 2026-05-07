@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using UnityGXGameFrame.AI.GOAP;
 using UnityGXGameFrame.AI.Utility;
-using UnityEngine;
 
 namespace UnityGXGameFrame.AI.Hybrid
 {
@@ -18,17 +18,17 @@ namespace UnityGXGameFrame.AI.Hybrid
     public class UtilityGOAPAgent
     {
         public string Name { get; set; }
-        
+
         /// <summary>
         /// 当前活跃的目标
         /// </summary>
         public IGOAPGoal CurrentGoal { get; private set; }
-        
+
         /// <summary>
         /// 当前执行的计划
         /// </summary>
         public GOAPPlan CurrentPlan { get; private set; }
-        
+
         /// <summary>
         /// 当前正在执行的动作索引
         /// </summary>
@@ -157,7 +157,7 @@ namespace UnityGXGameFrame.AI.Hybrid
 
             // 2. 选择最佳目标
             var bestGoal = SelectBestGoal();
-            
+
             // 3. 检查是否需要切换目标或重新规划
             if (bestGoal != null && (CurrentGoal == null || bestGoal != CurrentGoal))
             {
@@ -177,7 +177,7 @@ namespace UnityGXGameFrame.AI.Hybrid
             if (CurrentGoal != null && CurrentPlan != null && CurrentPlan.IsValid)
             {
                 _replanTimer += deltaTime;
-                
+
                 // 定期重新规划
                 if (_replanTimer >= ReplanInterval)
                 {
@@ -234,6 +234,7 @@ namespace UnityGXGameFrame.AI.Hybrid
                 {
                     CurrentPlan.Actions[CurrentActionIndex].OnAbort();
                 }
+
                 CurrentGoal.OnDeactivate(Context);
                 if (DebugMode)
                     Debug.Log($"[{Name}] Goal deactivated: {CurrentGoal.Name} (Priority: {CurrentGoal.Priority:F2})");
@@ -242,7 +243,7 @@ namespace UnityGXGameFrame.AI.Hybrid
             CurrentGoal = newGoal;
             CurrentGoal.OnActivate(Context);
             OnGoalChanged?.Invoke(CurrentGoal);
-            
+
             if (DebugMode)
                 Debug.Log($"[{Name}] Goal activated: {CurrentGoal.Name} (Priority: {CurrentGoal.Priority:F2})");
 
@@ -289,7 +290,7 @@ namespace UnityGXGameFrame.AI.Hybrid
                     if (DebugMode)
                         Debug.Log($"[{Name}] Plan completed for '{CurrentGoal.Name}'");
                 }
-                
+
                 CurrentPlan = null;
                 CurrentActionIndex = 0;
                 return;
@@ -332,7 +333,7 @@ namespace UnityGXGameFrame.AI.Hybrid
                 // 动作完成
                 action.OnComplete();
                 OnActionFinished?.Invoke(action, true);
-                
+
                 // 应用动作效果到世界状态
                 var newState = WorldState;
                 // 注意：WorldState的Apply方法需要按位或
@@ -358,6 +359,7 @@ namespace UnityGXGameFrame.AI.Hybrid
                 if (effects.Get(i))
                     result.Set(i, true);
             }
+
             return result;
         }
 
@@ -370,6 +372,7 @@ namespace UnityGXGameFrame.AI.Hybrid
             {
                 CurrentPlan.Actions[CurrentActionIndex].OnAbort();
             }
+
             CurrentPlan = null;
             CurrentActionIndex = 0;
         }
