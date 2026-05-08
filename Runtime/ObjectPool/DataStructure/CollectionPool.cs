@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using GameFrame.Runtime;
 
 namespace GameFrame.Runtime
 {
@@ -101,10 +100,10 @@ namespace GameFrame.Runtime
     {
         internal static readonly Stack<HashSet<T>> pool = new Stack<HashSet<T>>();
 
-        public static HashSet<T> Get()
+        public static HashSet<T> Get(int capacity = 0)
         {
             if (pool.Count == 0)
-                return new HashSet<T>();
+                return new HashSet<T>(capacity);
             var hs = pool.Pop();
             return hs;
         }

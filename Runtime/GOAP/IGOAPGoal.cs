@@ -1,6 +1,8 @@
-﻿namespace GameFrame.Runtime
+﻿using System;
+
+namespace GameFrame.Runtime
 {
-    public interface IGOAPGoal
+    public interface IGOAPGoal : IDisposable
     {
         GOAPState DesiredState { get; }
 

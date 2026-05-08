@@ -9,13 +9,13 @@ namespace GameFrame.Runtime
 
         private int currentActionIndex;
 
-        private readonly List<IGOAPGoal> goals = new();
+        private List<IGOAPGoal> goals;
+        private Dictionary<Type, IGOAPGoal> goalsDict;
 
+        private List<GOAPActionBase> actions;
+        private Dictionary<Type, GOAPActionBase> actionsDict;
 
-        private readonly List<GOAPActionBase> actions = new();
-
-
-        private readonly List<GOAPActionBase> resultActions = new();
+        private List<GOAPActionBase> resultActions;
 
 
         private GOAPPlan planner;
@@ -28,40 +28,66 @@ namespace GameFrame.Runtime
 
         private float replanTimer;
 
-        public void Init(Action finishAction)
+        public void Init()
         {
+            goals = ListPool<IGOAPGoal>.Get(8);
+            goalsDict = DictPool<Type, IGOAPGoal>.Get(8);
+            actions = ListPool<GOAPActionBase>.Get(16);
+            actionsDict = DictPool<Type, GOAPActionBase>.Get(16);
+            resultActions = ListPool<GOAPActionBase>.Get(8);
             replanTimer = ReplanInterval + 1;
-            planner = new GOAPPlan();
-            planner.Init(finishAction);
+            planner = ReferencePool.Acquire<GOAPPlan>();
+        }
+
+        public void SetFinishedAction(Action action)
+        {
+            planner.SetFinishedAction(action);
         }
 
 
-        public void AddGoal(IGOAPGoal goal)
+        public void AddGoal<T>() where T : class, IGOAPGoal
         {
-            if (goal == null) throw new ArgumentNullException(nameof(goal));
-            if (!goals.Contains(goal))
-                goals.Add(goal);
+            var type = typeof(T);
+            if (goalsDict.ContainsKey(type))
+                return;
+            var goal = ReferencePool.Acquire<T>();
+            goals.Add(goal);
+            goalsDict[type] = goal;
             environmentalChanges = true;
         }
 
 
-        public void RemoveGoal(IGOAPGoal goal)
+        public void RemoveGoal<T>() where T : class, IGOAPGoal
         {
+            var type = typeof(T);
+            if (!goalsDict.TryGetValue(type, out var goal))
+                return;
             goals.RemoveSwapBack(goal);
+            goalsDict.Remove(type);
+            ReferencePool.Release(goal);
             environmentalChanges = true;
         }
 
-        public void AddAction(GOAPActionBase actionBase)
+        public void AddAction<T>() where T : GOAPActionBase
         {
-            if (actionBase == null) throw new ArgumentNullException(nameof(actionBase));
-            if (!actions.Contains(actionBase))
-                actions.Add(actionBase);
+            var type = typeof(T);
+            if (actionsDict.ContainsKey(type))
+                return;
+            var action = ReferencePool.Acquire<T>();
+            actions.Add(action);
+            actionsDict[type] = action;
+            action.Agent = this;
             environmentalChanges = true;
         }
 
-        public void RemoveAction(GOAPActionBase actionBase)
+        public void RemoveAction<T>() where T : GOAPActionBase
         {
-            actions.RemoveSwapBack(actionBase);
+            var type = typeof(T);
+            if (!actionsDict.TryGetValue(type, out var action))
+                return;
+            actions.RemoveSwapBack(action);
+            actionsDict.Remove(type);
+            ReferencePool.Release(action);
             environmentalChanges = true;
         }
 
@@ -88,7 +114,7 @@ namespace GameFrame.Runtime
                 {
                     if (currentActionIndex < resultActions.Count)
                     {
-                        resultActions[currentActionIndex].OnAbort();
+                        resultActions[currentActionIndex].OnExit();
                     }
 
                     currentGoal.OnDeactivate();
@@ -138,7 +164,6 @@ namespace GameFrame.Runtime
         {
             if (currentActionIndex >= resultActions.Count)
             {
-                currentActionIndex = 0;
                 return;
             }
 
@@ -204,9 +229,24 @@ namespace GameFrame.Runtime
 
         public void Dispose()
         {
+            ReplanInterval = 1;
             replanTimer = ReplanInterval + 1;
-            goals.Clear();
-            resultActions.Clear();
+            foreach (var goal in goals)
+            {
+                ReferencePool.Release(goal);
+            }
+
+            foreach (var action in actions)
+            {
+                ReferencePool.Release(action);
+            }
+
+            ListPool<IGOAPGoal>.Release(goals);
+            DictPool<Type, IGOAPGoal>.Release(goalsDict);
+            ListPool<GOAPActionBase>.Release(actions);
+            DictPool<Type, GOAPActionBase>.Release(actionsDict);
+            ListPool<GOAPActionBase>.Release(resultActions);
+            ReferencePool.Release(planner);
         }
     }
 }
