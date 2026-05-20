@@ -8,7 +8,7 @@ namespace GameFrame.Runtime
         private DefaultAssetReference defaultAssetReference;
         public string AssetName { get; private set; }
         private Transform parent;
-        private GameObject prefab;
+        public GameObject Prefab { get; private set; }
         public GameObject Obj { get; private set; }
 
         public Transform Tra { get; private set; }
@@ -28,7 +28,7 @@ namespace GameFrame.Runtime
                 return;
             }
 
-            this.prefab = (GameObject) prefab;
+            this.Prefab = (GameObject) prefab;
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace GameFrame.Runtime
         {
             if (Obj == null)
             {
-                Obj = Object.Instantiate(prefab);
+                Obj = Object.Instantiate(Prefab);
                 isNew = true;
             }
             else
@@ -62,7 +62,7 @@ namespace GameFrame.Runtime
 
             Obj.SetActive(false);
 #if UNITY_EDITOR
-            
+
             var areaName = AssetName.Replace("/", "_");
             var goCacheParent = GameObjectPool.ObjectCacheArea.transform.Find(areaName);
             if (goCacheParent == null)
@@ -118,7 +118,7 @@ namespace GameFrame.Runtime
             AssetName = null;
             Obj = null;
             parent = null;
-            prefab = null;
+            Prefab = null;
             base.Dispose();
         }
     }

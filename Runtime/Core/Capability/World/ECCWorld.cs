@@ -75,6 +75,12 @@ namespace GameFrame.Runtime
             OnFixedUpdateSystem(FixedDeltaTime, realElapseSeconds);
         }
 
+        public override void OnLateUpdate(float elapseSeconds, float realElapseSeconds)
+        {
+            base.OnLateUpdate(elapseSeconds, realElapseSeconds);
+            OnLateUpdateSystem(FixedDeltaTime, realElapseSeconds);
+        }
+
         public override void Dispose()
         {
             capabilitys.Dispose();

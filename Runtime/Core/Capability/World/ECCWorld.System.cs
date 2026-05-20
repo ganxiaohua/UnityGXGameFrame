@@ -8,6 +8,7 @@ namespace GameFrame.Runtime
         private Dictionary<Type, IEntity> systems = new Dictionary<Type, IEntity>();
         private List<IUpdateSystem> updateSystems = new List<IUpdateSystem>();
         private List<IFixedUpdateSystem> fixedUpdateSystems = new List<IFixedUpdateSystem>();
+        private List<ILateUpdateSystem> lateUpdateSystems = new List<ILateUpdateSystem>();
 
         public void AddSystem<T>() where T : ISystem, IEntity
         {
@@ -26,9 +27,15 @@ namespace GameFrame.Runtime
                 system.SystemInitialize();
             }
 
+
             if (entity is IUpdateSystem updateSystem)
             {
                 updateSystems.Add(updateSystem);
+            }
+
+            if (entity is ILateUpdateSystem lateUpdateSystem)
+            {
+                lateUpdateSystems.Add(lateUpdateSystem);
             }
 
             if (entity is IFixedUpdateSystem fixedUpdateManagers)
@@ -52,6 +59,15 @@ namespace GameFrame.Runtime
             for (int i = 0; i < count; i++)
             {
                 fixedUpdateSystems[i].OnFixedUpdate(elapseSeconds, realElapseSeconds);
+            }
+        }
+
+        private void OnLateUpdateSystem(float elapseSeconds, float realElapseSeconds)
+        {
+            int count = lateUpdateSystems.Count;
+            for (int i = 0; i < count; i++)
+            {
+                lateUpdateSystems[i].OnLateUpdate(elapseSeconds, realElapseSeconds);
             }
         }
 
