@@ -1,22 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using GameFrame.Runtime;
 using Sirenix.OdinInspector;
-
 
 namespace GameFrame.Runtime
 {
     public class ObjectPoolManager : Singleton<ObjectPoolManager>
     {
-        [ShowInInspector]
-        private Dictionary<TypeNamePair, IObjectPoolBase> s_ObjectPoolBase = new Dictionary<TypeNamePair, IObjectPoolBase>();
-
+        [ShowInInspector] private Dictionary<TypeNamePair, IObjectPoolBase> objectPoolBaseDict = new Dictionary<TypeNamePair, IObjectPoolBase>();
+        private List<IObjectPoolBase> objectPoolBaseList = new List<IObjectPoolBase>();
 
         public void Update(float elapseSeconds, float realElapseSeconds)
         {
-            foreach (IObjectPoolBase objectpool in s_ObjectPoolBase.Values)
+            int count = objectPoolBaseList.Count;
+            for (int i = count - 1; i >= 0; i--)
             {
-                objectpool.Update(elapseSeconds, realElapseSeconds);
+                if (i >= objectPoolBaseList.Count)
+                    return;
+                objectPoolBaseList[i].Update(elapseSeconds, realElapseSeconds);
             }
         }
 
@@ -38,7 +38,8 @@ namespace GameFrame.Runtime
             }
 
             ObjectPool<T> objectPoolBase = ObjectPool<T>.Create(typeNamePair, type, maxNum, expireTime, initObject);
-            s_ObjectPoolBase.Add(typeNamePair, objectPoolBase);
+            objectPoolBaseDict.Add(typeNamePair, objectPoolBase);
+            objectPoolBaseList.Add(objectPoolBase);
             return objectPoolBase;
         }
 
@@ -53,7 +54,7 @@ namespace GameFrame.Runtime
         {
             Type type = typeof(T);
             TypeNamePair typeNamePair = new TypeNamePair(type, name);
-            if (s_ObjectPoolBase.TryGetValue(typeNamePair, out IObjectPoolBase objectbase))
+            if (objectPoolBaseDict.TryGetValue(typeNamePair, out IObjectPoolBase objectbase))
             {
                 return objectbase as ObjectPool<T>;
             }
@@ -77,7 +78,8 @@ namespace GameFrame.Runtime
             }
 
             ReferencePool.Release(objectpool);
-            s_ObjectPoolBase.Remove(objectpool.TypeName);
+            objectPoolBaseList.RemoveSwapBack(objectpool);
+            objectPoolBaseDict.Remove(objectpool.TypeName);
         }
 
         /// <summary>
@@ -104,18 +106,19 @@ namespace GameFrame.Runtime
         /// </summary>
         public void Disable()
         {
-            foreach (KeyValuePair<TypeNamePair, IObjectPoolBase> objectPool in s_ObjectPoolBase)
+            foreach (KeyValuePair<TypeNamePair, IObjectPoolBase> objectPool in objectPoolBaseDict)
             {
                 ReferencePool.Release(objectPool.Value);
             }
 
-            s_ObjectPoolBase.Clear();
+            objectPoolBaseDict.Clear();
+            objectPoolBaseList.Clear();
         }
 
 
         public bool HasPool(TypeNamePair typeNamePair)
         {
-            if (s_ObjectPoolBase.ContainsKey(typeNamePair))
+            if (objectPoolBaseDict.ContainsKey(typeNamePair))
             {
                 return true;
             }

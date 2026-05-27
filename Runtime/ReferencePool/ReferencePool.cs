@@ -18,8 +18,9 @@ namespace GameFrame.Runtime
         /// </summary>
         private const float AutoReleaseInterval = 10;
 
-        private static readonly Dictionary<Type, ReferenceCollection> sReferenceCollections = new Dictionary<Type, ReferenceCollection>();
-        private static List<Type> sWaitDestroyList = new();
+        private static readonly Dictionary<Type, ReferenceCollection> sReferenceCollectionDict = new Dictionary<Type, ReferenceCollection>();
+        private static List<ReferenceCollection> referenceCollectionList = new List<ReferenceCollection>();
+        private static List<Type> waitDestroyList = new();
 
 
         /// <summary>
@@ -29,9 +30,9 @@ namespace GameFrame.Runtime
         {
             get
             {
-                lock (sReferenceCollections)
+                lock (sReferenceCollectionDict)
                 {
-                    return sReferenceCollections.Count;
+                    return sReferenceCollectionDict.Count;
                 }
             }
         }
@@ -44,15 +45,15 @@ namespace GameFrame.Runtime
         {
             int index = 0;
             ReferencePoolInfo[] results = null;
-            lock (sReferenceCollections)
+            lock (sReferenceCollectionDict)
             {
-                results = new ReferencePoolInfo[sReferenceCollections.Count];
-                foreach (KeyValuePair<Type, ReferenceCollection> referenceCollection in sReferenceCollections)
+                results = new ReferencePoolInfo[sReferenceCollectionDict.Count];
+                foreach (KeyValuePair<Type, ReferenceCollection> referenceCollection in sReferenceCollectionDict)
                 {
                     results[index++] = new ReferencePoolInfo(referenceCollection.Key, referenceCollection.Value.UnusedReferenceCount,
-                            referenceCollection.Value.UsingReferenceCount, referenceCollection.Value.AcquireReferenceCount,
-                            referenceCollection.Value.ReleaseReferenceCount, referenceCollection.Value.AddReferenceCount,
-                            referenceCollection.Value.RemoveReferenceCount);
+                        referenceCollection.Value.UsingReferenceCount, referenceCollection.Value.AcquireReferenceCount,
+                        referenceCollection.Value.ReleaseReferenceCount, referenceCollection.Value.AddReferenceCount,
+                        referenceCollection.Value.RemoveReferenceCount);
                 }
             }
 
@@ -63,16 +64,18 @@ namespace GameFrame.Runtime
         {
             if (realElapseSeconds >= sCurAutoReleaseTime)
             {
-                sWaitDestroyList.Clear();
+                waitDestroyList.Clear();
                 sCurAutoReleaseTime = realElapseSeconds + AutoReleaseInterval;
-                lock (sReferenceCollections)
+                lock (sReferenceCollectionDict)
                 {
-                    foreach (ReferenceCollection referencepool in sReferenceCollections.Values)
+                    int count = referenceCollectionList.Count;
+                    for (int i = count - 1; i >= 0; i--)
                     {
-                        if (referencepool.UnusedCheck())
+                        var reference = referenceCollectionList[i];
+                        if (reference.UnusedCheck())
                         {
-                            sWaitDestroyList.Add(referencepool.ReferenceType);
-                            if (sWaitDestroyList.Count == 10)
+                            waitDestroyList.Add(reference.ReferenceType);
+                            if (waitDestroyList.Count == 10)
                             {
                                 break;
                             }
@@ -80,13 +83,13 @@ namespace GameFrame.Runtime
                     }
                 }
 
-                foreach (Type type in sWaitDestroyList)
+                foreach (Type type in waitDestroyList)
                 {
                     Debugger.Log($"clear {type.Name} ReleasePool");
                     RemoveAll(type);
                 }
 
-                sWaitDestroyList.Clear();
+                waitDestroyList.Clear();
             }
         }
 
@@ -95,14 +98,15 @@ namespace GameFrame.Runtime
         /// </summary>
         public static void ClearAll()
         {
-            lock (sReferenceCollections)
+            lock (sReferenceCollectionDict)
             {
-                foreach (KeyValuePair<Type, ReferenceCollection> referenceCollection in sReferenceCollections)
+                foreach (KeyValuePair<Type, ReferenceCollection> referenceCollection in sReferenceCollectionDict)
                 {
                     referenceCollection.Value.RemoveAll();
                 }
 
-                sReferenceCollections.Clear();
+                sReferenceCollectionDict.Clear();
+                referenceCollectionList.Clear();
             }
         }
 
@@ -113,9 +117,9 @@ namespace GameFrame.Runtime
         /// <returns></returns>
         public static void SetMaxReferenceCount<T>(int count) where T : class, IDisposable
         {
-            lock (sReferenceCollections)
+            lock (sReferenceCollectionDict)
             {
-                if (sReferenceCollections.TryGetValue(typeof(T), out ReferenceCollection referenceCollection))
+                if (sReferenceCollectionDict.TryGetValue(typeof(T), out ReferenceCollection referenceCollection))
                 {
                     referenceCollection.SetMaxAcquireReferenceCount(count);
                     return;
@@ -218,11 +222,15 @@ namespace GameFrame.Runtime
         /// 从引用池中移除所有的引用。
         /// </summary>
         /// <param name="referenceType">引用类型。</param>
-        public static void RemoveAll(Type referenceType)
+        private static void RemoveAll(Type referenceType)
         {
-            InternalCheckReferenceType(referenceType);
-            GetReferenceCollection(referenceType).RemoveAll();
-            sReferenceCollections.Remove(referenceType);
+            lock (sReferenceCollectionDict)
+            {
+                InternalCheckReferenceType(referenceType);
+                GetReferenceCollection(referenceType).RemoveAll();
+                referenceCollectionList.Remove(sReferenceCollectionDict[referenceType]);
+                sReferenceCollectionDict.Remove(referenceType);
+            }
         }
 
         private static void InternalCheckReferenceType(Type referenceType)
@@ -253,12 +261,13 @@ namespace GameFrame.Runtime
             }
 
             ReferenceCollection referenceCollection = null;
-            lock (sReferenceCollections)
+            lock (sReferenceCollectionDict)
             {
-                if (!sReferenceCollections.TryGetValue(referenceType, out referenceCollection))
+                if (!sReferenceCollectionDict.TryGetValue(referenceType, out referenceCollection))
                 {
                     referenceCollection = new ReferenceCollection(referenceType);
-                    sReferenceCollections.Add(referenceType, referenceCollection);
+                    sReferenceCollectionDict.Add(referenceType, referenceCollection);
+                    referenceCollectionList.Add(referenceCollection);
                 }
             }
 
