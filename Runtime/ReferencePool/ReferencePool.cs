@@ -18,7 +18,7 @@ namespace GameFrame.Runtime
         /// </summary>
         private const float AutoReleaseInterval = 10;
 
-        private static readonly Dictionary<Type, ReferenceCollection> sReferenceCollectionDict = new Dictionary<Type, ReferenceCollection>();
+        private static readonly Dictionary<Type, ReferenceCollection> ReferenceCollectionDict = new Dictionary<Type, ReferenceCollection>();
         private static List<ReferenceCollection> referenceCollectionList = new List<ReferenceCollection>();
         private static List<Type> waitDestroyList = new();
 
@@ -30,9 +30,9 @@ namespace GameFrame.Runtime
         {
             get
             {
-                lock (sReferenceCollectionDict)
+                lock (ReferenceCollectionDict)
                 {
-                    return sReferenceCollectionDict.Count;
+                    return ReferenceCollectionDict.Count;
                 }
             }
         }
@@ -45,10 +45,10 @@ namespace GameFrame.Runtime
         {
             int index = 0;
             ReferencePoolInfo[] results = null;
-            lock (sReferenceCollectionDict)
+            lock (ReferenceCollectionDict)
             {
-                results = new ReferencePoolInfo[sReferenceCollectionDict.Count];
-                foreach (KeyValuePair<Type, ReferenceCollection> referenceCollection in sReferenceCollectionDict)
+                results = new ReferencePoolInfo[ReferenceCollectionDict.Count];
+                foreach (KeyValuePair<Type, ReferenceCollection> referenceCollection in ReferenceCollectionDict)
                 {
                     results[index++] = new ReferencePoolInfo(referenceCollection.Key, referenceCollection.Value.UnusedReferenceCount,
                         referenceCollection.Value.UsingReferenceCount, referenceCollection.Value.AcquireReferenceCount,
@@ -66,7 +66,7 @@ namespace GameFrame.Runtime
             {
                 waitDestroyList.Clear();
                 sCurAutoReleaseTime = realElapseSeconds + AutoReleaseInterval;
-                lock (sReferenceCollectionDict)
+                lock (ReferenceCollectionDict)
                 {
                     int count = referenceCollectionList.Count;
                     for (int i = count - 1; i >= 0; i--)
@@ -83,6 +83,8 @@ namespace GameFrame.Runtime
                     }
                 }
 
+                if (waitDestroyList.Count == 0)
+                    return;
                 foreach (Type type in waitDestroyList)
                 {
                     Debugger.Log($"clear {type.Name} ReleasePool");
@@ -98,14 +100,14 @@ namespace GameFrame.Runtime
         /// </summary>
         public static void ClearAll()
         {
-            lock (sReferenceCollectionDict)
+            lock (ReferenceCollectionDict)
             {
-                foreach (KeyValuePair<Type, ReferenceCollection> referenceCollection in sReferenceCollectionDict)
+                foreach (KeyValuePair<Type, ReferenceCollection> referenceCollection in ReferenceCollectionDict)
                 {
                     referenceCollection.Value.RemoveAll();
                 }
 
-                sReferenceCollectionDict.Clear();
+                ReferenceCollectionDict.Clear();
                 referenceCollectionList.Clear();
             }
         }
@@ -117,9 +119,9 @@ namespace GameFrame.Runtime
         /// <returns></returns>
         public static void SetMaxReferenceCount<T>(int count) where T : class, IDisposable
         {
-            lock (sReferenceCollectionDict)
+            lock (ReferenceCollectionDict)
             {
-                if (sReferenceCollectionDict.TryGetValue(typeof(T), out ReferenceCollection referenceCollection))
+                if (ReferenceCollectionDict.TryGetValue(typeof(T), out ReferenceCollection referenceCollection))
                 {
                     referenceCollection.SetMaxAcquireReferenceCount(count);
                     return;
@@ -224,12 +226,12 @@ namespace GameFrame.Runtime
         /// <param name="referenceType">引用类型。</param>
         private static void RemoveAll(Type referenceType)
         {
-            lock (sReferenceCollectionDict)
+            lock (ReferenceCollectionDict)
             {
                 InternalCheckReferenceType(referenceType);
                 GetReferenceCollection(referenceType).RemoveAll();
-                referenceCollectionList.Remove(sReferenceCollectionDict[referenceType]);
-                sReferenceCollectionDict.Remove(referenceType);
+                referenceCollectionList.Remove(ReferenceCollectionDict[referenceType]);
+                ReferenceCollectionDict.Remove(referenceType);
             }
         }
 
@@ -261,12 +263,12 @@ namespace GameFrame.Runtime
             }
 
             ReferenceCollection referenceCollection = null;
-            lock (sReferenceCollectionDict)
+            lock (ReferenceCollectionDict)
             {
-                if (!sReferenceCollectionDict.TryGetValue(referenceType, out referenceCollection))
+                if (!ReferenceCollectionDict.TryGetValue(referenceType, out referenceCollection))
                 {
                     referenceCollection = new ReferenceCollection(referenceType);
-                    sReferenceCollectionDict.Add(referenceType, referenceCollection);
+                    ReferenceCollectionDict.Add(referenceType, referenceCollection);
                     referenceCollectionList.Add(referenceCollection);
                 }
             }
