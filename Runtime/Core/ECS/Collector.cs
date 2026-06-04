@@ -16,7 +16,6 @@ namespace GameFrame.Runtime
 
         private EcsChangeEventState.ChangeEventState state = 0;
 
-        
 
         public static Collector CreateCollector(World world, EcsChangeEventState.ChangeEventState stateType, params int[] indexs)
         {
@@ -48,7 +47,7 @@ namespace GameFrame.Runtime
 
                 if ((state & EcsChangeEventState.ChangeEventState.Remove) != 0)
                 {
-                    item.GroupRomve += groupChange;
+                    item.GroupRemove += groupChange;
                 }
 
                 if ((state & EcsChangeEventState.ChangeEventState.Update) != 0)
@@ -79,7 +78,7 @@ namespace GameFrame.Runtime
             foreach (var item in groups)
             {
                 item.GroupAdd -= groupChange;
-                item.GroupRomve -= groupChange;
+                item.GroupRemove -= groupChange;
                 item.GroupUpdate -= groupChange;
             }
         }

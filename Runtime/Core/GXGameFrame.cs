@@ -35,7 +35,7 @@ namespace GameFrame.Runtime
 
         public void FixedUpdate()
         {
-            float datetime = Time.deltaTime;
+            float datetime = Time.fixedDeltaTime;
             float realtimeSinceStartup = Time.realtimeSinceStartup;
             EntityHouse.Instance.FixedUpdate(datetime, realtimeSinceStartup);
         }

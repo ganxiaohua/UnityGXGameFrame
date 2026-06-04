@@ -1,16 +1,16 @@
-using UnityEngine;
-using Cysharp.Threading.Tasks;
 using System.Threading;
+using Cysharp.Threading.Tasks;
 using GameFrame.Runtime;
+using UnityEngine;
 
 namespace Common.Runtime
 {
     public interface IGameObjectPool
     {
-        UniTask<GameObjectPoolBaes> GetAsync(string asset, Transform parent = null, CancellationToken cancelToken = default);
+        UniTask<GameObjectPoolBase> GetAsync(string asset, Transform parent = null, CancellationToken cancelToken = default);
 
-        GameObjectPoolBaes InstantiateGameObject(GameObject prefab, Transform parent = null);
+        GameObjectPoolBase InstantiateGameObject(GameObject prefab, Transform parent = null);
 
-        void Release(object key, GameObjectPoolBaes go);
+        void Release(object key, GameObjectPoolBase go);
     }
 }

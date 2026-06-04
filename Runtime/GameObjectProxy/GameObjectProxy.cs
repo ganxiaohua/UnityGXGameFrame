@@ -58,7 +58,7 @@ namespace GameFrame.Runtime
         public Action onBeforeUnbind;
         public Action<GameObjectProxy> onAfterBind;
 
-        protected GameObjectPoolBaes bindedGameObject { get; private set; }
+        protected GameObjectPoolBase bindedGameObject { get; private set; }
 
         public GameObject BindingTarget => bindedGameObject?.Obj;
 
@@ -113,7 +113,7 @@ namespace GameFrame.Runtime
 
             State = GameObjectState.Loading;
 
-            GameObjectPoolBaes go = null;
+            GameObjectPoolBase go = null;
             try
             {
                 go = await GameObjectPool.Instance.GetAsync(asset, transform, cancelToken);
@@ -178,7 +178,7 @@ namespace GameFrame.Runtime
             return false;
         }
 
-        private void BindInternal(GameObjectPoolBaes go, Transform parent)
+        private void BindInternal(GameObjectPoolBase go, Transform parent)
         {
             var source = BindingSource;
 

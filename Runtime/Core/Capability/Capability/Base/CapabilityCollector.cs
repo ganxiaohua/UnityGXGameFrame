@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace GameFrame.Runtime
 {
@@ -47,7 +46,7 @@ namespace GameFrame.Runtime
 
                 if ((State & EcsChangeEventState.ChangeEventState.Remove) != 0)
                 {
-                    item.GroupRomve += groupChange;
+                    item.GroupRemove += groupChange;
                 }
 
                 if ((State & EcsChangeEventState.ChangeEventState.Update) != 0)
@@ -77,7 +76,7 @@ namespace GameFrame.Runtime
             foreach (var item in groups)
             {
                 item.GroupAdd -= groupChange;
-                item.GroupRomve -= groupChange;
+                item.GroupRemove -= groupChange;
                 item.GroupUpdate -= groupChange;
             }
 

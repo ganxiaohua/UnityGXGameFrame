@@ -164,7 +164,7 @@ namespace GameFrame.Runtime
             }
 
             int cur = 0;
-            while (spawnAsyncQueue.Count > 0 && cur < maxSpawnCount)
+            while (spawnAsyncQueue.Count > 0 && cur <= maxSpawnCount)
             {
                 cur++;
                 ObjectPoolHandle objectPoolHandle = spawnAsyncQueue.Dequeue();

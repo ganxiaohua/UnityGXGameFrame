@@ -6,7 +6,7 @@ namespace GameFrame.Runtime
     {
         private Matcher matcher;
         public event GroupChanged GroupAdd;
-        public event GroupChanged GroupRomve;
+        public event GroupChanged GroupRemove;
         public event GroupChanged GroupUpdate;
         public IndexHashSet<EffEntity> EntitiesMap { get; private set; }
 
@@ -35,7 +35,7 @@ namespace GameFrame.Runtime
         {
             bool b = EntitiesMap.Remove(entity);
             if (!silently && b)
-                GroupRomve?.Invoke(this, entity);
+                GroupRemove?.Invoke(this, entity);
         }
 
         public int HandleEntitySilently(EffEntity entity)
@@ -106,7 +106,7 @@ namespace GameFrame.Runtime
         public void Dispose()
         {
             GroupAdd -= GroupAdd;
-            GroupRomve -= GroupRomve;
+            GroupRemove -= GroupRemove;
             GroupUpdate -= GroupUpdate;
             matcher = null;
             EntitiesMap.Clear();

@@ -3,7 +3,7 @@ using Object = UnityEngine.Object;
 
 namespace GameFrame.Runtime
 {
-    public class GameObjectPoolBaes : ObjectBase
+    public class GameObjectPoolBase : ObjectBase
     {
         private DefaultAssetReference defaultAssetReference;
         public string AssetName { get; private set; }
