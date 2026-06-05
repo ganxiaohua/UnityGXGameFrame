@@ -1,6 +1,5 @@
 ﻿#if UNITY_EDITOR
 using System.Collections.Generic;
-using GameFrame.Runtime;
 
 namespace GameFrame.Runtime
 {
@@ -17,7 +16,7 @@ namespace GameFrame.Runtime
         {
             if (instigators == null)
                 return true;
-            var instigatorsDic = DicDatas<CapabilityBase, List<int>>.Instance.GetArrayDatas(index);
+            var instigatorsDic = DicDatas<CapabilityBase, List<int>>.Instance.GetArrayDatas(dicIndex);
             if (!instigatorsDic.TryGetValue(instigators, out var list))
             {
                 list = ListPool<int>.Get();
@@ -38,7 +37,7 @@ namespace GameFrame.Runtime
         {
             if (instigators == null)
                 return true;
-            var instigatorsDic = DicDatas<CapabilityBase, List<int>>.Instance.GetArrayDatas(index);
+            var instigatorsDic = DicDatas<CapabilityBase, List<int>>.Instance.GetArrayDatas(dicIndex);
             if (!instigatorsDic.TryGetValue(instigators, out var list))
             {
                 // Debugger.LogError($"{Instigators.GetType().Name}  not block {index}");
