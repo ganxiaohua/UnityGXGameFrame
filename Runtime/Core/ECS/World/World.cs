@@ -28,6 +28,8 @@ namespace GameFrame.Runtime
 
         public float Multiple { get; private set; }
 
+        public float WorldTime { get; private set; }
+
         private Dictionary<Matcher, Group> groups;
 
         private List<Group>[] groupsList;
@@ -47,6 +49,7 @@ namespace GameFrame.Runtime
         public virtual void OnInitialize(int maxComponentCount)
         {
             MaxComponentCount = maxComponentCount;
+            WorldTime = 0;
             groupsList = new List<Group>[MaxComponentCount];
             groups = new();
             InitializeChilds();
@@ -116,6 +119,7 @@ namespace GameFrame.Runtime
         public virtual void OnUpdate(float elapseSeconds, float realElapseSeconds)
         {
             DeltaTime = elapseSeconds * Multiple;
+            WorldTime += DeltaTime;
         }
 
         public virtual void OnFixedUpdate(float elapseSeconds, float realElapseSeconds)
