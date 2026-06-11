@@ -96,7 +96,7 @@ namespace GameFrame.Runtime
         }
 
 
-        public T GetComponent<T>() where T : unmanaged, EffComponent
+        public ref T GetComponent<T>() where T : unmanaged, EffComponent
         {
             var cid = ComponentsID<T>.TID;
 #if UNITY_EDITOR
@@ -106,9 +106,7 @@ namespace GameFrame.Runtime
                 throw new Exception($"entity  dont have component: {type.FullName}");
             }
 #endif
-
-            var component = world.GetComp<T>(ID, cid);
-            return component;
+            return ref world.GetComp<T>(ID, cid);
         }
 
         public T* GetComponentPtr<T>() where T : unmanaged, EffComponent
@@ -176,7 +174,6 @@ namespace GameFrame.Runtime
             {
                 int comid = ComponentsList[i];
                 componentIds[comid] = false;
-                ComponentsList.RemoveAtSwapBack(i);
                 world.Reactive(comid, this);
                 ComponentDisposeAction.ComponentDisposeActions[comid](world, ID);
             }

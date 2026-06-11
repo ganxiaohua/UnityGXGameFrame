@@ -24,6 +24,6 @@ public static partial class AllComponents
 @
     private static void Dis{0}(World world,int effEntityId)
     {{
-        var v = world.GetComp<{1}>(effEntityId, ComponentsID<{1}>.TID);
+       ref var v = ref world.GetComp<{1}>(effEntityId, ComponentsID<{1}>.TID);
         v.Dispose();
     }}

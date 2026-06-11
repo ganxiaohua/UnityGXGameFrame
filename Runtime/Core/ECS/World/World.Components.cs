@@ -81,10 +81,11 @@ namespace GameFrame.Runtime
             componentsChildrenSize = Children.AllCount;
         }
 
-        public T GetComp<T>(int entityIndex, int id) where T : unmanaged, EffComponent
+
+        public ref T GetComp<T>(int entityIndex, int id) where T : unmanaged, EffComponent
         {
             T* ptr = (T*) components[id];
-            return ptr[entityIndex];
+            return ref ptr[entityIndex];
         }
 
         public T* GetCompPtr<T>(int entityIndex, int id) where T : unmanaged, EffComponent
@@ -109,12 +110,13 @@ namespace GameFrame.Runtime
 
         public void ClearEntityAllComponent(int entityIndex)
         {
-            int count = components.Length;
-            for (int i = 0; i < count; i++)
+            var componentsList = Children[entityIndex].ComponentsList;
+            for (int i = 0; i < componentsList.Count; i++)
             {
-                var ptr = (byte*) components[i];
-                ptr += structSizes[i] * entityIndex;
-                UnsafeUtility.MemClear(ptr, structSizes[i]);
+                int cid = componentsList[i];
+                var ptr = (byte*) components[cid];
+                ptr += structSizes[cid] * entityIndex;
+                UnsafeUtility.MemClear(ptr, structSizes[cid]);
             }
         }
 

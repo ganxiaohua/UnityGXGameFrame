@@ -1,17 +1,14 @@
       
-    public static {1} Get{0}(this {2} effEntity)
+    public static ref {1} Get{0}(this {2} effEntity)
     {{
-        return effEntity.GetComponent<{1}>();
+        return ref effEntity.GetComponent<{1}>();
     }}
     
-    public static (bool have, {1} data) Get{0}WithHave(this {2} effEntity)
-    {{
+     public static bool Have{0}(this EffEntity effEntity)
+     {{
        var have = effEntity.HasComponent<{1}>();
-       if(have)
-           return (have,effEntity.GetComponent<{1}>());
-       else
-           return(have,default);
-    }}
+       return have;
+     }}  
     
     public static void Reactive{0}(this {2} effEntity)
     {{
