@@ -9,6 +9,16 @@
        var have = effEntity.HasComponent<{1}>();
        return have;
      }}  
+     
+      public static bool Get{0}WithHave(this {2} effEntity,out {1} data)
+      {{
+         var have = effEntity.HasComponent<{1}>();
+         if(have)
+              data =  effEntity.GetComponent<{1}>();
+         else
+              data = default;
+         return have;
+      }}   
     
     public static void Reactive{0}(this {2} effEntity)
     {{
