@@ -10,7 +10,7 @@
        return have;
      }}  
      
-      public static bool Get{0}WithHave(this {2} effEntity,out {1} data)
+      public static bool Get{0}(this {2} effEntity,out {1} data)
       {{
          var have = effEntity.HasComponent<{1}>();
          if(have)
