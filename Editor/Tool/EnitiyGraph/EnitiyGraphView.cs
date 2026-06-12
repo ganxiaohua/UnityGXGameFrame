@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System;
 using GameFrame.Runtime;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
@@ -9,11 +10,17 @@ namespace GameFrame.Editor
 {
     public class EntityGraphView : EditorEntity
     {
+        private static readonly Color EntityColor = new Color(0.36f, 0.40f, 0.46f, 1f);
+        private static readonly Color EffEntityColor = new Color(0.00f, 0.74f, 0.92f, 1f);
+        private static readonly Color WorldColor = new Color(1.00f, 0.72f, 0.22f, 1f);
+
         private GeneralGraphView generalGraphView;
 
         private EntityInfos entityInfos;
 
         private EditorWindow editorWindow;
+
+        private VisualElement graphContainer;
 
         private DoubleMap<Node, EntityNode> nodeDic;
 
@@ -27,11 +34,17 @@ namespace GameFrame.Editor
 
         public void Init(EditorWindow editorWindow)
         {
+            Init(editorWindow, editorWindow.rootVisualElement);
+        }
+
+        public void Init(EditorWindow editorWindow, VisualElement graphContainer)
+        {
             base.Init(editorWindow);
-            flootHeght = 200;
-            flootWidth = 200;
+            flootHeght = 118;
+            flootWidth = 280;
             nodeDic = new();
             this.editorWindow = editorWindow;
+            this.graphContainer = graphContainer ?? editorWindow.rootVisualElement;
             EditorApplication.playModeStateChanged += PlayModeStateChange;
         }
 
@@ -42,7 +55,7 @@ namespace GameFrame.Editor
             {
                 generalGraphView = new GeneralGraphView();
                 generalGraphView.Init();
-                editorWindow.rootVisualElement.Add(generalGraphView);
+                graphContainer.Add(generalGraphView);
             }
 
             generalGraphView.Show();
@@ -52,11 +65,14 @@ namespace GameFrame.Editor
         public override void Hide()
         {
             base.Hide();
-            generalGraphView.Hide();
+            generalGraphView?.Hide();
         }
 
         public override void Update()
         {
+            if (generalGraphView == null)
+                return;
+
             // if ((m_CurUpdateTime += Time.deltaTime) >= 0.5f)
             // {
             //     m_CurUpdateTime = 0;
@@ -72,10 +88,13 @@ namespace GameFrame.Editor
 
         public override void Dispose()
         {
-            if (generalGraphView == null) return;
-            editorWindow.rootVisualElement.Remove(generalGraphView);
-            RemoveAll();
-            generalGraphView = null;
+            if (generalGraphView != null)
+            {
+                graphContainer?.Remove(generalGraphView);
+                RemoveAll();
+                generalGraphView = null;
+            }
+
             EditorApplication.playModeStateChanged -= PlayModeStateChange;
             ComponentView.Destroy();
             CapabilityView.Destroy();
@@ -85,6 +104,9 @@ namespace GameFrame.Editor
 
         private void RemoveAll()
         {
+            if (generalGraphView == null || nodeDic == null)
+                return;
+
             generalGraphView.DeleteAllNode();
             nodeDic.Clear();
         }
@@ -126,7 +148,7 @@ namespace GameFrame.Editor
                     }
                 }
 
-                generalGraphView.RemoveElement(entityNode.GraphNode);
+                generalGraphView.RemoveNode(entityNode.GraphNode);
                 entityNode.GraphNode.Clear();
                 nodeDic.RemoveByKey(node);
             }
@@ -154,20 +176,15 @@ namespace GameFrame.Editor
             }
 
             var graphNode = generalGraphView.AddNode<GeneralGrophNode>();
-            var graphNodeName = string.IsNullOrEmpty(root.Entity.Name)
-                    ? root.Entity.GetType().Name
-                    : $"{root.Entity.GetType().Name} ({root.Entity.Name})";
+            var graphNodeName = GetGraphNodeName(root);
             nodeDic.Add(graphNode, root);
-            graphNode.Init(this, root, graphNodeName,
-                    new Rect(root.Floor * (flootHeght + 50), flootHeght + root.Grid * 100, Encoding.UTF8.GetByteCount(graphNodeName), 100));
-            graphNode.AddButton("关注", FollowNode);
-            graphNode.AddButton("删除", RemoveNode);
-            var outPort = graphNode.AddProt("", typeof(bool), Direction.Output);
+            graphNode.Init(this, root, graphNodeName, GetNodeRect(root, graphNodeName));
+            AddNodeActions(graphNode, root);
+            _ = graphNode.AddProt("", typeof(bool), Direction.Output);
             root.GraphNode = graphNode;
             graphNode.RefreshExpandedState();
             graphNode.RefreshPorts();
-            nodeDic.Add(graphNode, root);
-            graphNode.SetColor(root.Entity is EffEntity ? new Color(0.5f, 0.2f, 0.1f) : Color.gray);
+            graphNode.SetColor(GetNodeColor(root));
         }
 
         private void CreateEntityNode(EntityNode parentNode)
@@ -178,15 +195,21 @@ namespace GameFrame.Editor
                 if (nodeDic.ContainsValue(childNode))
                 {
                     if (parentNode.GraphNode == null)
-                        CreateGraphNode(parentNode);
-                    var port = (Port) childNode.GraphNode.outputContainer.hierarchy[0];
-                    if (!port.connected)
+                    {
+                        var parentPorts = CreateGraphNode(parentNode);
+                        parentPorts.node.SetColor(GetNodeColor(parentNode));
+                        if (!nodeDic.ContainsValue(parentNode))
+                            nodeDic.Add(parentPorts.node, parentNode);
+                    }
+
+                    var port = childNode.GraphNode?.InPort;
+                    if (port != null && !port.connected)
                         generalGraphView.AddEdgeByPorts(parentNode.GraphNode.OutPort, port, PickingMode.Ignore);
                     CreateEntityNode(childNode);
                     continue;
                 }
 
-                Rect localRect = new Rect(childNode.Floor * (flootHeght + 50), flootHeght + childNode.Grid * 100, flootWidth - 100, 100);
+                Rect localRect = GetNodeRect(childNode, GetGraphNodeName(childNode));
                 Rect graphViewRect = generalGraphView.viewport.worldBound;
                 float scale = generalGraphView.contentViewContainer.transform.scale.x;
                 Rect worldBound = generalGraphView.contentViewContainer.worldBound;
@@ -206,7 +229,7 @@ namespace GameFrame.Editor
             var nodesPort = CreateGraphNode(childNode);
             if (parentNode.GraphNode != null)
                 generalGraphView.AddEdgeByPorts(parentNode.GraphNode.OutPort, nodesPort.inPort, PickingMode.Ignore);
-            nodesPort.node.SetColor(childNode.Entity is EffEntity ? new Color(0.5f, 0.2f, 0.1f) : Color.gray);
+            nodesPort.node.SetColor(GetNodeColor(childNode));
             nodeDic.Add(nodesPort.node, childNode);
             CreateEntityNode(childNode);
         }
@@ -214,29 +237,52 @@ namespace GameFrame.Editor
         private (GeneralGrophNode node, Port inPort) CreateGraphNode(EntityNode node)
         {
             var graphNode = generalGraphView.AddNode<GeneralGrophNode>();
-            var graphNodeName = string.IsNullOrEmpty(node.Entity.Name)
-                    ? node.Entity.GetType().Name
-                    : $"{node.Entity.GetType().Name} ({node.Entity.Name})";
-            Rect localRect = new Rect(node.Floor * (flootHeght + 50), flootHeght + node.Grid * 100, Encoding.UTF8.GetByteCount(graphNodeName), 100);
+            var graphNodeName = GetGraphNodeName(node);
+            Rect localRect = GetNodeRect(node, graphNodeName);
             graphNode.Init(this, node, graphNodeName, localRect);
-            graphNode.AddButton("关注", FollowNode);
-            graphNode.AddButton("删除", RemoveNode);
-            graphNode.AddButton("组件", (x) => { ShowComponent(node); });
-            if (node.Entity is EffEntity effEntity)
-            {
-                if (effEntity.world is ECCWorld)
-                {
-                    graphNode.AddButton("能力", (x) => { ShowCapability(node); });
-                }
-            }
+            AddNodeActions(graphNode, node);
 
             var inPort = graphNode.AddProt("", typeof(bool), Direction.Input);
             _ = graphNode.AddProt("", typeof(bool), Direction.Output);
             node.GraphNode = graphNode;
             graphNode.RefreshExpandedState();
             graphNode.RefreshPorts();
-            generalGraphView.AddElement(graphNode);
             return (graphNode, inPort);
+        }
+
+        private void AddNodeActions(GeneralGrophNode graphNode, EntityNode node)
+        {
+            graphNode.AddButton("关注", FollowNode);
+            graphNode.AddButton("删除", RemoveNode);
+            graphNode.AddButton("组件", (x) => { ShowComponent(node); });
+            if (node.Entity is EffEntity effEntity && effEntity.world is ECCWorld)
+            {
+                graphNode.AddButton("能力", (x) => { ShowCapability(node); });
+            }
+        }
+
+        private string GetGraphNodeName(EntityNode node)
+        {
+            if (node?.Entity == null)
+                return "Unknown Entity";
+
+            return string.IsNullOrEmpty(node.Entity.Name)
+                    ? node.Entity.GetType().Name
+                    : $"{node.Entity.GetType().Name} ({node.Entity.Name})";
+        }
+
+        private Rect GetNodeRect(EntityNode node, string graphNodeName)
+        {
+            float width = Mathf.Clamp(graphNodeName.Length * 8f + 120f, 220f, 360f);
+            return new Rect(node.Floor * flootWidth, 120f + node.Grid * flootHeght, width, 112f);
+        }
+
+        private Color GetNodeColor(EntityNode node)
+        {
+            if (node?.Entity is World)
+                return WorldColor;
+
+            return node?.Entity is EffEntity ? EffEntityColor : EntityColor;
         }
 
         private void RemoveBeyondEntityNode()
@@ -270,7 +316,7 @@ namespace GameFrame.Editor
 
         public void ShowCapability(EntityNode selectEntityNode)
         {
-            if (selectEntityNode.Entity is EffEntity ecs)
+            if (selectEntityNode.Entity is EffEntity ecs && ecs.world is ECCWorld)
             {
                 CapabilityView.Init(ecs);
             }
@@ -278,44 +324,66 @@ namespace GameFrame.Editor
 
         private void PlayModeStateChange(PlayModeStateChange playModeStateChange)
         {
-            nodeDic.Clear();
+            nodeDic?.Clear();
             entityInfos = null;
         }
 
-        public void FindNodeComp(string name)
+        public bool FindNodeComp(string name)
         {
-            if (entityInfos == null) return;
-            FindNode(entityInfos.RootNode, name, true);
+            if (entityInfos == null || string.IsNullOrWhiteSpace(name))
+                return false;
+
+            return FindNode(entityInfos.RootNode, name.Trim(), true);
         }
 
-        public void FindNodecapability(string name)
+        public bool FindNodecapability(string name)
         {
-            if (entityInfos == null) return;
-            FindNode(entityInfos.RootNode, name, false);
+            if (entityInfos == null || string.IsNullOrWhiteSpace(name))
+                return false;
+
+            return FindNode(entityInfos.RootNode, name.Trim(), false);
         }
 
-        private void FindNode(EntityNode node, string name, bool isComp)
+        private bool FindNode(EntityNode node, string name, bool isComp)
         {
-            if (string.Equals(node.Entity.Name, name, System.StringComparison.OrdinalIgnoreCase))
+            if (node?.Entity == null)
+                return false;
+
+            if (IsNodeMatch(node, name))
             {
                 if (isComp)
+                {
                     ShowComponent(node);
-                else
+                    return true;
+                }
+
+                if (node.Entity is EffEntity effEntity && effEntity.world is ECCWorld)
                 {
                     ShowCapability(node);
+                    return true;
                 }
+
+                return false;
             }
-            else if (node.NextNodes == null || node.NextNodes.Count == 0)
+
+            if (node.NextNodes == null || node.NextNodes.Count == 0)
+                return false;
+
+            foreach (var nextNode in node.NextNodes)
             {
-                return;
+                if (FindNode(nextNode, name, isComp))
+                    return true;
             }
-            else
-            {
-                foreach (var nextNode in node.NextNodes)
-                {
-                    FindNode(nextNode, name,isComp);
-                }
-            }
+
+            return false;
+        }
+
+        private bool IsNodeMatch(EntityNode node, string name)
+        {
+            string entityName = node.Entity.Name ?? string.Empty;
+            string typeName = node.Entity.GetType().Name;
+            return entityName.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                   typeName.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0;
         }
     }
 }
