@@ -22,13 +22,16 @@ namespace GameFrame.Editor
         private const float TrackHeight = 16f;
         private const float RulerHeight = 22f;
         private const float SectionHeaderHeight = 30f;
+        private const float ToolbarHeight = 36f;
         private const float ContentPadding = 12f;
         private const int GridStep = 50;
+        private const string FocusedCapabilityEditorPrefsPrefix = "GameFrame.Editor.CapabilityView.Focused.";
 
         private static readonly Color UnknownColor = new Color(0.18f, 0.20f, 0.23f, 1f);
         private static readonly Color IdleColor = new Color(0.36f, 0.40f, 0.46f, 1f);
         private static readonly Color ActiveColor = new Color(0.00f, 0.74f, 0.92f, 1f);
         private static readonly Color LockedColor = new Color(1.00f, 0.72f, 0.22f, 1f);
+        private static readonly Color DimAccentColor = new Color(0.38f, 0.41f, 0.46f, 1f);
         private static readonly Color[] StateColor = {UnknownColor, IdleColor, ActiveColor, LockedColor};
 
         private static readonly Color DarkBackground = new Color(0.105f, 0.115f, 0.13f, 1f);
@@ -37,6 +40,12 @@ namespace GameFrame.Editor
         private static readonly Color LightPanel = new Color(0.90f, 0.91f, 0.93f, 1f);
         private static readonly Color DarkTrack = new Color(0.075f, 0.085f, 0.10f, 1f);
         private static readonly Color LightTrack = new Color(0.68f, 0.70f, 0.74f, 1f);
+        private static readonly Color DarkFocusedRow = new Color(0.12f, 0.20f, 0.24f, 1f);
+        private static readonly Color LightFocusedRow = new Color(0.82f, 0.94f, 0.98f, 1f);
+        private static readonly Color DarkDimmedRow = new Color(0.08f, 0.09f, 0.105f, 1f);
+        private static readonly Color LightDimmedRow = new Color(0.76f, 0.77f, 0.79f, 1f);
+        private static readonly Color DarkDimmedTrack = new Color(0.12f, 0.13f, 0.15f, 1f);
+        private static readonly Color LightDimmedTrack = new Color(0.58f, 0.59f, 0.62f, 1f);
         private static readonly Color GridColor = new Color(1f, 1f, 1f, 0.07f);
 
         private static CapabilityView sWindow;
@@ -49,6 +58,7 @@ namespace GameFrame.Editor
         private ArrayExSimilar[] fixUpdateMode;
         private int tailFrame;
         private int headFrame;
+        private bool isShowFocusedOnly;
         private Vector2 scrollPosition = Vector2.zero;
 
         private GUIStyle headerTitleStyle;
@@ -56,14 +66,20 @@ namespace GameFrame.Editor
         private GUIStyle sectionStyle;
         private GUIStyle labelStyle;
         private GUIStyle mutedLabelStyle;
+        private GUIStyle dimmedLabelStyle;
+        private GUIStyle focusButtonStyle;
         private GUIStyle pillStyle;
         private GUIStyle centerStyle;
 
         private static Color BackgroundColor => EditorGUIUtility.isProSkin ? DarkBackground : LightBackground;
         private static Color PanelColor => EditorGUIUtility.isProSkin ? DarkPanel : LightPanel;
         private static Color TrackColor => EditorGUIUtility.isProSkin ? DarkTrack : LightTrack;
+        private static Color FocusedRowColor => EditorGUIUtility.isProSkin ? DarkFocusedRow : LightFocusedRow;
+        private static Color DimmedRowColor => EditorGUIUtility.isProSkin ? DarkDimmedRow : LightDimmedRow;
+        private static Color DimmedTrackColor => EditorGUIUtility.isProSkin ? DarkDimmedTrack : LightDimmedTrack;
         private static Color PrimaryText => EditorGUIUtility.isProSkin ? new Color(0.91f, 0.93f, 0.96f, 1f) : new Color(0.12f, 0.13f, 0.15f, 1f);
         private static Color SecondaryText => EditorGUIUtility.isProSkin ? new Color(0.62f, 0.67f, 0.72f, 1f) : new Color(0.34f, 0.36f, 0.40f, 1f);
+        private static Color DimmedText => EditorGUIUtility.isProSkin ? new Color(0.42f, 0.45f, 0.50f, 1f) : new Color(0.50f, 0.52f, 0.56f, 1f);
 
         public static void Init(EffEntity effEntity)
         {
@@ -79,6 +95,7 @@ namespace GameFrame.Editor
         {
             tailFrame = 0;
             headFrame = 0;
+            isShowFocusedOnly = false;
             scrollPosition = Vector2.zero;
             capabilityBaseUpdateMode.Clear();
             capabilityBaseFixUpdateMode.Clear();
@@ -118,6 +135,8 @@ namespace GameFrame.Editor
 
             DrawHeader();
             GUILayout.Space(8f);
+            DrawToolbar();
+            GUILayout.Space(6f);
 
             scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition, false, true);
             GUILayout.Space(4f);
@@ -159,7 +178,36 @@ namespace GameFrame.Editor
             float x = 0f;
             x = DrawLegendItem(legendRect, x, "Active", ActiveColor);
             x = DrawLegendItem(legendRect, x + 18f, "Idle", IdleColor);
-            DrawLegendItem(legendRect, x + 18f, "Locked", LockedColor);
+            x = DrawLegendItem(legendRect, x + 18f, "Locked", LockedColor);
+            DrawLegendItem(legendRect, x + 18f, $"Focused {CountFocusedRows()}", CountFocusedRows() > 0 ? LockedColor : DimAccentColor);
+        }
+
+        private void DrawToolbar()
+        {
+            int totalCount = capabilityBaseUpdateMode.Count + capabilityBaseFixUpdateMode.Count;
+            int focusedCount = CountFocusedRows();
+            Rect rect = GUILayoutUtility.GetRect(0f, ToolbarHeight, GUILayout.ExpandWidth(true));
+            EditorGUI.DrawRect(rect, PanelColor);
+            EditorGUI.DrawRect(new Rect(rect.x, rect.yMax - 1f, rect.width, 1f), new Color(1f, 1f, 1f, 0.08f));
+
+            GUI.Label(new Rect(rect.x + 14f, rect.y + 8f, Mathf.Max(180f, rect.width - 292f), 20f),
+                $"Runtime capabilities: {totalCount}   Focused: {focusedCount}", sectionStyle);
+
+            Rect clearFocusRect = new Rect(rect.xMax - 276f, rect.y + 5f, 126f, 25f);
+            EditorGUI.BeginDisabledGroup(focusedCount == 0);
+            if (GUI.Button(clearFocusRect, "Clear Focus"))
+            {
+                ClearFocusedCapabilities();
+                GUIUtility.ExitGUI();
+            }
+
+            EditorGUI.EndDisabledGroup();
+
+            Rect focusRect = new Rect(rect.xMax - 142f, rect.y + 5f, 128f, 25f);
+            if (GUI.Button(focusRect, isShowFocusedOnly ? "Show All" : "Only Focused"))
+            {
+                isShowFocusedOnly = !isShowFocusedOnly;
+            }
         }
 
         private void DrawStatusPill(Rect rect)
@@ -183,29 +231,48 @@ namespace GameFrame.Editor
 
         private void DrawSection(string title, string subtitle, List<CapabilityBase> capabilities, ArrayExSimilar[] timelines, Color accent)
         {
-            DrawSectionHeader(title, subtitle, capabilities.Count, accent);
+            var focused = new List<int>();
+            var normal = new List<int>();
+            CollectCapabilityIndices(capabilities, focused, normal);
+            int displayCount = isShowFocusedOnly ? focused.Count : capabilities.Count;
+
+            DrawSectionHeader(title, subtitle, displayCount, capabilities.Count, accent);
             DrawRuler();
 
-            if (capabilities.Count == 0)
+            if (displayCount == 0)
             {
-                DrawEmptyRow("No capabilities registered.");
+                DrawEmptyRow(capabilities.Count == 0 ? "No capabilities registered." : "No focused capabilities.");
                 return;
             }
 
-            for (int i = 0; i < capabilities.Count; i++)
-            {
-                string name = capabilities[i].GetType().Name;
-                ArrayExSimilar timeline = timelines != null && i < timelines.Length ? timelines[i] : null;
-                DrawTrack(name, timeline, i);
-            }
+            int rowIndex = 0;
+            rowIndex = DrawCapabilityGroup(capabilities, timelines, focused, rowIndex, focused.Count > 0);
+            if (!isShowFocusedOnly)
+                DrawCapabilityGroup(capabilities, timelines, normal, rowIndex, focused.Count > 0);
         }
 
-        private void DrawSectionHeader(string title, string subtitle, int count, Color accent)
+        private int DrawCapabilityGroup(List<CapabilityBase> capabilities, ArrayExSimilar[] timelines, List<int> indices, int rowIndex, bool hasFocusedRows)
+        {
+            for (int i = 0; i < indices.Count; i++)
+            {
+                int capabilityIndex = indices[i];
+                string name = capabilities[capabilityIndex].GetType().Name;
+                bool focused = IsCapabilityFocused(capabilities[capabilityIndex]);
+                ArrayExSimilar timeline = timelines != null && capabilityIndex < timelines.Length ? timelines[capabilityIndex] : null;
+                DrawTrack(name, timeline, rowIndex, capabilities[capabilityIndex], focused, hasFocusedRows && !focused);
+                rowIndex++;
+            }
+
+            return rowIndex;
+        }
+
+        private void DrawSectionHeader(string title, string subtitle, int displayCount, int totalCount, Color accent)
         {
             Rect rect = GUILayoutUtility.GetRect(0f, SectionHeaderHeight, GUILayout.ExpandWidth(true));
             EditorGUI.DrawRect(rect, PanelColor);
             EditorGUI.DrawRect(new Rect(rect.x, rect.y, 4f, rect.height), accent);
-            GUI.Label(new Rect(rect.x + 12f, rect.y + 4f, LabelWidth, 20f), $"{title}  ({count})", sectionStyle);
+            string countText = displayCount == totalCount ? $"{title}  ({totalCount})" : $"{title}  ({displayCount}/{totalCount})";
+            GUI.Label(new Rect(rect.x + 12f, rect.y + 4f, LabelWidth, 20f), countText, sectionStyle);
             GUI.Label(new Rect(rect.x + LabelWidth, rect.y + 5f, rect.width - LabelWidth - 12f, 18f), subtitle, mutedLabelStyle);
         }
 
@@ -231,18 +298,36 @@ namespace GameFrame.Editor
             }
         }
 
-        private void DrawTrack(string name, ArrayExSimilar timeline, int rowIndex)
+        private void DrawTrack(string name, ArrayExSimilar timeline, int rowIndex, CapabilityBase capability, bool focused, bool dimmed)
         {
             Rect rowRect = GUILayoutUtility.GetRect(LabelWidth + 260f, RowHeight, GUILayout.ExpandWidth(true));
-            if (rowIndex % 2 == 1)
+            if (focused)
+                EditorGUI.DrawRect(rowRect, FocusedRowColor);
+            else if (dimmed)
+                EditorGUI.DrawRect(rowRect, DimmedRowColor);
+            else if (rowIndex % 2 == 1)
                 EditorGUI.DrawRect(rowRect, new Color(1f, 1f, 1f, EditorGUIUtility.isProSkin ? 0.018f : 0.12f));
 
-            Rect labelRect = new Rect(rowRect.x + ContentPadding, rowRect.y + 3f, LabelWidth - ContentPadding * 1.5f, RowHeight - 6f);
+            Color accent = focused ? LockedColor : dimmed ? DimAccentColor : ActiveColor;
+            EditorGUI.DrawRect(new Rect(rowRect.x, rowRect.y, 3f, rowRect.height), accent);
+
+            Rect labelRect = new Rect(rowRect.x + ContentPadding, rowRect.y + 3f, LabelWidth - ContentPadding * 1.5f - 74f, RowHeight - 6f);
+            Rect focusRect = new Rect(rowRect.x + LabelWidth - 72f, rowRect.y + 4f, 64f, RowHeight - 8f);
             Rect timelineRect = GetTimelineRect(rowRect);
             Rect trackRect = new Rect(timelineRect.x, rowRect.y + (RowHeight - TrackHeight) * 0.5f, timelineRect.width, TrackHeight);
 
-            GUI.Label(labelRect, name, labelStyle);
-            EditorGUI.DrawRect(trackRect, TrackColor);
+            GUI.Label(labelRect, name, dimmed ? dimmedLabelStyle : labelStyle);
+            Color previousBackground = GUI.backgroundColor;
+            GUI.backgroundColor = focused ? new Color(LockedColor.r, LockedColor.g, LockedColor.b, 0.9f) : previousBackground;
+            if (GUI.Button(focusRect, focused ? "Focused" : "Focus", focusButtonStyle))
+            {
+                SetCapabilityFocused(capability, !focused);
+                GUIUtility.ExitGUI();
+            }
+
+            GUI.backgroundColor = previousBackground;
+
+            EditorGUI.DrawRect(trackRect, dimmed ? DimmedTrackColor : TrackColor);
             DrawTimelineGrid(trackRect);
 
             if (timeline == null)
@@ -264,7 +349,7 @@ namespace GameFrame.Editor
             {
                 var data = datas[i];
                 float width = Mathf.Max(1f, data.Count * scale);
-                Color color = GetStateColor(data.State);
+                Color color = dimmed ? DimAccentColor : GetStateColor(data.State);
                 Rect segmentRect = new Rect(trackRect.x + offsetX, trackRect.y, Mathf.Min(width, trackRect.width - offsetX), trackRect.height);
                 if (segmentRect.width <= 0f)
                     break;
@@ -302,6 +387,70 @@ namespace GameFrame.Editor
             Rect rect = GUILayoutUtility.GetRect(0f, 36f, GUILayout.ExpandWidth(true));
             GUI.Label(rect, text, centerStyle);
             GUILayout.FlexibleSpace();
+        }
+
+        private void CollectCapabilityIndices(List<CapabilityBase> capabilities, List<int> focused, List<int> normal)
+        {
+            focused.Clear();
+            normal.Clear();
+            for (int i = 0; i < capabilities.Count; i++)
+            {
+                if (IsCapabilityFocused(capabilities[i]))
+                    focused.Add(i);
+                else
+                    normal.Add(i);
+            }
+        }
+
+        private int CountFocusedRows()
+        {
+            return CountFocusedRows(capabilityBaseUpdateMode) + CountFocusedRows(capabilityBaseFixUpdateMode);
+        }
+
+        private int CountFocusedRows(List<CapabilityBase> capabilities)
+        {
+            int count = 0;
+            for (int i = 0; i < capabilities.Count; i++)
+            {
+                if (IsCapabilityFocused(capabilities[i]))
+                    count++;
+            }
+
+            return count;
+        }
+
+        private void ClearFocusedCapabilities()
+        {
+            ClearFocusedCapabilities(capabilityBaseUpdateMode);
+            ClearFocusedCapabilities(capabilityBaseFixUpdateMode);
+            isShowFocusedOnly = false;
+        }
+
+        private void ClearFocusedCapabilities(List<CapabilityBase> capabilities)
+        {
+            for (int i = 0; i < capabilities.Count; i++)
+            {
+                SetCapabilityFocused(capabilities[i], false);
+            }
+        }
+
+        private static bool IsCapabilityFocused(CapabilityBase capability)
+        {
+            return capability != null && EditorPrefs.GetBool(GetCapabilityFocusKey(capability), false);
+        }
+
+        private static void SetCapabilityFocused(CapabilityBase capability, bool focused)
+        {
+            if (capability == null)
+                return;
+
+            EditorPrefs.SetBool(GetCapabilityFocusKey(capability), focused);
+        }
+
+        private static string GetCapabilityFocusKey(CapabilityBase capability)
+        {
+            var type = capability.GetType();
+            return $"{FocusedCapabilityEditorPrefsPrefix}{type.FullName ?? type.Name}";
         }
 
         private Rect GetTimelineRect(Rect rowRect)
@@ -357,6 +506,20 @@ namespace GameFrame.Editor
                 clipping = TextClipping.Clip
             };
             mutedLabelStyle.normal.textColor = SecondaryText;
+
+            dimmedLabelStyle = new GUIStyle(labelStyle)
+            {
+                alignment = TextAnchor.MiddleLeft,
+                clipping = TextClipping.Clip
+            };
+            dimmedLabelStyle.normal.textColor = DimmedText;
+
+            focusButtonStyle = new GUIStyle(GUI.skin.button)
+            {
+                fontStyle = FontStyle.Bold,
+                fontSize = 10
+            };
+            focusButtonStyle.normal.textColor = PrimaryText;
 
             pillStyle = new GUIStyle(EditorStyles.miniBoldLabel)
             {

@@ -55,16 +55,22 @@ namespace GameFrame.Editor
         private const float ToolbarHeight = 36f;
         private const float ComponentHeaderHeight = 34f;
         private const float ContentPadding = 12f;
+        private const string FocusedComponentEditorPrefsPrefix = "GameFrame.Editor.ComponentView.Focused.";
 
         private static readonly Color AccentColor = new Color(0.00f, 0.74f, 0.92f, 1f);
         private static readonly Color DangerColor = new Color(1.00f, 0.35f, 0.28f, 1f);
         private static readonly Color CapabilityColor = new Color(1.00f, 0.72f, 0.22f, 1f);
+        private static readonly Color DimAccentColor = new Color(0.38f, 0.41f, 0.46f, 1f);
         private static readonly Color DarkBackground = new Color(0.105f, 0.115f, 0.13f, 1f);
         private static readonly Color LightBackground = new Color(0.78f, 0.80f, 0.84f, 1f);
         private static readonly Color DarkPanel = new Color(0.145f, 0.16f, 0.185f, 1f);
         private static readonly Color LightPanel = new Color(0.90f, 0.91f, 0.93f, 1f);
         private static readonly Color DarkCard = new Color(0.12f, 0.135f, 0.16f, 1f);
         private static readonly Color LightCard = new Color(0.94f, 0.95f, 0.97f, 1f);
+        private static readonly Color DarkFocusedCard = new Color(0.12f, 0.20f, 0.24f, 1f);
+        private static readonly Color LightFocusedCard = new Color(0.82f, 0.94f, 0.98f, 1f);
+        private static readonly Color DarkDimmedCard = new Color(0.09f, 0.10f, 0.115f, 1f);
+        private static readonly Color LightDimmedCard = new Color(0.78f, 0.79f, 0.81f, 1f);
 
         private static ComponentView sWindow;
 
@@ -72,6 +78,7 @@ namespace GameFrame.Editor
 
         private EffEntity effEntity;
         private bool isShowAllEcsComponents;
+        private bool isShowFocusedOnly;
         private readonly Dictionary<int, PropertyTree> ecsComponentsTree = new();
         private Vector2 scrollPosition;
         private Vector2 addScrollPosition;
@@ -82,15 +89,21 @@ namespace GameFrame.Editor
         private GUIStyle sectionStyle;
         private GUIStyle componentTitleStyle;
         private GUIStyle mutedLabelStyle;
+        private GUIStyle dimmedTitleStyle;
+        private GUIStyle dimmedMutedLabelStyle;
         private GUIStyle pillStyle;
         private GUIStyle centeredStyle;
         private GUIStyle removeButtonStyle;
+        private GUIStyle focusButtonStyle;
 
         private static Color BackgroundColor => EditorGUIUtility.isProSkin ? DarkBackground : LightBackground;
         private static Color PanelColor => EditorGUIUtility.isProSkin ? DarkPanel : LightPanel;
         private static Color CardColor => EditorGUIUtility.isProSkin ? DarkCard : LightCard;
+        private static Color FocusedCardColor => EditorGUIUtility.isProSkin ? DarkFocusedCard : LightFocusedCard;
+        private static Color DimmedCardColor => EditorGUIUtility.isProSkin ? DarkDimmedCard : LightDimmedCard;
         private static Color PrimaryText => EditorGUIUtility.isProSkin ? new Color(0.91f, 0.93f, 0.96f, 1f) : new Color(0.12f, 0.13f, 0.15f, 1f);
         private static Color SecondaryText => EditorGUIUtility.isProSkin ? new Color(0.62f, 0.67f, 0.72f, 1f) : new Color(0.34f, 0.36f, 0.40f, 1f);
+        private static Color DimmedText => EditorGUIUtility.isProSkin ? new Color(0.42f, 0.45f, 0.50f, 1f) : new Color(0.50f, 0.52f, 0.56f, 1f);
 
         public static void Init(EffEntity effEntity)
         {
@@ -101,6 +114,7 @@ namespace GameFrame.Editor
             sWindow.addScrollPosition = Vector2.zero;
             sWindow.componentSearch = string.Empty;
             sWindow.isShowAllEcsComponents = false;
+            sWindow.isShowFocusedOnly = false;
             sWindow.ClearPropertyTrees();
             sWindow.BuildComponentOptions();
         }
@@ -129,9 +143,11 @@ namespace GameFrame.Editor
             }
 
             int componentCount = CountVisibleComponents();
-            DrawHeader(componentCount);
+            int focusedComponentCount = CountFocusedComponents();
+            int displayComponentCount = isShowFocusedOnly ? focusedComponentCount : componentCount;
+            DrawHeader(componentCount, focusedComponentCount);
             GUILayout.Space(8f);
-            DrawToolbar(componentCount);
+            DrawToolbar(componentCount, focusedComponentCount);
             GUILayout.Space(6f);
 
             if (isShowAllEcsComponents)
@@ -141,35 +157,48 @@ namespace GameFrame.Editor
             }
 
             scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition, false, true);
-            if (componentCount == 0)
+            if (displayComponentCount == 0)
             {
-                DrawEmptyState();
+                DrawEmptyState(componentCount > 0 && isShowFocusedOnly);
             }
             else
             {
-                DrawComponents();
+                DrawComponents(focusedComponentCount);
             }
 
             GUILayout.Space(8f);
             EditorGUILayout.EndScrollView();
         }
 
-        private unsafe void DrawComponents()
+        private unsafe void DrawComponents(int focusedComponentCount)
         {
-            for (var i = effEntity.world.MaxComponentCount - 1; i >= 0; i--)
+            var focused = new List<int>();
+            var normal = new List<int>();
+            CollectVisibleComponentIds(focused, normal);
+
+            DrawComponentGroup(focused, focusedComponentCount);
+            if (!isShowFocusedOnly)
+                DrawComponentGroup(normal, focusedComponentCount);
+        }
+
+        private unsafe void DrawComponentGroup(List<int> componentIds, int focusedComponentCount)
+        {
+            for (int i = 0; i < componentIds.Count; i++)
             {
-                if (!TryGetVisibleComponentType(i, out Type componentType))
+                int cid = componentIds[i];
+                if (!TryGetVisibleComponentType(cid, out Type componentType))
                     continue;
 
-                byte* dataPtr = effEntity.world.GetCompBytes(effEntity.ID, i);
+                byte* dataPtr = effEntity.world.GetCompBytes(effEntity.ID, cid);
                 object ecsComponent = Marshal.PtrToStructure(new IntPtr(dataPtr), componentType);
                 object ecsComponentExternal = InvokeGetDataIfExists(ecsComponent);
-                DrawComponentCard(i, componentType, ecsComponentExternal ?? ecsComponent);
+                bool focused = IsComponentFocused(componentType);
+                DrawComponentCard(cid, componentType, ecsComponentExternal ?? ecsComponent, focused, focusedComponentCount > 0 && !focused);
                 GUILayout.Space(5f);
             }
         }
 
-        private void DrawHeader(int componentCount)
+        private void DrawHeader(int componentCount, int focusedComponentCount)
         {
             Rect rect = GUILayoutUtility.GetRect(0f, HeaderHeight, GUILayout.ExpandWidth(true));
             EditorGUI.DrawRect(rect, PanelColor);
@@ -182,15 +211,32 @@ namespace GameFrame.Editor
 
             DrawPill(new Rect(rect.xMax - 132f, rect.y + 14f, 110f, 24f), $"{componentCount} Components", AccentColor);
             DrawPill(new Rect(rect.x + 16f, rect.y + 55f, 128f, 18f), "Capability hidden", CapabilityColor);
+            DrawPill(new Rect(rect.x + 152f, rect.y + 55f, 106f, 18f), $"{focusedComponentCount} Focused", focusedComponentCount > 0 ? CapabilityColor : DimAccentColor);
         }
 
-        private void DrawToolbar(int componentCount)
+        private void DrawToolbar(int componentCount, int focusedComponentCount)
         {
             Rect rect = GUILayoutUtility.GetRect(0f, ToolbarHeight, GUILayout.ExpandWidth(true));
             EditorGUI.DrawRect(rect, PanelColor);
             EditorGUI.DrawRect(new Rect(rect.x, rect.yMax - 1f, rect.width, 1f), new Color(1f, 1f, 1f, 0.08f));
 
-            GUI.Label(new Rect(rect.x + 14f, rect.y + 8f, 260f, 20f), $"Runtime ECS components: {componentCount}", sectionStyle);
+            GUI.Label(new Rect(rect.x + 14f, rect.y + 8f, Mathf.Max(180f, rect.width - 440f), 20f), $"Runtime ECS components: {componentCount}   Focused: {focusedComponentCount}", sectionStyle);
+
+            Rect clearFocusRect = new Rect(rect.xMax - 410f, rect.y + 5f, 126f, 25f);
+            EditorGUI.BeginDisabledGroup(focusedComponentCount == 0);
+            if (GUI.Button(clearFocusRect, "Clear Focus"))
+            {
+                ClearFocusedComponents();
+                GUIUtility.ExitGUI();
+            }
+
+            EditorGUI.EndDisabledGroup();
+
+            Rect focusRect = new Rect(rect.xMax - 276f, rect.y + 5f, 126f, 25f);
+            if (GUI.Button(focusRect, isShowFocusedOnly ? "Show All" : "Only Focused"))
+            {
+                isShowFocusedOnly = !isShowFocusedOnly;
+            }
 
             Rect addRect = new Rect(rect.xMax - 142f, rect.y + 5f, 128f, 25f);
             if (GUI.Button(addRect, isShowAllEcsComponents ? "Hide Add Panel" : "Add Component"))
@@ -199,26 +245,42 @@ namespace GameFrame.Editor
             }
         }
 
-        private void DrawComponentCard(int cid, Type componentType, object target)
+        private void DrawComponentCard(int cid, Type componentType, object target, bool focused, bool dimmed)
         {
             string key = $"Com_{cid}";
             bool expanded = EditorPrefs.GetBool(key, false);
+            Color accent = focused ? CapabilityColor : dimmed ? DimAccentColor : AccentColor;
+            Color cardColor = focused ? FocusedCardColor : dimmed ? DimmedCardColor : CardColor;
+            GUIStyle titleStyle = dimmed ? dimmedTitleStyle : componentTitleStyle;
+            GUIStyle namespaceStyle = dimmed ? dimmedMutedLabelStyle : mutedLabelStyle;
 
             Rect headerRect = GUILayoutUtility.GetRect(0f, ComponentHeaderHeight, GUILayout.ExpandWidth(true));
-            EditorGUI.DrawRect(headerRect, CardColor);
-            EditorGUI.DrawRect(new Rect(headerRect.x, headerRect.y, 4f, headerRect.height), AccentColor);
+            EditorGUI.DrawRect(headerRect, cardColor);
+            EditorGUI.DrawRect(new Rect(headerRect.x, headerRect.y, 4f, headerRect.height), accent);
             EditorGUI.DrawRect(new Rect(headerRect.x, headerRect.yMax - 1f, headerRect.width, 1f), new Color(1f, 1f, 1f, 0.07f));
 
             Rect foldoutRect = new Rect(headerRect.x + 12f, headerRect.y + 7f, 22f, 20f);
             expanded = EditorGUI.Foldout(foldoutRect, expanded, GUIContent.none, true);
 
-            Rect titleRect = new Rect(headerRect.x + 34f, headerRect.y + 4f, headerRect.width - 220f, 18f);
-            GUI.Label(titleRect, componentType.Name, componentTitleStyle);
+            float titleWidth = Mathf.Max(80f, headerRect.width - 288f);
+            Rect titleRect = new Rect(headerRect.x + 34f, headerRect.y + 4f, titleWidth, 18f);
+            GUI.Label(titleRect, componentType.Name, titleStyle);
 
-            Rect metaRect = new Rect(headerRect.x + 34f, headerRect.y + 19f, headerRect.width - 220f, 13f);
-            GUI.Label(metaRect, componentType.Namespace ?? "Global Namespace", mutedLabelStyle);
+            Rect metaRect = new Rect(headerRect.x + 34f, headerRect.y + 19f, titleWidth, 13f);
+            GUI.Label(metaRect, componentType.Namespace ?? "Global Namespace", namespaceStyle);
 
-            DrawPill(new Rect(headerRect.xMax - 148f, headerRect.y + 7f, 52f, 20f), $"CID {cid}", AccentColor);
+            Rect focusRect = new Rect(headerRect.xMax - 222f, headerRect.y + 6f, 68f, 22f);
+            Color previousBackground = GUI.backgroundColor;
+            GUI.backgroundColor = focused ? new Color(CapabilityColor.r, CapabilityColor.g, CapabilityColor.b, 0.9f) : previousBackground;
+            if (GUI.Button(focusRect, focused ? "Focused" : "Focus", focusButtonStyle))
+            {
+                SetComponentFocused(componentType, !focused);
+                GUIUtility.ExitGUI();
+            }
+
+            GUI.backgroundColor = previousBackground;
+
+            DrawPill(new Rect(headerRect.xMax - 148f, headerRect.y + 7f, 52f, 20f), $"CID {cid}", accent);
 
             Rect removeRect = new Rect(headerRect.xMax - 88f, headerRect.y + 6f, 72f, 22f);
             if (GUI.Button(removeRect, "Remove", removeButtonStyle))
@@ -254,11 +316,11 @@ namespace GameFrame.Editor
             GUI.Label(rect, text, pillStyle);
         }
 
-        private void DrawEmptyState()
+        private void DrawEmptyState(bool focusedFilterActive)
         {
             Rect rect = GUILayoutUtility.GetRect(0f, 64f, GUILayout.ExpandWidth(true));
             EditorGUI.DrawRect(rect, CardColor);
-            GUI.Label(rect, "No visible components on this entity.", centeredStyle);
+            GUI.Label(rect, focusedFilterActive ? "No focused components on this entity." : "No visible components on this entity.", centeredStyle);
         }
 
         private void DrawAddComponentPanel()
@@ -327,6 +389,22 @@ namespace GameFrame.Editor
             GUILayout.FlexibleSpace();
         }
 
+        private void CollectVisibleComponentIds(List<int> focused, List<int> normal)
+        {
+            focused.Clear();
+            normal.Clear();
+            for (var i = effEntity.world.MaxComponentCount - 1; i >= 0; i--)
+            {
+                if (!TryGetVisibleComponentType(i, out Type componentType))
+                    continue;
+
+                if (IsComponentFocused(componentType))
+                    focused.Add(i);
+                else
+                    normal.Add(i);
+            }
+        }
+
         private bool TryGetVisibleComponentType(int cid, out Type componentType)
         {
             componentType = null;
@@ -340,6 +418,29 @@ namespace GameFrame.Editor
             return effEntity.HasComponent(cid);
         }
 
+        private int CountFocusedComponents()
+        {
+            int count = 0;
+            for (int i = 0; i < effEntity.world.MaxComponentCount; i++)
+            {
+                if (TryGetVisibleComponentType(i, out Type componentType) && IsComponentFocused(componentType))
+                    count++;
+            }
+
+            return count;
+        }
+
+        private void ClearFocusedComponents()
+        {
+            for (int i = 0; i < effEntity.world.MaxComponentCount; i++)
+            {
+                if (TryGetVisibleComponentType(i, out Type componentType))
+                    SetComponentFocused(componentType, false);
+            }
+
+            isShowFocusedOnly = false;
+        }
+
         private int CountVisibleComponents()
         {
             int count = 0;
@@ -350,6 +451,24 @@ namespace GameFrame.Editor
             }
 
             return count;
+        }
+
+        private static bool IsComponentFocused(Type componentType)
+        {
+            return componentType != null && EditorPrefs.GetBool(GetComponentFocusKey(componentType), false);
+        }
+
+        private static void SetComponentFocused(Type componentType, bool focused)
+        {
+            if (componentType == null)
+                return;
+
+            EditorPrefs.SetBool(GetComponentFocusKey(componentType), focused);
+        }
+
+        private static string GetComponentFocusKey(Type componentType)
+        {
+            return $"{FocusedComponentEditorPrefsPrefix}{componentType.FullName ?? componentType.Name}";
         }
 
         protected override void OnImGUI()
@@ -462,6 +581,12 @@ namespace GameFrame.Editor
             };
             mutedLabelStyle.normal.textColor = SecondaryText;
 
+            dimmedTitleStyle = new GUIStyle(componentTitleStyle);
+            dimmedTitleStyle.normal.textColor = DimmedText;
+
+            dimmedMutedLabelStyle = new GUIStyle(mutedLabelStyle);
+            dimmedMutedLabelStyle.normal.textColor = DimmedText;
+
             pillStyle = new GUIStyle(EditorStyles.miniBoldLabel)
             {
                 alignment = TextAnchor.MiddleCenter
@@ -481,6 +606,13 @@ namespace GameFrame.Editor
             };
             removeButtonStyle.normal.textColor = DangerColor;
             removeButtonStyle.hover.textColor = Color.white;
+
+            focusButtonStyle = new GUIStyle(GUI.skin.button)
+            {
+                fontStyle = FontStyle.Bold,
+                fontSize = 10
+            };
+            focusButtonStyle.normal.textColor = PrimaryText;
         }
 
         public static void Destroy()
