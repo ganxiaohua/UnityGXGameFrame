@@ -16,6 +16,8 @@ namespace GameFrame.Runtime
 
         private EcsChangeEventState.ChangeEventState state = 0;
 
+        private World world;
+
 
         public static Collector CreateCollector(World world, EcsChangeEventState.ChangeEventState stateType, params int[] indexs)
         {
@@ -29,6 +31,7 @@ namespace GameFrame.Runtime
             Collector collector = ReferencePool.Acquire<Collector>();
             collector.state = stateType;
             collector.InitCollector(world.ChildsCount, groups);
+            collector.world = world;
             return collector;
         }
 

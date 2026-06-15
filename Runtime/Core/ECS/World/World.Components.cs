@@ -57,17 +57,19 @@ namespace GameFrame.Runtime
             for (int i = 0; i < count; i++)
             {
                 var structsize = structSizes[i];
+                long oldSize = structsize * componentsChildrenSize;
                 long size = structsize * Children.AllCount;
+                long appendSize = size - oldSize;
                 var compPtr = components[i];
 #if !Tracked
                 void* ptr = UnsafeUtility.Malloc(size, structAlign[i], Allocator.Persistent);
-                UnsafeUtility.MemClear(ptr, size);
-                UnsafeUtility.MemCpy(ptr, compPtr, structsize * componentsChildrenSize);
+                UnsafeUtility.MemCpy(ptr, compPtr, oldSize);
+                UnsafeUtility.MemClear((byte*) ptr + oldSize, appendSize);
                 UnsafeUtility.Free(compPtr, Allocator.Persistent);
 #else
                 void* ptr = UnsafeUtility.MallocTracked(size, structAlign[i], Allocator.Persistent, ConstTrackEdId.Components);
-                UnsafeUtility.MemClear(ptr, size);
-                UnsafeUtility.MemCpy(ptr, compPtr, structsize * componentsChildrenSize);
+                UnsafeUtility.MemCpy(ptr, compPtr, oldSize);
+                UnsafeUtility.MemClear((byte*)ptr + oldSize, appendSize);
                 UnsafeUtility.FreeTracked(compPtr, Allocator.Persistent);
 #endif
                 components[i] = ptr;
@@ -100,6 +102,12 @@ namespace GameFrame.Runtime
             var ptr = (byte*) components[id];
             ptr += structSizes[id] * entityIndex;
             return ptr;
+        }
+
+        public unsafe T* GetComponentColumnPtr<T>() where T : unmanaged, EffComponent
+        {
+            int cid = ComponentsID<T>.TID;
+            return (T*) components[cid];
         }
 
         public void ClearComp(int entityIndex, int id)
