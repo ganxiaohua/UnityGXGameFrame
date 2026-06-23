@@ -62,7 +62,6 @@ namespace GameFrame.Runtime
 
         public GameObject BindingTarget => bindedGameObject?.Obj;
 
-        private UniqueTimer recycleTimer;
 
         private UnityGameObjectItem unityGameObjectItem;
 
@@ -73,12 +72,6 @@ namespace GameFrame.Runtime
             transform = gameObject.transform;
 
             State = GameObjectState.Unload;
-
-            recycleTimer = new UniqueTimer(OnRequestRecycle);
-
-#if UNITY_EDITOR
-            recycleTimer.Name = this.GetType().Name;
-#endif
         }
 
         public void BindFromPrefab(GameObject prefab, Transform parent = null)
@@ -258,14 +251,8 @@ namespace GameFrame.Runtime
         }
 
 
-        public void Recycle(float delay)
-        {
-            recycleTimer.Schedule(delay);
-        }
-
         public void RecycleImmediate()
         {
-            recycleTimer.Cancel();
             OnRequestRecycle();
         }
 
@@ -283,7 +270,6 @@ namespace GameFrame.Runtime
         {
             Unbind();
             UnitGoPool.Instance.UnSpawn(unityGameObjectItem);
-            recycleTimer.Cancel();
             gameObject = null;
             transform = null;
             State = GameObjectState.Destroy;
