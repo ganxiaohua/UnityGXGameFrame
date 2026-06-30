@@ -80,6 +80,7 @@ namespace GameFrame.Editor
         private bool isShowAllEcsComponents;
         private bool isShowFocusedOnly;
         private readonly Dictionary<int, PropertyTree> ecsComponentsTree = new();
+        private readonly List<int> waitRemoveList = new();
         private Vector2 scrollPosition;
         private Vector2 addScrollPosition;
         private string componentSearch = string.Empty;
@@ -141,6 +142,8 @@ namespace GameFrame.Editor
                 Close();
                 return;
             }
+
+            SyncPropertyTreesWithComponents();
 
             int componentCount = CountVisibleComponents();
             int focusedComponentCount = CountFocusedComponents();
@@ -297,16 +300,61 @@ namespace GameFrame.Editor
             using (new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
             {
                 GUILayout.Space(4f);
-                if (!ecsComponentsTree.TryGetValue(cid, out var tree))
-                {
-                    tree = PropertyTree.Create(target);
-                    tree.OnPropertyValueChanged += ChangeComponent;
-                    ecsComponentsTree.Add(cid, tree);
-                }
+                var tree = GetOrCreateComponentTree(cid, target);
 
+                tree.UpdateTree();
                 tree.Draw(false);
                 GUILayout.Space(4f);
             }
+        }
+
+        private PropertyTree GetOrCreateComponentTree(int cid, object target)
+        {
+            if (ecsComponentsTree.TryGetValue(cid, out var tree))
+            {
+                if (IsTreeTargetCurrent(tree, target))
+                    return tree;
+
+                DisposeComponentTree(cid, tree);
+            }
+
+            tree = PropertyTree.Create(target);
+            tree.OnPropertyValueChanged += ChangeComponent;
+            ecsComponentsTree.Add(cid, tree);
+            return tree;
+        }
+
+        private static bool IsTreeTargetCurrent(PropertyTree tree, object target)
+        {
+            if (tree == null || target == null || tree.TargetType != target.GetType() || tree.WeakTargets.Count == 0)
+                return false;
+
+            object currentTarget = tree.WeakTargets[0];
+            return ReferenceEquals(currentTarget, target) || Equals(currentTarget, target);
+        }
+
+        private void SyncPropertyTreesWithComponents()
+        {
+            waitRemoveList.Clear();
+            foreach (var cid in ecsComponentsTree.Keys)
+            {
+                if (!TryGetVisibleComponentType(cid, out _))
+                    waitRemoveList.Add(cid);
+            }
+
+            foreach (int cid in waitRemoveList)
+            {
+                DisposeComponentTree(cid, ecsComponentsTree[cid]);
+            }
+
+            waitRemoveList.Clear();
+        }
+
+        private void DisposeComponentTree(int cid, PropertyTree tree)
+        {
+            tree.OnPropertyValueChanged -= ChangeComponent;
+            tree.Dispose();
+            ecsComponentsTree.Remove(cid);
         }
 
         private void DrawPill(Rect rect, string text, Color color)
@@ -474,17 +522,13 @@ namespace GameFrame.Editor
         protected override void OnImGUI()
         {
             DrawWindowContent();
-            if (EditorApplication.isPlaying && !EditorApplication.isPaused)
-                Repaint();
+            Repaint();
         }
 
         private void RemoveComponent(int index)
         {
             if (ecsComponentsTree.TryGetValue(index, out var tree))
-            {
-                tree.Dispose();
-                ecsComponentsTree.Remove(index);
-            }
+                DisposeComponentTree(index, tree);
 
             effEntity.RemoveComponent(index);
         }
@@ -650,9 +694,13 @@ namespace GameFrame.Editor
         private void ClearPropertyTrees()
         {
             foreach (var tree in ecsComponentsTree.Values)
+            {
+                tree.OnPropertyValueChanged -= ChangeComponent;
                 tree.Dispose();
+            }
 
             ecsComponentsTree.Clear();
+            waitRemoveList.Clear();
         }
 
         public static object InvokeGetDataIfExists(object target, params object[] parameters)

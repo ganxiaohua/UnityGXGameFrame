@@ -45,7 +45,7 @@ namespace GameFrame.Runtime
 
             return value;
         }
-#if UNITY_EDITOR
+
         public static void WriteToFile<T>(string filePath, in T value) where T : unmanaged
         {
             var directory = Path.GetDirectoryName(filePath);
@@ -62,5 +62,4 @@ namespace GameFrame.Runtime
             return Deserialize<T>(File.ReadAllBytes(filePath));
         }
     }
-#endif
 }
