@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using GameFrame.Runtime;
+﻿using System.Collections.Generic;
 
 namespace GameFrame.Runtime
 {
@@ -19,10 +17,18 @@ namespace GameFrame.Runtime
                 int id = CapabilityID<T, IFixedUpdateSystem>.TID;
                 SetArray(capabilitiesFixUpdateList, player, id, capability);
             }
+            else if (capability.UpdateMode == CapabilitysUpdateMode.LateUpdate)
+            {
+                int id = CapabilityID<T, ILateUpdateSystem>.TID;
+                SetArray(capabilitiesLateUpdateList, player, id, capability);
+            }
         }
 
         private void SetArray(JumpIndexArray<CapabilityBase>[] arrays, EffEntity player, int id, CapabilityBase capability)
         {
+            if ((uint) id >= (uint) arrays.Length)
+                throw new System.IndexOutOfRangeException($"{capability.GetType().Name} capability id {id} is outside {capability.UpdateMode} array length {arrays.Length}.");
+
             var array = arrays[id];
             if (array == null)
             {
@@ -35,7 +41,8 @@ namespace GameFrame.Runtime
             cap.Init(id, eccWorld, player);
         }
 
-        public void GetCapabilityBaseWithPlayer(EffEntity player, List<CapabilityBase> update, List<CapabilityBase> fixedUpdate)
+        public void GetCapabilityBaseWithPlayer(EffEntity player, List<CapabilityBase> update, List<CapabilityBase> fixedUpdate,
+            List<CapabilityBase> lateUpdate)
         {
             void Get(EffEntity player, JumpIndexArray<CapabilityBase>[] scr, List<CapabilityBase> dst)
             {
@@ -53,16 +60,37 @@ namespace GameFrame.Runtime
 
             Get(player, capabilitiesUpdateList, update);
             Get(player, capabilitiesFixUpdateList, fixedUpdate);
+            Get(player, capabilitiesLateUpdateList, lateUpdate);
         }
 
         public void Remove(EffEntity player, int capabilitieId)
         {
             RemoveUpdate(player, capabilitieId);
             RemoveFixedUpdate(player, capabilitieId);
+            RemoveLatedUpdate(player, capabilitieId);
+        }
+
+        public void Remove(EffEntity player, int capabilitieId, CapabilitysUpdateMode updateMode)
+        {
+            switch (updateMode)
+            {
+                case CapabilitysUpdateMode.FixedUpdate:
+                    RemoveFixedUpdate(player, capabilitieId);
+                    break;
+                case CapabilitysUpdateMode.LateUpdate:
+                    RemoveLatedUpdate(player, capabilitieId);
+                    break;
+                default:
+                    RemoveUpdate(player, capabilitieId);
+                    break;
+            }
         }
 
         private void RemoveUpdate(EffEntity player, int capabilitieId)
         {
+            if ((uint) capabilitieId >= (uint) capabilitiesUpdateList.Length)
+                return;
+
             var array = capabilitiesUpdateList[capabilitieId];
             if (array != null)
             {
@@ -72,7 +100,22 @@ namespace GameFrame.Runtime
 
         private void RemoveFixedUpdate(EffEntity player, int capabilitieId)
         {
+            if ((uint) capabilitieId >= (uint) capabilitiesFixUpdateList.Length)
+                return;
+
             var array = capabilitiesFixUpdateList[capabilitieId];
+            if (array != null)
+            {
+                RemoveArray(array, player);
+            }
+        }
+
+        private void RemoveLatedUpdate(EffEntity player, int capabilitieId)
+        {
+            if ((uint) capabilitieId >= (uint) capabilitiesLateUpdateList.Length)
+                return;
+
+            var array = capabilitiesLateUpdateList[capabilitieId];
             if (array != null)
             {
                 RemoveArray(array, player);
@@ -91,6 +134,14 @@ namespace GameFrame.Runtime
             }
 
             foreach (var array in capabilitiesFixUpdateList)
+            {
+                if (array != null)
+                {
+                    RemoveArray(array, player);
+                }
+            }
+
+            foreach (var array in capabilitiesLateUpdateList)
             {
                 if (array != null)
                 {

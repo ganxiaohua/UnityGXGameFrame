@@ -1,4 +1,7 @@
+using System;
 using System.Collections.Generic;
+using System.Reflection;
+using System.Text;
 using GameFrame.Runtime;
 using UnityEditor;
 using UnityEngine;
@@ -25,12 +28,14 @@ namespace GameFrame.Editor
         private const float ToolbarHeight = 36f;
         private const float ContentPadding = 12f;
         private const int GridStep = 50;
+        private const int MaxInspectDepth = 3;
         private const string FocusedCapabilityEditorPrefsPrefix = "GameFrame.Editor.CapabilityView.Focused.";
 
         private static readonly Color UnknownColor = new Color(0.18f, 0.20f, 0.23f, 1f);
         private static readonly Color IdleColor = new Color(0.36f, 0.40f, 0.46f, 1f);
         private static readonly Color ActiveColor = new Color(0.00f, 0.74f, 0.92f, 1f);
         private static readonly Color LockedColor = new Color(1.00f, 0.72f, 0.22f, 1f);
+        private static readonly Color LateUpdateColor = new Color(0.45f, 0.84f, 0.36f, 1f);
         private static readonly Color DimAccentColor = new Color(0.38f, 0.41f, 0.46f, 1f);
         private static readonly Color[] StateColor = {UnknownColor, IdleColor, ActiveColor, LockedColor};
 
@@ -54,8 +59,10 @@ namespace GameFrame.Editor
         private ECCWorld eccWorld;
         private readonly List<CapabilityBase> capabilityBaseUpdateMode = new List<CapabilityBase>();
         private readonly List<CapabilityBase> capabilityBaseFixUpdateMode = new List<CapabilityBase>();
+        private readonly List<CapabilityBase> capabilityBaseLateUpdateMode = new List<CapabilityBase>();
         private ArrayExSimilar[] updateMode;
         private ArrayExSimilar[] fixUpdateMode;
+        private ArrayExSimilar[] lateUpdateMode;
         private int tailFrame;
         private int headFrame;
         private bool isShowFocusedOnly;
@@ -70,6 +77,7 @@ namespace GameFrame.Editor
         private GUIStyle focusButtonStyle;
         private GUIStyle pillStyle;
         private GUIStyle centerStyle;
+        private GUIStyle detailStyle;
 
         private static Color BackgroundColor => EditorGUIUtility.isProSkin ? DarkBackground : LightBackground;
         private static Color PanelColor => EditorGUIUtility.isProSkin ? DarkPanel : LightPanel;
@@ -99,9 +107,11 @@ namespace GameFrame.Editor
             scrollPosition = Vector2.zero;
             capabilityBaseUpdateMode.Clear();
             capabilityBaseFixUpdateMode.Clear();
-            eccWorld.GetCapability(effEntity, capabilityBaseUpdateMode, capabilityBaseFixUpdateMode);
+            capabilityBaseLateUpdateMode.Clear();
+            eccWorld.GetCapability(effEntity, capabilityBaseUpdateMode, capabilityBaseFixUpdateMode, capabilityBaseLateUpdateMode);
             updateMode = new ArrayExSimilar[capabilityBaseUpdateMode.Count];
             fixUpdateMode = new ArrayExSimilar[capabilityBaseFixUpdateMode.Count];
+            lateUpdateMode = new ArrayExSimilar[capabilityBaseLateUpdateMode.Count];
         }
 
         protected override void OnBeginDrawEditors()
@@ -126,6 +136,7 @@ namespace GameFrame.Editor
             {
                 SetData(capabilityBaseUpdateMode, updateMode);
                 SetData(capabilityBaseFixUpdateMode, fixUpdateMode);
+                SetData(capabilityBaseLateUpdateMode, lateUpdateMode);
                 tailFrame++;
                 if (tailFrame >= FrameSize)
                 {
@@ -143,6 +154,8 @@ namespace GameFrame.Editor
             DrawSection("Update", "Per-frame capability sampling", capabilityBaseUpdateMode, updateMode, ActiveColor);
             GUILayout.Space(10f);
             DrawSection("Fixed Update", "Physics-step capability sampling", capabilityBaseFixUpdateMode, fixUpdateMode, LockedColor);
+            GUILayout.Space(10f);
+            DrawSection("Late Update", "Post-animation capability sampling", capabilityBaseLateUpdateMode, lateUpdateMode, LateUpdateColor);
             GUILayout.Space(12f);
             EditorGUILayout.EndScrollView();
         }
@@ -157,7 +170,8 @@ namespace GameFrame.Editor
                 bool isLock = false;
                 if (capability.TagList != null)
                     isLock = eccWorld.IsBindCapability(effEntity, capability.TagList);
-                capabilityTypes[i].Add(tailFrame % FrameSize, (int) (isLock ? CapabilityType.Lock : (capability.IsActive ? CapabilityType.Action : CapabilityType.NotAction)), headFrame);
+                capabilityTypes[i].Add(tailFrame % FrameSize,
+                    (int) (isLock ? CapabilityType.Lock : (capability.IsActive ? CapabilityType.Action : CapabilityType.NotAction)), headFrame);
             }
         }
 
@@ -184,7 +198,7 @@ namespace GameFrame.Editor
 
         private void DrawToolbar()
         {
-            int totalCount = capabilityBaseUpdateMode.Count + capabilityBaseFixUpdateMode.Count;
+            int totalCount = capabilityBaseUpdateMode.Count + capabilityBaseFixUpdateMode.Count + capabilityBaseLateUpdateMode.Count;
             int focusedCount = CountFocusedRows();
             Rect rect = GUILayoutUtility.GetRect(0f, ToolbarHeight, GUILayout.ExpandWidth(true));
             EditorGUI.DrawRect(rect, PanelColor);
@@ -246,12 +260,13 @@ namespace GameFrame.Editor
             }
 
             int rowIndex = 0;
-            rowIndex = DrawCapabilityGroup(capabilities, timelines, focused, rowIndex, focused.Count > 0);
+            rowIndex = DrawCapabilityGroup(capabilities, timelines, focused, rowIndex, focused.Count > 0, accent);
             if (!isShowFocusedOnly)
-                DrawCapabilityGroup(capabilities, timelines, normal, rowIndex, focused.Count > 0);
+                DrawCapabilityGroup(capabilities, timelines, normal, rowIndex, focused.Count > 0, accent);
         }
 
-        private int DrawCapabilityGroup(List<CapabilityBase> capabilities, ArrayExSimilar[] timelines, List<int> indices, int rowIndex, bool hasFocusedRows)
+        private int DrawCapabilityGroup(List<CapabilityBase> capabilities, ArrayExSimilar[] timelines, List<int> indices, int rowIndex, bool hasFocusedRows,
+            Color accent)
         {
             for (int i = 0; i < indices.Count; i++)
             {
@@ -259,7 +274,7 @@ namespace GameFrame.Editor
                 string name = capabilities[capabilityIndex].GetType().Name;
                 bool focused = IsCapabilityFocused(capabilities[capabilityIndex]);
                 ArrayExSimilar timeline = timelines != null && capabilityIndex < timelines.Length ? timelines[capabilityIndex] : null;
-                DrawTrack(name, timeline, rowIndex, capabilities[capabilityIndex], focused, hasFocusedRows && !focused);
+                DrawTrack(name, timeline, rowIndex, capabilities[capabilityIndex], focused, hasFocusedRows && !focused, accent);
                 rowIndex++;
             }
 
@@ -298,7 +313,7 @@ namespace GameFrame.Editor
             }
         }
 
-        private void DrawTrack(string name, ArrayExSimilar timeline, int rowIndex, CapabilityBase capability, bool focused, bool dimmed)
+        private void DrawTrack(string name, ArrayExSimilar timeline, int rowIndex, CapabilityBase capability, bool focused, bool dimmed, Color accentColor)
         {
             Rect rowRect = GUILayoutUtility.GetRect(LabelWidth + 260f, RowHeight, GUILayout.ExpandWidth(true));
             if (focused)
@@ -308,7 +323,7 @@ namespace GameFrame.Editor
             else if (rowIndex % 2 == 1)
                 EditorGUI.DrawRect(rowRect, new Color(1f, 1f, 1f, EditorGUIUtility.isProSkin ? 0.018f : 0.12f));
 
-            Color accent = focused ? LockedColor : dimmed ? DimAccentColor : ActiveColor;
+            Color accent = focused ? LockedColor : dimmed ? DimAccentColor : accentColor;
             EditorGUI.DrawRect(new Rect(rowRect.x, rowRect.y, 3f, rowRect.height), accent);
 
             Rect labelRect = new Rect(rowRect.x + ContentPadding, rowRect.y + 3f, LabelWidth - ContentPadding * 1.5f - 74f, RowHeight - 6f);
@@ -333,6 +348,7 @@ namespace GameFrame.Editor
             if (timeline == null)
             {
                 GUI.Label(trackRect, "waiting for samples", centerStyle);
+                DrawFocusedCapabilityDetails(capability, focused, dimmed);
                 return;
             }
 
@@ -340,6 +356,7 @@ namespace GameFrame.Editor
             if (datas.Count == 0)
             {
                 GUI.Label(trackRect, "no samples", centerStyle);
+                DrawFocusedCapabilityDetails(capability, focused, dimmed);
                 return;
             }
 
@@ -361,6 +378,20 @@ namespace GameFrame.Editor
 
             float currentX = Mathf.Min(trackRect.x + offsetX, trackRect.xMax - 1f);
             EditorGUI.DrawRect(new Rect(currentX, trackRect.y - 3f, 2f, trackRect.height + 6f), new Color(1f, 1f, 1f, 0.72f));
+            DrawFocusedCapabilityDetails(capability, focused, dimmed);
+        }
+
+        private void DrawFocusedCapabilityDetails(CapabilityBase capability, bool focused, bool dimmed)
+        {
+            if (!focused || capability == null)
+                return;
+
+            using (new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
+            {
+                GUI.enabled = !dimmed;
+                GUILayout.Label(BuildCapabilitySnapshot(capability), detailStyle);
+                GUI.enabled = true;
+            }
         }
 
         private void DrawTimelineGrid(Rect rect)
@@ -404,7 +435,9 @@ namespace GameFrame.Editor
 
         private int CountFocusedRows()
         {
-            return CountFocusedRows(capabilityBaseUpdateMode) + CountFocusedRows(capabilityBaseFixUpdateMode);
+            return CountFocusedRows(capabilityBaseUpdateMode) +
+                   CountFocusedRows(capabilityBaseFixUpdateMode) +
+                   CountFocusedRows(capabilityBaseLateUpdateMode);
         }
 
         private int CountFocusedRows(List<CapabilityBase> capabilities)
@@ -423,7 +456,131 @@ namespace GameFrame.Editor
         {
             ClearFocusedCapabilities(capabilityBaseUpdateMode);
             ClearFocusedCapabilities(capabilityBaseFixUpdateMode);
+            ClearFocusedCapabilities(capabilityBaseLateUpdateMode);
             isShowFocusedOnly = false;
+        }
+
+        private static string BuildCapabilitySnapshot(CapabilityBase capability)
+        {
+            var builder = new StringBuilder(512);
+            builder.AppendLine($"{capability.GetType().Name}  IsActive:{capability.IsActive}  UpdateMode:{capability.UpdateMode}");
+            AppendInspectableFields(builder, capability, capability.GetType(), 0);
+            return builder.ToString().TrimEnd();
+        }
+
+        private static void AppendInspectableFields(StringBuilder builder, object target, Type type, int depth)
+        {
+            if (target == null || type == null || depth > MaxInspectDepth)
+                return;
+
+            var fields = GetInspectableFields(type);
+            for (int i = 0; i < fields.Count; i++)
+            {
+                var field = fields[i];
+                object value;
+                try
+                {
+                    value = field.GetValue(target);
+                }
+                catch (Exception exception)
+                {
+                    AppendLine(builder, depth, $"{field.Name}: {exception.GetType().Name}");
+                    continue;
+                }
+
+                AppendFieldValue(builder, field.Name, field.FieldType, value, depth);
+            }
+        }
+
+        private static void AppendFieldValue(StringBuilder builder, string name, Type type, object value, int depth)
+        {
+            if (value == null)
+            {
+                AppendLine(builder, depth, $"{name}: null");
+                return;
+            }
+
+            if (IsSimpleType(type) || ShouldStopDeepInspection(type) || !type.IsValueType || depth >= MaxInspectDepth)
+            {
+                AppendLine(builder, depth, $"{name}: {FormatScalar(value)}");
+                return;
+            }
+
+            AppendLine(builder, depth, $"{name}: {type.Name}");
+            AppendInspectableFields(builder, value, type, depth + 1);
+        }
+
+        private static List<FieldInfo> GetInspectableFields(Type type)
+        {
+            const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+            var result = new List<FieldInfo>();
+            while (type != null && type != typeof(object))
+            {
+                var fields = type.GetFields(flags);
+                for (int i = 0; i < fields.Length; i++)
+                {
+                    var field = fields[i];
+                    if (field.IsStatic || field.IsNotSerialized || field.Name.Contains("k__BackingField"))
+                        continue;
+
+                    result.Add(field);
+                }
+
+                type = type.BaseType;
+            }
+
+            return result;
+        }
+
+        private static bool IsSimpleType(Type type)
+        {
+            type = Nullable.GetUnderlyingType(type) ?? type;
+            return type.IsPrimitive ||
+                   type.IsEnum ||
+                   type == typeof(string) ||
+                   type == typeof(decimal) ||
+                   type == typeof(Vector2) ||
+                   type == typeof(Vector3) ||
+                   type == typeof(Vector4) ||
+                   type == typeof(Quaternion) ||
+                   type == typeof(Color) ||
+                   type == typeof(Color32) ||
+                   type == typeof(Rect) ||
+                   type == typeof(Bounds) ||
+                   type.Namespace == "Unity.Mathematics";
+        }
+
+        private static bool ShouldStopDeepInspection(Type type)
+        {
+            if (type.IsPointer)
+                return true;
+
+            var fullName = type.FullName ?? string.Empty;
+            return fullName == "Unity.Entities.EntityManager" ||
+                   fullName.StartsWith("Unity.Collections.Native", StringComparison.Ordinal) ||
+                   fullName.StartsWith("Unity.Collections.LowLevel", StringComparison.Ordinal) ||
+                   fullName.StartsWith("Unity.Collections.Unsafe", StringComparison.Ordinal) ||
+                   fullName.StartsWith("Unity.Entities.BlobAssetReference", StringComparison.Ordinal);
+        }
+
+        private static string FormatScalar(object value)
+        {
+            return value switch
+            {
+                null => "null",
+                float f => f.ToString("0.###"),
+                double d => d.ToString("0.###"),
+                bool b => b ? "true" : "false",
+                // Unity.Entities.Entity entity => $"Entity({entity.Index}:{entity.Version})",
+                UnityEngine.Object unityObject => unityObject ? $"{unityObject.GetType().Name}({unityObject.name})" : "null",
+                _ => value.ToString()
+            };
+        }
+
+        private static void AppendLine(StringBuilder builder, int depth, string text)
+        {
+            builder.Append(' ', depth * 2);
+            builder.AppendLine(text);
         }
 
         private void ClearFocusedCapabilities(List<CapabilityBase> capabilities)
@@ -533,6 +690,14 @@ namespace GameFrame.Editor
                 clipping = TextClipping.Clip
             };
             centerStyle.normal.textColor = SecondaryText;
+
+            detailStyle = new GUIStyle(EditorStyles.miniLabel)
+            {
+                alignment = TextAnchor.UpperLeft,
+                wordWrap = true,
+                richText = false
+            };
+            detailStyle.normal.textColor = PrimaryText;
         }
 
         protected override void OnImGUI()

@@ -26,6 +26,9 @@ namespace GameFrame.Editor
         {
             var assemblys = AppDomain.CurrentDomain.GetAssemblies();
             var number = 0;
+            var updateCount = 0;
+            var fixedUpdateCount = 0;
+            var lateUpdateCount = 0;
             sTempStr.Clear();
             capabilitylist.Clear();
             foreach (var assembly in assemblys)
@@ -50,16 +53,42 @@ namespace GameFrame.Editor
             int index = 0;
             foreach (var item in capabilitylist)
             {
-                string updateMode = item.UpdateMode == CapabilitysUpdateMode.Update ? "IUpdateSystem" : "IFixedUpdateSystem";
+                string updateMode = GetCapabilityUpdateModeInterface(item.UpdateMode);
+                switch (item.UpdateMode)
+                {
+                    case CapabilitysUpdateMode.FixedUpdate:
+                        fixedUpdateCount++;
+                        break;
+                    case CapabilitysUpdateMode.LateUpdate:
+                        lateUpdateCount++;
+                        break;
+                    default:
+                        updateCount++;
+                        break;
+                }
+
                 sTempStr.Append(index == 0
                     ? $" var orderTid =  CapabilityID<{item.GetType().FullName},{updateMode}>.TID;\n"
                     : $"        orderTid =  CapabilityID<{item.GetType().FullName},{updateMode}>.TID;\n");
                 index++;
             }
 
-            var str = string.Format(sTextDictionary[CreateAuto.Capability], sTempStr, number);
+            var str = string.Format(sTextDictionary[CreateAuto.Capability], sTempStr, number, updateCount, fixedUpdateCount, lateUpdateCount);
             File.WriteAllText($"{EditorString.GetPath("CompOutPutPath")}AllCapabilitys.cs", str);
             sTempStr.Clear();
+        }
+
+        private static string GetCapabilityUpdateModeInterface(CapabilitysUpdateMode updateMode)
+        {
+            switch (updateMode)
+            {
+                case CapabilitysUpdateMode.FixedUpdate:
+                    return "IFixedUpdateSystem";
+                case CapabilitysUpdateMode.LateUpdate:
+                    return "ILateUpdateSystem";
+                default:
+                    return "IUpdateSystem";
+            }
         }
     }
 }

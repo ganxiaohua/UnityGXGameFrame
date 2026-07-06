@@ -5,6 +5,9 @@
 using GameFrame.Runtime;
 public static class AllCapability {{
  
+    public static readonly int TotallUpdateCapabiltys = {2};
+    public static readonly int TotallFixedUpdateCapabiltys = {3};
+    public static readonly int TotallLateUpdateCapabiltys = {4};
     public static readonly int TotallCapabiltys = Order();
     
     private  static int Order()

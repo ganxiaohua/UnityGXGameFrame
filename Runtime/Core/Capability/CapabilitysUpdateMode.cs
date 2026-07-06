@@ -4,5 +4,6 @@
     {
         Update,
         FixedUpdate,
+        LateUpdate,
     }
 }

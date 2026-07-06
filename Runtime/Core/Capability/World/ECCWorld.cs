@@ -4,18 +4,17 @@ namespace GameFrame.Runtime
 {
     public abstract unsafe partial class ECCWorld : World
     {
-        private int maxCapabilityCount;
-
         private int maxCapabilityTag;
 
         private Capabilitys capabilitys;
 
 
-        protected void InitCapabilitys(int maxCapabilityCount, int maxTag, int estimatePlayer)
+        protected void InitCapabilitys(int updateCapabilityCount, int fixedUpdateCapabilityCount, int lateUpdateCapabilityCount, int maxTag,
+            int estimatePlayer)
         {
             maxCapabilityTag = maxTag;
             capabilitys = new Capabilitys();
-            capabilitys.Init(this, maxCapabilityCount, estimatePlayer);
+            capabilitys.Init(this, updateCapabilityCount, fixedUpdateCapabilityCount, lateUpdateCapabilityCount, estimatePlayer);
         }
 
         public override EffEntity AddChild()
@@ -33,9 +32,9 @@ namespace GameFrame.Runtime
             base.RemoveChild(effEntity);
         }
 
-        public void GetCapability(EffEntity eff, List<CapabilityBase> update, List<CapabilityBase> fixedUpdate)
+        public void GetCapability(EffEntity eff, List<CapabilityBase> update, List<CapabilityBase> fixedUpdate, List<CapabilityBase> LateUpdate)
         {
-            capabilitys.GetCapabilityBaseWithPlayer(eff, update, fixedUpdate);
+            capabilitys.GetCapabilityBaseWithPlayer(eff, update, fixedUpdate, LateUpdate);
         }
 
         public void BindCapability<T>(EffEntity effEntity) where T : CapabilityBase
@@ -46,8 +45,24 @@ namespace GameFrame.Runtime
 
         public void UnBindCapability<T>(EffEntity player) where T : CapabilityBase
         {
-            int id = CapabilityID<T, IUpdateSystem>.TID;
-            UnBindCapability(player, id);
+            var capability = ReferencePool.Acquire<T>();
+            int id;
+            var updateMode = capability.UpdateMode;
+            switch (updateMode)
+            {
+                case CapabilitysUpdateMode.FixedUpdate:
+                    id = CapabilityID<T, IFixedUpdateSystem>.TID;
+                    break;
+                case CapabilitysUpdateMode.LateUpdate:
+                    id = CapabilityID<T, ILateUpdateSystem>.TID;
+                    break;
+                default:
+                    id = CapabilityID<T, IUpdateSystem>.TID;
+                    break;
+            }
+
+            ReferencePool.Release(capability);
+            capabilitys.Remove(player, id, updateMode);
         }
 
         public void UnBindCapability(EffEntity player, int capabilitiyId)
@@ -78,7 +93,8 @@ namespace GameFrame.Runtime
         public override void OnLateUpdate(float elapseSeconds, float realElapseSeconds)
         {
             base.OnLateUpdate(elapseSeconds, realElapseSeconds);
-            OnLateUpdateSystem(FixedDeltaTime, realElapseSeconds);
+            capabilitys.OnLateUpdate(DeltaTime, realElapseSeconds);
+            OnLateUpdateSystem(DeltaTime, realElapseSeconds);
         }
 
         public override void Dispose()

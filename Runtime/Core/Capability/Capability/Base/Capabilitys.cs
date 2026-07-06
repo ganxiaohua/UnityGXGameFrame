@@ -5,16 +5,20 @@
         private JumpIndexArray<CapabilityBase>[] capabilitiesUpdateList;
 
         private JumpIndexArray<CapabilityBase>[] capabilitiesFixUpdateList;
+
+        private JumpIndexArray<CapabilityBase>[] capabilitiesLateUpdateList;
         private int estimatedNumberPlayer;
 
         private ECCWorld eccWorld;
 
-        public void Init(ECCWorld eccWorld, int capabilityCount, int estimatedNumberPlayer)
+        public void Init(ECCWorld eccWorld, int updateCapabilityCount, int fixedUpdateCapabilityCount, int lateUpdateCapabilityCount,
+            int estimatedNumberPlayer)
         {
             this.eccWorld = eccWorld;
             this.estimatedNumberPlayer = estimatedNumberPlayer;
-            capabilitiesUpdateList = new JumpIndexArray<CapabilityBase>[capabilityCount];
-            capabilitiesFixUpdateList = new JumpIndexArray<CapabilityBase>[capabilityCount];
+            capabilitiesUpdateList = new JumpIndexArray<CapabilityBase>[updateCapabilityCount];
+            capabilitiesFixUpdateList = new JumpIndexArray<CapabilityBase>[fixedUpdateCapabilityCount];
+            capabilitiesLateUpdateList = new JumpIndexArray<CapabilityBase>[lateUpdateCapabilityCount];
         }
 
         public void OnUpdate(float delatTime, float realElapseSeconds)
@@ -27,6 +31,12 @@
             ConvenientCapabilitys(capabilitiesFixUpdateList, delatTime, realElapseSeconds);
         }
 
+        public void OnLateUpdate(float delatTime, float realElapseSeconds)
+        {
+            ConvenientCapabilitys(capabilitiesLateUpdateList, delatTime, realElapseSeconds);
+        }
+
+
         private void ConvenientCapabilitys(JumpIndexArray<CapabilityBase>[] arrays, float delatTime, float realElapseSeconds)
         {
             int count = arrays.Length;
@@ -38,11 +48,24 @@
                 if (capabilityArray == null)
                     continue;
 #if UNITY_EDITOR
-                using (new Profiler(CapabilityID2Type.CapabilitysTyps[i].Name))
+                using (new Profiler(GetCapabilityName(capabilityArray)))
 #endif
                     UpdateCapability(capabilityArray, delatTime, realElapseSeconds);
             }
         }
+
+#if UNITY_EDITOR
+        private static string GetCapabilityName(JumpIndexArray<CapabilityBase> capabilityArray)
+        {
+            foreach (var capability in capabilityArray)
+            {
+                if (capability != null)
+                    return capability.GetType().Name;
+            }
+
+            return nameof(CapabilityBase);
+        }
+#endif
 
         private void UpdateCapability(JumpIndexArray<CapabilityBase> capabilityBaseArrayEx, float delatTime, float realElapseSeconds)
         {
@@ -85,12 +108,17 @@
         {
             ClearCapabilities(capabilitiesUpdateList);
             ClearCapabilities(capabilitiesFixUpdateList);
+            ClearCapabilities(capabilitiesLateUpdateList);
             capabilitiesUpdateList = null;
             capabilitiesFixUpdateList = null;
+            capabilitiesLateUpdateList = null;
         }
 
         private void ClearCapabilities(JumpIndexArray<CapabilityBase>[] arrays)
         {
+            if (arrays == null)
+                return;
+
             foreach (var array in arrays)
             {
                 if (array == null)
