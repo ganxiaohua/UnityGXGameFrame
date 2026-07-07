@@ -5,6 +5,7 @@ namespace GameFrame.Runtime
 {
     public unsafe partial class World
     {
+        //TODO: Cut into groups and chunks …… be like unity ecs?
         private void*[] components;
         private int[] structSizes;
         private int[] structAlign;
