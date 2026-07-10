@@ -80,6 +80,12 @@ namespace GameFrame.Runtime
         }
 
 
+        public void RemoveComponent<T>() where T : unmanaged, EffComponent
+        {
+            var cid = ComponentsID<T>.TID;
+            RemoveComponent(cid);
+        }
+
         public void RemoveComponent(int cid)
         {
             var component = componentIds[cid];
