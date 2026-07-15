@@ -18,48 +18,83 @@ namespace GameFrame.Runtime
 
         public void Plan(GOAPState worldState, IGOAPGoal goal, List<GOAPActionBase> availableActions, List<GOAPActionBase> result)
         {
+            var vers = ++Versions;
+            result.Clear();
+
             if (worldState.Satisfies(goal.DesiredState))
             {
+                if (vers == Versions)
+                    onfinishAction?.Invoke();
                 return;
             }
 
-            var vers = ++Versions;
-            var preconditions = new NativeArray<GOAPState>(availableActions.Count, Allocator.TempJob);
-            var effects = new NativeArray<GOAPState>(availableActions.Count, Allocator.TempJob);
-            var cost = new NativeArray<float>(availableActions.Count, Allocator.TempJob);
-            var openList = new NativeList<GOAPPlanNode>(MaxSearchNodes, Allocator.TempJob);
-            var closeList = new NativeHashSet<int>(MaxSearchNodes, Allocator.TempJob);
-            var actionPathIndexList = new NativeList<int>(availableActions.Count * 2, Allocator.TempJob);
-            var availableActionsIndex = ListPool<int>.Get();
-            bool succ = FilterAction(availableActions, preconditions, effects, cost, availableActionsIndex);
-            if (!succ)
-                return;
-            SearchAlgorithms job = new SearchAlgorithms
-            {
-                Preconditions = preconditions,
-                Effects = effects,
-                Cost = cost,
-                OpenList = openList,
-                CloseList = closeList,
-                ActionPathIndex = actionPathIndexList,
-                WorldState = worldState,
-                GoalState = goal.DesiredState,
-            };
-            JobHandle handle = job.Schedule();
-            handle.Complete();
-            if (vers == Versions)
-                foreach (var index in job.ActionPathIndex)
-                {
-                    result.Add(availableActions[availableActionsIndex[index]]);
-                }
+            int maxNodeCount = MaxSearchNodes;
+            if (maxNodeCount <= 0)
+                throw new InvalidOperationException($"{nameof(MaxSearchNodes)} must be greater than zero.");
 
-            ListPool<int>.Release(availableActionsIndex);
-            preconditions.Dispose();
-            effects.Dispose();
-            cost.Dispose();
-            openList.Dispose();
-            closeList.Dispose();
-            actionPathIndexList.Dispose();
+            NativeArray<GOAPState> preconditions = default;
+            NativeArray<GOAPState> effects = default;
+            NativeArray<float> cost = default;
+            NativeList<GOAPPlanNode> openList = default;
+            NativeHashSet<int> closeList = default;
+            NativeList<int> actionPathIndexList = default;
+            List<int> availableActionsIndex = null;
+
+            try
+            {
+                preconditions = new NativeArray<GOAPState>(availableActions.Count, Allocator.TempJob);
+                effects = new NativeArray<GOAPState>(availableActions.Count, Allocator.TempJob);
+                cost = new NativeArray<float>(availableActions.Count, Allocator.TempJob);
+                openList = new NativeList<GOAPPlanNode>(maxNodeCount, Allocator.TempJob);
+                closeList = new NativeHashSet<int>(maxNodeCount, Allocator.TempJob);
+                actionPathIndexList = new NativeList<int>(availableActions.Count * 2, Allocator.TempJob);
+                availableActionsIndex = ListPool<int>.Get();
+
+                bool succ = FilterAction(availableActions, preconditions, effects, cost, availableActionsIndex);
+                if (succ)
+                {
+                    SearchAlgorithms job = new SearchAlgorithms
+                    {
+                        Preconditions = preconditions,
+                        Effects = effects,
+                        Cost = cost,
+                        OpenList = openList,
+                        CloseList = closeList,
+                        ActionPathIndex = actionPathIndexList,
+                        WorldState = worldState,
+                        GoalState = goal.DesiredState,
+                        ActionCount = availableActionsIndex.Count,
+                        MaxNodeCount = maxNodeCount,
+                    };
+                    JobHandle handle = job.Schedule();
+                    handle.Complete();
+                    if (vers == Versions)
+                    {
+                        foreach (var index in job.ActionPathIndex)
+                        {
+                            result.Add(availableActions[availableActionsIndex[index]]);
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                if (preconditions.IsCreated)
+                    preconditions.Dispose();
+                if (effects.IsCreated)
+                    effects.Dispose();
+                if (cost.IsCreated)
+                    cost.Dispose();
+                if (openList.IsCreated)
+                    openList.Dispose();
+                if (closeList.IsCreated)
+                    closeList.Dispose();
+                if (actionPathIndexList.IsCreated)
+                    actionPathIndexList.Dispose();
+                if (availableActionsIndex != null)
+                    ListPool<int>.Release(availableActionsIndex);
+            }
+
             if (vers != Versions)
                 return;
             onfinishAction?.Invoke();

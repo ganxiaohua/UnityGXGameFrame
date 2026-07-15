@@ -16,7 +16,7 @@ namespace GameFrame.Runtime
             State = state;
             ParentIndex = parentIndex;
             Cost = cost;
-            Heuristic = cost;
+            Heuristic = heuristic;
             ActionIndex = actionIndex;
         }
 
@@ -28,14 +28,7 @@ namespace GameFrame.Runtime
 
         public int CompareTo(GOAPPlanNode other)
         {
-            if (TotalCost > other.TotalCost)
-                return -1;
-            else if (TotalCost < other.TotalCost)
-            {
-                return 1;
-            }
-
-            return 0;
+            return TotalCost.CompareTo(other.TotalCost);
         }
     }
 }

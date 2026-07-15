@@ -43,12 +43,6 @@ namespace GameFrame.Runtime
         }
 
 
-        /// <summary>
-        /// 加入组件
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
         public T* AddComponent<T>() where T : unmanaged, EffComponent
         {
             var cid = ComponentsID<T>.TID;
@@ -155,11 +149,6 @@ namespace GameFrame.Runtime
         }
 
 
-        /// <summary>
-        /// 包含任意一个
-        /// </summary>
-        /// <param name="indexs"></param>
-        /// <returns></returns>
         public bool HasAnyComponent(int[] cids)
         {
             for (int index = 0; index < cids.Length; ++index)

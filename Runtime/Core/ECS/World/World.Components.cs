@@ -6,17 +6,39 @@ namespace GameFrame.Runtime
     public unsafe partial class World
     {
         //TODO: Cut into groups and chunks …… be like unity ecs?
-        private void*[] components;
-        private int[] structSizes;
-        private int[] structAlign;
+        private void** components;
+        private int* structSizes;
+        private int* structAlign;
+        private int componentsCapacity;
         private int componentsChildrenSize;
 
         private void InitComponents(int childCount)
         {
-            components = new void*[MaxComponentCount];
-            structSizes = new int[MaxComponentCount];
-            structAlign = new int[MaxComponentCount];
-            componentsChildrenSize = childCount;
+            if (components != null)
+                throw new System.InvalidOperationException("Components have already been initialized.");
+            if (MaxComponentCount <= 0)
+                throw new System.ArgumentOutOfRangeException(nameof(MaxComponentCount), MaxComponentCount,
+                    "Max component count must be greater than zero.");
+
+            componentsCapacity = MaxComponentCount;
+            long componentsSize = sizeof(void*) * (long) componentsCapacity;
+            long structMetadataSize = sizeof(int) * (long) componentsCapacity;
+#if !Tracked
+            components = (void**) UnsafeUtility.Malloc(componentsSize, UnsafeUtility.AlignOf<System.IntPtr>(), Allocator.Persistent);
+            structSizes = (int*) UnsafeUtility.Malloc(structMetadataSize, UnsafeUtility.AlignOf<int>(), Allocator.Persistent);
+            structAlign = (int*) UnsafeUtility.Malloc(structMetadataSize, UnsafeUtility.AlignOf<int>(), Allocator.Persistent);
+#else
+            components = (void**) UnsafeUtility.MallocTracked(componentsSize, UnsafeUtility.AlignOf<System.IntPtr>(), Allocator.Persistent,
+                ConstTrackEdId.Components);
+            structSizes = (int*) UnsafeUtility.MallocTracked(structMetadataSize, UnsafeUtility.AlignOf<int>(), Allocator.Persistent,
+                ConstTrackEdId.Components);
+            structAlign = (int*) UnsafeUtility.MallocTracked(structMetadataSize, UnsafeUtility.AlignOf<int>(), Allocator.Persistent,
+                ConstTrackEdId.Components);
+#endif
+            UnsafeUtility.MemClear(components, componentsSize);
+            UnsafeUtility.MemClear(structSizes, structMetadataSize);
+            UnsafeUtility.MemClear(structAlign, structMetadataSize);
+            componentsChildrenSize = childCount > 0 ? childCount : 1;
 #if UNITY_EDITOR
             InitCompSize();
 #endif
@@ -28,13 +50,14 @@ namespace GameFrame.Runtime
         public void AddComp<T>() where T : unmanaged, EffComponent
         {
             var cid = ComponentsID<T>.TID;
+            ValidateComponentId(cid);
             if (components[cid] != null)
                 return;
             int structSize = UnsafeUtility.SizeOf<T>();
             int alignment = UnsafeUtility.AlignOf<T>();
             structSizes[cid] = structSize;
             structAlign[cid] = alignment;
-            long size = structSize * componentsChildrenSize;
+            long size = (long) structSize * componentsChildrenSize;
 #if !Tracked
             void* ptr = UnsafeUtility.Malloc(size, alignment, Allocator.Persistent);
 #else
@@ -51,17 +74,19 @@ namespace GameFrame.Runtime
         {
             if (ChildsCount <= componentsChildrenSize)
                 return;
-            int count = components.Length;
+            int count = componentsCapacity;
 #if UNITY_EDITOR
             InitCompSize();
 #endif
             for (int i = 0; i < count; i++)
             {
                 var structsize = structSizes[i];
-                long oldSize = structsize * componentsChildrenSize;
-                long size = structsize * Children.AllCount;
+                long oldSize = (long) structsize * componentsChildrenSize;
+                long size = (long) structsize * Children.AllCount;
                 long appendSize = size - oldSize;
                 var compPtr = components[i];
+                if (compPtr == null)
+                    continue;
 #if !Tracked
                 void* ptr = UnsafeUtility.Malloc(size, structAlign[i], Allocator.Persistent);
                 UnsafeUtility.MemCpy(ptr, compPtr, oldSize);
@@ -87,12 +112,14 @@ namespace GameFrame.Runtime
 
         public ref T GetComp<T>(int entityIndex, int id) where T : unmanaged, EffComponent
         {
+            ValidateComponentId(id);
             T* ptr = (T*) components[id];
             return ref ptr[entityIndex];
         }
 
         public T* GetCompPtr<T>(int entityIndex, int id) where T : unmanaged, EffComponent
         {
+            ValidateComponentId(id);
             T* ptr = (T*) components[id];
             ptr += entityIndex;
             return ptr;
@@ -100,6 +127,7 @@ namespace GameFrame.Runtime
 
         public byte* GetCompBytes(int entityIndex, int id)
         {
+            ValidateComponentId(id);
             var ptr = (byte*) components[id];
             ptr += structSizes[id] * entityIndex;
             return ptr;
@@ -108,6 +136,7 @@ namespace GameFrame.Runtime
         public unsafe T* GetComponentColumnPtr<T>() where T : unmanaged, EffComponent
         {
             int cid = ComponentsID<T>.TID;
+            ValidateComponentId(cid);
             return (T*) components[cid];
         }
 
@@ -123,6 +152,7 @@ namespace GameFrame.Runtime
             for (int i = 0; i < componentsList.Count; i++)
             {
                 int cid = componentsList[i];
+                ValidateComponentId(cid);
                 var ptr = (byte*) components[cid];
                 ptr += structSizes[cid] * entityIndex;
                 UnsafeUtility.MemClear(ptr, structSizes[cid]);
@@ -133,8 +163,9 @@ namespace GameFrame.Runtime
         {
             if (components == null)
                 return;
-            foreach (var item in components)
+            for (int i = 0; i < componentsCapacity; i++)
             {
+                var item = components[i];
                 if (item != null)
 #if !Tracked
                     UnsafeUtility.Free(item, Allocator.Persistent);
@@ -143,9 +174,29 @@ namespace GameFrame.Runtime
 #endif
             }
 
+#if !Tracked
+            UnsafeUtility.Free(components, Allocator.Persistent);
+            UnsafeUtility.Free(structSizes, Allocator.Persistent);
+            UnsafeUtility.Free(structAlign, Allocator.Persistent);
+#else
+            UnsafeUtility.FreeTracked(components, Allocator.Persistent);
+            UnsafeUtility.FreeTracked(structSizes, Allocator.Persistent);
+            UnsafeUtility.FreeTracked(structAlign, Allocator.Persistent);
+#endif
             components = null;
             structSizes = null;
             structAlign = null;
+            componentsCapacity = 0;
+            componentsChildrenSize = 0;
+        }
+
+        [System.Diagnostics.Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
+        private void ValidateComponentId(int id)
+        {
+            if (components == null)
+                throw new System.InvalidOperationException("Components have not been initialized.");
+            if ((uint) id >= (uint) componentsCapacity)
+                throw new System.IndexOutOfRangeException($"Component id {id} is outside the allocated range [0, {componentsCapacity}).");
         }
     }
 }

@@ -13,6 +13,7 @@ namespace GameFrame.Runtime
             return next++;
         }
     }
+
     public static class ComponentsID<T> where T : EffComponent
     {
         public static readonly int TID = ComponentsIdidGenerator.GetId<T>();
