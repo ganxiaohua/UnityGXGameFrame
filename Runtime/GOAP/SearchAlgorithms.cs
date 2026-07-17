@@ -144,7 +144,7 @@ public struct SearchAlgorithms : IJob
 
     private static bool IsLowerCost(GOAPPlanNode candidate, GOAPPlanNode currentBest)
     {
-        if (candidate.TotalCost != currentBest.TotalCost)
+        if (!Mathf.Approximately(candidate.TotalCost, currentBest.TotalCost))
             return candidate.TotalCost < currentBest.TotalCost;
 
         return candidate.Heuristic < currentBest.Heuristic;
