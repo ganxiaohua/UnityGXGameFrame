@@ -41,7 +41,7 @@ namespace GameFrame.Runtime
         private readonly List<AssetCache> dyingAssetCaches = new List<AssetCache>();
 
         public async UniTask<T> LoadAsync<T>(string path, IAssetReference reference,
-                CancellationToken cancellationToken = default)
+            CancellationToken cancellationToken = default)
         {
             Assert.IsNotNull(reference, "IAssetReference is null");
             Type type = typeof(T);
@@ -54,7 +54,7 @@ namespace GameFrame.Runtime
         /// assetHandleType: <see cref="IAssetHandle"/>
         /// </summary>
         public async UniTask<IAssetHandle> LoadAsync(string path, Type assetType, Type assetHandleType, IAssetReference reference,
-                CancellationToken cancellationToken = default)
+            CancellationToken cancellationToken = default)
         {
             if (!assetCaches.TryGetValue(path, out var cache))
             {
@@ -95,7 +95,7 @@ namespace GameFrame.Runtime
         }
 
         public async UniTask<IAssetHandle> LoadSceneAsync(string path, LoadSceneMode loadMode = LoadSceneMode.Single,
-                bool activateOnLoad = true, int priority = 100, CancellationToken cancellationToken = default)
+            bool activateOnLoad = true, int priority = 100, CancellationToken cancellationToken = default)
         {
             var handle = new SceneHandle(loadMode, activateOnLoad, priority);
             handle.Initialize(path, null);
@@ -116,7 +116,7 @@ namespace GameFrame.Runtime
         }
 
         public async UniTask LoadAssetCallBack<TObject>(string path, DefaultAssetReference reference, Action<TObject> callback)
-                where TObject : UnityEngine.Object
+            where TObject : UnityEngine.Object
         {
             var objectgo = await LoadAsync<TObject>(path, reference);
             if (objectgo == null)
@@ -129,7 +129,7 @@ namespace GameFrame.Runtime
 
         public async UniTask<byte[]> LoadRawAsync(string path, CancellationToken cancellationToken = default)
         {
-            var handle = new TextAssetHandle();
+            var handle = new RawAssetHandle();
             handle.Initialize(path, null);
             try
             {
@@ -146,14 +146,14 @@ namespace GameFrame.Runtime
                 return default;
             }
 
-            var result = (handle.Result as TextAsset)?.bytes;
+            var result = handle.Result as byte[];
             handle.Release();
             return result;
         }
 
         public async UniTask<string> LoadTextAsync(string path, CancellationToken cancellationToken = default)
         {
-            var handle = new TextAssetHandle();
+            var handle = new RawAssetHandle();
             handle.Initialize(path, null);
             try
             {
@@ -170,14 +170,14 @@ namespace GameFrame.Runtime
                 return default;
             }
 
-            var result = (handle.Result as TextAsset)?.text;
+            var result = handle.GetText();
             handle.Release();
             return result;
         }
 
         public async UniTask<IList<byte[]>> LoadRawsAsync(object paths, CancellationToken cancellationToken = default)
         {
-            var handle = new TextAssetsHandle();
+            var handle = new RawAssetsHandle();
             handle.Initialize(paths, null);
             try
             {
@@ -194,26 +194,14 @@ namespace GameFrame.Runtime
                 return default;
             }
 
-            var tas = handle.Result as IList;
-            if (tas == null)
-            {
-                handle.Release();
-                return default;
-            }
-
-            var result = new List<byte[]>(tas.Count);
-            foreach (var ta in tas)
-            {
-                result.Add(((TextAsset) ta).bytes);
-            }
-
+            var result = handle.Result as IList<byte[]>;
             handle.Release();
             return result;
         }
 
         public async UniTask<IList<string>> LoadTextsAsync(object paths, CancellationToken cancellationToken = default)
         {
-            var handle = new TextAssetsHandle();
+            var handle = new RawAssetsHandle();
             handle.Initialize(paths, null);
             try
             {
@@ -230,21 +218,41 @@ namespace GameFrame.Runtime
                 return default;
             }
 
-            var tas = handle.Result as IList;
-            if (tas == null)
-            {
-                handle.Release();
-                return default;
-            }
-
-            var result = new List<string>(tas.Count);
-            foreach (var ta in tas)
-            {
-                result.Add(((TextAsset) ta).text);
-            }
-
+            var result = handle.GetTexts();
             handle.Release();
             return result;
+        }
+
+        public async UniTask<bool> OpenRawFileAsync(string path, RawZipper rawZipper, CancellationToken cancellationToken = default)
+        {
+            if (rawZipper == null)
+                return false;
+
+            var handle = new RawMsgFileHandle();
+
+            try
+            {
+                handle.Initialize(path, null);
+                await handle.GetTask(cancellationToken);
+                handle.Finish();
+
+                if (string.IsNullOrEmpty(handle.Path))
+                    return false;
+                return await rawZipper.OpenAsync(handle.Path, cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                return false;
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                return false;
+            }
+            finally
+            {
+                handle.Release();
+            }
         }
 
         public void IncrementReferenceCount(string path)

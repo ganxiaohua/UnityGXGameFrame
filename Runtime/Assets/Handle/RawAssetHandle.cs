@@ -6,7 +6,7 @@ using YooAsset;
 
 namespace GameFrame.Runtime
 {
-    public struct TextAssetHandle : IAssetHandle
+    public struct RawAssetHandle : IAssetHandle
     {
         public bool IsValid => internalHandle?.IsValid ?? false;
 
@@ -17,16 +17,16 @@ namespace GameFrame.Runtime
             get
             {
                 if (internalHandle != null && internalHandle.Status == EOperationStatus.Succeed)
-                    return internalHandle.AssetObject;
+                    return internalHandle.GetRawFileData();
                 return null;
             }
         }
 
         public IAssetReference AssetReference => null;
 
-        private AssetHandle internalHandle;
+        private YooAsset.RawFileHandle internalHandle;
 
-        public void Initialize(object key,Type type)
+        public void Initialize(object key, Type type)
         {
             try
             {
@@ -34,8 +34,8 @@ namespace GameFrame.Runtime
                 using (new Profiler("TextAssetHandle.Initialize"))
 #endif
                 {
-                    var package = PackageSearcher.SearchByAssetLocation((string) key, out var info,type);
-                    internalHandle = package.LoadAssetAsync(info);
+                    var package = PackageSearcher.SearchByAssetLocation((string) key, out var info, null);
+                    internalHandle = package.LoadRawFileAsync(info);
                 }
             }
             catch (Exception e)
@@ -51,17 +51,24 @@ namespace GameFrame.Runtime
 
         public void Finish()
         {
-            // never called
+       
+        }
+
+        public string GetText()
+        {
+            if (internalHandle != null && internalHandle.Status == EOperationStatus.Succeed)
+                return internalHandle.GetRawFileText();
+            return null;
         }
 
         public void Release()
         {
             if (internalHandle != null && internalHandle.IsValid)
             {
-                internalHandle.Dispose();
                 var assetInfo = internalHandle.GetAssetInfo();
+                internalHandle.Dispose();
                 var package = PackageSearcher.SearchByAssetLocation(assetInfo.AssetPath);
-                package.TryUnloadUnusedAsset(assetInfo.AssetPath);
+                package?.TryUnloadUnusedAsset(assetInfo);
                 internalHandle = default;
             }
         }
