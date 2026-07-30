@@ -1,12 +1,10 @@
 #if !UNITY_WEBGL
 using System;
-using System.IO;
+using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.IO.LowLevel.Unsafe;
-using Unity.Jobs;
 using UnityEngine;
 
 namespace GameFrame.Runtime
@@ -23,12 +21,29 @@ namespace GameFrame.Runtime
 
         private FileHandle fileHandle;
 
-        private JobHandle readDependency;
+        private readonly RawZipperMemoryPool memoryPool = new();
+
+        private readonly List<PendingRead> pendingReads = new();
+
+        private readonly List<PendingRead> completedReads = new();
+
+        private bool isUpdating;
+
+        private bool disposed;
 
         public async UniTask<bool> OpenAsync(string param, CancellationToken cancellationToken = default)
         {
+            if (disposed)
+            {
+                Debug.LogError($"{nameof(RawZipper)} has already been disposed.");
+                return false;
+            }
+
             if (string.IsNullOrWhiteSpace(param))
-                throw new ArgumentException("Raw file path cannot be null or empty.", nameof(param));
+            {
+                Debug.LogError("Raw file path cannot be null or empty.");
+                return false;
+            }
 
             if (cancellationToken.IsCancellationRequested)
                 return false;
@@ -81,186 +96,328 @@ namespace GameFrame.Runtime
 
                 return true;
             }
-            catch
+            catch (Exception exception)
             {
+                string failedPath = path;
                 if (version == Versions)
                     InvalidateAndClose();
-                throw;
+
+                Debug.LogError($"Failed to open raw file: {failedPath}\n{exception}");
+                return false;
             }
         }
 
-        public async UniTask<T> LoadAsync<T>(long offset, CancellationToken cancellationToken = default) where T : unmanaged
+        public UniTask<T> LoadAsync<T>(long offset, CancellationToken cancellationToken = default)
+            where T : unmanaged
         {
             long byteCount = UnsafeUtility.SizeOf<T>();
-            ValidateRange(offset, byteCount);
+            if (!ValidateRange(offset, byteCount))
+                return UniTask.FromResult(default(T));
+
+            if (disposed)
+            {
+                Debug.LogError($"{nameof(RawZipper)} has already been disposed.");
+                return UniTask.FromResult(default(T));
+            }
 
             if (cancellationToken.IsCancellationRequested)
-                return default;
+                return UniTask.FromResult(default(T));
 
-            int version = Versions;
-            using var operation = BeginRead(offset, byteCount, UnsafeUtility.AlignOf<T>());
-            if (!operation.IsValid)
-                return default;
-
-            if (!await WaitForReadAsync(operation.Handle, version, cancellationToken))
-                return default;
-
-            if (!ValidateRead(operation.Status, operation.BytesRead, offset, byteCount))
-                return default;
-
-            return ReadValue<T>(operation.Buffer);
+            var request = new ValueRead<T>(
+                Versions, offset, byteCount, cancellationToken);
+            BeginRead(request, UnsafeUtility.AlignOf<T>());
+            return request.Task;
         }
 
-        public async UniTask<T[]> LoadArrayAsync<T>(long offset, int count, CancellationToken cancellationToken = default) where T : unmanaged
+        public UniTask<T[]> LoadArrayAsync<T>(long offset, int count,
+            CancellationToken cancellationToken = default) where T : unmanaged
         {
             if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset), offset, "Offset cannot be negative.");
+            {
+                Debug.LogError($"Raw file offset cannot be negative: {offset}.");
+                return UniTask.FromResult<T[]>(default);
+            }
+
             if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count), count, "Count cannot be negative.");
+            {
+                Debug.LogError($"Raw file element count cannot be negative: {count}.");
+                return UniTask.FromResult<T[]>(default);
+            }
+
+            if (disposed)
+            {
+                Debug.LogError($"{nameof(RawZipper)} has already been disposed.");
+                return UniTask.FromResult<T[]>(default);
+            }
 
             if (cancellationToken.IsCancellationRequested)
-                return default;
+                return UniTask.FromResult<T[]>(default);
             if (count == 0)
-                return Array.Empty<T>();
+                return UniTask.FromResult(Array.Empty<T>());
 
-            long byteCount = checked((long) UnsafeUtility.SizeOf<T>() * count);
-            ValidateRange(offset, byteCount);
+            long byteCount = (long) UnsafeUtility.SizeOf<T>() * count;
+            if (!ValidateRange(offset, byteCount))
+                return UniTask.FromResult<T[]>(default);
 
-            int version = Versions;
-            using var operation = BeginRead(offset, byteCount, UnsafeUtility.AlignOf<T>());
-            if (!operation.IsValid)
-                return default;
-
-            if (!await WaitForReadAsync(operation.Handle, version, cancellationToken))
-                return default;
-
-            if (!ValidateRead(operation.Status, operation.BytesRead, offset, byteCount))
-                return default;
-
-            return ReadArray<T>(operation.Buffer, count, byteCount);
+            var request = new ArrayRead<T>(
+                Versions, offset, byteCount, cancellationToken, count);
+            BeginRead(request, UnsafeUtility.AlignOf<T>());
+            return request.Task;
         }
 
         public UniTask<T[]> LoadRangeAsync<T>(long offset, int byteLength,
-                CancellationToken cancellationToken = default) where T : unmanaged
+            CancellationToken cancellationToken = default) where T : unmanaged
         {
             if (byteLength < 0)
-                throw new ArgumentOutOfRangeException(nameof(byteLength), byteLength, "Byte length cannot be negative.");
+            {
+                Debug.LogError($"Raw file byte length cannot be negative: {byteLength}.");
+                return UniTask.FromResult<T[]>(default);
+            }
 
             int elementSize = UnsafeUtility.SizeOf<T>();
             if (byteLength % elementSize != 0)
             {
-                throw new InvalidDataException(
-                        $"The requested range ({byteLength} bytes) is not aligned to {typeof(T).Name} ({elementSize} bytes).");
+                Debug.LogError(
+                    $"The requested raw file range ({byteLength} bytes) is not aligned to " +
+                    $"{typeof(T).Name} ({elementSize} bytes).");
+                return UniTask.FromResult<T[]>(default);
             }
 
             return LoadArrayAsync<T>(offset, byteLength / elementSize, cancellationToken);
         }
 
         public UniTask<byte[]> LoadBytesAsync(long offset, int byteLength,
-                CancellationToken cancellationToken = default)
+            CancellationToken cancellationToken = default)
         {
             return LoadArrayAsync<byte>(offset, byteLength, cancellationToken);
         }
 
         public void Dispose()
         {
+            if (disposed)
+                return;
+
+            disposed = true;
             InvalidateAndClose();
+
+            try
+            {
+                memoryPool.Dispose();
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError($"Failed to dispose raw file memory pool.\n{exception}");
+            }
+        }
+
+        /// <summary>
+        /// Checks queued raw reads and completes their UniTasks on the calling thread.
+        /// The owner must call this once per frame.
+        /// </summary>
+        public void Update()
+        {
+            if (disposed || isUpdating || pendingReads.Count == 0)
+                return;
+
+            isUpdating = true;
+            completedReads.Clear();
+
+            for (int i = pendingReads.Count - 1; i >= 0; i--)
+            {
+                PendingRead request = pendingReads[i];
+                request.TryCancel(Versions);
+                if (!request.IsCompleted)
+                    continue;
+
+                pendingReads.RemoveAt(i);
+                CompleteRead(request, false);
+                completedReads.Add(request);
+            }
+
+            for (int i = 0; i < completedReads.Count; i++)
+                Publish(completedReads[i]);
+
+            isUpdating = false;
         }
 
         private void InvalidateAndClose()
         {
             Versions++;
 
-            if (fileHandle.IsValid())
+            PendingRead[] invalidatedReads = null;
+            if (pendingReads.Count > 0)
             {
-                var closeDependency = JobHandle.CombineDependencies(fileHandle.JobHandle, readDependency);
-                fileHandle.Close(closeDependency).Complete();
+                invalidatedReads = pendingReads.ToArray();
+                pendingReads.Clear();
+
+                for (int i = 0; i < invalidatedReads.Length; i++)
+                {
+                    invalidatedReads[i].TryCancel(Versions);
+                    CompleteRead(invalidatedReads[i], true);
+                }
             }
 
-            fileHandle = default;
-            readDependency = default;
-            path = null;
-        }
-
-        private unsafe ReadOperation BeginRead(long offset, long byteCount, int alignment)
-        {
-            if (!IsOpen)
-                return default;
-
-            void* buffer = null;
-            ReadCommand* command = null;
-            ReadHandle readHandle = default;
-
+            string closingPath = path;
             try
             {
-                buffer = UnsafeUtility.Malloc(byteCount, alignment, Allocator.Persistent);
-                if (buffer == null)
-                    throw new OutOfMemoryException($"Failed to allocate {byteCount} bytes for raw file reading.");
+                if (fileHandle.IsValid())
+                    fileHandle.Close(fileHandle.JobHandle).Complete();
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError($"Failed to close raw file: {closingPath}\n{exception}");
+            }
+            finally
+            {
+                fileHandle = default;
+                path = null;
+            }
 
-                command = (ReadCommand*) UnsafeUtility.Malloc(UnsafeUtility.SizeOf<ReadCommand>(), UnsafeUtility.AlignOf<ReadCommand>(), Allocator.Persistent);
-                if (command == null)
-                    throw new OutOfMemoryException("Failed to allocate a raw file read command.");
+            if (invalidatedReads != null)
+            {
+                for (int i = 0; i < invalidatedReads.Length; i++)
+                    Publish(invalidatedReads[i]);
+            }
+        }
 
-                *command = new ReadCommand
-                {
-                        Buffer = buffer,
-                        Offset = offset,
-                        Size = byteCount
-                };
+        private void BeginRead(PendingRead request, int alignment)
+        {
+            if (!IsOpen)
+            {
+                request.PrepareDefault();
+                Publish(request);
+                return;
+            }
 
-                var commandArray = new ReadCommandArray
-                {
-                        ReadCommands = command,
-                        CommandCount = 1
-                };
-
+            RawZipperMemory memory = null;
+            ReadHandle readHandle = default;
+            try
+            {
+                memory = memoryPool.Rent(request.ExpectedBytes, alignment);
+                ReadCommandArray commandArray =
+                    memory.CreateCommandArray(request.Offset, request.ExpectedBytes);
                 readHandle = AsyncReadManager.Read(in fileHandle, commandArray);
                 if (!readHandle.IsValid())
                 {
                     Debug.LogError($"Failed to queue raw file read: {path}");
-                    UnsafeUtility.Free(command, Allocator.Persistent);
-                    UnsafeUtility.Free(buffer, Allocator.Persistent);
-                    return default;
+                    ReturnMemory(memory);
+                    request.PrepareDefault();
+                    Publish(request);
+                    return;
                 }
 
-                readDependency = JobHandle.CombineDependencies(readDependency, readHandle.JobHandle);
-                return new ReadOperation(readHandle, (IntPtr) buffer, (IntPtr) command);
+                request.Attach(readHandle, memory);
+                pendingReads.Add(request);
             }
-            catch
+            catch (Exception exception)
             {
                 if (readHandle.IsValid())
                 {
-                    readHandle.JobHandle.Complete();
-                    readHandle.Dispose();
+                    try
+                    {
+                        if (readHandle.Status == ReadStatus.InProgress)
+                            readHandle.Cancel();
+                        readHandle.JobHandle.Complete();
+                        readHandle.Dispose();
+                    }
+                    catch (Exception cleanupException)
+                    {
+                        Debug.LogError(
+                            $"Failed to clean up an unqueued raw file read.\n{cleanupException}");
+                    }
                 }
 
-                if (command != null)
-                    UnsafeUtility.Free(command, Allocator.Persistent);
-                if (buffer != null)
-                    UnsafeUtility.Free(buffer, Allocator.Persistent);
-                throw;
+                ReturnMemory(memory);
+
+                request.Detach();
+                request.PrepareDefault();
+                Debug.LogError(
+                    $"Failed to queue raw file read. Path:{path}, Offset:{request.Offset}, " +
+                    $"Bytes:{request.ExpectedBytes}\n{exception}");
+                Publish(request);
             }
         }
 
-        private async UniTask<bool> WaitForReadAsync(ReadHandle readHandle, int version, CancellationToken cancellationToken)
+        private void CompleteRead(PendingRead request, bool forceDefault)
         {
-            while (!readHandle.JobHandle.IsCompleted)
+            ReadHandle readHandle = request.Handle;
+            RawZipperMemory memory = request.Memory;
+
+            try
             {
-                if (version != Versions || cancellationToken.IsCancellationRequested)
+                if (readHandle.IsValid())
+                    readHandle.JobHandle.Complete();
+
+                if (forceDefault || request.IsInvalid(Versions))
                 {
-                    if (readHandle.IsValid() && readHandle.Status == ReadStatus.InProgress)
-                        readHandle.Cancel();
-                    if (readHandle.IsValid())
-                        readHandle.JobHandle.Complete();
-                    return false;
+                    request.PrepareDefault();
+                }
+                else if (!ValidateRead(
+                             readHandle.Status,
+                             readHandle.GetBytesRead(),
+                             request.Offset,
+                             request.ExpectedBytes))
+                {
+                    request.PrepareDefault();
+                }
+                else
+                {
+                    request.PrepareSuccess(memory.Buffer);
+                }
+            }
+            catch (Exception exception)
+            {
+                request.PrepareDefault();
+                Debug.LogError(
+                    $"Failed to complete raw file read. Path:{path}, Offset:{request.Offset}, " +
+                    $"Bytes:{request.ExpectedBytes}\n{exception}");
+            }
+            finally
+            {
+                if (readHandle.IsValid())
+                {
+                    try
+                    {
+                        readHandle.Dispose();
+                    }
+                    catch (Exception exception)
+                    {
+                        Debug.LogError(
+                            $"Failed to dispose raw file read handle. Path:{path}, " +
+                            $"Offset:{request.Offset}\n{exception}");
+                    }
                 }
 
-                await UniTask.Yield(PlayerLoopTiming.Update);
+                request.Detach();
+                ReturnMemory(memory);
             }
+        }
 
-            if (readHandle.IsValid())
-                readHandle.JobHandle.Complete();
-            return version == Versions && !cancellationToken.IsCancellationRequested;
+        private void ReturnMemory(RawZipperMemory memory)
+        {
+            if (memory == null || !memory.IsInUse)
+                return;
+
+            try
+            {
+                memoryPool.Return(memory);
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError($"Failed to return raw file read memory.\n{exception}");
+            }
+        }
+
+        private void Publish(PendingRead request)
+        {
+            try
+            {
+                request.Publish(Versions);
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError($"Failed to publish raw file read result.\n{exception}");
+            }
         }
 
         private bool ValidateRead(ReadStatus status, long bytesRead, long offset, long expectedBytes)
@@ -269,19 +426,33 @@ namespace GameFrame.Runtime
                 return true;
 
             Debug.LogError(
-                    $"Raw file range could not be read completely. Path:{path}, Offset:{offset}, " +
-                    $"Expected:{expectedBytes}, Read:{bytesRead}, Status:{status}");
+                $"Raw file range could not be read completely. Path:{path}, Offset:{offset}, " +
+                $"Expected:{expectedBytes}, Read:{bytesRead}, Status:{status}");
             return false;
         }
 
-        private static void ValidateRange(long offset, long byteCount)
+        private static bool ValidateRange(long offset, long byteCount)
         {
             if (offset < 0)
-                throw new ArgumentOutOfRangeException(nameof(offset), offset, "Offset cannot be negative.");
-            if (byteCount <= 0)
-                throw new ArgumentOutOfRangeException(nameof(byteCount), byteCount, "Byte count must be positive.");
+            {
+                Debug.LogError($"Raw file offset cannot be negative: {offset}.");
+                return false;
+            }
 
-            _ = checked(offset + byteCount);
+            if (byteCount <= 0)
+            {
+                Debug.LogError($"Raw file byte count must be positive: {byteCount}.");
+                return false;
+            }
+
+            if (offset > long.MaxValue - byteCount)
+            {
+                Debug.LogError(
+                    $"Raw file range exceeds the supported offset. Offset:{offset}, Bytes:{byteCount}.");
+                return false;
+            }
+
+            return true;
         }
 
         private static unsafe T ReadValue<T>(IntPtr buffer) where T : unmanaged
@@ -296,60 +467,196 @@ namespace GameFrame.Runtime
                 UnsafeUtility.MemCpy(destination, buffer.ToPointer(), byteCount);
             return result;
         }
-        
-        private struct ReadOperation : IDisposable
+
+        private enum ReadCompletionState
         {
-            public bool IsValid => readHandle.IsValid();
+            None,
+            Success,
+            Default
+        }
 
-            public ReadStatus Status => readHandle.Status;
+        private abstract class PendingRead
+        {
+            public long Offset { get; }
 
-            public long BytesRead => readHandle.GetBytesRead();
+            public long ExpectedBytes { get; }
 
-            public IntPtr Buffer => buffer;
+            public ReadHandle Handle { get; private set; }
 
-            public ReadHandle Handle => readHandle;
+            public RawZipperMemory Memory { get; private set; }
 
-            private ReadHandle readHandle;
-
-            private IntPtr buffer;
-
-            private IntPtr command;
-
-            private bool disposed;
-
-            public ReadOperation(ReadHandle readHandle, IntPtr buffer, IntPtr command)
+            public bool IsCompleted
             {
-                this.readHandle = readHandle;
-                this.buffer = buffer;
-                this.command = command;
-                disposed = false;
+                get
+                {
+                    try
+                    {
+                        return !Handle.IsValid() || Handle.JobHandle.IsCompleted;
+                    }
+                    catch (Exception exception)
+                    {
+                        Debug.LogError(
+                            $"Failed to check raw file read state at offset {Offset}.\n{exception}");
+                        return true;
+                    }
+                }
             }
 
-            public unsafe void Dispose()
+            private readonly int version;
+
+            private readonly CancellationToken cancellationToken;
+
+            private ReadCompletionState completionState;
+
+            private bool cancellationRequested;
+
+            private bool published;
+
+            protected PendingRead(int version, long offset, long expectedBytes,
+                CancellationToken cancellationToken)
             {
-                if (disposed)
+                this.version = version;
+                this.cancellationToken = cancellationToken;
+                Offset = offset;
+                ExpectedBytes = expectedBytes;
+            }
+
+            public void Attach(ReadHandle handle, RawZipperMemory memory)
+            {
+                Handle = handle;
+                Memory = memory;
+            }
+
+            public void Detach()
+            {
+                Handle = default;
+                Memory = null;
+            }
+
+            public bool IsInvalid(int currentVersion)
+            {
+                return version != currentVersion || cancellationToken.IsCancellationRequested;
+            }
+
+            public void TryCancel(int currentVersion)
+            {
+                if (cancellationRequested || !IsInvalid(currentVersion))
                     return;
 
-                disposed = true;
-
-                if (readHandle.IsValid())
+                cancellationRequested = true;
+                try
                 {
-                    readHandle.JobHandle.Complete();
-                    readHandle.Dispose();
-                    readHandle = default;
+                    if (Handle.IsValid() && Handle.Status == ReadStatus.InProgress)
+                        Handle.Cancel();
+                }
+                catch (Exception exception)
+                {
+                    Debug.LogError(
+                        $"Failed to cancel raw file read at offset {Offset}.\n{exception}");
+                }
+            }
+
+            public void PrepareSuccess(IntPtr buffer)
+            {
+                CaptureResult(buffer);
+                completionState = ReadCompletionState.Success;
+            }
+
+            public void PrepareDefault()
+            {
+                completionState = ReadCompletionState.Default;
+            }
+
+            public void Publish(int currentVersion)
+            {
+                if (published)
+                    return;
+
+                published = true;
+                if (IsInvalid(currentVersion))
+                {
+                    PublishDefault();
+                    return;
                 }
 
-                if (command != IntPtr.Zero)
+                switch (completionState)
                 {
-                    UnsafeUtility.Free(command.ToPointer(), Allocator.Persistent);
-                    command = IntPtr.Zero;
+                    case ReadCompletionState.Success:
+                        PublishResult();
+                        break;
+                    default:
+                        PublishDefault();
+                        break;
                 }
+            }
 
-                if (buffer != IntPtr.Zero)
-                {
-                    UnsafeUtility.Free(buffer.ToPointer(), Allocator.Persistent);
-                    buffer = IntPtr.Zero;
-                }
+            protected abstract void CaptureResult(IntPtr buffer);
+
+            protected abstract void PublishResult();
+
+            protected abstract void PublishDefault();
+        }
+
+        private sealed class ValueRead<T> : PendingRead where T : unmanaged
+        {
+            public UniTask<T> Task => completionSource.Task;
+
+            private readonly UniTaskCompletionSource<T> completionSource = new();
+
+            private T result;
+
+            public ValueRead(int version, long offset, long expectedBytes,
+                CancellationToken cancellationToken)
+                : base(version, offset, expectedBytes, cancellationToken)
+            {
+            }
+
+            protected override void CaptureResult(IntPtr buffer)
+            {
+                result = ReadValue<T>(buffer);
+            }
+
+            protected override void PublishResult()
+            {
+                completionSource.TrySetResult(result);
+            }
+
+            protected override void PublishDefault()
+            {
+                completionSource.TrySetResult(default);
+            }
+        }
+
+        private sealed class ArrayRead<T> : PendingRead where T : unmanaged
+        {
+            public UniTask<T[]> Task => completionSource.Task;
+
+            private readonly UniTaskCompletionSource<T[]> completionSource = new();
+
+            private readonly int count;
+
+            private T[] result;
+
+            public ArrayRead(int version, long offset, long expectedBytes,
+                CancellationToken cancellationToken, int count)
+                : base(version, offset, expectedBytes, cancellationToken)
+            {
+                this.count = count;
+            }
+
+            protected override void CaptureResult(IntPtr buffer)
+            {
+                result = ReadArray<T>(buffer, count, ExpectedBytes);
+            }
+
+            protected override void PublishResult()
+            {
+                completionSource.TrySetResult(result);
+            }
+
+            protected override void PublishDefault()
+            {
+                completionSource.TrySetResult(default);
             }
         }
     }
