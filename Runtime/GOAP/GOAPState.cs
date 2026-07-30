@@ -5,89 +5,58 @@ namespace GameFrame.Runtime
     public struct GOAPState : IEquatable<GOAPState>
     {
         /// <summary>
-        /// 一共32*2个预设位，如若不足自己添加，或者整合成ulong 在甲一组ulong
+        /// 一共64个预设位。
         /// </summary>
-        /// ------------
-        private uint bits1;
-
-        private uint bits2;
+        private ulong bits;
 
         // 为1表示这一位有意义（被设置过）
-        private uint care1;
-        private uint care2;
+        private ulong care;
 
-        private const uint BitsSize1 = sizeof(uint) * 8;
-        private const uint BitsSize2 = BitsSize1 * 2;
-        public const uint BitsSizeMax = BitsSize2;
+        public const uint BitsSizeMax = sizeof(ulong) * 8;
 
-        public static readonly GOAPState Empty = new(0, 0, 0, 0);
+        public static readonly GOAPState Empty = new(0UL, 0UL);
 
-        public GOAPState(uint low, uint high, uint careLow = 0, uint careHigh = 0)
+        public GOAPState(ulong bits, ulong care = 0)
         {
-            bits1 = low;
-            bits2 = high;
-            care1 = careLow;
-            care2 = careHigh;
+            this.bits = bits;
+            this.care = care;
         }
 
         public void Set(int index, bool value)
         {
-            if (index < 0 || index > BitsSizeMax)
-                throw new ArgumentOutOfRangeException(nameof(index));
+            ValidateIndex(index);
 
-            if (index < BitsSize1)
-            {
-                care1 |= 1U << index;
-                if (value)
-                    bits1 |= 1U << index;
-                else
-                    bits1 &= ~(1U << index);
-            }
+            ulong mask = 1UL << index;
+            care |= mask;
+            if (value)
+                bits |= mask;
             else
-            {
-                int idx = index - (int) BitsSize1;
-                care2 |= 1U << idx;
-                if (value)
-                    bits2 |= 1U << idx;
-                else
-                    bits2 &= ~(1U << idx);
-            }
+                bits &= ~mask;
         }
 
         public bool Get(int index)
         {
-            if (index < 0 || index > BitsSizeMax)
-                throw new ArgumentOutOfRangeException(nameof(index));
+            ValidateIndex(index);
 
-            if (index < BitsSize1)
-                return (bits1 & (1U << index)) != 0;
-            else
-                return (bits2 & (1U << (index - (int) BitsSize1))) != 0;
+            return (bits & (1UL << index)) != 0;
         }
 
         public bool GetCare(int index)
         {
-            if (index < 0 || index > BitsSizeMax)
-                throw new ArgumentOutOfRangeException(nameof(index));
+            ValidateIndex(index);
 
-            if (index < BitsSize1)
-                return (care1 & (1U << index)) != 0;
-            else
-                return (care2 & (1U << (index - (int) BitsSize1))) != 0;
+            return (care & (1UL << index)) != 0;
         }
 
         public bool Satisfies(GOAPState goal)
         {
-            uint relevant1 = goal.care1;
-            uint relevant2 = goal.care2;
-            return ((bits1 & relevant1) == (goal.bits1 & relevant1)) &&
-                   ((bits2 & relevant2) == (goal.bits2 & relevant2));
+            ulong relevant = goal.care;
+            return (bits & relevant) == (goal.bits & relevant);
         }
 
         public void Apply(GOAPState effects)
         {
-            bits1 = (bits1 & ~effects.care1) | (effects.bits1 & effects.care1);
-            bits2 = (bits2 & ~effects.care2) | (effects.bits2 & effects.care2);
+            bits = (bits & ~effects.care) | (effects.bits & effects.care);
         }
 
 
@@ -98,7 +67,7 @@ namespace GameFrame.Runtime
 
         public bool Equals(GOAPState other)
         {
-            return bits1 == other.bits1 && bits2 == other.bits2;
+            return bits == other.bits;
         }
 
         public override bool Equals(object obj)
@@ -108,7 +77,7 @@ namespace GameFrame.Runtime
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(bits1, bits2);
+            return bits.GetHashCode();
         }
 
         public static bool operator ==(GOAPState left, GOAPState right)
@@ -123,8 +92,19 @@ namespace GameFrame.Runtime
 
         public override string ToString()
         {
-            return
-                $"WS(L:{Convert.ToString((long) bits1, 2).PadLeft(64, '0')}, H:{Convert.ToString((long) bits2, 2).PadLeft(64, '0')}, CareL:{Convert.ToString((long) care1, 2).PadLeft(64, '0')}, CareH:{Convert.ToString((long) care2, 2).PadLeft(64, '0')})";
+            return $"WS(Bits:{ToBinaryString(bits)}, Care:{ToBinaryString(care)})";
+        }
+
+
+        private static void ValidateIndex(int index)
+        {
+            if ((uint) index >= BitsSizeMax)
+                throw new ArgumentOutOfRangeException(nameof(index));
+        }
+
+        private static string ToBinaryString(ulong value)
+        {
+            return Convert.ToString(unchecked((long) value), 2).PadLeft((int) BitsSizeMax, '0');
         }
     }
 }
