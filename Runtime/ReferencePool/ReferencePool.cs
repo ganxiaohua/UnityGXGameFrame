@@ -88,27 +88,10 @@ namespace GameFrame.Runtime
                 foreach (Type type in waitDestroyList)
                 {
                     Debugger.Log($"clear {type.Name} ReleasePool");
-                    RemoveAll(type);
+                    Clear(type);
                 }
 
                 waitDestroyList.Clear();
-            }
-        }
-
-        /// <summary>
-        /// 清除所有引用池。
-        /// </summary>
-        public static void ClearAll()
-        {
-            lock (ReferenceCollectionDict)
-            {
-                foreach (KeyValuePair<Type, ReferenceCollection> referenceCollection in ReferenceCollectionDict)
-                {
-                    referenceCollection.Value.RemoveAll();
-                }
-
-                ReferenceCollectionDict.Clear();
-                referenceCollectionList.Clear();
             }
         }
 
@@ -224,14 +207,33 @@ namespace GameFrame.Runtime
         /// 从引用池中移除所有的引用。
         /// </summary>
         /// <param name="referenceType">引用类型。</param>
-        private static void RemoveAll(Type referenceType)
+        private static void Clear(Type referenceType)
         {
             lock (ReferenceCollectionDict)
             {
                 InternalCheckReferenceType(referenceType);
-                GetReferenceCollection(referenceType).RemoveAll();
+                GetReferenceCollection(referenceType).Clear();
                 referenceCollectionList.Remove(ReferenceCollectionDict[referenceType]);
                 ReferenceCollectionDict.Remove(referenceType);
+            }
+        }
+        
+        
+        
+        /// <summary>
+        /// 清除所有引用池。
+        /// </summary>
+        public static void ClearAll()
+        {
+            lock (ReferenceCollectionDict)
+            {
+                foreach (KeyValuePair<Type, ReferenceCollection> referenceCollection in ReferenceCollectionDict)
+                {
+                    referenceCollection.Value.Clear();
+                }
+
+                ReferenceCollectionDict.Clear();
+                referenceCollectionList.Clear();
             }
         }
 
@@ -255,7 +257,7 @@ namespace GameFrame.Runtime
 #endif
         }
 
-        private static ReferenceCollection GetReferenceCollection(Type referenceType)
+        internal static ReferenceCollection GetReferenceCollection(Type referenceType)
         {
             if (referenceType == null)
             {

@@ -4,9 +4,32 @@ using UnityEngine;
 
 namespace GameFrame.Runtime
 {
+    public static class ReferenceCollection<T> where T : class, IDisposable
+    {
+        private static ReferencePool.ReferenceCollection referenceCollection;
+
+        public static T Acquire()
+        {
+            RefreshReferenceCollection();
+            return (T) referenceCollection.Acquire();
+        }
+
+        public static void Recycle(T t)
+        {
+            RefreshReferenceCollection();
+            referenceCollection.OnRelease(t);
+        }
+
+        private static void RefreshReferenceCollection()
+        {
+            if (referenceCollection == null || !referenceCollection.IsAction)
+                referenceCollection = ReferencePool.GetReferenceCollection(typeof(T));
+        }
+    }
+
     public static partial class ReferencePool
     {
-        private sealed class ReferenceCollection
+        internal sealed class ReferenceCollection
         {
             private readonly Queue<IDisposable> references;
             private readonly Type referenceType;
@@ -16,6 +39,7 @@ namespace GameFrame.Runtime
             private int releaseReferenceCount;
             private int addReferenceCount;
             private int removeReferenceCount;
+            internal bool IsAction;
 
 
             /// <summary>
@@ -39,6 +63,7 @@ namespace GameFrame.Runtime
                 addReferenceCount = 0;
                 removeReferenceCount = 0;
                 expireTime = 60; //如果这个池子超过一分钟没有使用则释放所有的引用
+                IsAction = true;
             }
 
             public Type ReferenceType
@@ -203,6 +228,12 @@ namespace GameFrame.Runtime
                 }
 
                 return false;
+            }
+
+            public void Clear()
+            {
+                RemoveAll();
+                IsAction = false;
             }
         }
     }
