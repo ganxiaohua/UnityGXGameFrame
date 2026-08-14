@@ -12,22 +12,22 @@ namespace GameFrame.Runtime
     {
         private ArrayEx<bool> blocks;
 
-        private List<T> datas;
+        public List<T> Datas { get; private set; }
 
         private int capacity;
 
-        public int Count => datas.Count;
+        public int Count => Datas.Count;
 
         public IndexHashSet(int capacity)
         {
-            datas = new List<T>(capacity);
+            Datas = new List<T>(capacity);
             blocks = new(capacity, true);
             SetCapacity(capacity);
         }
 
         public void SetCapacity(int capacity)
         {
-            datas.Capacity = capacity;
+            Datas.Capacity = capacity;
             blocks.SetCapacity(capacity);
         }
 
@@ -36,7 +36,7 @@ namespace GameFrame.Runtime
             bool have = blocks[data.ID];
             if (!have)
             {
-                datas.Add(data);
+                Datas.Add(data);
                 blocks[data.ID] = true;
             }
 
@@ -48,7 +48,7 @@ namespace GameFrame.Runtime
             bool have = blocks[data.ID];
             if (have)
             {
-                datas.RemoveSwapBack(data);
+                Datas.RemoveSwapBack(data);
                 blocks[data.ID] = false;
             }
 
@@ -59,12 +59,12 @@ namespace GameFrame.Runtime
         public void Clear()
         {
             blocks.Clear();
-            datas.Clear();
+            Datas.Clear();
         }
 
-        public Enumerator GetEnumerator() => new Enumerator(datas);
+        public Enumerator GetEnumerator() => new Enumerator(Datas);
 
-        IEnumerator<T> IEnumerable<T>.GetEnumerator() => this.datas.GetEnumerator();
+        IEnumerator<T> IEnumerable<T>.GetEnumerator() => this.Datas.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator()
         {
