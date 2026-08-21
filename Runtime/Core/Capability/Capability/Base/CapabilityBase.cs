@@ -10,6 +10,9 @@ namespace GameFrame.Runtime
         public ECCWorld World { get; private set; }
         public EffEntity Owner { get; private set; }
         public bool IsActive { get; internal set; }
+
+        public bool IsEfficient => Owner != null && Owner.IsAction;
+
         public virtual CapabilitysUpdateMode UpdateMode { get; protected set; } = CapabilitysUpdateMode.Update;
         public virtual int TickGroupOrder { get; protected set; }
 

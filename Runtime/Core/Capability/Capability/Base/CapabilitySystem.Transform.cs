@@ -4,24 +4,27 @@ namespace GameFrame.Runtime
 {
     public partial class Capabilitys
     {
-        public void Add<T>(EffEntity player) where T : CapabilityBase
+        public CapabilitysUpdateMode Add<T>(EffEntity player) where T : CapabilityBase
         {
             var capability = ReferencePool.Acquire<T>();
-            if (capability.UpdateMode == CapabilitysUpdateMode.Update)
+            var updateMode = capability.UpdateMode;
+            if (updateMode == CapabilitysUpdateMode.Update)
             {
                 int id = CapabilityID<T, IUpdateSystem>.TID;
                 SetArray(capabilitiesUpdateList, player, id, capability);
             }
-            else if (capability.UpdateMode == CapabilitysUpdateMode.FixedUpdate)
+            else if (updateMode == CapabilitysUpdateMode.FixedUpdate)
             {
                 int id = CapabilityID<T, IFixedUpdateSystem>.TID;
                 SetArray(capabilitiesFixUpdateList, player, id, capability);
             }
-            else if (capability.UpdateMode == CapabilitysUpdateMode.LateUpdate)
+            else if (updateMode == CapabilitysUpdateMode.LateUpdate)
             {
                 int id = CapabilityID<T, ILateUpdateSystem>.TID;
                 SetArray(capabilitiesLateUpdateList, player, id, capability);
             }
+
+            return updateMode;
         }
 
         private void SetArray(JumpIndexArray<CapabilityBase>[] arrays, EffEntity player, int id, CapabilityBase capability)
@@ -41,7 +44,7 @@ namespace GameFrame.Runtime
             cap.Init(id, eccWorld, player);
         }
 
-        public void GetCapabilityBaseWithPlayer(EffEntity player, List<CapabilityBase> update, List<CapabilityBase> fixedUpdate,
+        public void SetCapabilityBaseWithPlayer(EffEntity player, List<CapabilityBase> update, List<CapabilityBase> fixedUpdate,
             List<CapabilityBase> lateUpdate)
         {
             void Get(EffEntity player, JumpIndexArray<CapabilityBase>[] scr, List<CapabilityBase> dst)
@@ -61,13 +64,6 @@ namespace GameFrame.Runtime
             Get(player, capabilitiesUpdateList, update);
             Get(player, capabilitiesFixUpdateList, fixedUpdate);
             Get(player, capabilitiesLateUpdateList, lateUpdate);
-        }
-
-        public void Remove(EffEntity player, int capabilitieId)
-        {
-            RemoveUpdate(player, capabilitieId);
-            RemoveFixedUpdate(player, capabilitieId);
-            RemoveLatedUpdate(player, capabilitieId);
         }
 
         public void Remove(EffEntity player, int capabilitieId, CapabilitysUpdateMode updateMode)

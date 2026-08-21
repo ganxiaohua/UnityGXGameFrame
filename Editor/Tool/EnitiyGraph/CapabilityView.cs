@@ -108,7 +108,7 @@ namespace GameFrame.Editor
             capabilityBaseUpdateMode.Clear();
             capabilityBaseFixUpdateMode.Clear();
             capabilityBaseLateUpdateMode.Clear();
-            eccWorld.GetCapability(effEntity, capabilityBaseUpdateMode, capabilityBaseFixUpdateMode, capabilityBaseLateUpdateMode);
+            eccWorld.SetCapability(effEntity, capabilityBaseUpdateMode, capabilityBaseFixUpdateMode, capabilityBaseLateUpdateMode);
             updateMode = new ArrayExSimilar[capabilityBaseUpdateMode.Count];
             fixUpdateMode = new ArrayExSimilar[capabilityBaseFixUpdateMode.Count];
             lateUpdateMode = new ArrayExSimilar[capabilityBaseLateUpdateMode.Count];

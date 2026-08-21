@@ -8,6 +8,9 @@ namespace GameFrame.Runtime
 
         private Capabilitys capabilitys;
 
+        private readonly Dictionary<System.Type, CapabilitysUpdateMode> capabilityUpdateModes =
+            new Dictionary<System.Type, CapabilitysUpdateMode>();
+
 
         protected void InitCapabilitys(int updateCapabilityCount, int fixedUpdateCapabilityCount, int lateUpdateCapabilityCount, int maxTag,
             int estimatePlayer)
@@ -32,22 +35,23 @@ namespace GameFrame.Runtime
             base.RemoveChild(effEntity);
         }
 
-        public void GetCapability(EffEntity eff, List<CapabilityBase> update, List<CapabilityBase> fixedUpdate, List<CapabilityBase> LateUpdate)
+        public void SetCapability(EffEntity eff, List<CapabilityBase> update, List<CapabilityBase> fixedUpdate, List<CapabilityBase> LateUpdate)
         {
-            capabilitys.GetCapabilityBaseWithPlayer(eff, update, fixedUpdate, LateUpdate);
+            capabilitys.SetCapabilityBaseWithPlayer(eff, update, fixedUpdate, LateUpdate);
         }
 
         public void BindCapability<T>(EffEntity effEntity) where T : CapabilityBase
         {
             Assert.IsNotNull(effEntity, $"not have {effEntity.Name} ecsentity");
-            capabilitys.Add<T>(effEntity);
+            capabilityUpdateModes[typeof(T)] = capabilitys.Add<T>(effEntity);
         }
 
         public void UnBindCapability<T>(EffEntity player) where T : CapabilityBase
         {
-            var capability = ReferencePool.Acquire<T>();
+            if (!capabilityUpdateModes.TryGetValue(typeof(T), out var updateMode))
+                return;
+
             int id;
-            var updateMode = capability.UpdateMode;
             switch (updateMode)
             {
                 case CapabilitysUpdateMode.FixedUpdate:
@@ -61,14 +65,9 @@ namespace GameFrame.Runtime
                     break;
             }
 
-            ReferencePool.Release(capability);
             capabilitys.Remove(player, id, updateMode);
         }
 
-        public void UnBindCapability(EffEntity player, int capabilitiyId)
-        {
-            capabilitys.Remove(player, capabilitiyId);
-        }
 
         public bool IsBindCapability(EffEntity player, List<int> tagInts)
         {
@@ -100,6 +99,7 @@ namespace GameFrame.Runtime
         public override void Dispose()
         {
             capabilitys.Dispose();
+            capabilityUpdateModes.Clear();
             DisposeSystem();
             base.Dispose();
         }
