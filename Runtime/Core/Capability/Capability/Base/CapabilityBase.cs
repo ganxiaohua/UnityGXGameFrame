@@ -11,7 +11,9 @@ namespace GameFrame.Runtime
         public EffEntity Owner { get; private set; }
         public bool IsActive { get; internal set; }
 
-        public bool IsEfficient => Owner != null && Owner.IsAction;
+        protected bool IsSurvive { get; private set; }
+
+        public bool IsEfficient => IsSurvive && Owner != null && Owner.IsAction;
 
         public virtual CapabilitysUpdateMode UpdateMode { get; protected set; } = CapabilitysUpdateMode.Update;
         public virtual int TickGroupOrder { get; protected set; }
@@ -37,6 +39,7 @@ namespace GameFrame.Runtime
             World = world;
             Owner = owner;
             ComponentChanges = true;
+            IsSurvive = true;
             OnInit();
         }
 
@@ -78,6 +81,7 @@ namespace GameFrame.Runtime
             TagList = null;
             Owner = null;
             World = null;
+            IsSurvive = false;
         }
     }
 }
