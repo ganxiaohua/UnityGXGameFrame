@@ -8,8 +8,7 @@ namespace GameFrame.Runtime
 
         private Capabilitys capabilitys;
 
-        private readonly Dictionary<System.Type, CapabilitysUpdateMode> capabilityUpdateModes =
-            new Dictionary<System.Type, CapabilitysUpdateMode>();
+        private readonly Dictionary<System.Type, CapabilitysUpdateMode> capabilityUpdateModes = new Dictionary<System.Type, CapabilitysUpdateMode>();
 
 
         protected void InitCapabilitys(int updateCapabilityCount, int fixedUpdateCapabilityCount, int lateUpdateCapabilityCount, int maxTag,

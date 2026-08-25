@@ -12,8 +12,8 @@ public static class AllCapability {{
     
     private  static int Order()
     {{
-       {0}
+{0}
 
-       return {1};
+         return {1};
     }}
 }}

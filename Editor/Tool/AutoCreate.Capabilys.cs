@@ -50,7 +50,6 @@ namespace GameFrame.Editor
             }
 
             capabilitylist.Sort((x, y) => { return x.TickGroupOrder - y.TickGroupOrder; });
-            int index = 0;
             foreach (var item in capabilitylist)
             {
                 string updateMode = GetCapabilityUpdateModeInterface(item.UpdateMode);
@@ -67,10 +66,7 @@ namespace GameFrame.Editor
                         break;
                 }
 
-                sTempStr.Append(index == 0
-                    ? $" var orderTid =  CapabilityID<{item.GetType().FullName},{updateMode}>.TID;\n"
-                    : $"        orderTid =  CapabilityID<{item.GetType().FullName},{updateMode}>.TID;\n");
-                index++;
+                sTempStr.Append($"          _ =  CapabilityID<{item.GetType().FullName},{updateMode}>.TID;\n");
             }
 
             var str = string.Format(sTextDictionary[CreateAuto.Capability], sTempStr, number, updateCount, fixedUpdateCount, lateUpdateCount);

@@ -27,7 +27,6 @@ namespace GameFrame.Runtime
                 system.SystemInitialize();
             }
 
-
             if (entity is IUpdateSystem updateSystem)
             {
                 updateSystems.Add(updateSystem);
@@ -81,6 +80,7 @@ namespace GameFrame.Runtime
 
             updateSystems.Clear();
             fixedUpdateSystems.Clear();
+            lateUpdateSystems.Clear();
         }
     }
 }

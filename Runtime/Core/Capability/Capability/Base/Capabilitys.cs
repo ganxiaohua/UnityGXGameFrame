@@ -74,8 +74,8 @@
                 var owner = capability.Owner;
                 if (capability.TagList != null)
                 {
-                    var capailty = owner.GetComponent<CapabilityComponent>();
-                    if (capailty.IsBlock(capability.TagList))
+                    var capabilityComp = owner.GetComponent<CapabilityComponent>();
+                    if (capabilityComp.IsBlock(capability.TagList))
                         continue;
                 }
 
