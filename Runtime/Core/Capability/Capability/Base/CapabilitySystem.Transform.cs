@@ -150,7 +150,13 @@ namespace GameFrame.Runtime
         {
             var capability = array.Remove(player.ID);
             if (capability != null)
+            {
+                if (capability.IsActive)
+                {
+                    capability.OnDeactivated();
+                }
                 ReferencePool.Release(capability);
+            }
         }
     }
 }
