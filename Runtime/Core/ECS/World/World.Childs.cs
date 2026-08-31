@@ -11,9 +11,12 @@ namespace GameFrame.Runtime
 
         private Stack<int> heritageId = new();
 
+        private ulong nextEntityGeneration;
+
         private void InitializeChilds()
         {
             Children = new JumpIndexArrayEx<EffEntity>();
+            nextEntityGeneration = 0;
         }
 
         public void EstimateChildsCount(int count)
@@ -42,10 +45,18 @@ namespace GameFrame.Runtime
 
             var entity = Children.Add(id, type);
             entity.SetContext(this);
+            entity.SetGeneration(GetNextEntityGeneration());
             entity.OnDirty(this, id);
             Expansion();
             return entity;
         }
+
+        private ulong GetNextEntityGeneration()
+        {
+            nextEntityGeneration++;
+            return nextEntityGeneration;
+        }
+
 
         public virtual void RemoveChild(EffEntity effEntity)
         {
@@ -58,6 +69,24 @@ namespace GameFrame.Runtime
         public EffEntity GetChild(int id)
         {
             return Children[id];
+        }
+
+        public EffEntity GetChild(in EffEntityHandle handle)
+        {
+            return TryGetChild(in handle, out var entity) ? entity : null;
+        }
+
+        public bool TryGetChild(in EffEntityHandle handle, out EffEntity entity)
+        {
+            entity = null;
+            var candidate = Children[handle.Id];
+            if (candidate == null || !candidate.IsAction || candidate.Generation != handle.Generation)
+            {
+                return false;
+            }
+
+            entity = candidate;
+            return true;
         }
 
         private void ClearAllChild()

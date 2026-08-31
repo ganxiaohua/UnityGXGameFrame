@@ -7,6 +7,22 @@ namespace GameFrame.Runtime
     {
     }
 
+
+    public readonly struct EffEntityHandle
+    {
+        public int Id { get; }
+
+        public ulong Generation { get; }
+
+        public bool IsValid => Generation != 0;
+
+        public EffEntityHandle(int id, ulong generation)
+        {
+            Id = id;
+            Generation = generation;
+        }
+    }
+
     public unsafe class EffEntity : IEntity, IVersions
     {
         public IEntity.EntityState State { get; private set; }
@@ -18,6 +34,8 @@ namespace GameFrame.Runtime
         public string Name { get; set; }
 
         public int Versions { get; private set; }
+
+        public ulong Generation { get; private set; }
 
         public World world { get; private set; }
 
@@ -42,6 +60,15 @@ namespace GameFrame.Runtime
             this.world = world;
         }
 
+        internal void SetGeneration(ulong generation)
+        {
+            Generation = generation;
+        }
+
+        public EffEntityHandle GetEffEntityHandle()
+        {
+            return IsAction ? new EffEntityHandle(ID, Generation) : default;
+        }
 
         public T* AddComponent<T>() where T : unmanaged, EffComponent
         {
