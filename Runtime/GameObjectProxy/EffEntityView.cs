@@ -30,7 +30,7 @@ namespace GameFrame.Runtime
 
         private Action bindOver;
 
-        public virtual bool NotNeedBuind => false;
+        public virtual bool NotNeedBind => false;
 
 
         public override void Initialize(object initData)
