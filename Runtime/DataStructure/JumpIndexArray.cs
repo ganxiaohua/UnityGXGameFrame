@@ -56,9 +56,14 @@ namespace GameFrame.Runtime
         protected void Expansion(int index)
         {
             if (index < Items.Length) return;
-            int newSize = Math.Max(Items.Length * 2, index + 1);
-            var newArray = new T[newSize];
-            var newRealItemIndex = new bool[newSize];
+            EnsureCapacity(Math.Max(Items.Length * 2, index + 1));
+        }
+
+        public void EnsureCapacity(int capacity)
+        {
+            if (capacity <= Items.Length) return;
+            var newArray = new T[capacity];
+            var newRealItemIndex = new bool[capacity];
             Array.Copy(Items, 0, newArray, 0, Items.Length);
             Array.Copy(RealItemIndex, 0, newRealItemIndex, 0, RealItemIndex.Length);
             Items = newArray;
@@ -98,7 +103,7 @@ namespace GameFrame.Runtime
             RealItemIndex = null;
         }
 
-        public Enumerator GetEnumerator() => new Enumerator(IndexList, Items);
+        public Enumerator GetEnumerator() => new Enumerator(IndexList, this);
 
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
@@ -114,19 +119,19 @@ namespace GameFrame.Runtime
         public struct Enumerator : IEnumerator<T>, IEnumerator
         {
             private List<int> indexs;
-            private T[] items;
+            private readonly JumpIndexArray<T> owner;
             private int cur;
 
-            internal Enumerator(List<int> indexs, T[] items)
+            internal Enumerator(List<int> indexs, JumpIndexArray<T> owner)
             {
-                this.items = items;
+                this.owner = owner;
                 this.indexs = indexs ?? throw new Exception("Linked list is invalid.");
                 cur = indexs.Count;
             }
 
             public T Current
             {
-                get { return items[indexs[cur]]; }
+                get { return owner.Items[indexs[cur]]; }
             }
 
             object IEnumerator.Current => Current;

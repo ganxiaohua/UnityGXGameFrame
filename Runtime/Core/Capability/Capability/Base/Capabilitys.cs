@@ -7,7 +7,7 @@
         private JumpIndexArray<CapabilityBase>[] capabilitiesFixUpdateList;
 
         private JumpIndexArray<CapabilityBase>[] capabilitiesLateUpdateList;
-        private int estimatedNumberPlayer;
+        private int capabilityArrayCapacity;
 
         private ECCWorld eccWorld;
 
@@ -15,7 +15,7 @@
             int estimatedNumberPlayer)
         {
             this.eccWorld = eccWorld;
-            this.estimatedNumberPlayer = estimatedNumberPlayer;
+            this.capabilityArrayCapacity = estimatedNumberPlayer;
             capabilitiesUpdateList = new JumpIndexArray<CapabilityBase>[updateCapabilityCount];
             capabilitiesFixUpdateList = new JumpIndexArray<CapabilityBase>[fixedUpdateCapabilityCount];
             capabilitiesLateUpdateList = new JumpIndexArray<CapabilityBase>[lateUpdateCapabilityCount];

@@ -22,6 +22,7 @@ namespace GameFrame.Runtime
         public override EffEntity AddChild()
         {
             var child = base.AddChild();
+            capabilitys.EnsureCapabilityCapacity(child.ID);
             BindCapability<DestroyCapability>(child);
             var capabiltyComponet = child.AddComponent<CapabilityComponent>();
             capabiltyComponet->Init(maxCapabilityTag);

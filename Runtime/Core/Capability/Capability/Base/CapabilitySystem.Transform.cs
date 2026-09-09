@@ -36,12 +36,30 @@ namespace GameFrame.Runtime
             if (array == null)
             {
                 array = new JumpIndexArray<CapabilityBase>();
-                array.Init(estimatedNumberPlayer);
+                array.Init(capabilityArrayCapacity);
                 arrays[id] = array;
             }
 
             var cap = array.Set(player.ID, capability);
             cap.Init(id, eccWorld, player);
+        }
+
+        public void EnsureCapabilityCapacity(int entityId)
+        {
+            if (entityId < capabilityArrayCapacity)
+                return;
+
+            var newCapacity = System.Math.Max(capabilityArrayCapacity * 2, entityId + 1);
+            ExpandCapabilityArrays(capabilitiesUpdateList, newCapacity);
+            ExpandCapabilityArrays(capabilitiesFixUpdateList, newCapacity);
+            ExpandCapabilityArrays(capabilitiesLateUpdateList, newCapacity);
+            capabilityArrayCapacity = newCapacity;
+        }
+
+        private static void ExpandCapabilityArrays(JumpIndexArray<CapabilityBase>[] arrays, int capacity)
+        {
+            foreach (var array in arrays)
+                array?.EnsureCapacity(capacity);
         }
 
         public void SetCapabilityBaseWithPlayer(EffEntity player, List<CapabilityBase> update, List<CapabilityBase> fixedUpdate,
@@ -155,6 +173,7 @@ namespace GameFrame.Runtime
                 {
                     capability.OnDeactivated();
                 }
+
                 ReferencePool.Release(capability);
             }
         }

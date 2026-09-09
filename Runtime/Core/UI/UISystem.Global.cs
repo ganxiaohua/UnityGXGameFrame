@@ -6,7 +6,8 @@ namespace GameFrame.Runtime
     {
         public void SetGlobalEnable(bool enableRender, bool enableInput)
         {
-            StageCamera.main.enabled = enableRender;
+            GRoot.inst.visible = enableRender;
+            GRoot.inst.touchable = enableInput;
         }
     }
 }
