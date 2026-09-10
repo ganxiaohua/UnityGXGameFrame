@@ -9,18 +9,18 @@ namespace GameFrame.Runtime
 {
     public static class UIPackageHelper
     {
-        public static readonly string PackagePathPattern = "{0}_fui";    //"Assets/Art/UI/{0}_fui.bytes";
+        public static readonly string PackagePathPattern = "{0}_fui"; //"Assets/Art/UI/{0}_fui.bytes";
         public static readonly string PackageResPathPattern = "{0}_{1}"; //"Assets/Art/UI/{0}_{1}";
 
         public static readonly UIPackage.LoadResourceAsync OnLoadResFromBundleAsync =
-                (string name, string extension, Type type, PackageItem item) => { LoadResFromBundleAsync(name, item).Forget(); };
+            (string name, string extension, Type type, PackageItem item) => { LoadResFromBundleAsync(name, item).Forget(); };
 
         public static readonly UIPackage.LoadResource OnLoadResFromResources =
-                (string name, string extension, Type type, out DestroyMethod destroyMethod) =>
-                {
-                    destroyMethod = DestroyMethod.Unload;
-                    return Resources.Load(name, type);
-                };
+            (string name, string extension, Type type, out DestroyMethod destroyMethod) =>
+            {
+                destroyMethod = DestroyMethod.Unload;
+                return Resources.Load(name, type);
+            };
 
         private static readonly Dictionary<string, string> packagePaths = new Dictionary<string, string>();
 
@@ -42,7 +42,7 @@ namespace GameFrame.Runtime
 
         public static bool IsPackageReady(string packageName,
 #if UNITY_EDITOR
-                List<string> debugChain = null)
+            List<string> debugChain = null)
 #else
             int depth = 0)
 #endif
@@ -63,7 +63,7 @@ namespace GameFrame.Runtime
                 var depName = dep["name"];
                 if (!IsPackageReady(depName,
 #if UNITY_EDITOR
-                            debugChain))
+                        debugChain))
 #else
                     depth))
 #endif
@@ -87,12 +87,10 @@ namespace GameFrame.Runtime
             var path = GetPackagePath(packageName);
             if (!reference.RefAsset(path))
                 return false; // already ref
+
             foreach (var dep in package.dependencies)
             {
-                foreach (var dp in dep)
-                {
-                    RefPackage(dp.Value, reference);
-                }
+                RefPackage(dep["name"], reference);
             }
 
             return true;
@@ -112,9 +110,9 @@ namespace GameFrame.Runtime
         /// assetHandleType: <see cref="IAssetHandle"/>
         /// </summary>
         public static async UniTask<UIPackage> LoadPackageAsync(string packageName, Type assetHandleType,
-                IAssetReference reference, CancellationToken cancelToken = default,
+            IAssetReference reference, CancellationToken cancelToken = default,
 #if UNITY_EDITOR
-                List<string> debugChain = null)
+            List<string> debugChain = null)
 #else
             int depth = 0)
 #endif
@@ -139,7 +137,7 @@ namespace GameFrame.Runtime
                 var depName = dep["name"];
                 var depPackage = await LoadPackageAsync(depName, assetHandleType, reference, cancelToken,
 #if UNITY_EDITOR
-                        debugChain);
+                    debugChain);
 #else
                     depth);
 #endif
