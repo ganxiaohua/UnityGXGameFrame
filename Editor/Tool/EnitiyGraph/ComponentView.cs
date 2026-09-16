@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using GameFrame.Runtime;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
@@ -75,11 +74,13 @@ namespace GameFrame.Editor
         private static ComponentView sWindow;
 
         private static List<ComponentInfo> sAllEcsComponents = new();
+        private static readonly Dictionary<Type, ComponentAccessors> ComponentAccessorsByType = new();
 
         private EffEntity effEntity;
         private bool isShowAllEcsComponents;
         private bool isShowFocusedOnly;
         private readonly Dictionary<int, PropertyTree> ecsComponentsTree = new();
+        private readonly HashSet<PropertyTree> pendingComponentChanges = new();
         private readonly List<int> waitRemoveList = new();
         private Vector2 scrollPosition;
         private Vector2 addScrollPosition;
@@ -192,11 +193,12 @@ namespace GameFrame.Editor
                 if (!TryGetVisibleComponentType(cid, out Type componentType))
                     continue;
 
-                byte* dataPtr = effEntity.world.GetCompBytes(effEntity.ID, cid);
-                object ecsComponent = Marshal.PtrToStructure(new IntPtr(dataPtr), componentType);
+                object ecsComponent = GetComponentAccessors(componentType).Read(effEntity);
                 object ecsComponentExternal = InvokeGetDataIfExists(ecsComponent);
                 bool focused = IsComponentFocused(componentType);
                 DrawComponentCard(cid, componentType, ecsComponentExternal ?? ecsComponent, focused, focusedComponentCount > 0 && !focused);
+                if (ecsComponentsTree.TryGetValue(cid, out var tree))
+                    CommitComponentChanges(cid, componentType, tree, ecsComponentExternal != null);
                 GUILayout.Space(5f);
             }
         }
@@ -319,6 +321,7 @@ namespace GameFrame.Editor
             }
 
             tree = PropertyTree.Create(target);
+            tree.AttributeProcessorLocator = ComponentAttributeProcessorLocator.Instance;
             tree.OnPropertyValueChanged += ChangeComponent;
             ecsComponentsTree.Add(cid, tree);
             return tree;
@@ -352,6 +355,7 @@ namespace GameFrame.Editor
 
         private void DisposeComponentTree(int cid, PropertyTree tree)
         {
+            pendingComponentChanges.Remove(tree);
             tree.OnPropertyValueChanged -= ChangeComponent;
             tree.Dispose();
             ecsComponentsTree.Remove(cid);
@@ -535,15 +539,95 @@ namespace GameFrame.Editor
 
         private void ChangeComponent(InspectorProperty property, int selectionIndex)
         {
-            var type = property.Tree.TargetType;
-            var fields = property.Tree.WeakTargets[0].GetType().GetFields();
-            if (fields.Length == 0)
+            pendingComponentChanges.Add(property.Tree);
+        }
+
+        private void CommitComponentChanges(int cid, Type componentType, PropertyTree tree, bool isExternal)
+        {
+            if (!pendingComponentChanges.Remove(tree) || effEntity == null ||
+                effEntity.State == IEntity.EntityState.IsClear || !effEntity.HasComponent(cid))
                 return;
 
-            var fieldValue = fields[0].GetValue(property.Tree.WeakTargets[0]);
-            var comType = GamePlayAssembly.GetAssembly().GetType($"Auto{type.Name}");
-            var methodInfo = comType?.GetMethod($"Set{type.Name}", BindingFlags.Static | BindingFlags.Public);
-            methodInfo?.Invoke(null, new[] {effEntity, fieldValue});
+            // Draw 完成后，Odin 已将嵌套值类型逐层写回根对象。
+            // GetData 返回的引用对象已原位修改，不应作为组件结构体写入。
+            if (!isExternal)
+                GetComponentAccessors(componentType).Write(effEntity, tree.WeakTargets[0]);
+            effEntity.world.Reactive(cid, effEntity);
+        }
+
+        private static ComponentAccessors GetComponentAccessors(Type componentType)
+        {
+            if (!ComponentAccessorsByType.TryGetValue(componentType, out var accessors))
+            {
+                accessors = new ComponentAccessors(componentType);
+                ComponentAccessorsByType.Add(componentType, accessors);
+            }
+
+            return accessors;
+        }
+
+        private static object ReadComponentValue<T>(EffEntity entity) where T : unmanaged, EffComponent
+        {
+            return entity.GetComponent<T>();
+        }
+
+        private static void WriteComponentValue<T>(EffEntity entity, object value) where T : unmanaged, EffComponent
+        {
+            entity.GetComponent<T>() = (T) value;
+        }
+
+        private sealed class ComponentAccessors
+        {
+            public readonly Func<EffEntity, object> Read;
+            public readonly Action<EffEntity, object> Write;
+
+            public ComponentAccessors(Type componentType)
+            {
+                const BindingFlags flags = BindingFlags.Static | BindingFlags.NonPublic;
+                Read = (Func<EffEntity, object>) typeof(ComponentView).GetMethod(nameof(ReadComponentValue), flags)
+                    .MakeGenericMethod(componentType).CreateDelegate(typeof(Func<EffEntity, object>));
+                Write = (Action<EffEntity, object>) typeof(ComponentView).GetMethod(nameof(WriteComponentValue), flags)
+                    .MakeGenericMethod(componentType).CreateDelegate(typeof(Action<EffEntity, object>));
+            }
+        }
+
+        [OdinDontRegister]
+        private sealed class ComponentFieldAttributeProcessor : OdinAttributeProcessor
+        {
+            public override bool CanProcessChildMemberAttributes(InspectorProperty parentProperty, MemberInfo member)
+            {
+                return member is FieldInfo field && field.IsPublic && !field.IsStatic;
+            }
+
+            public override void ProcessChildMemberAttributes(InspectorProperty parentProperty, MemberInfo member, List<Attribute> attributes)
+            {
+                if (member is not FieldInfo field || !field.IsPublic || field.IsStatic ||
+                    attributes.Exists(attribute => attribute is HideInInspector))
+                    return;
+
+                if (!attributes.Exists(attribute => attribute is ShowInInspectorAttribute))
+                    attributes.Add(new ShowInInspectorAttribute());
+                if (field.IsInitOnly && !attributes.Exists(attribute => attribute is ReadOnlyAttribute))
+                    attributes.Add(new ReadOnlyAttribute());
+            }
+        }
+
+        private sealed class ComponentAttributeProcessorLocator : OdinAttributeProcessorLocator
+        {
+            public static readonly ComponentAttributeProcessorLocator Instance = new();
+            private static readonly ComponentFieldAttributeProcessor Processor = new();
+
+            public override List<OdinAttributeProcessor> GetChildProcessors(InspectorProperty parentProperty, MemberInfo member)
+            {
+                var processors = new List<OdinAttributeProcessor>(DefaultOdinAttributeProcessorLocator.Instance.GetChildProcessors(parentProperty, member));
+                processors.Add(Processor);
+                return processors;
+            }
+
+            public override List<OdinAttributeProcessor> GetSelfProcessors(InspectorProperty property)
+            {
+                return DefaultOdinAttributeProcessorLocator.Instance.GetSelfProcessors(property);
+            }
         }
 
         private void AddComponent(Type type)
@@ -700,6 +784,7 @@ namespace GameFrame.Editor
             }
 
             ecsComponentsTree.Clear();
+            pendingComponentChanges.Clear();
             waitRemoveList.Clear();
         }
 
