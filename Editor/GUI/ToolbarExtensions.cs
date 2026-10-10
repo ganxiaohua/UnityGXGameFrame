@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 #if UNITY_6000_3_OR_NEWER
+using UnityEditor.Overlays;
 using UnityEditor.Toolbars;
 #else
-using System.Reflection;
 using UnityEngine.UIElements;
 #endif
 
@@ -20,6 +21,34 @@ namespace GameFrame.Editor
 #if UNITY_6000_3_OR_NEWER
         private const string LeftToolbarPath = "GX框架/左侧工具";
         private const string RightToolbarPath = "GX框架/右侧工具";
+        private static readonly MethodInfo DockAfterMethod = typeof(Overlay).GetMethod(
+            "DockAfter", BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(Overlay) }, null);
+
+        static ToolbarExtensions()
+        {
+            ScheduleToolbarRefresh();
+            if (!Application.isBatchMode && DockAfterMethod != null)
+                EditorApplication.update += PositionRightToolbar;
+        }
+
+        private static void PositionRightToolbar()
+        {
+            // Saved layouts override defaultDockPosition. Wait for the toolbar to
+            // restore its overlays, then move this group next to the play controls.
+            foreach (var window in Resources.FindObjectsOfTypeAll<EditorWindow>())
+            {
+                if (window.GetType().FullName != "UnityEditor.MainToolbarWindow"
+                    || !window.TryGetOverlay("Play Mode Controls", out var playControls)
+                    || !window.TryGetOverlay(RightToolbarPath, out var rightToolbar))
+                    continue;
+
+                // Unity 6.3 exposes no public API for docking main-toolbar groups.
+                // Use its docking operation so the saved layout is updated too.
+                EditorApplication.update -= PositionRightToolbar;
+                DockAfterMethod.Invoke(rightToolbar, new object[] { playControls });
+                return;
+            }
+        }
 
         // Unity 6.3 replaces the old toolbar visual tree. Enable these groups from
         // the main toolbar's context menu; Unity persists their visibility/layout.
@@ -31,7 +60,7 @@ namespace GameFrame.Editor
         }
 
         // Dock immediately after the built-in Play/Pause/Step group in the middle.
-        [MainToolbarElement(RightToolbarPath, defaultDockPosition = MainToolbarDockPosition.Middle, defaultDockIndex = 0)]
+        [MainToolbarElement(RightToolbarPath, defaultDockPosition = MainToolbarDockPosition.Middle, defaultDockIndex = 1)]
         private static IEnumerable<MainToolbarElement> CreateRightToolbar()
         {
             yield return new MainToolbarButton(new MainToolbarContent("审查器"),
