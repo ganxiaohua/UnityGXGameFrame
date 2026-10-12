@@ -5,7 +5,6 @@ using System.Text;
 using FairyGUI;
 using FairyGUIEditor;
 using Microsoft.CSharp;
-using Unity.Properties;
 using UnityEditor;
 using UnityEngine;
 
@@ -17,7 +16,7 @@ namespace GameFrame.Editor
         private static string OutputDir = "";
 
         private const string LogicCodeTemplatePath = "Assets/3rd/UnityGXGameFrame/Editor/Text/UI/Panel.txt";
-        private const string GenCodeTemplatePath = "Assets/3rd/UnityGXGameFrame/Editor/Text/UI/Panel.Gen.txt";
+        private const string GenCodeTemplatePath = "Assets/3rd/UnityGXGameFrame/Editor/Text/UI/Panel.gen.txt";
         private const string ComponentTemplatePath = "Assets/3rd/UnityGXGameFrame/Editor/Text/UI/Component.gen.txt";
 
         private const string VarTab = "\t\t";
@@ -36,30 +35,33 @@ namespace GameFrame.Editor
 
         private static void ProcessAssets(string[] paths)
         {
-            SourceDir = EditorString.GetPath("FguiConfigAssetPath");
-            OutputDir = EditorString.GetPath("UIScriptsPath");
-            foreach (var path in paths)
+            SourceDir = NormalizePath(FGUICodeGenSettings.GetFullPath(EditorString.GetPath("FguiConfigAssetPath")));
+            OutputDir = NormalizePath(FGUICodeGenSettings.GetFullPath(EditorString.GetPath("UIScriptsPath")));
+            foreach (var assetPath in paths)
             {
-                if (path.StartsWith(OutputDir) && path.EndsWith(".cs") && !path.EndsWith(".gen.cs"))
+                var path = FGUICodeGenSettings.GetFullPath(assetPath);
+                if (path.EndsWith(".cs") && !path.EndsWith(".gen.cs"))
+                {
+                    var info = FGUICodeGenSettings.Find(path);
+                    if (info != null)
+                    {
+                        Export(info.package, info.name);
+                        continue;
+                    }
+                }
+
+                if (IsUnderDirectory(path, OutputDir) && path.EndsWith(".cs") && !path.EndsWith(".gen.cs"))
                 {
                     var dir = Path.GetDirectoryName(path);
                     var name1 = Path.GetFileNameWithoutExtension(path);
                     var name2 = Path.GetFileNameWithoutExtension(name1);
                     var gen = $"{dir}/{name2}.gen.cs";
-                    if (File.Exists(gen) && name2.EndsWith("Panel"))
+                    if (File.Exists(gen) && TryGetPanelInfo($"{dir}/{name2}.cs", "Panel.cs", out var packageName, out var name))
                     {
-                        var packageName = Path.GetFileName(dir);
-                        var name = name2.Substring(0, name2.Length - "Panel".Length);
                         Build(packageName, name);
                     }
-
-                    var info = FGUICodeGenSettings.Find(path);
-                    if (info != null)
-                    {
-                        ExportToPath(info.codePath, info.package, info.name);
-                    }
                 }
-                else if (path.StartsWith(SourceDir) && path.EndsWith("_fui.bytes"))
+                else if (IsUnderDirectory(path, SourceDir) && path.EndsWith("_fui.bytes"))
                 {
                     EditorToolSet.LoadPackages();
                     var name1 = Path.GetFileNameWithoutExtension(path);
@@ -69,17 +71,14 @@ namespace GameFrame.Editor
                     {
                         foreach (var item in package.GetItems())
                         {
-                            if (ExistsGenFile(packageName, item.name))
+                            var info = FGUICodeGenSettings.Find(packageName, item.name);
+                            if (info != null)
+                            {
+                                Export(packageName, item.name);
+                            }
+                            else if (ExistsGenFile(packageName, item.name))
                             {
                                 Build(packageName, item.name);
-                            }
-                            else
-                            {
-                                var info = FGUICodeGenSettings.Find(packageName, item.name);
-                                if (info != null)
-                                {
-                                    ExportToPath(info.codePath, packageName, item.name);
-                                }
                             }
                         }
                     }
@@ -89,51 +88,118 @@ namespace GameFrame.Editor
 
         public static bool Exists(string package, string name)
         {
-            OutputDir = EditorString.GetPath("UIScriptsPath");
-            var path = $"{OutputDir}/{package}/{name}Panel.cs";
-            return File.Exists(path);
+            return TryGetPanelPaths(package, name, out var logicCodePath, out _) && File.Exists(logicCodePath);
         }
 
         public static bool ExistsGenFile(string package, string name)
         {
-            OutputDir = EditorString.GetPath("UIScriptsPath");
-            var path = $"{OutputDir}/{package}/{name}Panel.gen.cs";
-            return File.Exists(path);
+            return TryGetPanelPaths(package, name, out _, out var genCodePath) && File.Exists(genCodePath);
         }
 
         public static void UpdateAll()
         {
-            OutputDir = EditorString.GetPath("UIScriptsPath");
-            foreach (var file in Directory.GetFiles(OutputDir, "*.gen.cs", SearchOption.AllDirectories))
+            OutputDir = NormalizePath(FGUICodeGenSettings.GetFullPath(EditorString.GetPath("UIScriptsPath")));
+            if (!Directory.Exists(OutputDir))
+                return;
+
+            foreach (var file in Directory.GetFiles(OutputDir, "*Panel.gen.cs", SearchOption.AllDirectories))
             {
-                var package = Path.GetDirectoryName(file)?.Replace('\\', '/').Replace(OutputDir + "/", "");
-                var name = Path.GetFileName(file).Replace("Panel.gen.cs", "");
-                Build(package, name);
+                if (!TryGetPanelInfo(file, "Panel.gen.cs", out var package, out var name))
+                    continue;
+
+                if (FGUICodeGenSettings.Find(package, name) != null)
+                    Export(package, name);
+                else
+                    Build(package, name);
             }
+        }
+
+        private static string NormalizePath(string path)
+        {
+            return path?.Replace('\\', '/').TrimEnd('/');
+        }
+
+        private static bool IsUnderDirectory(string path, string directory)
+        {
+            return !string.IsNullOrEmpty(directory) && path.StartsWith(directory.TrimEnd('/') + "/", FGUICodeGenSettings.PathComparison);
+        }
+
+        private static bool TryGetPanelInfo(string path, string suffix, out string package, out string name)
+        {
+            package = null;
+            name = null;
+            path = FGUICodeGenSettings.GetFullPath(path);
+            if (!IsUnderDirectory(path, OutputDir))
+                return false;
+
+            var relativePath = path.Substring(OutputDir.Length + 1);
+            var separator = relativePath.IndexOf('/');
+            var fileName = Path.GetFileName(path);
+            if (separator <= 0 || !fileName.EndsWith(suffix, StringComparison.Ordinal) || fileName.Length <= suffix.Length)
+                return false;
+
+            package = relativePath.Substring(0, separator);
+            name = fileName.Substring(0, fileName.Length - suffix.Length);
+            return true;
+        }
+
+        private static bool TryGetPanelPaths(string package, string name, out string logicCodePath, out string genCodePath)
+        {
+            logicCodePath = null;
+            genCodePath = null;
+            OutputDir = NormalizePath(FGUICodeGenSettings.GetFullPath(EditorString.GetPath("UIScriptsPath")));
+            var packageDir = Path.Combine(OutputDir, package);
+            var logicFileName = $"{name}Panel.cs";
+            var genFileName = $"{name}Panel.gen.cs";
+            string panelDir = null;
+
+            // 已有面板沿用实际目录；新面板才创建组件子目录。
+            if (Directory.Exists(packageDir))
+            {
+                foreach (var file in Directory.GetFiles(packageDir, $"{name}Panel*.cs", SearchOption.AllDirectories))
+                {
+                    var fileName = Path.GetFileName(file);
+                    if (fileName != logicFileName && fileName != genFileName)
+                        continue;
+
+                    var directory = NormalizePath(Path.GetDirectoryName(file));
+                    if (panelDir != null && !string.Equals(panelDir, directory, FGUICodeGenSettings.PathComparison))
+                    {
+                        Debug.LogError($"FGUI 面板 {package}/{name} 存在多个代码目录，已跳过生成：{panelDir}、{directory}");
+                        return false;
+                    }
+
+                    panelDir = directory;
+                }
+            }
+
+            panelDir = panelDir ?? Path.Combine(packageDir, name);
+            logicCodePath = NormalizePath(Path.Combine(panelDir, logicFileName));
+            genCodePath = NormalizePath(Path.Combine(panelDir, genFileName));
+            return true;
         }
 
         public static void Build(string package, string name)
         {
-            OutputDir = EditorString.GetPath("UIScriptsPath");
             GComponent root = null;
             try
             {
+                if (!TryGetPanelPaths(package, name, out var logicCodePath, out var genCodePath))
+                    return;
+
                 EditorToolSet.LoadPackages();
                 root = UIPackage.CreateObject(package, name) as GComponent;
                 if (root == null)
                     return;
 
-                var genCodePath = $"{OutputDir}/{package}/{name}Panel.gen.cs";
-                var logicCodePath = $"{OutputDir}/{package}/{name}Panel.cs";
-
-                OpFile.CreateDirectory($"{OutputDir}/{package}");
+                Directory.CreateDirectory(Path.GetDirectoryName(logicCodePath));
 
                 var item = GenCode(root, logicCodePath);
-                string genTemplate = File.ReadAllText(GenCodeTemplatePath);
+                string genTemplate = File.ReadAllText(FGUICodeGenSettings.GetFullPath(GenCodeTemplatePath));
                 File.WriteAllText(genCodePath, string.Format(genTemplate, package, name, item.Item1, item.Item2));
 
                 if (File.Exists(logicCodePath)) return;
-                string loginTemplate = File.ReadAllText(LogicCodeTemplatePath);
+                string loginTemplate = File.ReadAllText(FGUICodeGenSettings.GetFullPath(LogicCodeTemplatePath));
                 File.WriteAllText(logicCodePath, string.Format(loginTemplate, package, name));
             }
             catch (Exception e)
@@ -168,30 +234,32 @@ namespace GameFrame.Editor
             return (sbVar, sbBody);
         }
 
-        private static void ExportToPath(string path, string package, string name)
+        private static bool ExportToPath(string path, string package, string name)
         {
-            if (string.IsNullOrEmpty(path))
-                throw new InvalidPathException("路径不能为空");
-            var fileName = Path.GetFileNameWithoutExtension(path).Replace(".gen", string.Empty);
             GComponent root = null;
             try
             {
+                var logicCodePath = FGUICodeGenSettings.GetFullPath(path);
+                var genCodePath = Path.ChangeExtension(logicCodePath, ".gen.cs");
+                var fileName = Path.GetFileNameWithoutExtension(logicCodePath);
+                if (!CodeProvider.IsValidIdentifier(fileName))
+                    throw new ArgumentException($"组件类名无效：{fileName}");
+
                 EditorToolSet.LoadPackages();
                 root = UIPackage.CreateObject(package, name) as GComponent;
                 if (root == null)
-                    return;
+                    throw new InvalidOperationException($"无法加载 FGUI 组件：{package}/{name}");
 
-                var dir = Path.GetDirectoryName(path);
-                var genCodePath = $"{dir}/{fileName}.gen.cs";
-                var logicCodePath = genCodePath.Replace(".gen", string.Empty);
-                OpFile.CreateDirectory(dir);
+                Directory.CreateDirectory(Path.GetDirectoryName(logicCodePath));
                 var gen = GenCode(root, logicCodePath);
-                var genTemplate = File.ReadAllText(ComponentTemplatePath);
+                var genTemplate = File.ReadAllText(FGUICodeGenSettings.GetFullPath(ComponentTemplatePath));
                 File.WriteAllText(genCodePath, string.Format(genTemplate, package, name, fileName, gen.Item1, gen.Item2));
+                return true;
             }
             catch (Exception e)
             {
-                Debug.LogException(e);
+                Debug.LogError($"FGUI 组件 {package}/{name} 导出失败，目标路径：{path}\n{e}");
+                return false;
             }
             finally
             {
@@ -201,18 +269,20 @@ namespace GameFrame.Editor
 
         public static void Export(string package, string name)
         {
-            var info = FGUICodeGenSettings.Find(package, name);
-            if (info != null)
+            string path = null;
+            try
             {
-                ExportToPath(info.codePath, package, name);
-                return;
-            }
+                // 与生成面板代码共用 name + Panel 命名及已有目录，旧缓存仅记录结果。
+                if (!TryGetPanelPaths(package, name, out path, out _))
+                    return;
 
-            var path = EditorUtility.SaveFilePanel("Export", "", name, "");
-            ExportToPath(path, package, name);
-            path = path.Replace(Environment.CurrentDirectory.Replace("\\", "/") + "/", string.Empty);
-            path = path.Replace(".gen", string.Empty);
-            FGUICodeGenSettings.Save(package, name, path);
+                if (ExportToPath(path, package, name))
+                    FGUICodeGenSettings.Save(package, name, path);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"FGUI 组件 {package}/{name} 导出失败，目标路径：{path}\n{e}");
+            }
         }
 
         private static int Search(GComponent parent, string parentVar, string prefix,

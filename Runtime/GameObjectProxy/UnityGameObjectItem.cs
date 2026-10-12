@@ -24,13 +24,17 @@ namespace GameFrame.Runtime
         public override void OnUnspawn()
         {
 #if UNITY_EDITOR
-            var goCacheParent = GameObjectPool.ObjectCacheArea.transform.Find("ComGameObject");
-            if (goCacheParent == null)
+            Transform goCacheParent = null;
+            if (GameObjectPool.ObjectCacheArea)
             {
-                var go = new GameObject();
-                goCacheParent = go.transform;
-                goCacheParent.name = "ComGameObject";
-                goCacheParent.transform.SetParent(GameObjectPool.ObjectCacheArea.transform);
+                 goCacheParent = GameObjectPool.ObjectCacheArea.transform.Find("ComGameObject");
+                if (goCacheParent == null)
+                {
+                    var go = new GameObject();
+                    goCacheParent = go.transform;
+                    goCacheParent.name = "ComGameObject";
+                    goCacheParent.transform.SetParent(GameObjectPool.ObjectCacheArea.transform);
+                }
             }
 #else
           var  goCacheParent = GameObjectPool.ObjectCacheArea.transform;

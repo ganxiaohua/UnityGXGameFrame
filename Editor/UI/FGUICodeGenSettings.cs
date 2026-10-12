@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -33,11 +34,47 @@ namespace GameFrame.Editor
 
         public List<CodeGenInfo> infos = new();
 
+        internal static StringComparison PathComparison => Path.DirectorySeparatorChar == '\\'
+                ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+
+        internal static string GetFullPath(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                throw new ArgumentException("路径不能为空", nameof(path));
+
+            return Path.GetFullPath(Path.Combine(Application.dataPath, "..", path.Replace('\\', '/'))).Replace('\\', '/');
+        }
+
+        internal static string NormalizeCodePath(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                return null;
+
+            try
+            {
+                path = GetFullPath(path);
+                if (!path.EndsWith(".cs", StringComparison.OrdinalIgnoreCase))
+                    path += ".cs";
+                if (path.EndsWith(".gen.cs", StringComparison.OrdinalIgnoreCase))
+                    path = path.Substring(0, path.Length - ".gen.cs".Length) + ".cs";
+
+                var projectDir = GetFullPath(".").TrimEnd('/') + "/";
+                return path.StartsWith(projectDir, PathComparison) ? path.Substring(projectDir.Length) : path;
+            }
+            catch (ArgumentException) { return null; }
+            catch (NotSupportedException) { return null; }
+            catch (PathTooLongException) { return null; }
+        }
+
         public static CodeGenInfo Find(string codePath)
         {
+            codePath = NormalizeCodePath(codePath);
+            if (codePath == null)
+                return null;
+
             foreach (var item in Instance.infos)
             {
-                if (item.codePath == codePath)
+                if (string.Equals(NormalizeCodePath(item.codePath), codePath, PathComparison))
                     return item;
             }
 
@@ -57,16 +94,23 @@ namespace GameFrame.Editor
 
         public static void Save(string package, string name, string codePath)
         {
-            var info = Find(codePath);
-            if (info != null)
-                return;
-            info = new CodeGenInfo()
+            codePath = NormalizeCodePath(codePath);
+            if (codePath == null)
+                throw new ArgumentException("组件代码路径无效", nameof(codePath));
+
+            var info = Find(package, name);
+            if (info == null)
             {
+                info = new CodeGenInfo
+                {
                     package = package,
                     name = name,
-                    codePath = codePath,
-            };
-            Instance.infos.Add(info);
+                };
+                Instance.infos.Add(info);
+            }
+
+            info.codePath = codePath;
+            Instance.infos.RemoveAll(item => item != info && item.package == package && item.name == name);
             var json = JsonUtility.ToJson(Instance, true);
             EditorPrefs.SetString(EditorPrefsKey.FGUICodeGenSettings, json);
         }
