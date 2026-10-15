@@ -11,8 +11,7 @@
 
         private ECCWorld eccWorld;
 
-        public void Init(ECCWorld eccWorld, int updateCapabilityCount, int fixedUpdateCapabilityCount, int lateUpdateCapabilityCount,
-            int estimatedNumberPlayer)
+        public void Init(ECCWorld eccWorld, int updateCapabilityCount, int fixedUpdateCapabilityCount, int lateUpdateCapabilityCount, int estimatedNumberPlayer)
         {
             this.eccWorld = eccWorld;
             this.capabilityArrayCapacity = estimatedNumberPlayer;

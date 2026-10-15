@@ -23,6 +23,8 @@ namespace GameFrame.Runtime
 
         private int serialId;
 
+        protected virtual bool HandleUpdateSelf => false;
+
         public void OnDirty(IEntity parent, int id)
         {
             State = IEntity.EntityState.IsRunning;
@@ -129,7 +131,8 @@ namespace GameFrame.Runtime
                 system.SystemInitialize(p1);
             }
 
-            EntityHouse.Instance.AddUpdateSystem(component);
+            if (!HandleUpdateSelf)
+                EntityHouse.Instance.AddUpdateSystem(component);
             return component;
         }
 
