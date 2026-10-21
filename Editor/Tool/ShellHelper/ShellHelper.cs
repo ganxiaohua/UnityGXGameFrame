@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 
 namespace GameFrame.Editor
@@ -27,15 +28,26 @@ namespace GameFrame.Editor
 
             try
             {
+                var startInfo = new ProcessStartInfo(fileName, arguments)
+                {
+                    WorkingDirectory = Path.GetFullPath(workingDirectory),
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    CreateNoWindow = true,
+                    UseShellExecute = true,
+                };
+                var extension = Path.GetExtension(fileName);
+                if (Environment.OSVersion.Platform == PlatformID.Win32NT &&
+                    (string.Equals(extension, ".bat", StringComparison.OrdinalIgnoreCase) ||
+                     string.Equals(extension, ".cmd", StringComparison.OrdinalIgnoreCase)))
+                {
+                    // cmd /s /c needs an outer pair of quotes around the quoted script and its arguments.
+                    startInfo.FileName = Environment.GetEnvironmentVariable("ComSpec") ?? "cmd.exe";
+                    startInfo.Arguments = $"/d /s /c \"\"{Path.GetFullPath(fileName)}\" {arguments}\"";
+                }
+
                 using var process = new System.Diagnostics.Process
                 {
-                        StartInfo = new ProcessStartInfo(fileName, arguments)
-                        {
-                                WorkingDirectory = workingDirectory,
-                                WindowStyle = ProcessWindowStyle.Hidden,
-                                CreateNoWindow = true,
-                                UseShellExecute = true,
-                        }
+                    StartInfo = startInfo
                 };
                 StringBuilder logSB = new StringBuilder();
                 StringBuilder errSB = new StringBuilder();
@@ -50,28 +62,36 @@ namespace GameFrame.Editor
                     process.OutputDataReceived += (_, args) =>
                     {
                         var log = args.Data;
+                        if (log == null)
+                            return;
                         if (logHandler.LogIsError(log))
                         {
-                            errSB.AppendLine(log);
+                            lock (errSB)
+                                errSB.AppendLine(log);
                             UnityEngine.Debug.LogError(log);
                         }
                         else
                         {
-                            logSB.AppendLine(log);
+                            lock (logSB)
+                                logSB.AppendLine(log);
                             UnityEngine.Debug.Log(log);
                         }
                     };
                     process.ErrorDataReceived += (_, args) =>
                     {
                         var err = args.Data;
+                        if (err == null)
+                            return;
                         if (logHandler.ErrorIsLog(err))
                         {
-                            logSB.AppendLine(err);
+                            lock (logSB)
+                                logSB.AppendLine(err);
                             UnityEngine.Debug.Log(err);
                         }
                         else
                         {
-                            errSB.AppendLine(err);
+                            lock (errSB)
+                                errSB.AppendLine(err);
                             UnityEngine.Debug.LogError(err);
                         }
                     };
@@ -88,8 +108,12 @@ namespace GameFrame.Editor
                 LastExecuteLog = logSB.ToString();
                 LastExecuteErr = errSB.ToString();
                 LastExecuteExitCode = process.ExitCode;
-                UnityEngine.Debug.Log($"exit({LastExecuteExitCode}) {cmd}");
-                return redirect ? string.IsNullOrEmpty(LastExecuteErr) : LastExecuteExitCode == 0;
+                var success = LastExecuteExitCode == 0 && (!redirect || string.IsNullOrEmpty(LastExecuteErr));
+                if (success)
+                    UnityEngine.Debug.Log($"exit({LastExecuteExitCode}) {cmd}");
+                else
+                    UnityEngine.Debug.LogError($"exit({LastExecuteExitCode}) {cmd}");
+                return success;
             }
             catch (Exception e)
             {

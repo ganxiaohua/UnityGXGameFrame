@@ -3,6 +3,7 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using GameFrame.Editor;
 using Microsoft.CSharp;
 using UnityEngine;
@@ -85,6 +86,7 @@ namespace GameFrame.Runtime
         {
             var buildResult = new BuildResult {AssemblyName = assemblyName};
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            var tempFiles = new TempFileCollection();
 
             try
             {
@@ -96,16 +98,12 @@ namespace GameFrame.Runtime
                     return buildResult;
                 }
 
-                string[] sources = new string[sourceFiles.Count];
                 for (int i = 0; i < sourceFiles.Count; i++)
                 {
                     if (!File.Exists(sourceFiles[i]))
                     {
                         buildResult.Errors.Add($"源文件不存在：{sourceFiles[i]}");
-                        continue;
                     }
-
-                    sources[i] = File.ReadAllText(sourceFiles[i]);
                 }
 
                 if (buildResult.Errors.Count > 0)
@@ -115,39 +113,47 @@ namespace GameFrame.Runtime
                 }
 
                 provider = new CSharpCodeProvider();
+                // 所有长参数放入响应文件，避免引用及源文件路径总长度超过 Windows 进程参数限制。
+                var responseFile = tempFiles.AddExtension("rsp");
+                using (var writer = new StreamWriter(responseFile, false, new UTF8Encoding(false)))
+                {
+                    foreach (var reference in CSharpRunner.GetReferences())
+                        writer.WriteLine($"/reference:\"{Path.GetFullPath(reference)}\"");
+                    foreach (var sourceFile in sourceFiles)
+                        writer.WriteLine($"\"{sourceFile}\"");
+                }
+
                 CompilerParameters parameters = new CompilerParameters();
                 parameters.GenerateExecutable = false;
                 parameters.GenerateInMemory = true;
-                parameters.ReferencedAssemblies.AddRange(CSharpRunner.GetReferences().ToArray());
+                parameters.TempFiles = tempFiles;
+                parameters.CompilerOptions = $"@\"{responseFile}\"";
 
-                CompilerResults compilerResults = provider.CompileAssemblyFromSource(parameters, sources);
-                stopwatch.Stop();
-                buildResult.CompileTimeMs = stopwatch.ElapsedMilliseconds;
+                // 源文件已列在响应文件中，不能再传给 CodeDOM，否则仍会展开为长命令行。
+                CompilerResults compilerResults = provider.CompileAssemblyFromFile(parameters, Array.Empty<string>());
+
+                foreach (CompilerError diagnostic in compilerResults.Errors)
+                {
+                    if (string.IsNullOrEmpty(diagnostic.ErrorText))
+                        continue;
+
+                    var kind = diagnostic.IsWarning ? "警告" : "错误";
+                    var message = $"[{Path.GetFileName(diagnostic.FileName)}] {kind} {diagnostic.ErrorNumber}: {diagnostic.ErrorText} (行:{diagnostic.Line}, 列:{diagnostic.Column})";
+                    if (diagnostic.IsWarning)
+                    {
+                        buildResult.Warnings.Add(message);
+                        Debug.LogWarning($"[DynamicAssemblyBuilder] {message}");
+                    }
+                    else
+                    {
+                        buildResult.Errors.Add(message);
+                        Debug.LogError($"[DynamicAssemblyBuilder] {message}");
+                    }
+                }
 
                 if (compilerResults.Errors.HasErrors)
                 {
                     buildResult.Success = false;
-                    foreach (CompilerError error in compilerResults.Errors)
-                    {
-                        if (!string.IsNullOrEmpty(error.ErrorText))
-                        {
-                            string errorMsg = $"[{Path.GetFileName(error.FileName)}] 错误 {error.ErrorNumber}: {error.ErrorText} (行:{error.Line}, 列:{error.Column})";
-                            buildResult.Errors.Add(errorMsg);
-                            Debug.LogError($"[DynamicAssemblyBuilder] {errorMsg}");
-                        }
-                    }
-
-                    // 收集警告
-                    foreach (CompilerError warning in compilerResults.Errors)
-                    {
-                        if (!string.IsNullOrEmpty(warning.ErrorText))
-                        {
-                            string warnMsg = $"[{Path.GetFileName(warning.FileName)}] 警告 {warning.ErrorNumber}: {warning.ErrorText} (行:{warning.Line}, 列:{warning.Column})";
-                            buildResult.Warnings.Add(warnMsg);
-                            Debug.LogWarning($"[DynamicAssemblyBuilder] {warnMsg}");
-                        }
-                    }
-
                     return buildResult;
                 }
 
@@ -155,20 +161,27 @@ namespace GameFrame.Runtime
                 buildResult.Success = true;
                 buildResult.CompiledAssembly = compilerResults.CompiledAssembly;
 
-                Debug.Log($"[DynamicAssemblyBuilder] ✓ 程序集 {assemblyName} 编译成功！耗时：{buildResult.CompileTimeMs}ms");
+                Debug.Log($"[DynamicAssemblyBuilder] ✓ 程序集 {assemblyName} 编译成功！耗时：{stopwatch.ElapsedMilliseconds}ms");
                 return buildResult;
             }
             catch (Exception e)
             {
-                stopwatch.Stop();
-                buildResult.CompileTimeMs = stopwatch.ElapsedMilliseconds;
                 buildResult.Success = false;
                 buildResult.Errors.Add($"编译异常：{e.Message}\n{e.StackTrace}");
                 Debug.LogError($"[DynamicAssemblyBuilder] ✗ 编译失败：{e.Message}");
 
                 return buildResult;
             }
+            finally
+            {
+                stopwatch.Stop();
+                buildResult.CompileTimeMs = stopwatch.ElapsedMilliseconds;
+                provider?.Dispose();
+                provider = null;
+                ((IDisposable) tempFiles).Dispose();
+            }
         }
+        
 
 
         public void Destroy()
