@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -8,7 +8,7 @@ namespace GameFrame.Runtime
     {
         public class Input : IDisposable
         {
-            public EffEntityHandle Entity;
+            public EffEntity Entity;
             public World World;
             public Transform Parent;
             public object UserData;
@@ -24,7 +24,7 @@ namespace GameFrame.Runtime
 
         public Transform Parent { get; private set; }
         protected World World { get; private set; }
-        protected EffEntityHandle BindEntity { get; private set; }
+        protected EffEntity BindEntity { get; private set; }
 
         public override bool AutoLayers { get; set; } = false;
 

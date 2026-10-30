@@ -55,7 +55,7 @@ namespace GameFrame.Editor
 
         private static CapabilityView sWindow;
 
-        private EffEntityHandle effEntity;
+        private EffEntity effEntity;
         private World world;
         private ECCWorld eccWorld;
         private readonly List<CapabilityBase> capabilityBaseUpdateMode = new List<CapabilityBase>();
@@ -90,7 +90,7 @@ namespace GameFrame.Editor
         private static Color SecondaryText => EditorGUIUtility.isProSkin ? new Color(0.62f, 0.67f, 0.72f, 1f) : new Color(0.34f, 0.36f, 0.40f, 1f);
         private static Color DimmedText => EditorGUIUtility.isProSkin ? new Color(0.42f, 0.45f, 0.50f, 1f) : new Color(0.50f, 0.52f, 0.56f, 1f);
 
-        public static void Init(World world, EffEntityHandle effEntity)
+        public static void Init(World world, EffEntity effEntity)
         {
             sWindow ??= GetWindow<CapabilityView>();
             sWindow.titleContent.text = string.IsNullOrEmpty(world.GetName(effEntity)) ? "Entity" : world.GetName(effEntity);

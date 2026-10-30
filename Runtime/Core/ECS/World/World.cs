@@ -97,7 +97,7 @@ namespace GameFrame.Runtime
             return group;
         }
 
-        internal void Reactive(int comid, EffEntityHandle entity)
+        internal void Reactive(int comid, EffEntity entity)
         {
             var groupList = groupsList[comid];
             if (groupList != null)

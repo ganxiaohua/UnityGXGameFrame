@@ -9,7 +9,7 @@ namespace GameFrame.Runtime
         public event GroupChanged GroupAdd;
         public event GroupChanged GroupRemove;
         public event GroupChanged GroupUpdate;
-        public IndexHashSet<EffEntityHandle> EntitiesMap { get; private set; }
+        public IndexHashSet<EffEntity> EntitiesMap { get; private set; }
 
         public static Group CreateGroup(World world, int childsCount, Matcher matcher)
         {
@@ -25,7 +25,7 @@ namespace GameFrame.Runtime
             ReferencePool.Release(group);
         }
 
-        private void AddOrUpdateComponent(EffEntityHandle entity, bool silently)
+        private void AddOrUpdateComponent(EffEntity entity, bool silently)
         {
             EntitiesMap.Add(entity);
             if (!silently)
@@ -33,26 +33,26 @@ namespace GameFrame.Runtime
         }
 
 
-        private void RemoveComponent(EffEntityHandle entity, bool silently)
+        private void RemoveComponent(EffEntity entity, bool silently)
         {
             bool b = EntitiesMap.Remove(entity);
             if (!silently && b)
                 GroupRemove?.Invoke(this, entity);
         }
 
-        public int HandleEntitySilently(EffEntityHandle entity)
+        public int HandleEntitySilently(EffEntity entity)
         {
             return DoEntity(entity, true);
         }
 
 
-        public int HandleEntity(EffEntityHandle entity)
+        public int HandleEntity(EffEntity entity)
         {
             return DoEntity(entity, false);
         }
 
 
-        private int DoEntity(EffEntityHandle entity, bool silently)
+        private int DoEntity(EffEntity entity, bool silently)
         {
             if (World.IsAlive(entity))
             {

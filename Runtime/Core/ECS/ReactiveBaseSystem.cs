@@ -10,7 +10,7 @@ namespace GameFrame.Runtime
         private Collector collector;
         protected World World { get; private set; }
 
-        private List<EffEntityHandle> effEntities = new(64);
+        private List<EffEntity> effEntities = new(64);
 
         public virtual void OnInitialize()
         {
@@ -20,15 +20,15 @@ namespace GameFrame.Runtime
 
         protected abstract Collector GetTrigger(World world);
 
-        protected abstract bool Filter(EffEntityHandle entity);
+        protected abstract bool Filter(EffEntity entity);
 
-        protected abstract void Execute(List<EffEntityHandle> entities);
+        protected abstract void Execute(List<EffEntity> entities);
 
         protected void Do()
         {
             if (collector.CollectedEntities.Count == 0)
                 return;
-            foreach (EffEntityHandle ecsentity in collector.CollectedEntities)
+            foreach (EffEntity ecsentity in collector.CollectedEntities)
             {
                 if (World.IsAlive(ecsentity) && Filter(ecsentity))
                 {

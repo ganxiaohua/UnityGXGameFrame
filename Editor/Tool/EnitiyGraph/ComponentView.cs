@@ -76,7 +76,7 @@ namespace GameFrame.Editor
         private static List<ComponentInfo> sAllEcsComponents = new();
         private static readonly Dictionary<Type, ComponentAccessors> ComponentAccessorsByType = new();
 
-        private EffEntityHandle effEntity;
+        private EffEntity effEntity;
         private World world;
         private bool isShowAllEcsComponents;
         private bool isShowFocusedOnly;
@@ -108,7 +108,7 @@ namespace GameFrame.Editor
         private static Color SecondaryText => EditorGUIUtility.isProSkin ? new Color(0.62f, 0.67f, 0.72f, 1f) : new Color(0.34f, 0.36f, 0.40f, 1f);
         private static Color DimmedText => EditorGUIUtility.isProSkin ? new Color(0.42f, 0.45f, 0.50f, 1f) : new Color(0.50f, 0.52f, 0.56f, 1f);
 
-        public static void Init(World world, EffEntityHandle effEntity)
+        public static void Init(World world, EffEntity effEntity)
         {
             sWindow ??= GetWindow<ComponentView>();
             sWindow.titleContent.text = string.IsNullOrEmpty(world.GetName(effEntity)) ? "Entity" : world.GetName(effEntity);
@@ -568,28 +568,28 @@ namespace GameFrame.Editor
             return accessors;
         }
 
-        private static object ReadComponentValue<T>(World world, EffEntityHandle entity) where T : unmanaged, EffComponent
+        private static object ReadComponentValue<T>(World world, EffEntity entity) where T : unmanaged, EffComponent
         {
             return world.GetComp<T>(entity);
         }
 
-        private static void WriteComponentValue<T>(World world, EffEntityHandle entity, object value) where T : unmanaged, EffComponent
+        private static void WriteComponentValue<T>(World world, EffEntity entity, object value) where T : unmanaged, EffComponent
         {
             world.GetComp<T>(entity) = (T) value;
         }
 
         private sealed class ComponentAccessors
         {
-            public readonly Func<World, EffEntityHandle, object> Read;
-            public readonly Action<World, EffEntityHandle, object> Write;
+            public readonly Func<World, EffEntity, object> Read;
+            public readonly Action<World, EffEntity, object> Write;
 
             public ComponentAccessors(Type componentType)
             {
                 const BindingFlags flags = BindingFlags.Static | BindingFlags.NonPublic;
-                Read = (Func<World, EffEntityHandle, object>) typeof(ComponentView).GetMethod(nameof(ReadComponentValue), flags)
-                    .MakeGenericMethod(componentType).CreateDelegate(typeof(Func<World, EffEntityHandle, object>));
-                Write = (Action<World, EffEntityHandle, object>) typeof(ComponentView).GetMethod(nameof(WriteComponentValue), flags)
-                    .MakeGenericMethod(componentType).CreateDelegate(typeof(Action<World, EffEntityHandle, object>));
+                Read = (Func<World, EffEntity, object>) typeof(ComponentView).GetMethod(nameof(ReadComponentValue), flags)
+                    .MakeGenericMethod(componentType).CreateDelegate(typeof(Func<World, EffEntity, object>));
+                Write = (Action<World, EffEntity, object>) typeof(ComponentView).GetMethod(nameof(WriteComponentValue), flags)
+                    .MakeGenericMethod(componentType).CreateDelegate(typeof(Action<World, EffEntity, object>));
             }
         }
 
@@ -638,7 +638,7 @@ namespace GameFrame.Editor
                 return;
 
             var comType = GamePlayAssembly.GetAssembly().GetType($"Auto{type.Name}");
-            var methodInfo = comType?.GetMethod($"Add{type.Name}", BindingFlags.Static | BindingFlags.Public, null, new[] {typeof(World), typeof(EffEntityHandle)}, null);
+            var methodInfo = comType?.GetMethod($"Add{type.Name}", BindingFlags.Static | BindingFlags.Public, null, new[] {typeof(World), typeof(EffEntity)}, null);
             methodInfo?.Invoke(null, new object[] {world, effEntity});
             isShowAllEcsComponents = false;
         }

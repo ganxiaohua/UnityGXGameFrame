@@ -82,7 +82,7 @@ namespace GameFrame.Runtime
             ReferencePool.Release(matcher);
         }
 
-        public bool Match(World world, EffEntityHandle entity)
+        public bool Match(World world, EffEntity entity)
         {
             if (this.AllOfIndices != null && !world.HasComps(entity, this.AllOfIndices) ||
                 this.AnyOfIndices != null && !world.HasAnyComp(entity, this.AnyOfIndices))

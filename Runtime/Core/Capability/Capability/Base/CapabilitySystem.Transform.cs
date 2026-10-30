@@ -4,7 +4,7 @@ namespace GameFrame.Runtime
 {
     public partial class Capabilitys
     {
-        public CapabilitysUpdateMode Add<T>(EffEntityHandle player) where T : CapabilityBase
+        public CapabilitysUpdateMode Add<T>(EffEntity player) where T : CapabilityBase
         {
             var capability = ReferencePool.Acquire<T>();
             var updateMode = capability.UpdateMode;
@@ -27,7 +27,7 @@ namespace GameFrame.Runtime
             return updateMode;
         }
 
-        private void SetArray(JumpIndexArray<CapabilityBase>[] arrays, EffEntityHandle player, int id, CapabilityBase capability)
+        private void SetArray(JumpIndexArray<CapabilityBase>[] arrays, EffEntity player, int id, CapabilityBase capability)
         {
             if ((uint) id >= (uint) arrays.Length)
                 throw new System.IndexOutOfRangeException($"{capability.GetType().Name} capability id {id} is outside {capability.UpdateMode} array length {arrays.Length}.");
@@ -62,10 +62,10 @@ namespace GameFrame.Runtime
                 array?.EnsureCapacity(capacity);
         }
 
-        public void SetCapabilityBaseWithPlayer(EffEntityHandle player, List<CapabilityBase> update, List<CapabilityBase> fixedUpdate,
+        public void SetCapabilityBaseWithPlayer(EffEntity player, List<CapabilityBase> update, List<CapabilityBase> fixedUpdate,
             List<CapabilityBase> lateUpdate)
         {
-            void Get(EffEntityHandle player, JumpIndexArray<CapabilityBase>[] scr, List<CapabilityBase> dst)
+            void Get(EffEntity player, JumpIndexArray<CapabilityBase>[] scr, List<CapabilityBase> dst)
             {
                 foreach (var capArray in scr)
                 {
@@ -85,7 +85,7 @@ namespace GameFrame.Runtime
             Get(player, capabilitiesLateUpdateList, lateUpdate);
         }
 
-        public void Remove(EffEntityHandle player, int capabilitieId, CapabilitysUpdateMode updateMode)
+        public void Remove(EffEntity player, int capabilitieId, CapabilitysUpdateMode updateMode)
         {
             switch (updateMode)
             {
@@ -101,7 +101,7 @@ namespace GameFrame.Runtime
             }
         }
 
-        private void RemoveUpdate(EffEntityHandle player, int capabilitieId)
+        private void RemoveUpdate(EffEntity player, int capabilitieId)
         {
             if ((uint) capabilitieId >= (uint) capabilitiesUpdateList.Length)
                 return;
@@ -113,7 +113,7 @@ namespace GameFrame.Runtime
             }
         }
 
-        private void RemoveFixedUpdate(EffEntityHandle player, int capabilitieId)
+        private void RemoveFixedUpdate(EffEntity player, int capabilitieId)
         {
             if ((uint) capabilitieId >= (uint) capabilitiesFixUpdateList.Length)
                 return;
@@ -125,7 +125,7 @@ namespace GameFrame.Runtime
             }
         }
 
-        private void RemoveLatedUpdate(EffEntityHandle player, int capabilitieId)
+        private void RemoveLatedUpdate(EffEntity player, int capabilitieId)
         {
             if ((uint) capabilitieId >= (uint) capabilitiesLateUpdateList.Length)
                 return;
@@ -138,7 +138,7 @@ namespace GameFrame.Runtime
         }
 
 
-        public void RemoveEffEntitysAllCapability(EffEntityHandle player)
+        public void RemoveEffEntitysAllCapability(EffEntity player)
         {
             foreach (var array in capabilitiesUpdateList)
             {
@@ -165,7 +165,7 @@ namespace GameFrame.Runtime
             }
         }
 
-        private void RemoveArray(JumpIndexArray<CapabilityBase> array, EffEntityHandle player)
+        private void RemoveArray(JumpIndexArray<CapabilityBase> array, EffEntity player)
         {
             if ((uint) player.Id >= (uint) array.AllCount) return;
             var capability = array[player.Id];

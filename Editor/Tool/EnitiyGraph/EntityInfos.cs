@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using GameFrame.Runtime;
 
 namespace GameFrame.Editor
@@ -11,11 +11,11 @@ namespace GameFrame.Editor
         public int Grid;
         public IEntity Entity;
         public World World;
-        public EffEntityHandle EffEntity;
+        public EffEntity EffEntity;
         public bool IsEffEntity => EffEntity.IsValid;
         public bool HasTarget => IsEffEntity ? World != null && World.IsAlive(EffEntity) : Entity != null;
         public string Name => IsEffEntity ? (HasTarget ? World.GetName(EffEntity) : null) : Entity?.Name;
-        public string TypeName => IsEffEntity ? nameof(EffEntityHandle) : Entity?.GetType().Name;
+        public string TypeName => IsEffEntity ? nameof(Runtime.EffEntity) : Entity?.GetType().Name;
 
         public GeneralGrophNode GraphNode;
     }

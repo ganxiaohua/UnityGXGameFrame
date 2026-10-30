@@ -12,7 +12,7 @@ namespace GameFrame.Runtime
             internal bool Destroying;
         }
 
-        private JumpIndexArray<EffEntityHandle> children;
+        private JumpIndexArray<EffEntity> children;
         private EntitySlot[] entitySlots;
         private string[] entityNames;
         private bool[][] entityComponentFlags;
@@ -29,14 +29,14 @@ namespace GameFrame.Runtime
 
         public readonly struct EntityEnumerable
         {
-            private readonly JumpIndexArray<EffEntityHandle> items;
-            internal EntityEnumerable(JumpIndexArray<EffEntityHandle> items) { this.items = items; }
-            public JumpIndexArray<EffEntityHandle>.Enumerator GetEnumerator() => items.GetEnumerator();
+            private readonly JumpIndexArray<EffEntity> items;
+            internal EntityEnumerable(JumpIndexArray<EffEntity> items) { this.items = items; }
+            public JumpIndexArray<EffEntity>.Enumerator GetEnumerator() => items.GetEnumerator();
         }
 
         private void InitializeChilds()
         {
-            children = new JumpIndexArray<EffEntityHandle>();
+            children = new JumpIndexArray<EffEntity>();
             entitySlots = Array.Empty<EntitySlot>();
             entityNames = Array.Empty<string>();
             entityComponentFlags = Array.Empty<bool[]>();
@@ -66,7 +66,7 @@ namespace GameFrame.Runtime
             Array.Resize(ref entityComponentIds, count);
         }
 
-        public EffEntityHandle CreateEntity()
+        public EffEntity CreateEntity()
         {
             RequireWorld();
             if (disposing || componentDisposalDepth != 0)
@@ -76,7 +76,7 @@ namespace GameFrame.Runtime
             children.EnsureCapacity(Math.Max(children.AllCount * (id >= children.AllCount ? 2 : 1), id + 1));
             EnsureEntityCapacity(children.AllCount);
             Expansion();
-            var entity = new EffEntityHandle(id, checked(++nextEntityGeneration));
+            var entity = new EffEntity(id, checked(++nextEntityGeneration));
             entitySlots[id] = new EntitySlot { Generation = entity.Generation, State = IEntity.EntityState.IsRunning };
             entityComponentFlags[id] ??= new bool[MaxComponentCount];
             entityComponentIds[id] ??= new List<int>(MaxComponentCount);
@@ -94,19 +94,19 @@ namespace GameFrame.Runtime
             }
         }
 
-        protected virtual void OnEntityCreated(EffEntityHandle entity) { }
-        protected virtual void OnEntityDestroying(EffEntityHandle entity) { }
+        protected virtual void OnEntityCreated(EffEntity entity) { }
+        protected virtual void OnEntityDestroying(EffEntity entity) { }
 
-        public bool IsAlive(EffEntityHandle entity) => initialized && entity.Generation != 0 &&
+        public bool IsAlive(EffEntity entity) => initialized && entity.Generation != 0 &&
             (uint)entity.Id < (uint)entitySlots.Length && entitySlots[entity.Id].Generation == entity.Generation &&
             entitySlots[entity.Id].State == IEntity.EntityState.IsRunning;
 
-        internal void RequireEntity(EffEntityHandle entity)
+        internal void RequireEntity(EffEntity entity)
         {
             if (!IsAlive(entity)) throw new InvalidOperationException($"Entity {entity} is not alive in this world.");
         }
 
-        public bool DestroyEntity(EffEntityHandle entity)
+        public bool DestroyEntity(EffEntity entity)
         {
             if (!IsAlive(entity) || entitySlots[entity.Id].Destroying) return false;
             int id = entity.Id;
@@ -124,10 +124,10 @@ namespace GameFrame.Runtime
             return true;
         }
 
-        public string GetName(EffEntityHandle entity) { RequireEntity(entity); return entityNames[entity.Id]; }
-        public void SetName(EffEntityHandle entity, string name) { RequireEntity(entity); entityNames[entity.Id] = name; }
-        public IReadOnlyList<int> GetComponentIds(EffEntityHandle entity) { RequireEntity(entity); return entityComponentIds[entity.Id]; }
-        public IEntity.EntityState GetState(EffEntityHandle entity) => IsAlive(entity) ? IEntity.EntityState.IsRunning : IEntity.EntityState.IsClear;
+        public string GetName(EffEntity entity) { RequireEntity(entity); return entityNames[entity.Id]; }
+        public void SetName(EffEntity entity, string name) { RequireEntity(entity); entityNames[entity.Id] = name; }
+        public IReadOnlyList<int> GetComponentIds(EffEntity entity) { RequireEntity(entity); return entityComponentIds[entity.Id]; }
+        public IEntity.EntityState GetState(EffEntity entity) => IsAlive(entity) ? IEntity.EntityState.IsRunning : IEntity.EntityState.IsClear;
 
         private void DisposeChilds()
         {

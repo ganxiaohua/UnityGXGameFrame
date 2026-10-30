@@ -4,28 +4,28 @@ namespace GameFrame.Runtime
 {
     public unsafe partial class World
     {
-        public bool HasComp<T>(EffEntityHandle entity) where T : unmanaged, EffComponent => HasComp(entity, ComponentsID<T>.TID);
+        public bool HasComp<T>(EffEntity entity) where T : unmanaged, EffComponent => HasComp(entity, ComponentsID<T>.TID);
 
-        public bool HasComp(EffEntityHandle entity, int cid) => IsAlive(entity) && HasCompAt(entity.Id, cid);
+        public bool HasComp(EffEntity entity, int cid) => IsAlive(entity) && HasCompAt(entity.Id, cid);
 
         private bool HasCompAt(int entityId, int cid) =>
             (uint)cid < (uint)MaxComponentCount && entityComponentFlags[entityId][cid];
 
-        public bool HasComps(EffEntityHandle entity, int[] cids)
+        public bool HasComps(EffEntity entity, int[] cids)
         {
             if (!IsAlive(entity)) return false;
             foreach (int cid in cids) if (!HasCompAt(entity.Id, cid)) return false;
             return true;
         }
 
-        public bool HasAnyComp(EffEntityHandle entity, int[] cids)
+        public bool HasAnyComp(EffEntity entity, int[] cids)
         {
             if (!IsAlive(entity)) return false;
             foreach (int cid in cids) if (HasCompAt(entity.Id, cid)) return true;
             return false;
         }
 
-        public bool TryGetComp<T>(EffEntityHandle entity, out T value) where T : unmanaged, EffComponent
+        public bool TryGetComp<T>(EffEntity entity, out T value) where T : unmanaged, EffComponent
         {
             int cid = ComponentsID<T>.TID;
             if (!HasComp(entity, cid)) { value = default; return false; }
@@ -33,9 +33,9 @@ namespace GameFrame.Runtime
             return true;
         }
 
-        public ref T GetComp<T>(EffEntityHandle entity) where T : unmanaged, EffComponent => ref *GetCompPtr<T>(entity);
+        public ref T GetComp<T>(EffEntity entity) where T : unmanaged, EffComponent => ref *GetCompPtr<T>(entity);
 
-        public T* GetCompPtr<T>(EffEntityHandle entity) where T : unmanaged, EffComponent
+        public T* GetCompPtr<T>(EffEntity entity) where T : unmanaged, EffComponent
         {
             RequireEntity(entity);
             int cid = ComponentsID<T>.TID;
@@ -43,9 +43,9 @@ namespace GameFrame.Runtime
             return GetCompPtr<T>(entity.Id, cid);
         }
 
-        public void AddCompNoGet<T>(EffEntityHandle entity) where T : unmanaged, EffComponent => AddComp<T>(entity);
+        public void AddCompNoGet<T>(EffEntity entity) where T : unmanaged, EffComponent => AddComp<T>(entity);
 
-        public T* AddComp<T>(EffEntityHandle entity) where T : unmanaged, EffComponent
+        public T* AddComp<T>(EffEntity entity) where T : unmanaged, EffComponent
         {
             RequireEntity(entity);
             int cid = ComponentsID<T>.TID;
@@ -61,25 +61,25 @@ namespace GameFrame.Runtime
             return GetCompPtr<T>(entity);
         }
 
-        public bool RemoveComp<T>(EffEntityHandle entity) where T : unmanaged, EffComponent => RemoveComp(entity, ComponentsID<T>.TID);
+        public bool RemoveComp<T>(EffEntity entity) where T : unmanaged, EffComponent => RemoveComp(entity, ComponentsID<T>.TID);
 
-        public bool RemoveComp(EffEntityHandle entity, int cid)
+        public bool RemoveComp(EffEntity entity, int cid)
         {
             if (!HasComp(entity, cid)) return false;
             ReleaseEntityComp(entity, cid, true);
             return true;
         }
 
-        public void Reactive<T>(EffEntityHandle entity) where T : unmanaged, EffComponent => Reactive(entity, ComponentsID<T>.TID);
+        public void Reactive<T>(EffEntity entity) where T : unmanaged, EffComponent => Reactive(entity, ComponentsID<T>.TID);
 
-        public void Reactive(EffEntityHandle entity, int cid)
+        public void Reactive(EffEntity entity, int cid)
         {
             RequireEntity(entity);
             if (!HasCompAt(entity.Id, cid)) throw new InvalidOperationException($"Entity {entity} does not have component {cid}.");
             Reactive(cid, entity);
         }
 
-        private void ReleaseEntityComp(EffEntityHandle entity, int cid, bool reactive)
+        private void ReleaseEntityComp(EffEntity entity, int cid, bool reactive)
         {
             // Clear membership first so recursive disposal cannot release the same component twice.
             entityComponentFlags[entity.Id][cid] = false;

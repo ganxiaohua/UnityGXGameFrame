@@ -70,7 +70,7 @@ namespace GameFrame.Runtime
         {
             foreach (var capability in capabilityBaseArrayEx)
             {
-                EffEntityHandle owner = capability.Owner;
+                EffEntity owner = capability.Owner;
                 if (capability.TagList != null)
                 {
                     var capabilityComp = eccWorld.GetComp<CapabilityComponent>(owner);
