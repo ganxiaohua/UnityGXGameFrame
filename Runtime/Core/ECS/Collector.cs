@@ -1,13 +1,13 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace GameFrame.Runtime
 {
     public class Collector : IDisposable
     {
-        private HashSet<EffEntity> collectedEntities;
+        private HashSet<EffEntityHandle> collectedEntities;
 
-        public HashSet<EffEntity> CollectedEntities => collectedEntities;
+        public HashSet<EffEntityHandle> CollectedEntities => collectedEntities;
 
         private Group[] groups;
 
@@ -39,7 +39,7 @@ namespace GameFrame.Runtime
         private void InitCollector(int childSize, Group[] group)
         {
             groups = group;
-            collectedEntities ??= new HashSet<EffEntity>(childSize);
+            collectedEntities ??= new HashSet<EffEntityHandle>(childSize);
             groupChange = AddEvent;
             foreach (var item in groups)
             {
@@ -70,7 +70,7 @@ namespace GameFrame.Runtime
             }
         }
 
-        private void AddEvent(Group group, EffEntity effEntity)
+        private void AddEvent(Group group, EffEntityHandle effEntity)
         {
             collectedEntities.Add(effEntity);
         }

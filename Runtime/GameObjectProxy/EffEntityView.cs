@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -8,19 +8,23 @@ namespace GameFrame.Runtime
     {
         public class Input : IDisposable
         {
-            public EffEntity Entity;
+            public EffEntityHandle Entity;
+            public World World;
             public Transform Parent;
             public object UserData;
 
             public void Dispose()
             {
-                Entity = null;
+                Entity = default;
+                World = default;
                 Parent = null;
+                UserData = null;
             }
         }
 
         public Transform Parent { get; private set; }
-        protected EffEntity BindEntity { get; private set; }
+        protected World World { get; private set; }
+        protected EffEntityHandle BindEntity { get; private set; }
 
         public override bool AutoLayers { get; set; } = false;
 
@@ -38,24 +42,26 @@ namespace GameFrame.Runtime
             var input = (Input) initData;
             base.Initialize(initData);
             BindEntity = input.Entity;
+            World = input.World;
             Parent = input.Parent;
             UserData = input.UserData;
             viewEffBindEnitiy = gameObject.AddComponent<ViewEffBindEnitiy>();
             viewEffBindEnitiy.Entity = BindEntity;
+            viewEffBindEnitiy.World = World;
         }
 
         protected override void OnAfterBind(GameObject go)
         {
             base.OnAfterBind(go);
-            if (BindEntity.IsAction)
-                BindEntity.AddComponentNoGet<BindingTargetOverComp>();
+            if (World != null && World.IsAlive(BindEntity))
+                World.AddCompNoGet<BindingTargetOverComp>(BindEntity);
             bindOver?.Invoke();
         }
 
         protected override void OnBeforeUnbind()
         {
-            if (BindEntity.IsAction)
-                BindEntity.RemoveComponent(ComponentsID<BindingTargetOverComp>.TID);
+            if (World != null && World.IsAlive(BindEntity))
+                World.RemoveComp(BindEntity, ComponentsID<BindingTargetOverComp>.TID);
         }
 
         public void SetBindOver(Action action)
@@ -68,6 +74,16 @@ namespace GameFrame.Runtime
             Object.Destroy(viewEffBindEnitiy);
             bindOver = null;
             base.Dispose();
+            if (viewEffBindEnitiy != null)
+            {
+                viewEffBindEnitiy.Entity = default;
+                viewEffBindEnitiy.World = default;
+            }
+            viewEffBindEnitiy = null;
+            BindEntity = default;
+            World = default;
+            Parent = null;
+            UserData = null;
         }
 
         public virtual void TickActive(float delatTime, float realElapseSeconds)

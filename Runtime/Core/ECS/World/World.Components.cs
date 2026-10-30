@@ -1,4 +1,4 @@
-﻿using Unity.Collections;
+using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 
 namespace GameFrame.Runtime
@@ -47,8 +47,9 @@ namespace GameFrame.Runtime
 #endif
         }
 
-        public void AddComp<T>() where T : unmanaged, EffComponent
+        public void RegisterComp<T>() where T : unmanaged, EffComponent
         {
+            RequireWorld();
             var cid = ComponentsID<T>.TID;
             ValidateComponentId(cid);
             if (components[cid] != null)
@@ -65,6 +66,7 @@ namespace GameFrame.Runtime
 #endif
             UnsafeUtility.MemClear(ptr, size);
             components[cid] = ptr;
+            ComponentDisposeAction.Register<T>(cid, componentsCapacity);
 #if UNITY_EDITOR
             CalculateSize(size);
 #endif
@@ -72,7 +74,7 @@ namespace GameFrame.Runtime
 
         private void Expansion()
         {
-            if (ChildsCount <= componentsChildrenSize)
+            if (children.AllCount <= componentsChildrenSize)
                 return;
             int count = componentsCapacity;
 #if UNITY_EDITOR
@@ -82,7 +84,7 @@ namespace GameFrame.Runtime
             {
                 var structsize = structSizes[i];
                 long oldSize = (long) structsize * componentsChildrenSize;
-                long size = (long) structsize * Children.AllCount;
+                long size = (long) structsize * children.AllCount;
                 long appendSize = size - oldSize;
                 var compPtr = components[i];
                 if (compPtr == null)
@@ -106,18 +108,18 @@ namespace GameFrame.Runtime
 #if UNITY_EDITOR
             OutputSize();
 #endif
-            componentsChildrenSize = Children.AllCount;
+            componentsChildrenSize = children.AllCount;
         }
 
 
-        public ref T GetComp<T>(int entityIndex, int id) where T : unmanaged, EffComponent
+        internal ref T GetComp<T>(int entityIndex, int id) where T : unmanaged, EffComponent
         {
             ValidateComponentId(id);
             T* ptr = (T*) components[id];
             return ref ptr[entityIndex];
         }
 
-        public T* GetCompPtr<T>(int entityIndex, int id) where T : unmanaged, EffComponent
+        internal T* GetCompPtr<T>(int entityIndex, int id) where T : unmanaged, EffComponent
         {
             ValidateComponentId(id);
             T* ptr = (T*) components[id];
@@ -125,7 +127,7 @@ namespace GameFrame.Runtime
             return ptr;
         }
 
-        public byte* GetCompBytes(int entityIndex, int id)
+        internal byte* GetCompBytes(int entityIndex, int id)
         {
             ValidateComponentId(id);
             var ptr = (byte*) components[id];
@@ -133,30 +135,17 @@ namespace GameFrame.Runtime
             return ptr;
         }
 
-        public unsafe T* GetComponentColumnPtr<T>() where T : unmanaged, EffComponent
+        internal T* GetComponentColumnPtr<T>() where T : unmanaged, EffComponent
         {
             int cid = ComponentsID<T>.TID;
             ValidateComponentId(cid);
             return (T*) components[cid];
         }
 
-        public void ClearComp(int entityIndex, int id)
+        internal void ClearComp(int entityIndex, int id)
         {
             var ptr = GetCompBytes(entityIndex, id);
             UnsafeUtility.MemClear(ptr, structSizes[id]);
-        }
-
-        public void ClearEntityAllComponent(int entityIndex)
-        {
-            var componentsList = Children[entityIndex].ComponentsList;
-            for (int i = 0; i < componentsList.Count; i++)
-            {
-                int cid = componentsList[i];
-                ValidateComponentId(cid);
-                var ptr = (byte*) components[cid];
-                ptr += structSizes[cid] * entityIndex;
-                UnsafeUtility.MemClear(ptr, structSizes[cid]);
-            }
         }
 
         private void DestroyComp()
@@ -190,7 +179,6 @@ namespace GameFrame.Runtime
             componentsChildrenSize = 0;
         }
 
-        [System.Diagnostics.Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
         private void ValidateComponentId(int id)
         {
             if (components == null)

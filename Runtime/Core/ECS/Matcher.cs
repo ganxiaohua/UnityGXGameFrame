@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace GameFrame.Runtime
@@ -82,12 +82,12 @@ namespace GameFrame.Runtime
             ReferencePool.Release(matcher);
         }
 
-        public bool Match(EffEntity entity)
+        public bool Match(World world, EffEntityHandle entity)
         {
-            if (this.AllOfIndices != null && !entity.HasComponents(this.AllOfIndices) ||
-                this.AnyOfIndices != null && !entity.HasAnyComponent(this.AnyOfIndices))
+            if (this.AllOfIndices != null && !world.HasComps(entity, this.AllOfIndices) ||
+                this.AnyOfIndices != null && !world.HasAnyComp(entity, this.AnyOfIndices))
                 return false;
-            return this.NoneOfIndices == null || !entity.HasAnyComponent(this.NoneOfIndices);
+            return this.NoneOfIndices == null || !world.HasAnyComp(entity, this.NoneOfIndices);
         }
 
 

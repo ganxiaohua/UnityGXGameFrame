@@ -1,23 +1,23 @@
  
-    public static EffEntity Set{0}(this {4} effEntity,{1} param)
+    public static EffEntityHandle Set{0}(this World world, EffEntityHandle effEntity,{1} param)
     {{
-        var p = effEntity.GetComponentPtr<{2}>();
+        var p = world.GetCompPtr<{2}>(effEntity);
         p->{3} = param;
         {5}
-        ((World)effEntity.Parent).Reactive(ComponentsID<{2}>.TID, effEntity);
+        world.Reactive<{2}>(effEntity);
         return effEntity;
     }}
     
-    public static EffEntity AddOrSet{0}(this {4} effEntity,{1} param)
+    public static EffEntityHandle AddOrSet{0}(this World world, EffEntityHandle effEntity,{1} param)
     {{
-        var has = effEntity.HasComponent<{2}>();
+        var has = world.HasComp<{2}>(effEntity);
         {2}* p;
         if(!has)
         {{
-           p = effEntity.AddComponent<{2}>();
+           p = world.AddComp<{2}>(effEntity);
         }}else{{
-           p = effEntity.GetComponentPtr<{2}>();
-           ((World)effEntity.Parent).Reactive(ComponentsID<{2}>.TID, effEntity);
+           world.Reactive<{2}>(effEntity);
+           p = world.GetCompPtr<{2}>(effEntity);
         }}
         p->{3} = param;
         return effEntity;

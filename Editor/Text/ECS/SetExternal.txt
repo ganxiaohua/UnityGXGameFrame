@@ -1,22 +1,22 @@
  
-    public static void Set{0}External(this {1} effEntity,{3} param)
+    public static void Set{0}External(this World world, EffEntityHandle effEntity,{3} param)
     {{
-        var data =  effEntity.AddComponent<{2}>();
+        var data =  world.AddComp<{2}>(effEntity);
         data->Set(param);
-         ((World)effEntity.Parent).Reactive(ComponentsID<{2}>.TID, effEntity);
+         world.Reactive<{2}>(effEntity);
     }}
     
-    public static void AddOrSet{0}External(this {1} effEntity,{3} param)
+    public static void AddOrSet{0}External(this World world, EffEntityHandle effEntity,{3} param)
     {{
-        var have = effEntity.HasComponent<{2}>();
+        var have = world.HasComp<{2}>(effEntity);
         {2}* p;
         if(!have)
         {{
-           p = effEntity.AddComponent<{2}>();
+           p = world.AddComp<{2}>(effEntity);
            p->Init(param);
         }}else{{
-           p = effEntity.GetComponentPtr<{2}>();
+           p = world.GetCompPtr<{2}>(effEntity);
            p->Set(param);
-           ((World)effEntity.Parent).Reactive(ComponentsID<{2}>.TID, effEntity);
+           world.Reactive<{2}>(effEntity);
         }}
     }} 

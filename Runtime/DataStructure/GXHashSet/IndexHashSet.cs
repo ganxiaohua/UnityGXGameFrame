@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
@@ -46,13 +46,10 @@ namespace GameFrame.Runtime
         public bool Remove(T data)
         {
             bool have = blocks[data.ID];
-            if (have)
-            {
-                Datas.RemoveSwapBack(data);
-                blocks[data.ID] = false;
-            }
-
-            return have;
+            if (!have || !Datas.RemoveSwapBack(data))
+                return false;
+            blocks[data.ID] = false;
+            return true;
         }
 
 

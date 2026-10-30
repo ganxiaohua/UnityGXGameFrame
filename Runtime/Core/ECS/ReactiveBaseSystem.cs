@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace GameFrame.Runtime
 {
@@ -8,27 +8,29 @@ namespace GameFrame.Runtime
         /// 我想要关注的实体
         /// </summary>
         private Collector collector;
+        protected World World { get; private set; }
 
-        private List<EffEntity> effEntities = new(64);
+        private List<EffEntityHandle> effEntities = new(64);
 
         public virtual void OnInitialize()
         {
+            World = ((World)Parent);
             collector = this.GetTrigger((World) Parent);
         }
 
         protected abstract Collector GetTrigger(World world);
 
-        protected abstract bool Filter(EffEntity entity);
+        protected abstract bool Filter(EffEntityHandle entity);
 
-        protected abstract void Execute(List<EffEntity> entities);
+        protected abstract void Execute(List<EffEntityHandle> entities);
 
         protected void Do()
         {
             if (collector.CollectedEntities.Count == 0)
                 return;
-            foreach (EffEntity ecsentity in collector.CollectedEntities)
+            foreach (EffEntityHandle ecsentity in collector.CollectedEntities)
             {
-                if (ecsentity.State != IEntity.EntityState.IsClear && Filter(ecsentity))
+                if (World.IsAlive(ecsentity) && Filter(ecsentity))
                 {
                     effEntities.Add(ecsentity);
                 }
@@ -44,6 +46,7 @@ namespace GameFrame.Runtime
         {
             base.Dispose();
             collector?.Dispose();
+            World = default;
         }
     }
 }

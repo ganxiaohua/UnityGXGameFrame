@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -120,7 +120,7 @@ namespace GameFrame.Editor
                 return;
             }
 
-            string ECSComponentName = nameof(EffEntity);
+            string ECSComponentName = nameof(World);
             var vb = type.GetCustomAttribute<AssignBindAttribute>();
             if (vb != null)
             {

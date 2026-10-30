@@ -6,14 +6,14 @@ using System;
 using System.Collections.Generic;
 using GameFrame.Runtime;
 
-public static partial class AllComponents
+public static unsafe partial class AllComponents
 {{
     private static bool initDisEffEntityAction = false;
     private static void SetDisEffEntityAction()
     {{
         if (initDisEffEntityAction)
             return;
-        ComponentDisposeAction.ComponentDisposeActions =  new Action<World,int>[TotalComponents];
+        ComponentDisposeAction.ComponentDisposeActions =  new ComponentDisposer[TotalComponents];
         {0}
         initDisEffEntityAction = true;
     }}
@@ -22,8 +22,8 @@ public static partial class AllComponents
 @
         ComponentDisposeAction.ComponentDisposeActions[ComponentsID<{1}>.TID] = Dis{0};
 @
-    private static void Dis{0}(World world,int effEntityId)
+    private static void Dis{0}(void* component)
     {{
-       ref var v = ref world.GetComp<{1}>(effEntityId, ComponentsID<{1}>.TID);
+       ref var v = ref *({1}*)component;
         v.Dispose();
     }}

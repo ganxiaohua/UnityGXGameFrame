@@ -1,8 +1,8 @@
 
   
-    public static void Add{0}External(this {1} effEntity,{3} param)
+    public static void Add{0}External(this World world, EffEntityHandle effEntity,{3} param)
     {{
-        var data =  effEntity.AddComponent<{2}>();
+        var data =  world.AddComp<{2}>(effEntity);
         data->Init(param);
     }}
     

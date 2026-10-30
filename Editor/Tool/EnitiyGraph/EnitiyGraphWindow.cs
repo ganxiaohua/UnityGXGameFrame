@@ -121,7 +121,7 @@ namespace GameFrame.Editor
             legend.style.flexDirection = FlexDirection.Row;
             legend.style.marginTop = 8f;
             legend.Add(CreateLegendItem("Entity", IdleColor));
-            legend.Add(CreateLegendItem("EffEntity", AccentColor));
+            legend.Add(CreateLegendItem("EffEntityHandle", AccentColor));
             legend.Add(CreateLegendItem("World", CapabilityColor));
 
             header.Add(titleRow);

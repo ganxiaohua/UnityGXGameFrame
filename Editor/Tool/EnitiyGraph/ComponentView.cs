@@ -76,7 +76,8 @@ namespace GameFrame.Editor
         private static List<ComponentInfo> sAllEcsComponents = new();
         private static readonly Dictionary<Type, ComponentAccessors> ComponentAccessorsByType = new();
 
-        private EffEntity effEntity;
+        private EffEntityHandle effEntity;
+        private World world;
         private bool isShowAllEcsComponents;
         private bool isShowFocusedOnly;
         private readonly Dictionary<int, PropertyTree> ecsComponentsTree = new();
@@ -107,11 +108,12 @@ namespace GameFrame.Editor
         private static Color SecondaryText => EditorGUIUtility.isProSkin ? new Color(0.62f, 0.67f, 0.72f, 1f) : new Color(0.34f, 0.36f, 0.40f, 1f);
         private static Color DimmedText => EditorGUIUtility.isProSkin ? new Color(0.42f, 0.45f, 0.50f, 1f) : new Color(0.50f, 0.52f, 0.56f, 1f);
 
-        public static void Init(EffEntity effEntity)
+        public static void Init(World world, EffEntityHandle effEntity)
         {
             sWindow ??= GetWindow<ComponentView>();
-            sWindow.titleContent.text = string.IsNullOrEmpty(effEntity.Name) ? "Entity" : effEntity.Name;
+            sWindow.titleContent.text = string.IsNullOrEmpty(world.GetName(effEntity)) ? "Entity" : world.GetName(effEntity);
             sWindow.effEntity = effEntity;
+            sWindow.world = world;
             sWindow.scrollPosition = Vector2.zero;
             sWindow.addScrollPosition = Vector2.zero;
             sWindow.componentSearch = string.Empty;
@@ -132,13 +134,13 @@ namespace GameFrame.Editor
             EnsureStyles();
             EditorGUI.DrawRect(new Rect(0f, 0f, position.width, position.height), BackgroundColor);
 
-            if (effEntity == null)
+            if (world == null || !world.IsAlive(effEntity))
             {
                 DrawCenteredMessage("No entity selected.");
                 return;
             }
 
-            if (effEntity.State == IEntity.EntityState.IsClear)
+            if (world.GetState(effEntity) == IEntity.EntityState.IsClear)
             {
                 Close();
                 return;
@@ -193,7 +195,7 @@ namespace GameFrame.Editor
                 if (!TryGetVisibleComponentType(cid, out Type componentType))
                     continue;
 
-                object ecsComponent = GetComponentAccessors(componentType).Read(effEntity);
+                object ecsComponent = GetComponentAccessors(componentType).Read(world, effEntity);
                 object ecsComponentExternal = InvokeGetDataIfExists(ecsComponent);
                 bool focused = IsComponentFocused(componentType);
                 DrawComponentCard(cid, componentType, ecsComponentExternal ?? ecsComponent, focused, focusedComponentCount > 0 && !focused);
@@ -209,10 +211,10 @@ namespace GameFrame.Editor
             EditorGUI.DrawRect(rect, PanelColor);
             EditorGUI.DrawRect(new Rect(rect.x, rect.y, rect.width, 2f), AccentColor);
 
-            string entityName = string.IsNullOrEmpty(effEntity.Name) ? "Entity" : effEntity.Name;
+            string entityName = string.IsNullOrEmpty(world.GetName(effEntity)) ? "Entity" : world.GetName(effEntity);
             GUI.Label(new Rect(rect.x + 16f, rect.y + 10f, rect.width - 170f, 24f), "Component Inspector", headerTitleStyle);
             GUI.Label(new Rect(rect.x + 16f, rect.y + 35f, rect.width - 170f, 18f),
-                $"{entityName}   ID:{effEntity.ID}   State:{effEntity.State}", headerSubTitleStyle);
+                $"{entityName}   ID:{effEntity.Id}   State:{world.GetState(effEntity)}", headerSubTitleStyle);
 
             DrawPill(new Rect(rect.xMax - 132f, rect.y + 14f, 110f, 24f), $"{componentCount} Components", AccentColor);
             DrawPill(new Rect(rect.x + 16f, rect.y + 55f, 128f, 18f), "Capability hidden", CapabilityColor);
@@ -445,7 +447,7 @@ namespace GameFrame.Editor
         {
             focused.Clear();
             normal.Clear();
-            for (var i = effEntity.world.MaxComponentCount - 1; i >= 0; i--)
+            for (var i = world.MaxComponentCount - 1; i >= 0; i--)
             {
                 if (!TryGetVisibleComponentType(i, out Type componentType))
                     continue;
@@ -467,13 +469,13 @@ namespace GameFrame.Editor
             if (componentType == typeof(CapabilityComponent))
                 return false;
 
-            return effEntity.HasComponent(cid);
+            return world.HasComp(effEntity, cid);
         }
 
         private int CountFocusedComponents()
         {
             int count = 0;
-            for (int i = 0; i < effEntity.world.MaxComponentCount; i++)
+            for (int i = 0; i < world.MaxComponentCount; i++)
             {
                 if (TryGetVisibleComponentType(i, out Type componentType) && IsComponentFocused(componentType))
                     count++;
@@ -484,7 +486,7 @@ namespace GameFrame.Editor
 
         private void ClearFocusedComponents()
         {
-            for (int i = 0; i < effEntity.world.MaxComponentCount; i++)
+            for (int i = 0; i < world.MaxComponentCount; i++)
             {
                 if (TryGetVisibleComponentType(i, out Type componentType))
                     SetComponentFocused(componentType, false);
@@ -496,7 +498,7 @@ namespace GameFrame.Editor
         private int CountVisibleComponents()
         {
             int count = 0;
-            for (int i = 0; i < effEntity.world.MaxComponentCount; i++)
+            for (int i = 0; i < world.MaxComponentCount; i++)
             {
                 if (TryGetVisibleComponentType(i, out _))
                     count++;
@@ -534,7 +536,7 @@ namespace GameFrame.Editor
             if (ecsComponentsTree.TryGetValue(index, out var tree))
                 DisposeComponentTree(index, tree);
 
-            effEntity.RemoveComponent(index);
+            world.RemoveComp(effEntity, index);
         }
 
         private void ChangeComponent(InspectorProperty property, int selectionIndex)
@@ -544,15 +546,15 @@ namespace GameFrame.Editor
 
         private void CommitComponentChanges(int cid, Type componentType, PropertyTree tree, bool isExternal)
         {
-            if (!pendingComponentChanges.Remove(tree) || effEntity == null ||
-                effEntity.State == IEntity.EntityState.IsClear || !effEntity.HasComponent(cid))
+            if (!pendingComponentChanges.Remove(tree) || !world.IsAlive(effEntity) ||
+                world.GetState(effEntity) == IEntity.EntityState.IsClear || !world.HasComp(effEntity, cid))
                 return;
 
             // Draw 完成后，Odin 已将嵌套值类型逐层写回根对象。
             // GetData 返回的引用对象已原位修改，不应作为组件结构体写入。
             if (!isExternal)
-                GetComponentAccessors(componentType).Write(effEntity, tree.WeakTargets[0]);
-            effEntity.world.Reactive(cid, effEntity);
+                GetComponentAccessors(componentType).Write(world, effEntity, tree.WeakTargets[0]);
+            world.Reactive(effEntity, cid);
         }
 
         private static ComponentAccessors GetComponentAccessors(Type componentType)
@@ -566,28 +568,28 @@ namespace GameFrame.Editor
             return accessors;
         }
 
-        private static object ReadComponentValue<T>(EffEntity entity) where T : unmanaged, EffComponent
+        private static object ReadComponentValue<T>(World world, EffEntityHandle entity) where T : unmanaged, EffComponent
         {
-            return entity.GetComponent<T>();
+            return world.GetComp<T>(entity);
         }
 
-        private static void WriteComponentValue<T>(EffEntity entity, object value) where T : unmanaged, EffComponent
+        private static void WriteComponentValue<T>(World world, EffEntityHandle entity, object value) where T : unmanaged, EffComponent
         {
-            entity.GetComponent<T>() = (T) value;
+            world.GetComp<T>(entity) = (T) value;
         }
 
         private sealed class ComponentAccessors
         {
-            public readonly Func<EffEntity, object> Read;
-            public readonly Action<EffEntity, object> Write;
+            public readonly Func<World, EffEntityHandle, object> Read;
+            public readonly Action<World, EffEntityHandle, object> Write;
 
             public ComponentAccessors(Type componentType)
             {
                 const BindingFlags flags = BindingFlags.Static | BindingFlags.NonPublic;
-                Read = (Func<EffEntity, object>) typeof(ComponentView).GetMethod(nameof(ReadComponentValue), flags)
-                    .MakeGenericMethod(componentType).CreateDelegate(typeof(Func<EffEntity, object>));
-                Write = (Action<EffEntity, object>) typeof(ComponentView).GetMethod(nameof(WriteComponentValue), flags)
-                    .MakeGenericMethod(componentType).CreateDelegate(typeof(Action<EffEntity, object>));
+                Read = (Func<World, EffEntityHandle, object>) typeof(ComponentView).GetMethod(nameof(ReadComponentValue), flags)
+                    .MakeGenericMethod(componentType).CreateDelegate(typeof(Func<World, EffEntityHandle, object>));
+                Write = (Action<World, EffEntityHandle, object>) typeof(ComponentView).GetMethod(nameof(WriteComponentValue), flags)
+                    .MakeGenericMethod(componentType).CreateDelegate(typeof(Action<World, EffEntityHandle, object>));
             }
         }
 
@@ -636,8 +638,8 @@ namespace GameFrame.Editor
                 return;
 
             var comType = GamePlayAssembly.GetAssembly().GetType($"Auto{type.Name}");
-            var methodInfo = comType?.GetMethod($"Add{type.Name}", BindingFlags.Static | BindingFlags.Public, null, new[] {typeof(EffEntity)}, null);
-            methodInfo?.Invoke(null, new object[] {effEntity});
+            var methodInfo = comType?.GetMethod($"Add{type.Name}", BindingFlags.Static | BindingFlags.Public, null, new[] {typeof(World), typeof(EffEntityHandle)}, null);
+            methodInfo?.Invoke(null, new object[] {world, effEntity});
             isShowAllEcsComponents = false;
         }
 
@@ -765,7 +767,8 @@ namespace GameFrame.Editor
         {
             EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
             ClearPropertyTrees();
-            effEntity = null;
+            effEntity = default;
+            world = null;
             sWindow = null;
         }
 

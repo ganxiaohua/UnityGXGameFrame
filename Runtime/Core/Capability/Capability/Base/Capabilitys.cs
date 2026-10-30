@@ -1,4 +1,4 @@
-﻿namespace GameFrame.Runtime
+namespace GameFrame.Runtime
 {
     public partial class Capabilitys
     {
@@ -70,10 +70,10 @@
         {
             foreach (var capability in capabilityBaseArrayEx)
             {
-                var owner = capability.Owner;
+                EffEntityHandle owner = capability.Owner;
                 if (capability.TagList != null)
                 {
-                    var capabilityComp = owner.GetComponent<CapabilityComponent>();
+                    var capabilityComp = eccWorld.GetComp<CapabilityComponent>(owner);
                     if (capabilityComp.IsBlock(capability.TagList))
                         continue;
                 }

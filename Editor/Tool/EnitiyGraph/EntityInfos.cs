@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using GameFrame.Runtime;
 
 namespace GameFrame.Editor
@@ -10,6 +10,13 @@ namespace GameFrame.Editor
         public int Floor;
         public int Grid;
         public IEntity Entity;
+        public World World;
+        public EffEntityHandle EffEntity;
+        public bool IsEffEntity => EffEntity.IsValid;
+        public bool HasTarget => IsEffEntity ? World != null && World.IsAlive(EffEntity) : Entity != null;
+        public string Name => IsEffEntity ? (HasTarget ? World.GetName(EffEntity) : null) : Entity?.Name;
+        public string TypeName => IsEffEntity ? nameof(EffEntityHandle) : Entity?.GetType().Name;
+
         public GeneralGrophNode GraphNode;
     }
 
@@ -75,9 +82,13 @@ namespace GameFrame.Editor
 
             if (entityNode.Entity is World world)
             {
-                foreach (IEntity childEntity in world.Children)
+                foreach (var childEntity in world.Children)
                 {
-                    CreateNode(entityNode, childEntity, floor + 1, FloorGrid[floor]++);
+                    entityNode.NextNodes.Add(new EntityNode
+                    {
+                        PreNode = entityNode, World = world, EffEntity = childEntity,
+                        Floor = floor + 1, Grid = FloorGrid[floor]++
+                    });
                 }
             }
         }

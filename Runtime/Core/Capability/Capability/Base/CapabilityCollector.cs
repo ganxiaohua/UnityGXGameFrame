@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace GameFrame.Runtime
 {
@@ -60,13 +60,13 @@ namespace GameFrame.Runtime
 
         private void Add(Group group)
         {
-            foreach (var item in group.EntitiesMap)
+            foreach (EffEntityHandle item in group.EntitiesMap)
             {
                 AddEvent(group, item);
             }
         }
 
-        private void AddEvent(Group group, EffEntity effEntity)
+        private void AddEvent(Group group, EffEntityHandle effEntity)
         {
             capability.ComponentChanges = true;
         }

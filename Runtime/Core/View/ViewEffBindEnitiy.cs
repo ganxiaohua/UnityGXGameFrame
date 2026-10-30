@@ -1,9 +1,10 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace GameFrame.Runtime
 {
     public partial class ViewEffBindEnitiy: MonoBehaviour
     {
-        public EffEntity Entity { get; set; }
+        public World World { get; set; }
+        public EffEntityHandle Entity { get; set; }
     }
 }

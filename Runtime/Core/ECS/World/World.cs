@@ -1,7 +1,12 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 
 namespace GameFrame.Runtime
 {
+    /// <summary>
+    /// Main-thread entity/component access. Reacquire component refs and pointers after storage
+    /// expansion, removal or destruction. Async callers must capture and check Versions after awaits.
+    /// </summary>
     public abstract partial class World : IEntity, IVersions, IInitializeSystem<int>, IUpdateSystem, IFixedUpdateSystem, ILateUpdateSystem
     {
         public IEntity Parent { get; private set; }
@@ -48,12 +53,18 @@ namespace GameFrame.Runtime
 
         public virtual void OnInitialize(int maxComponentCount)
         {
+            if (initialized) throw new InvalidOperationException("World has already been initialized.");
             MaxComponentCount = maxComponentCount;
             WorldTime = 0;
             groupsList = new List<Group>[MaxComponentCount];
             groups = new();
             InitializeChilds();
             SetMultiple(1);
+        }
+
+        private void RequireWorld()
+        {
+            if (!initialized) throw new InvalidOperationException("World is not initialized or has been disposed.");
         }
 
         protected virtual void SetMultiple(float mul)
@@ -63,16 +74,17 @@ namespace GameFrame.Runtime
 
         public Group GetGroup(Matcher matcher)
         {
+            RequireWorld();
             if (groups.TryGetValue(matcher, out Group group))
             {
                 Matcher.ClearMatcher(matcher);
                 return group;
             }
 
-            group = Group.CreateGroup(ChildsCount, matcher);
+            group = Group.CreateGroup(this, ChildsCount, matcher);
             foreach (var item in Children)
             {
-                group.HandleEntitySilently((EffEntity) item);
+                group.HandleEntitySilently(item);
             }
 
             groups.Add(matcher, group);
@@ -85,7 +97,7 @@ namespace GameFrame.Runtime
             return group;
         }
 
-        public void Reactive(int comid, EffEntity entity)
+        internal void Reactive(int comid, EffEntityHandle entity)
         {
             var groupList = groupsList[comid];
             if (groupList != null)
@@ -99,21 +111,34 @@ namespace GameFrame.Runtime
         }
 
 
+        protected virtual void OnDisposeSystems() { }
+
         public virtual void Dispose()
         {
-            DisposeChilds();
-            foreach (var group in groups)
+            if (disposing || !initialized) return;
+            disposing = true;
+            try
             {
-                Matcher.ClearMatcher(group.Key);
-                Group.RemoveGroup(group.Value);
+                DisposeChilds();
+                OnDisposeSystems();
             }
-
-            Versions++;
-            ecsSerialId = 0;
-            groupsList = null;
-            groups.Clear();
-            groups = null;
-            DestroyComp();
+            finally
+            {
+                foreach (var group in groups)
+                {
+                    Matcher.ClearMatcher(group.Key);
+                    Group.RemoveGroup(group.Value);
+                }
+                Versions++;
+                State = IEntity.EntityState.IsClear;
+                ecsSerialId = 0;
+                groupsList = null;
+                groups.Clear();
+                groups = null;
+                DestroyComp();
+                initialized = false;
+                Parent = null;
+            }
         }
 
         public virtual void OnUpdate(float elapseSeconds, float realElapseSeconds)

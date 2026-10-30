@@ -1,19 +1,21 @@
-﻿using System;
+using System;
 
 namespace GameFrame.Runtime
 {
     public partial class Group : IDisposable
     {
         private Matcher matcher;
+        public World World { get; private set; }
         public event GroupChanged GroupAdd;
         public event GroupChanged GroupRemove;
         public event GroupChanged GroupUpdate;
-        public IndexHashSet<EffEntity> EntitiesMap { get; private set; }
+        public IndexHashSet<EffEntityHandle> EntitiesMap { get; private set; }
 
-        public static Group CreateGroup(int childsCount, Matcher matcher)
+        public static Group CreateGroup(World world, int childsCount, Matcher matcher)
         {
             Group Group = ReferencePool.Acquire<Group>();
             Group.matcher = matcher;
+            Group.World = world;
             Group.EntitiesMap = new(childsCount);
             return Group;
         }
@@ -23,7 +25,7 @@ namespace GameFrame.Runtime
             ReferencePool.Release(group);
         }
 
-        private void AddOrUpdateComponent(EffEntity entity, bool silently)
+        private void AddOrUpdateComponent(EffEntityHandle entity, bool silently)
         {
             EntitiesMap.Add(entity);
             if (!silently)
@@ -31,30 +33,30 @@ namespace GameFrame.Runtime
         }
 
 
-        private void RemoveComponent(EffEntity entity, bool silently)
+        private void RemoveComponent(EffEntityHandle entity, bool silently)
         {
             bool b = EntitiesMap.Remove(entity);
             if (!silently && b)
                 GroupRemove?.Invoke(this, entity);
         }
 
-        public int HandleEntitySilently(EffEntity entity)
+        public int HandleEntitySilently(EffEntityHandle entity)
         {
             return DoEntity(entity, true);
         }
 
 
-        public int HandleEntity(EffEntity entity)
+        public int HandleEntity(EffEntityHandle entity)
         {
             return DoEntity(entity, false);
         }
 
 
-        private int DoEntity(EffEntity entity, bool silently)
+        private int DoEntity(EffEntityHandle entity, bool silently)
         {
-            if (entity.IsAction)
+            if (World.IsAlive(entity))
             {
-                bool match = this.matcher.Match(entity);
+                bool match = this.matcher.Match(World, entity);
                 if (match)
                     this.AddOrUpdateComponent(entity, silently);
                 else
@@ -109,6 +111,7 @@ namespace GameFrame.Runtime
             GroupRemove -= GroupRemove;
             GroupUpdate -= GroupUpdate;
             matcher = null;
+            World = default;
             EntitiesMap.Clear();
 #if UNITY_EDITOR
             EditorDisPose();

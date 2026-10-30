@@ -126,12 +126,12 @@ namespace GameFrame.Editor
 
         private string GetEntityMetaText()
         {
-            if (mData?.Entity == null)
+            if (mData == null || !mData.HasTarget)
                 return "Unknown Entity";
 
-            string typeName = mData.Entity.GetType().Name;
-            if (mData.Entity is EffEntity effEntity)
-                return $"{typeName}   ID:{effEntity.ID}   State:{effEntity.State}";
+            string typeName = mData.TypeName;
+            if (mData.IsEffEntity)
+                return $"{typeName}   ID:{mData.EffEntity.Id}   State:{mData.World.GetState(mData.EffEntity)}";
 
             return typeName;
         }

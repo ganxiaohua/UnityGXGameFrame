@@ -55,7 +55,8 @@ namespace GameFrame.Editor
 
         private static CapabilityView sWindow;
 
-        private EffEntity effEntity;
+        private EffEntityHandle effEntity;
+        private World world;
         private ECCWorld eccWorld;
         private readonly List<CapabilityBase> capabilityBaseUpdateMode = new List<CapabilityBase>();
         private readonly List<CapabilityBase> capabilityBaseFixUpdateMode = new List<CapabilityBase>();
@@ -89,12 +90,13 @@ namespace GameFrame.Editor
         private static Color SecondaryText => EditorGUIUtility.isProSkin ? new Color(0.62f, 0.67f, 0.72f, 1f) : new Color(0.34f, 0.36f, 0.40f, 1f);
         private static Color DimmedText => EditorGUIUtility.isProSkin ? new Color(0.42f, 0.45f, 0.50f, 1f) : new Color(0.50f, 0.52f, 0.56f, 1f);
 
-        public static void Init(EffEntity effEntity)
+        public static void Init(World world, EffEntityHandle effEntity)
         {
             sWindow ??= GetWindow<CapabilityView>();
-            sWindow.titleContent.text = string.IsNullOrEmpty(effEntity.Name) ? "Entity" : effEntity.Name;
+            sWindow.titleContent.text = string.IsNullOrEmpty(world.GetName(effEntity)) ? "Entity" : world.GetName(effEntity);
             sWindow.effEntity = effEntity;
-            sWindow.eccWorld = (ECCWorld) effEntity.world;
+            sWindow.world = world;
+            sWindow.eccWorld = (ECCWorld)world;
             sWindow.Start();
             sWindow.Show();
         }
@@ -120,13 +122,13 @@ namespace GameFrame.Editor
             EnsureStyles();
             EditorGUI.DrawRect(new Rect(0f, 0f, position.width, position.height), BackgroundColor);
 
-            if (effEntity == null)
+            if (world == null || !world.IsAlive(effEntity))
             {
                 DrawCenteredMessage("No entity selected.");
                 return;
             }
 
-            if (effEntity.State == IEntity.EntityState.IsClear)
+            if (world.GetState(effEntity) == IEntity.EntityState.IsClear)
             {
                 DrawCenteredMessage("Entity has been cleared.");
                 return;
@@ -181,10 +183,10 @@ namespace GameFrame.Editor
             EditorGUI.DrawRect(rect, PanelColor);
             EditorGUI.DrawRect(new Rect(rect.x, rect.y, rect.width, 2f), ActiveColor);
 
-            string entityName = string.IsNullOrEmpty(effEntity.Name) ? "Entity" : effEntity.Name;
+            string entityName = string.IsNullOrEmpty(world.GetName(effEntity)) ? "Entity" : world.GetName(effEntity);
             GUI.Label(new Rect(rect.x + 16f, rect.y + 10f, rect.width - 150f, 24f), "Capability Timeline", headerTitleStyle);
             GUI.Label(new Rect(rect.x + 16f, rect.y + 35f, rect.width - 150f, 18f),
-                $"{entityName}   ID:{effEntity.ID}   State:{effEntity.State}   Frames:{Mathf.Min(tailFrame, FrameSize)}/{FrameSize}", headerSubTitleStyle);
+                $"{entityName}   ID:{effEntity.Id}   State:{world.GetState(effEntity)}   Frames:{Mathf.Min(tailFrame, FrameSize)}/{FrameSize}", headerSubTitleStyle);
 
             DrawStatusPill(new Rect(rect.xMax - 118f, rect.y + 14f, 96f, 24f));
 
@@ -714,6 +716,15 @@ namespace GameFrame.Editor
 
         protected override void OnDestroy()
         {
+            effEntity = default;
+            world = null;
+            eccWorld = null;
+            capabilityBaseUpdateMode.Clear();
+            capabilityBaseFixUpdateMode.Clear();
+            capabilityBaseLateUpdateMode.Clear();
+            updateMode = null;
+            fixUpdateMode = null;
+            lateUpdateMode = null;
             sWindow = null;
         }
     }

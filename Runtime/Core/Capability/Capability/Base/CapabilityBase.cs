@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace GameFrame.Runtime
@@ -8,12 +8,12 @@ namespace GameFrame.Runtime
         public int ID { get; private set; }
         public List<int> TagList { get; protected set; }
         public ECCWorld World { get; private set; }
-        public EffEntity Owner { get; private set; }
+        public EffEntityHandle Owner { get; private set; }
         public bool IsActive { get; internal set; }
 
         protected bool IsSurvive { get; private set; }
 
-        public bool IsEfficient => IsSurvive && Owner != null && Owner.IsAction;
+        public bool IsEfficient => IsSurvive && Owner != default && World.IsAlive(Owner);
 
         public virtual CapabilitysUpdateMode UpdateMode { get; protected set; } = CapabilitysUpdateMode.Update;
         public virtual int TickGroupOrder { get; protected set; }
@@ -33,7 +33,7 @@ namespace GameFrame.Runtime
             }
         }
 
-        public void Init(int id, ECCWorld world, EffEntity owner)
+        public void Init(int id, ECCWorld world, EffEntityHandle owner)
         {
             ID = id;
             World = world;
@@ -79,7 +79,7 @@ namespace GameFrame.Runtime
             CapabilityCollector = null;
             IsActive = false;
             TagList = null;
-            Owner = null;
+            Owner = default;
             World = null;
             IsSurvive = false;
         }

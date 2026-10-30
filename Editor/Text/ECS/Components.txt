@@ -13,4 +13,4 @@ public static partial class  AllComponents {{
     }}
 }}
 @
-        world.AddComp<{0}>();
+        world.RegisterComp<{0}>();

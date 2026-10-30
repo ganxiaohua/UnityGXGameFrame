@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace GameFrame.Runtime
 {
@@ -19,35 +19,34 @@ namespace GameFrame.Runtime
             capabilitys.Init(this, updateCapabilityCount, fixedUpdateCapabilityCount, lateUpdateCapabilityCount, estimatePlayer);
         }
 
-        public override EffEntity AddChild()
+        protected override void OnEntityCreated(EffEntityHandle child)
         {
-            var child = base.AddChild();
-            capabilitys.EnsureCapabilityCapacity(child.ID);
+            capabilitys.EnsureCapabilityCapacity(child.Id);
             BindCapability<DestroyCapability>(child);
-            var capabiltyComponet = child.AddComponent<CapabilityComponent>();
-            capabiltyComponet->Init(maxCapabilityTag);
-            return child;
+            var component = this.AddComp<CapabilityComponent>(child);
+            component->Init(maxCapabilityTag);
         }
 
-        public override void RemoveChild(EffEntity effEntity)
+        protected override void OnEntityDestroying(EffEntityHandle entity)
         {
-            capabilitys.RemoveEffEntitysAllCapability(effEntity);
-            base.RemoveChild(effEntity);
+            capabilitys.RemoveEffEntitysAllCapability(entity);
         }
 
-        public void SetCapability(EffEntity eff, List<CapabilityBase> update, List<CapabilityBase> fixedUpdate, List<CapabilityBase> LateUpdate)
+        public void SetCapability(EffEntityHandle eff, List<CapabilityBase> update, List<CapabilityBase> fixedUpdate, List<CapabilityBase> LateUpdate)
         {
+            RequireEntity(eff);
             capabilitys.SetCapabilityBaseWithPlayer(eff, update, fixedUpdate, LateUpdate);
         }
 
-        public void BindCapability<T>(EffEntity effEntity) where T : CapabilityBase
+        public void BindCapability<T>(EffEntityHandle effEntity) where T : CapabilityBase
         {
-            Assert.IsNotNull(effEntity, $"not have {effEntity.Name} ecsentity");
+            RequireEntity(effEntity);
             capabilityUpdateModes[typeof(T)] = capabilitys.Add<T>(effEntity);
         }
 
-        public void UnBindCapability<T>(EffEntity player) where T : CapabilityBase
+        public void UnBindCapability<T>(EffEntityHandle player) where T : CapabilityBase
         {
+            if (!this.IsAlive(player)) return;
             if (!capabilityUpdateModes.TryGetValue(typeof(T), out var updateMode))
                 return;
 
@@ -69,9 +68,9 @@ namespace GameFrame.Runtime
         }
 
 
-        public bool IsBindCapability(EffEntity player, List<int> tagInts)
+        public bool IsBindCapability(EffEntityHandle player, List<int> tagInts)
         {
-            var capabiltyComponent = player.GetComponent<CapabilityComponent>();
+            var capabiltyComponent = this.GetComp<CapabilityComponent>(player);
             return capabiltyComponent.IsBlock(tagInts);
         }
 
@@ -96,12 +95,12 @@ namespace GameFrame.Runtime
             OnLateUpdateSystem(DeltaTime, realElapseSeconds);
         }
 
-        public override void Dispose()
+        protected override void OnDisposeSystems()
         {
             capabilitys.Dispose();
             capabilityUpdateModes.Clear();
             DisposeSystem();
-            base.Dispose();
+            base.OnDisposeSystems();
         }
     }
 }

@@ -131,9 +131,9 @@ namespace GameFrame.Editor
         {
             if (nodeDic.TryGetValueKv(node, out EntityNode entityNode))
             {
-                if (entityNode.Entity.Parent is World)
+                if (entityNode.IsEffEntity)
                 {
-                    (((EffEntity) entityNode.Entity).Parent as World).RemoveChild((EffEntity) entityNode.Entity);
+                    entityNode.World.DestroyEntity(entityNode.EffEntity);
                 }
                 else
                 {
@@ -158,7 +158,7 @@ namespace GameFrame.Editor
 
         private void CreateNodeWithInfo(EntityNode rootNode)
         {
-            if (rootNode == null || rootNode.Entity == null)
+            if (rootNode == null || !rootNode.HasTarget)
             {
                 return;
             }
@@ -255,7 +255,7 @@ namespace GameFrame.Editor
             graphNode.AddButton("关注", FollowNode);
             graphNode.AddButton("删除", RemoveNode);
             graphNode.AddButton("组件", (x) => { ShowComponent(node); });
-            if (node.Entity is EffEntity effEntity && effEntity.world is ECCWorld)
+            if (node.IsEffEntity && node.World is ECCWorld)
             {
                 graphNode.AddButton("能力", (x) => { ShowCapability(node); });
             }
@@ -263,12 +263,12 @@ namespace GameFrame.Editor
 
         private string GetGraphNodeName(EntityNode node)
         {
-            if (node?.Entity == null)
+            if (node == null || !node.HasTarget)
                 return "Unknown Entity";
 
-            return string.IsNullOrEmpty(node.Entity.Name)
-                    ? node.Entity.GetType().Name
-                    : $"{node.Entity.GetType().Name} ({node.Entity.Name})";
+            return string.IsNullOrEmpty(node.Name)
+                    ? node.TypeName
+                    : $"{node.TypeName} ({node.Name})";
         }
 
         private Rect GetNodeRect(EntityNode node, string graphNodeName)
@@ -282,7 +282,7 @@ namespace GameFrame.Editor
             if (node?.Entity is World)
                 return WorldColor;
 
-            return node?.Entity is EffEntity ? EffEntityColor : EntityColor;
+            return node != null && node.IsEffEntity ? EffEntityColor : EntityColor;
         }
 
         private void RemoveBeyondEntityNode()
@@ -304,9 +304,9 @@ namespace GameFrame.Editor
 
         public void ShowComponent(EntityNode selectEntityNode)
         {
-            if (selectEntityNode.Entity is EffEntity ecs)
+            if (selectEntityNode.IsEffEntity)
             {
-                ComponentView.Init(ecs);
+                ComponentView.Init(selectEntityNode.World, selectEntityNode.EffEntity);
             }
             else
             {
@@ -316,9 +316,9 @@ namespace GameFrame.Editor
 
         public void ShowCapability(EntityNode selectEntityNode)
         {
-            if (selectEntityNode.Entity is EffEntity ecs && ecs.world is ECCWorld)
+            if (selectEntityNode.IsEffEntity && selectEntityNode.World is ECCWorld)
             {
-                CapabilityView.Init(ecs);
+                CapabilityView.Init(selectEntityNode.World, selectEntityNode.EffEntity);
             }
         }
 
@@ -346,7 +346,7 @@ namespace GameFrame.Editor
 
         private bool FindNode(EntityNode node, string name, bool isComp)
         {
-            if (node?.Entity == null)
+            if (node == null || !node.HasTarget)
                 return false;
 
             if (IsNodeMatch(node, name))
@@ -357,7 +357,7 @@ namespace GameFrame.Editor
                     return true;
                 }
 
-                if (node.Entity is EffEntity effEntity && effEntity.world is ECCWorld)
+                if (node.IsEffEntity && node.World is ECCWorld)
                 {
                     ShowCapability(node);
                     return true;
@@ -380,8 +380,8 @@ namespace GameFrame.Editor
 
         private bool IsNodeMatch(EntityNode node, string name)
         {
-            string entityName = node.Entity.Name ?? string.Empty;
-            string typeName = node.Entity.GetType().Name;
+            string entityName = node.Name ?? string.Empty;
+            string typeName = node.TypeName;
             return entityName.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0 ||
                    typeName.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0;
         }

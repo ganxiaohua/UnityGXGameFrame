@@ -1,4 +1,4 @@
-﻿namespace GameFrame.Runtime
+namespace GameFrame.Runtime
 {
     public class DestroyCapability : CapabilityBase
     {
@@ -11,18 +11,18 @@
 
         public override bool ShouldActivate()
         {
-            return Owner.HasComponent<DestroyComp>();
+            return World.HasComp<DestroyComp>(Owner);
         }
 
         public override void OnActivated()
         {
             base.OnActivated();
-            World.RemoveChild(Owner);
+            World.DestroyEntity(Owner);
         }
 
         public override bool ShouldDeactivate()
         {
-            return Owner.HasComponent<DestroyComp>();
+            return World.HasComp<DestroyComp>(Owner);
         }
 
         public override void TickActive(float delatTime, float realElapseSeconds)

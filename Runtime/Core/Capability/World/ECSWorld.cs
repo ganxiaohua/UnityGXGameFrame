@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace GameFrame.Runtime
@@ -150,9 +150,9 @@ namespace GameFrame.Runtime
         /// <summary>
         /// 清除
         /// </summary>
-        public override void Dispose()
+        protected override void OnDisposeSystems()
         {
-            base.Dispose();
+            base.OnDisposeSystems();
             ClearAllSystem();
         }
     }
