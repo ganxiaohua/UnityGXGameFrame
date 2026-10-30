@@ -5,10 +5,20 @@ using System.Runtime.InteropServices;
 
 namespace GameFrame.Runtime
 {
+    /// <summary>
+    /// 仅支持无序遍历，删除时使用末尾索引填补空位，不改变元素的外部 ID。
+    /// 遍历期间只支持删除当前元素，不支持删除其他元素、新增元素或清空集合。
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public partial class JumpIndexArray<T> : IEnumerable<T>, IEnumerable, IDisposable
     {
         protected T[] Items;
         protected bool[] RealItemIndex;
+        private int[] indexPositions;
+
+        /// <summary>
+        /// 当前有效的外部 ID，顺序不固定。仅供读取，请通过 Set、Remove、Clear 修改集合。
+        /// </summary>
         public List<int> IndexList { get; private set; }
 
         public int Count => IndexList.Count;
@@ -38,16 +48,24 @@ namespace GameFrame.Runtime
             {
                 Items = new T[arrayMaxCount];
             }
+            else
+            {
+                Array.Clear(Items, 0, Items.Length);
+            }
 
             IndexList = new List<int>(arrayMaxCount);
             RealItemIndex = new bool[arrayMaxCount];
+            indexPositions = new int[arrayMaxCount];
         }
 
         public T Set(int index, T t)
         {
             Expansion(index);
             if (!RealItemIndex[index])
+            {
+                indexPositions[index] = IndexList.Count;
                 IndexList.Add(index);
+            }
             RealItemIndex[index] = true;
             Items[index] = t;
             return t;
@@ -64,18 +82,34 @@ namespace GameFrame.Runtime
             if (capacity <= Items.Length) return;
             var newArray = new T[capacity];
             var newRealItemIndex = new bool[capacity];
+            var newIndexPositions = new int[capacity];
             Array.Copy(Items, 0, newArray, 0, Items.Length);
             Array.Copy(RealItemIndex, 0, newRealItemIndex, 0, RealItemIndex.Length);
+            Array.Copy(indexPositions, 0, newIndexPositions, 0, indexPositions.Length);
             Items = newArray;
             RealItemIndex = newRealItemIndex;
+            indexPositions = newIndexPositions;
             Debugger.LogWarning($"{typeof(T).Name} GXArray Expansion!!!");
         }
 
         public T Remove(int index)
         {
-            IndexList.Remove(index);
+            if (!RealItemIndex[index])
+                return default;
+
             var t = Items[index];
+            int position = indexPositions[index];
+            int lastPosition = IndexList.Count - 1;
+            if (position != lastPosition)
+            {
+                int lastIndex = IndexList[lastPosition];
+                IndexList[position] = lastIndex;
+                indexPositions[lastIndex] = position;
+            }
+
+            IndexList.RemoveAt(lastPosition);
             RealItemIndex[index] = false;
+            indexPositions[index] = 0;
             Items[index] = default;
             return t;
         }
@@ -85,8 +119,11 @@ namespace GameFrame.Runtime
             if (!isInit)
                 return;
             foreach (int index in IndexList)
+            {
                 Items[index] = default;
-            Array.Clear(RealItemIndex, 0, RealItemIndex.Length);
+                RealItemIndex[index] = false;
+                indexPositions[index] = 0;
+            }
             IndexList.Clear();
         }
 
@@ -101,6 +138,7 @@ namespace GameFrame.Runtime
             IndexList = null;
             Items = null;
             RealItemIndex = null;
+            indexPositions = null;
         }
 
         public Enumerator GetEnumerator() => new Enumerator(IndexList, this);
