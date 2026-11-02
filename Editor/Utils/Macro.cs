@@ -4,9 +4,10 @@ namespace GameFrame.Editor
 {
     public static class Macro
     {
-        public const string ShowAssert = "ShowAssert";
-        public const string Tracked = "Tracked";
-        public const string ShowEditorLine = "ShowEditorLine";
+        public const string ShowAssert = "ASSERT_SHOW";
+        public const string Tracked = "TRACKED_SHOW";
+        public const string ShowEditorLine = "EDITOR_LINE_USE";
+        public const string GAMEFRAME_USE_UNITYUI = "UNITYUI_USE";
 
         [MenuItem("GX框架工具/宏定义/" + ShowAssert, true, 0)]
         private static bool CommonAssertDisableValidateV()
@@ -26,6 +27,20 @@ namespace GameFrame.Editor
             else
             {
                 MacroDefineHelper.Enable(ShowAssert);
+            }
+        }
+        
+        
+        [MenuItem("GX框架工具/宏定义/" + GAMEFRAME_USE_UNITYUI, priority = 1)]
+        private static void GAMEFRAME_USE_UNITYUIDisableValidate()
+        {
+            if (MacroDefineHelper.Contains(GAMEFRAME_USE_UNITYUI))
+            {
+                MacroDefineHelper.Disable(GAMEFRAME_USE_UNITYUI);
+            }
+            else
+            {
+                MacroDefineHelper.Enable(GAMEFRAME_USE_UNITYUI);
             }
         }
 
