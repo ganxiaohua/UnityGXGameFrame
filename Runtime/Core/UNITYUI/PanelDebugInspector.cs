@@ -1,3 +1,4 @@
+#if GAMEFRAME_USE_UNITYUI
 #if UNITY_EDITOR
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -18,4 +19,5 @@ namespace GameFrame.Runtime.UnityUI
         [Button] private void DestroyPanel() => UISystem.Instance.DestroyPanel(Panel);
     }
 }
+#endif
 #endif

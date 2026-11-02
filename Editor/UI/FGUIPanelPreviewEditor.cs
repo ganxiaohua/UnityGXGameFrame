@@ -1,4 +1,5 @@
-﻿using FairyGUI;
+﻿#if !GAMEFRAME_USE_UNITYUI
+using FairyGUI;
 using GameFrame.Editor;
 using UnityEditor;
 using UnityEngine;
@@ -59,3 +60,4 @@ namespace FairyGUIEditor
         }
     }
 }
+#endif

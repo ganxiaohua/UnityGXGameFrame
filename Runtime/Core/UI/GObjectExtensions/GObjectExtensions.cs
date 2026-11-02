@@ -1,4 +1,5 @@
-﻿using FairyGUI;
+﻿#if !GAMEFRAME_USE_UNITYUI
+using FairyGUI;
 
 namespace GameFrame.Runtime
 {
@@ -10,3 +11,4 @@ namespace GameFrame.Runtime
         }
     }
 }
+#endif

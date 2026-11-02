@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !GAMEFRAME_USE_UNITYUI
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
@@ -178,3 +179,4 @@ namespace GameFrame.Runtime
         }
     }
 }
+#endif

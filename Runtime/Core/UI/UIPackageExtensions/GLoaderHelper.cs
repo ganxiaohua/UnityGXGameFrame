@@ -1,4 +1,5 @@
-﻿using Cysharp.Threading.Tasks;
+﻿#if !GAMEFRAME_USE_UNITYUI
+using Cysharp.Threading.Tasks;
 using FairyGUI;
 using UnityEngine;
 
@@ -68,3 +69,4 @@ namespace GameFrame.Runtime
         }
     }
 }
+#endif

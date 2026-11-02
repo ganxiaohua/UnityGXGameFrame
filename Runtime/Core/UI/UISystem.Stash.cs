@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#if !GAMEFRAME_USE_UNITYUI
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace GameFrame.Runtime
@@ -108,3 +109,4 @@ namespace GameFrame.Runtime
         }
     }
 }
+#endif

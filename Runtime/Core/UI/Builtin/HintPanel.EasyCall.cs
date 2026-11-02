@@ -1,3 +1,4 @@
+#if !GAMEFRAME_USE_UNITYUI
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
@@ -19,3 +20,4 @@ namespace GameFrame.Runtime
         }
     }
 }
+#endif

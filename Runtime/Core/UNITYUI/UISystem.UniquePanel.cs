@@ -1,3 +1,4 @@
+#if GAMEFRAME_USE_UNITYUI
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
@@ -67,3 +68,4 @@ namespace GameFrame.Runtime.UnityUI
         public void DestroyUniquePanel<T>() where T : Panel, new() => DestroyUniquePanel(typeof(T));
     }
 }
+#endif

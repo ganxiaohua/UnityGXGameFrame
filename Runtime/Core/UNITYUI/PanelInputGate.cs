@@ -1,3 +1,4 @@
+#if GAMEFRAME_USE_UNITYUI
 using UnityEngine;
 
 namespace GameFrame.Runtime.UnityUI
@@ -11,3 +12,4 @@ namespace GameFrame.Runtime.UnityUI
         public bool IsRaycastLocationValid(Vector2 screenPoint, Camera eventCamera) => InputEnabled;
     }
 }
+#endif

@@ -1,3 +1,4 @@
+#if GAMEFRAME_USE_UNITYUI
 using System;
 
 namespace GameFrame.Runtime.UnityUI
@@ -12,3 +13,4 @@ namespace GameFrame.Runtime.UnityUI
         NonTopmost = 0x08,
     }
 }
+#endif

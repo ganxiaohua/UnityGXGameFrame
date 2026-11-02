@@ -1,3 +1,4 @@
+#if !GAMEFRAME_USE_UNITYUI
 using System.Xml;
 
 namespace GameFrame.Editor
@@ -34,3 +35,4 @@ namespace GameFrame.Editor
         }
     }
 }
+#endif

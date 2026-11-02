@@ -1,3 +1,4 @@
+#if !GAMEFRAME_USE_UNITYUI
 using System.Collections.Generic;
 using System.Xml;
 using Sirenix.OdinInspector;
@@ -43,3 +44,4 @@ namespace GameFrame.Editor
         }
     }
 }
+#endif

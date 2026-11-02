@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿#if !GAMEFRAME_USE_UNITYUI
+using System.Collections;
 using System.Collections.Generic;
 
 namespace GameFrame.Runtime
@@ -56,3 +57,4 @@ namespace GameFrame.Runtime
         }
     }
 }
+#endif

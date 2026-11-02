@@ -5,14 +5,17 @@
 using GameFrame.Runtime;
 namespace GamePlay.Runtime
 {{
-    public static class AutoBindEvent
+    public static partial class AutoBindEvent
     {{
         public static void AddSystem()
         {{
-            var  eventData =  EventData.Instance;
-            {0}
+            var eventData = EventData.Instance;
+{0}
+            AddUIEventSystems(eventData);
         }}
+
+        static partial void AddUIEventSystems(EventData eventData);
     }}
 }}
 @
-        eventData.AddSourceDic(typeof({0}),typeof({1}));
+            eventData.AddSourceDic(typeof({0}),typeof({1}));

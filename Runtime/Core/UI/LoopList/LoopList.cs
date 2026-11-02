@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !GAMEFRAME_USE_UNITYUI
+using System;
 using FairyGUI;
 
 namespace GameFrame.Runtime
@@ -176,3 +177,4 @@ namespace GameFrame.Runtime
         }
     }
 }
+#endif

@@ -1,3 +1,4 @@
+#if GAMEFRAME_USE_UNITYUI
 #if UNITY_EDITOR
 using UnityEngine;
 
@@ -13,4 +14,5 @@ namespace GameFrame.Runtime.UnityUI
         }
     }
 }
+#endif
 #endif

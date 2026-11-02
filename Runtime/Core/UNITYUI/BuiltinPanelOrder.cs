@@ -1,3 +1,4 @@
+#if GAMEFRAME_USE_UNITYUI
 namespace GameFrame.Runtime.UnityUI
 {
     public static class BuiltinPanelOrder
@@ -11,3 +12,4 @@ namespace GameFrame.Runtime.UnityUI
         public const int Alert = 5000;
     }
 }
+#endif

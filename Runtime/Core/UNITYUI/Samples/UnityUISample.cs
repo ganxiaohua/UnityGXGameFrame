@@ -1,3 +1,4 @@
+#if GAMEFRAME_USE_UNITYUI
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -41,3 +42,4 @@ namespace GameFrame.Runtime.UnityUI.Samples
         }
     }
 }
+#endif

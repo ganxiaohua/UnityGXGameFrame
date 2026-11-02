@@ -1,3 +1,4 @@
+#if !GAMEFRAME_USE_UNITYUI
 using FairyGUI;
 
 namespace Gameplay.Runtime
@@ -14,3 +15,4 @@ namespace Gameplay.Runtime
         }}
     }}
 }}
+#endif

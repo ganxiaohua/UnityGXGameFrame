@@ -1,3 +1,4 @@
+#if !GAMEFRAME_USE_UNITYUI
 using FairyGUI;
 using UnityEngine;
 
@@ -13,3 +14,4 @@ namespace UnityGXGameFrame.Runtime
         }
     }
 }
+#endif

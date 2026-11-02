@@ -8,7 +8,7 @@ namespace GamePlay.Runtime
 {{
     public class EventSend : Singleton<EventSend>
     {{
-       {0}
+{0}
     }}
 }}
 @
@@ -28,4 +28,4 @@ namespace GamePlay.Runtime
             }}
             HashSetPool<IEntity>.Release(allEntity);
         }}
-        
+

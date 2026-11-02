@@ -1,3 +1,4 @@
+#if GAMEFRAME_USE_UNITYUI
 #if UNITY_EDITOR
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
@@ -13,4 +14,5 @@ namespace GameFrame.Runtime.UnityUI
         [ShowInInspector] private int InitializingCount => pendingCreations.Count;
     }
 }
+#endif
 #endif

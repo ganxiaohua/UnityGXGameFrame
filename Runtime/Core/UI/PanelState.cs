@@ -1,4 +1,5 @@
-﻿namespace GameFrame.Runtime
+﻿#if !GAMEFRAME_USE_UNITYUI
+namespace GameFrame.Runtime
 {
     public enum PanelState
     {
@@ -8,3 +9,4 @@
         Destroy,
     }
 }
+#endif

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !GAMEFRAME_USE_UNITYUI
+using System;
 
 namespace GameFrame.Runtime
 {
@@ -16,3 +17,4 @@ namespace GameFrame.Runtime
         NonTopmost = 0x08,
     }
 }
+#endif

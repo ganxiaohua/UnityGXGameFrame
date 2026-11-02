@@ -1,4 +1,5 @@
-﻿using GameFrame.Runtime;
+﻿#if !GAMEFRAME_USE_UNITYUI
+using GameFrame.Runtime;
 
 namespace Eden.Core.Runtime.UI.Platform
 {
@@ -11,3 +12,4 @@ namespace Eden.Core.Runtime.UI.Platform
     {
     }
 }
+#endif

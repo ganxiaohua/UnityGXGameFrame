@@ -1,3 +1,4 @@
+#if GAMEFRAME_USE_UNITYUI
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -108,3 +109,4 @@ namespace GameFrame.Runtime.UnityUI
         }
     }
 }
+#endif

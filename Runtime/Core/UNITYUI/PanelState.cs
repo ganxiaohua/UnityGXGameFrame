@@ -1,3 +1,4 @@
+#if GAMEFRAME_USE_UNITYUI
 namespace GameFrame.Runtime.UnityUI
 {
     public enum PanelState
@@ -8,3 +9,4 @@ namespace GameFrame.Runtime.UnityUI
         Destroy,
     }
 }
+#endif

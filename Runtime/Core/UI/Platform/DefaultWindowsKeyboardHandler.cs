@@ -1,4 +1,5 @@
-﻿#if UNITY_EDITOR || UNITY_STANDALONE_WIN
+﻿#if !GAMEFRAME_USE_UNITYUI
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
 using UnityEngine;
 
 namespace GameFrame.Runtime
@@ -19,4 +20,5 @@ namespace GameFrame.Runtime
         }
     }
 }
+#endif
 #endif

@@ -1,3 +1,4 @@
+#if GAMEFRAME_USE_UNITYUI
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -116,3 +117,4 @@ namespace GameFrame.Runtime.UnityUI
         }
     }
 }
+#endif

@@ -1,3 +1,4 @@
+#if !GAMEFRAME_USE_UNITYUI
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
@@ -215,3 +216,4 @@ namespace GameFrame.Editor
         }
     }
 }
+#endif

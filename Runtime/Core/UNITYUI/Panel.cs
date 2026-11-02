@@ -1,3 +1,4 @@
+#if GAMEFRAME_USE_UNITYUI
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -232,3 +233,4 @@ namespace GameFrame.Runtime.UnityUI
         protected virtual void Update(float elapseSeconds, float realElapseSeconds) { }
     }
 }
+#endif

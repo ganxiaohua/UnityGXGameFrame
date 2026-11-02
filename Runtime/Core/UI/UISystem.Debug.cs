@@ -1,4 +1,5 @@
-﻿#if UNITY_EDITOR
+﻿#if !GAMEFRAME_USE_UNITYUI
+#if UNITY_EDITOR
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -126,4 +127,5 @@ namespace GameFrame.Runtime
         }
     }
 }
+#endif
 #endif

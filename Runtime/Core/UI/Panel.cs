@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#if !GAMEFRAME_USE_UNITYUI
+using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using FairyGUI;
@@ -235,3 +236,4 @@ namespace GameFrame.Runtime
         }
     }
 }
+#endif
