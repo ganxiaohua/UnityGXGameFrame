@@ -211,7 +211,11 @@ namespace GameFrame.Editor
 
                 Rect localRect = GetNodeRect(childNode, GetGraphNodeName(childNode));
                 Rect graphViewRect = generalGraphView.viewport.worldBound;
+#if UNITY_6000_2_OR_NEWER
+                float scale = generalGraphView.contentViewContainer.resolvedStyle.scale.value.x;
+#else
                 float scale = generalGraphView.contentViewContainer.transform.scale.x;
+#endif
                 Rect worldBound = generalGraphView.contentViewContainer.worldBound;
                 Rect rectView = new Rect(localRect.x * scale + worldBound.x, localRect.y * scale + worldBound.y, localRect.width, localRect.height);
                 if (!graphViewRect.Overlaps(rectView))
