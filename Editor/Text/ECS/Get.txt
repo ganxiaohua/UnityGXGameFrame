@@ -1,21 +1,21 @@
       
-    public static ref {1} Get{0}(this World world, EffEntityHandle effEntity)
+    public static ref {1} Get{0}(this World world, EffEntity effEntity)
     {{
         return ref world.GetComp<{1}>(effEntity);
     }}
     
-     public static bool Have{0}(this World world, EffEntityHandle effEntity)
+     public static bool Have{0}(this World world, EffEntity effEntity)
      {{
        var have = world.HasComp<{1}>(effEntity);
        return have;
      }}  
      
-      public static bool TryGet{0}(this World world, EffEntityHandle effEntity,out {1} data)
+      public static bool TryGet{0}(this World world, EffEntity effEntity,out {1} data)
       {{
          return world.TryGetComp<{1}>(effEntity, out data);
       }}   
     
-    public static void Reactive{0}(this World world, EffEntityHandle effEntity)
+    public static void Reactive{0}(this World world, EffEntity effEntity)
     {{
         world.Reactive<{1}>(effEntity);
     }} 

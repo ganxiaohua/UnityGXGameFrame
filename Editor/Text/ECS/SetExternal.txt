@@ -1,12 +1,12 @@
  
-    public static void Set{0}External(this World world, EffEntityHandle effEntity,{3} param)
+    public static void Set{0}External(this World world, EffEntity effEntity,{3} param)
     {{
         var data =  world.AddComp<{2}>(effEntity);
         data->Set(param);
          world.Reactive<{2}>(effEntity);
     }}
     
-    public static void AddOrSet{0}External(this World world, EffEntityHandle effEntity,{3} param)
+    public static void AddOrSet{0}External(this World world, EffEntity effEntity,{3} param)
     {{
         var have = world.HasComp<{2}>(effEntity);
         {2}* p;

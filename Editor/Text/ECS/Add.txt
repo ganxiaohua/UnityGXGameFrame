@@ -1,10 +1,10 @@
 
-    public static {2}* Add{0}Return(this World world, EffEntityHandle effEntity)
+    public static {2}* Add{0}Return(this World world, EffEntity effEntity)
     {{
         return world.AddComp<{2}>(effEntity);
     }}
     
-    public static void Add{0}(this World world, EffEntityHandle effEntity)
+    public static void Add{0}(this World world, EffEntity effEntity)
     {{
         world.AddComp<{2}>(effEntity);
     }}
