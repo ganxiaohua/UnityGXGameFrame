@@ -12,6 +12,7 @@ namespace GameFrame.Runtime
             RootEntity.OnDirty(null, 0);
             RootEntity.AddComponent<UIRootComponents>();
             RootEntity.AddComponent<FsmComponents>();
+            InitializeUISystem();
         }
 
         public void Update()
@@ -22,9 +23,13 @@ namespace GameFrame.Runtime
             EntityHouse.Instance.Update(datetime, realtimeSinceStartup);
             ObjectPoolManager.Instance.Update(datetime, realtimeSinceStartup);
             TimerSystem.Instance.Update(realtimeSinceStartup);
-            UISystem.Instance.Update();
+            UpdateUISystem();
             ReferencePool.Update(datetime, realtimeSinceStartup);
         }
+
+        static partial void InitializeUISystem();
+        static partial void UpdateUISystem();
+        static partial void DisposeUISystem();
 
         public void LateUpdate()
         {
@@ -42,8 +47,8 @@ namespace GameFrame.Runtime
 
         public void OnApplicationQuit()
         {
+            DisposeUISystem();
             ReferencePool.Release(RootEntity);
-            // UISystem.Instance.Dispose();
             // EntityHouse.Instance.Disable();
             // ObjectPoolManager.Instance.Disable();
             // AssetManager.Instance.Dispose();

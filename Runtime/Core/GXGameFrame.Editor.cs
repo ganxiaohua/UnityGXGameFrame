@@ -7,8 +7,6 @@ namespace GameFrame.Runtime
     {
         [ShowInInspector] private ObjectPoolManager ObjectPoolManagerEditor = ObjectPoolManager.Instance;
         
-        [ShowInInspector] private UISystem UISystem = UISystem.Instance;
-        
         [ShowInInspector] private TimerSystem TimerSystem = TimerSystem.Instance;
     }
 }
