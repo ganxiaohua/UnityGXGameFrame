@@ -75,7 +75,7 @@ namespace GameFrame.Runtime
                         return;
                 }
             }
-
+            
             ShowPanel(panel, args);
         }
 

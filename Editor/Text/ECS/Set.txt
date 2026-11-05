@@ -1,5 +1,5 @@
  
-    public static EffEntity Set{0}(this World world, EffEntity effEntity,{1} param)
+    public static EffEntity Set{0}(this World world, EffEntity effEntity,in {1} param)
     {{
         var p = world.GetCompPtr<{2}>(effEntity);
         p->{3} = param;
@@ -8,7 +8,7 @@
         return effEntity;
     }}
     
-    public static EffEntity AddOrSet{0}(this World world, EffEntity effEntity,{1} param)
+    public static EffEntity AddOrSet{0}(this World world, EffEntity effEntity,in {1} param)
     {{
         var has = world.HasComp<{2}>(effEntity);
         {2}* p;

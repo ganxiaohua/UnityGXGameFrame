@@ -76,9 +76,7 @@ namespace GameFrame.Runtime
 
         public void ShowPanel(Panel panel, object args = null)
         {
-            // hide panel first if panel is open
-            if (panel.PanelState == PanelState.Open) HidePanel(panel);
-            Assert.IsFalse(visiblePanels.Contains(panel), $"Bad Panel({panel}, state:{panel.PanelState}) OnShow|OnHide Call");
+            if (panel.PanelState == PanelState.Open) return;
             panel.OnBeforeShow();
             if (panel.Mode == PanelMode.Mono)
             {
@@ -249,6 +247,11 @@ namespace GameFrame.Runtime
             if (monoPanelStack.TryPeek(out var panel))
                 return panel;
             return null;
+        }
+
+        public int GetMonoPanelStackDepth()
+        {
+            return monoPanelStack.Count;
         }
 
         public bool IsDisplayTopmost(Panel panel)
