@@ -119,7 +119,7 @@ namespace GameFrame.Runtime.UnityUI
         public void ShowPanel(Panel panel, object args = null)
         {
             panel.RequireInitialized();
-            if (panel.Visible) HidePanel(panel);
+            if (panel.Visible) return;
             panel.OnBeforeShow();
             if (panel.Mode == PanelMode.Mono)
             {
