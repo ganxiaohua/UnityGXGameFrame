@@ -340,6 +340,7 @@ namespace GameFrame.Runtime
 
         public void Dispose()
         {
+            TimerSystem.Instance.UIGroup.Clear();
         }
     }
 }

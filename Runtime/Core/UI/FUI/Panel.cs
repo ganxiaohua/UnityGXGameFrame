@@ -44,9 +44,9 @@ namespace GameFrame.Runtime
         {
             get
             {
-                if (_DestroyTimer == null)
+                if (_DestroyTimer == null || _DestroyTimer.Group.IsDisposed)
                 {
-                    _DestroyTimer = new UniqueTimer(() => UISystem.Instance.DestroyPanel(this));
+                    _DestroyTimer = new UniqueTimer(TimerSystem.Instance.UIGroup, () => UISystem.Instance.DestroyPanel(this));
 #if UNITY_EDITOR
                     _DestroyTimer.Name = $"{Name} Destroy";
 #endif

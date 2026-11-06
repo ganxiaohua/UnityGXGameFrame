@@ -37,7 +37,20 @@ namespace GameFrame.Runtime.UnityUI
         private UniqueTimer destroyTimer;
         private int canvasSortingOrder;
         private PanelInputGate inputGate;
-        public UniqueTimer DestroyTimer => destroyTimer ??= new UniqueTimer(() => UISystem.Instance.DestroyPanel(this));
+        public UniqueTimer DestroyTimer
+        {
+            get
+            {
+                if (destroyTimer == null || destroyTimer.Group.IsDisposed)
+                {
+                    destroyTimer = new UniqueTimer(TimerSystem.Instance.UIGroup, () => UISystem.Instance.DestroyPanel(this));
+#if UNITY_EDITOR
+                    destroyTimer.Name = $"{Name} Destroy";
+#endif
+                }
+                return destroyTimer;
+            }
+        }
 
         public void OnInitialize()
         {

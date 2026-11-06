@@ -5,22 +5,10 @@ using System.Runtime.CompilerServices;
 namespace GameFrame.Runtime
 {
     /// <summary>
-    /// 主线程使用的轮询组；每轮分帧检查完毕后，再等待指定间隔。
+    /// 主线程使用的轮询组；每隔指定时间检查一批条目，不保证遍历顺序。
     /// </summary>
     public sealed class InexactCountdownGroup : IDisposable
     {
-        private readonly struct Registration
-        {
-            public readonly IInexactCountdown Item;
-            public readonly long Sequence;
-
-            public Registration(IInexactCountdown item, long sequence)
-            {
-                Item = item;
-                Sequence = sequence;
-            }
-        }
-
         private sealed class ItemReferenceComparer : IEqualityComparer<IInexactCountdown>
         {
             public static readonly ItemReferenceComparer Instance = new();
@@ -31,33 +19,22 @@ namespace GameFrame.Runtime
         }
 
         private readonly InexactCountdownSystem owner;
-        private readonly LinkedList<Registration> items = new();
-        private readonly Dictionary<IInexactCountdown, LinkedListNode<Registration>> itemNodes = new(ItemReferenceComparer.Instance);
-        private LinkedListNode<Registration> nextItem;
-        private long registrationSequence;
-        private long roundLastSequence;
-        private int version;
-        private bool scanning;
-        private bool waitingToStart = true;
+        private readonly List<IInexactCountdown> items = new();
+        private readonly Dictionary<IInexactCountdown, int> itemIndices = new(ItemReferenceComparer.Instance);
+        private int nextItemIndex = -1;
         private float nextPollTime;
 
-        internal LinkedListNode<InexactCountdownGroup> SystemNode { get; set; }
-        internal long SystemSequence { get; }
+        internal int SystemIndex { get; set; } = -1;
 
         public float IntervalSeconds { get; }
+        /// <summary>每次间隔检查的数量上限。</summary>
         public int MaxChecksPerFrame { get; }
-        public int Count => itemNodes.Count;
+        public int Count => items.Count;
         public bool IsDisposed { get; private set; }
 
-        internal InexactCountdownGroup(InexactCountdownSystem owner, long systemSequence, float intervalSeconds, int maxChecksPerFrame)
+        internal InexactCountdownGroup(InexactCountdownSystem owner, float intervalSeconds, int maxChecksPerFrame)
         {
-            if (float.IsNaN(intervalSeconds) || float.IsInfinity(intervalSeconds) || intervalSeconds < 0f)
-                throw new ArgumentOutOfRangeException(nameof(intervalSeconds));
-            if (maxChecksPerFrame <= 0)
-                throw new ArgumentOutOfRangeException(nameof(maxChecksPerFrame));
-
             this.owner = owner;
-            SystemSequence = systemSequence;
             IntervalSeconds = intervalSeconds;
             MaxChecksPerFrame = maxChecksPerFrame;
         }
@@ -67,38 +44,30 @@ namespace GameFrame.Runtime
         /// </summary>
         public bool Add(IInexactCountdown item)
         {
-            if (IsDisposed)
-                throw new ObjectDisposedException(nameof(InexactCountdownGroup));
-            if (item == null)
-                throw new ArgumentNullException(nameof(item));
-            if (itemNodes.ContainsKey(item))
+            if (itemIndices.ContainsKey(item))
                 return false;
-
-            var node = items.AddLast(new Registration(item, ++registrationSequence));
-            itemNodes.Add(item, node);
+            items.Add(item);
+            itemIndices.Add(item, items.Count - 1);
             return true;
         }
 
         public bool Remove(IInexactCountdown item)
         {
-            if (item == null || !itemNodes.TryGetValue(item, out var node))
+            if (item == null || !itemIndices.TryGetValue(item, out var index))
                 return false;
-
-            RemoveNode(node);
+            RemoveAt(index);
             return true;
         }
 
         /// <summary>
-        /// 取消全部注册，不触发到期回调。下次更新重新开始等待。
+        /// 取消全部注册，不触发到期回调。重新加入条目后可在下次更新时检查。
         /// </summary>
         public void Clear()
         {
-            version++;
-            nextItem = null;
-            scanning = false;
-            waitingToStart = true;
+            nextItemIndex = -1;
+            nextPollTime = 0f;
             items.Clear();
-            itemNodes.Clear();
+            itemIndices.Clear();
         }
 
         public void Dispose()
@@ -111,63 +80,38 @@ namespace GameFrame.Runtime
             owner.RemoveGroup(this);
         }
 
-        private void RemoveNode(LinkedListNode<Registration> node)
+        private void RemoveAt(int index)
         {
-            // 回调可能移除下一项，及时把游标移到仍在链表中的节点。
-            if (nextItem == node)
-                nextItem = node.Next;
-            items.Remove(node);
-            itemNodes.Remove(node.Value.Item);
+            itemIndices.Remove(items[index]);
+            int lastIndex = items.Count - 1;
+            if (index != lastIndex)
+            {
+                var lastItem = items[lastIndex];
+                items[index] = lastItem;
+                itemIndices[lastItem] = index;
+            }
+            items.RemoveAt(lastIndex);
+            if (nextItemIndex >= items.Count)
+                nextItemIndex = items.Count - 1;
         }
 
         internal void Update(float currentTime)
         {
-            if (IsDisposed)
+            if (IsDisposed || items.Count == 0 || currentTime < nextPollTime)
                 return;
-            if (waitingToStart)
+            nextPollTime = currentTime + IntervalSeconds;
+            if (nextItemIndex < 0)
+                nextItemIndex = items.Count - 1;
+
+            for (int checkedCount = 0; checkedCount < MaxChecksPerFrame && nextItemIndex >= 0; checkedCount++)
             {
-                nextPollTime = currentTime + IntervalSeconds;
-                waitingToStart = false;
-            }
-
-            if (!scanning)
-            {
-                if (items.Count == 0 || currentTime < nextPollTime)
-                    return;
-
-                nextItem = items.First;
-                roundLastSequence = registrationSequence;
-                scanning = true;
-            }
-
-            int updateVersion = version;
-            int checkedCount = 0;
-            while (nextItem != null && nextItem.Value.Sequence <= roundLastSequence && checkedCount < MaxChecksPerFrame)
-            {
-                var node = nextItem;
-                nextItem = node.Next;
-                checkedCount++;
-                var item = node.Value.Item;
-                bool expired = currentTime >= item.ExpireTime;
-                if (IsDisposed || version != updateVersion)
-                    return;
-
-                if (expired && node.List == items)
+                int index = nextItemIndex--;
+                var item = items[index];
+                if (currentTime >= item.ExpireTime)
                 {
-                    RemoveNode(node);
+                    RemoveAt(index);
                     item.OnCountdownExpired();
                 }
-
-                if (IsDisposed || version != updateVersion)
-                    return;
-            }
-
-            // 新注册项不参与本轮，确保持续加入对象也能结束这一轮。
-            if (nextItem == null || nextItem.Value.Sequence > roundLastSequence)
-            {
-                nextItem = null;
-                scanning = false;
-                nextPollTime = currentTime + IntervalSeconds;
             }
         }
     }

@@ -257,6 +257,7 @@ namespace GameFrame.Runtime.UnityUI
             StashClear();
             foreach (var panel in panels.ToArray()) DestroyPanel(panel);
             DestroyRoot();
+            TimerSystem.Instance.UIGroup.Clear();
         }
     }
 }

@@ -8,6 +8,7 @@ namespace GameFrame.Runtime
 
         public void Init()
         {
+            TimerSystem.Instance.Clear();
             InexactCountdownSystem.Instance.Clear();
             RootEntity = ReferencePool.Acquire<RootEntity>();
             RootEntity.OnDirty(null, 0);
@@ -51,6 +52,7 @@ namespace GameFrame.Runtime
         {
             DisposeUISystem();
             ReferencePool.Release(RootEntity);
+            TimerSystem.Instance.Clear();
             InexactCountdownSystem.Instance.Clear();
             // EntityHouse.Instance.Disable();
             // ObjectPoolManager.Instance.Disable();

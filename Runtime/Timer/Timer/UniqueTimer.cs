@@ -7,16 +7,19 @@ namespace GameFrame.Runtime
     {
         public string Name { get; set; }
 
-        public int MutableIndex { get; set; }
+        public int MutableIndex { get; set; } = -1;
+
+        public TimerGroup Group { get; }
 
         public float ExpireTime { get; private set; }
 
-        public bool Scheduled => TimerSystem.Instance.Contains(this);
+        public bool Scheduled => Group.Contains(this);
 
-        private Action expireCallback;
+        private readonly Action expireCallback;
 
-        public UniqueTimer(Action expireCallback)
+        public UniqueTimer(TimerGroup group, Action expireCallback)
         {
+            Group = group ?? throw new ArgumentNullException(nameof(group));
             Assert.IsNotNull(expireCallback, "Expire Callback can't be null");
             this.expireCallback = expireCallback;
             ExpireTime = float.PositiveInfinity;
@@ -24,14 +27,24 @@ namespace GameFrame.Runtime
 
         public void Schedule(float lifetime)
         {
+            if (Group.IsDisposed)
+                throw new ObjectDisposedException(nameof(TimerGroup));
+
             ExpireTime = Time.realtimeSinceStartup + lifetime;
-            TimerSystem.Instance.Schedule(this);
+            Group.Schedule(this);
         }
 
         public bool Cancel()
         {
+            bool cancelled = Group.Cancel(this);
+            ResetSchedule();
+            return cancelled;
+        }
+
+        internal void ResetSchedule()
+        {
             ExpireTime = float.PositiveInfinity;
-            return TimerSystem.Instance.Cancel(this);
+            MutableIndex = -1;
         }
 
         public void Execute()

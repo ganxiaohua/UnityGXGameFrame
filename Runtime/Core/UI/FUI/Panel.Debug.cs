@@ -71,7 +71,7 @@ namespace GameFrame.Runtime
                     var lifetime = panel.DestroyTimer.ExpireTime;
                     if (!float.IsInfinity(lifetime))
                     {
-                        lifetime -= Time.deltaTime;
+                        lifetime -= Time.realtimeSinceStartup;
                         lifetime = Mathf.Max(0, lifetime);
                     }
 

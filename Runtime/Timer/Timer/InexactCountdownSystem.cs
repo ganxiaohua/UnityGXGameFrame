@@ -3,50 +3,48 @@
 namespace GameFrame.Runtime
 {
     /// <summary>
-    /// 不精确倒计时的主线程驱动入口，各组独立分配轮询间隔和每帧检查预算。
+    /// 不精确倒计时的主线程驱动入口，各组独立设置检查间隔和每批检查数量。
     /// </summary>
     public sealed class InexactCountdownSystem : Singleton<InexactCountdownSystem>
     {
-        private readonly LinkedList<InexactCountdownGroup> groups = new();
-        private LinkedListNode<InexactCountdownGroup> nextGroup;
-        private long groupSequence;
+        private readonly List<InexactCountdownGroup> groups = new();
 
         public int GroupCount => groups.Count;
 
         public InexactCountdownGroup CreateGroup(float intervalSeconds = 5f, int maxChecksPerFrame = 30)
         {
-            var group = new InexactCountdownGroup(this, ++groupSequence, intervalSeconds, maxChecksPerFrame);
-            group.SystemNode = groups.AddLast(group);
+            var group = new InexactCountdownGroup(this, intervalSeconds, maxChecksPerFrame);
+            group.SystemIndex = groups.Count;
+            groups.Add(group);
             return group;
         }
 
         internal void RemoveGroup(InexactCountdownGroup group)
         {
-            var node = group.SystemNode;
-            if (node == null)
+            var index = group.SystemIndex;
+            if (index < 0)
                 return;
 
-            if (nextGroup == node)
-                nextGroup = node.Next;
-            groups.Remove(node);
-            group.SystemNode = null;
+            int lastIndex = groups.Count - 1;
+            if (index != lastIndex)
+            {
+                var lastGroup = groups[lastIndex];
+                groups[index] = lastGroup;
+                lastGroup.SystemIndex = index;
+            }
+            groups.RemoveAt(lastIndex);
+            group.SystemIndex = -1;
         }
 
         /// <summary>
-        /// 由 GXGameFrame 每帧调用一次并传入真实时间，回调中不调用此方法。
-        /// 更新过程中创建的新组从下一帧开始参与。
+        /// 由 GXGameFrame 每帧调用一次并传入真实时间，各组更新顺序不固定。
+        /// 回调中不调用此方法；更新过程中创建的新组从下一帧开始参与。
+        /// 回调中只允许删除当前组；删除其他组或清空系统应在遍历之外进行。
         /// </summary>
         public void Update(float currentTime)
         {
-            long frameLastSequence = groupSequence;
-            nextGroup = groups.First;
-            while (nextGroup != null && nextGroup.Value.SystemSequence <= frameLastSequence)
-            {
-                var group = nextGroup.Value;
-                nextGroup = nextGroup.Next;
-                group.Update(currentTime);
-            }
-            nextGroup = null;
+            for (int index = groups.Count - 1; index >= 0; index--)
+                groups[index].Update(currentTime);
         }
 
         /// <summary>
@@ -54,8 +52,8 @@ namespace GameFrame.Runtime
         /// </summary>
         public void Clear()
         {
-            while (groups.First != null)
-                groups.First.Value.Dispose();
+            while (groups.Count > 0)
+                groups[groups.Count - 1].Dispose();
         }
     }
 }
