@@ -8,6 +8,7 @@ namespace GameFrame.Runtime
 
         public void Init()
         {
+            InexactCountdownSystem.Instance.Clear();
             RootEntity = ReferencePool.Acquire<RootEntity>();
             RootEntity.OnDirty(null, 0);
             RootEntity.AddComponent<UIRootComponents>();
@@ -23,6 +24,7 @@ namespace GameFrame.Runtime
             EntityHouse.Instance.Update(datetime, realtimeSinceStartup);
             ObjectPoolManager.Instance.Update(datetime, realtimeSinceStartup);
             TimerSystem.Instance.Update(realtimeSinceStartup);
+            InexactCountdownSystem.Instance.Update(realtimeSinceStartup);
             UpdateUISystem();
             ReferencePool.Update(datetime, realtimeSinceStartup);
         }
@@ -49,6 +51,7 @@ namespace GameFrame.Runtime
         {
             DisposeUISystem();
             ReferencePool.Release(RootEntity);
+            InexactCountdownSystem.Instance.Clear();
             // EntityHouse.Instance.Disable();
             // ObjectPoolManager.Instance.Disable();
             // AssetManager.Instance.Dispose();
