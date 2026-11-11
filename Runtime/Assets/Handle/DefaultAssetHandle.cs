@@ -16,7 +16,7 @@ namespace GameFrame.Runtime
         {
             get
             {
-                if (internalHandle != null && internalHandle.Status == EOperationStatus.Succeed)
+                if (internalHandle != null && internalHandle.Status == EOperationStatus.Succeeded)
                     return internalHandle.AssetObject;
                 return null;
             }

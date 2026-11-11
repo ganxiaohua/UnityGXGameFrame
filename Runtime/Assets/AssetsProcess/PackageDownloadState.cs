@@ -1,43 +1,84 @@
 ﻿using Cysharp.Threading.Tasks;
+using System;
+using UnityEngine;
 using YooAsset;
 
 namespace GameFrame.Runtime
 {
     public class PackageDownloadState : FsmState
     {
+        private ResourceDownloaderOperation downloader;
+        private bool isActive;
+
         public override void OnEnter()
         {
             base.OnEnter();
+            isActive = true;
             BeginDownload().Forget();
+        }
+
+        public override void OnExit()
+        {
+            isActive = false;
+            if (downloader != null)
+            {
+                downloader.DownloadError -= OnDownloadError;
+                downloader.DownloadProgressChanged -= OnDownloadProgressChanged;
+                if (!downloader.IsDone)
+                    downloader.CancelDownload();
+            }
+            base.OnExit();
         }
 
         private async UniTask BeginDownload()
         {
-            var downloader = (ResourceDownloaderOperation) GetData("downloader");
-            downloader.DownloadErrorCallback = (DownloadErrorData data) =>
-            {
-                Debugger.Log($"{data.FileName}下载失败 :error:{data.ErrorInfo}");
-                EventData.Instance.FireAssetEvent(AssetEventType.PackageDownloadFail);
-            };
-            downloader.DownloadUpdateCallback = (DownloadUpdateData data) => { EventData.Instance.FireAssetDownEvent(data); };
-            downloader.BeginDownload();
-            await downloader.ToUniTask();
-            // 检测下载结果
-            if (downloader.Status != EOperationStatus.Succeed)
-            {
-                EventData.Instance.FireAssetEvent(AssetEventType.PackageDownloadFail);
-                return;
-            }
-
             var packageName = (string) GetData("packageName");
-            var package = YooAssets.GetPackage(packageName);
-            var operation = package.ClearCacheFilesAsync(EFileClearMode.ClearUnusedBundleFiles);
-            operation.Completed += Operation_Completed;
+            downloader = (ResourceDownloaderOperation) GetData("downloader");
+            downloader.DownloadError += OnDownloadError;
+            downloader.DownloadProgressChanged += OnDownloadProgressChanged;
+            try
+            {
+                downloader.StartDownload();
+                await downloader.ToUniTask();
+                if (!isActive)
+                    return;
+                if (downloader.Status != EOperationStatus.Succeeded)
+                {
+                    EventData.Instance.FireAssetEvent(AssetEventType.PackageDownloadFail, packageName);
+                    return;
+                }
+
+                var package = YooAssets.GetPackage(packageName);
+                var operation = package.ClearCacheAsync(new ClearCacheOptions(ClearCacheMethods.ClearUnusedBundleFiles));
+                await operation.ToUniTask();
+                if (!isActive)
+                    return;
+                if (operation.Status != EOperationStatus.Succeeded)
+                    Debug.LogWarning(operation.Error);
+
+                EventData.Instance.FireAssetEvent(AssetEventType.Succ, packageName);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                if (isActive)
+                    EventData.Instance.FireAssetEvent(AssetEventType.PackageDownloadFail, packageName);
+            }
+            finally
+            {
+                downloader.DownloadError -= OnDownloadError;
+                downloader.DownloadProgressChanged -= OnDownloadProgressChanged;
+            }
         }
 
-        private void Operation_Completed(YooAsset.AsyncOperationBase obj)
+        private void OnDownloadError(DownloadErrorEventArgs data)
         {
-            EventData.Instance.FireAssetEvent(AssetEventType.Succ);
+            Debugger.Log($"{data.FileName}下载失败 :error:{data.ErrorInfo}");
+        }
+
+        private void OnDownloadProgressChanged(DownloadProgressChangedEventArgs data)
+        {
+            EventData.Instance.FireAssetDownEvent(data);
         }
     }
 }

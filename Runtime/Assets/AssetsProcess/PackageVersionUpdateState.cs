@@ -19,10 +19,10 @@ namespace GameFrame.Runtime
             var operation = package.RequestPackageVersionAsync();
             await operation.ToUniTask();
 
-            if (operation.Status != EOperationStatus.Succeed)
+            if (operation.Status != EOperationStatus.Succeeded)
             {
                 Debug.LogWarning(operation.Error);
-                EventData.Instance.FireAssetEvent(AssetEventType.LoadVersionFail);
+                EventData.Instance.FireAssetEvent(AssetEventType.LoadVersionFail, packageName);
             }
             else
             {

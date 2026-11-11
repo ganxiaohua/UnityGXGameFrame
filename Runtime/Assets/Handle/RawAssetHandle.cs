@@ -16,26 +16,26 @@ namespace GameFrame.Runtime
         {
             get
             {
-                if (internalHandle != null && internalHandle.Status == EOperationStatus.Succeed)
-                    return internalHandle.GetRawFileData();
+                if (IsValid && internalHandle.Status == EOperationStatus.Succeeded)
+                    return ((RawFileObject) internalHandle.AssetObject).GetBytes();
                 return null;
             }
         }
 
         public IAssetReference AssetReference => null;
 
-        private YooAsset.RawFileHandle internalHandle;
+        private AssetHandle internalHandle;
 
         public void Initialize(object key, Type type)
         {
             try
             {
 #if UNITY_EDITOR
-                using (new Profiler("TextAssetHandle.Initialize"))
+                using (new Profiler("RawAssetHandle.Initialize"))
 #endif
                 {
-                    var package = PackageSearcher.SearchByAssetLocation((string) key, out var info, null);
-                    internalHandle = package.LoadRawFileAsync(info);
+                    var package = PackageSearcher.SearchByAssetLocation((string) key, out var info, typeof(RawFileObject));
+                    internalHandle = package.LoadAssetAsync(info);
                 }
             }
             catch (Exception e)
@@ -46,7 +46,9 @@ namespace GameFrame.Runtime
 
         public UniTask GetTask(CancellationToken cancellationToken)
         {
-            return internalHandle.ToUniTask(cancellationToken: cancellationToken);
+            return internalHandle != null
+                    ? internalHandle.ToUniTask(cancellationToken: cancellationToken)
+                    : UniTask.CompletedTask;
         }
 
         public void Finish()
@@ -56,8 +58,8 @@ namespace GameFrame.Runtime
 
         public string GetText()
         {
-            if (internalHandle != null && internalHandle.Status == EOperationStatus.Succeed)
-                return internalHandle.GetRawFileText();
+            if (IsValid && internalHandle.Status == EOperationStatus.Succeeded)
+                return ((RawFileObject) internalHandle.AssetObject).GetText() ?? string.Empty;
             return null;
         }
 
@@ -67,10 +69,11 @@ namespace GameFrame.Runtime
             {
                 var assetInfo = internalHandle.GetAssetInfo();
                 internalHandle.Dispose();
-                var package = PackageSearcher.SearchByAssetLocation(assetInfo.AssetPath);
-                package?.TryUnloadUnusedAsset(assetInfo);
-                internalHandle = default;
+                if (YooAssets.TryGetPackage(assetInfo.PackageName, out var package))
+                    package.TryUnloadUnusedAsset(assetInfo);
             }
+
+            internalHandle = null;
         }
     }
 }

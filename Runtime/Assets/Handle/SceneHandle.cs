@@ -17,7 +17,7 @@ namespace GameFrame.Runtime
         {
             get
             {
-                if (internalHandle != null && internalHandle.Status == EOperationStatus.Succeed)
+                if (internalHandle != null && internalHandle.Status == EOperationStatus.Succeeded)
                     return internalHandle.SceneObject;
                 return null;
             }
@@ -54,7 +54,7 @@ namespace GameFrame.Runtime
 #endif
                 {
                     var package = PackageSearcher.SearchByAssetLocation((string) key, out var info, type);
-                    internalHandle = package.LoadSceneAsync(info, loadMode, LocalPhysicsMode.None, !activateOnLoad, (uint) priority);
+                    internalHandle = package.LoadSceneAsync(info, loadMode, LocalPhysicsMode.None, allowSceneActivation: activateOnLoad, priority: (uint) priority);
                 }
             }
             catch (Exception e)
@@ -77,7 +77,7 @@ namespace GameFrame.Runtime
         {
             if (internalHandle != null && internalHandle.IsValid)
             {
-                internalHandle.UnloadAsync();
+                internalHandle.UnloadSceneAsync();
                 internalHandle = default;
             }
         }

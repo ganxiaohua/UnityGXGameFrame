@@ -130,14 +130,14 @@ namespace GameFrame.Runtime
         public async UniTask<byte[]> LoadRawAsync(string path, CancellationToken cancellationToken = default)
         {
             var handle = new RawAssetHandle();
-            handle.Initialize(path, null);
             try
             {
+                handle.Initialize(path, null);
                 await handle.GetTask(cancellationToken);
+                return handle.Result as byte[];
             }
             catch (OperationCanceledException)
             {
-                handle.Release();
                 return default;
             }
             catch (Exception e)
@@ -146,22 +146,23 @@ namespace GameFrame.Runtime
                 return default;
             }
 
-            var result = handle.Result as byte[];
-            handle.Release();
-            return result;
+            finally
+            {
+                handle.Release();
+            }
         }
 
         public async UniTask<string> LoadTextAsync(string path, CancellationToken cancellationToken = default)
         {
             var handle = new RawAssetHandle();
-            handle.Initialize(path, null);
             try
             {
+                handle.Initialize(path, null);
                 await handle.GetTask(cancellationToken);
+                return handle.GetText();
             }
             catch (OperationCanceledException)
             {
-                handle.Release();
                 return default;
             }
             catch (Exception e)
@@ -170,22 +171,23 @@ namespace GameFrame.Runtime
                 return default;
             }
 
-            var result = handle.GetText();
-            handle.Release();
-            return result;
+            finally
+            {
+                handle.Release();
+            }
         }
 
         public async UniTask<IList<byte[]>> LoadRawsAsync(object paths, CancellationToken cancellationToken = default)
         {
             var handle = new RawAssetsHandle();
-            handle.Initialize(paths, null);
             try
             {
+                handle.Initialize(paths, null);
                 await handle.GetTask(cancellationToken);
+                return handle.Result as IList<byte[]>;
             }
             catch (OperationCanceledException)
             {
-                handle.Release();
                 return default;
             }
             catch (Exception e)
@@ -194,22 +196,23 @@ namespace GameFrame.Runtime
                 return default;
             }
 
-            var result = handle.Result as IList<byte[]>;
-            handle.Release();
-            return result;
+            finally
+            {
+                handle.Release();
+            }
         }
 
         public async UniTask<IList<string>> LoadTextsAsync(object paths, CancellationToken cancellationToken = default)
         {
             var handle = new RawAssetsHandle();
-            handle.Initialize(paths, null);
             try
             {
+                handle.Initialize(paths, null);
                 await handle.GetTask(cancellationToken);
+                return handle.GetTexts();
             }
             catch (OperationCanceledException)
             {
-                handle.Release();
                 return default;
             }
             catch (Exception e)
@@ -218,9 +221,10 @@ namespace GameFrame.Runtime
                 return default;
             }
 
-            var result = handle.GetTexts();
-            handle.Release();
-            return result;
+            finally
+            {
+                handle.Release();
+            }
         }
 
         public async UniTask<bool> OpenRawFileAsync(string path, RawZipper rawZipper, CancellationToken cancellationToken = default)

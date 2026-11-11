@@ -20,7 +20,7 @@ namespace GameFrame.Runtime
                 for (var i = internalHandles.Length - 1; i >= 0; i--)
                 {
                     var handle = internalHandles[i];
-                    if (handle.Status != EOperationStatus.Succeed)
+                    if (handle.Status != EOperationStatus.Succeeded)
                         return null;
                     arr[i] = handle.AssetObject;
                 }

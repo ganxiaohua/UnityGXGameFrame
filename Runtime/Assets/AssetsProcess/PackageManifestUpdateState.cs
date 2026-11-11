@@ -17,13 +17,13 @@ namespace GameFrame.Runtime
             var packageName = (string) GetData("packageName");
             var packageVersion = (string) GetData("packageVersion");
             var package = YooAssets.GetPackage(packageName);
-            var operation = package.UpdatePackageManifestAsync(packageVersion);
+            var operation = package.LoadPackageManifestAsync(new LoadPackageManifestOptions(packageVersion, 60));
             await operation.ToUniTask();
 
-            if (operation.Status != EOperationStatus.Succeed)
+            if (operation.Status != EOperationStatus.Succeeded)
             {
                 Debug.LogWarning(operation.Error);
-                EventData.Instance.FireAssetEvent(AssetEventType.PackageManifestFail);
+                EventData.Instance.FireAssetEvent(AssetEventType.PackageManifestFail, packageName);
             }
             else
             {

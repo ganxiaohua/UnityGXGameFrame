@@ -1,4 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using YooAsset;
 
@@ -16,72 +18,69 @@ namespace GameFrame.Runtime
         {
             var playMode = (EPlayMode) GetData("playMode");
             var packageName = (string) GetData("packageName");
+            var contentType = (PackageContentType) GetData("contentType");
 
-            // 创建资源包裹类
-            var package = YooAssets.TryGetPackage(packageName);
-            if (package == null)
-                package = YooAssets.CreatePackage(packageName);
-
-            // 编辑器下的模拟模式
-            InitializationOperation initializationOperation = null;
-            if (playMode == EPlayMode.EditorSimulateMode)
+            try
             {
-                var buildResult = EditorSimulateModeHelper.SimulateBuild(packageName);
-                var packageRoot = buildResult.PackageRootDirectory;
-                var createParameters = new EditorSimulateModeParameters();
-                createParameters.EditorFileSystemParameters = FileSystemParameters.CreateDefaultEditorFileSystemParameters(packageRoot);
-                initializationOperation = package.InitializeAsync(createParameters);
-            }
+                if (!YooAssets.TryGetPackage(packageName, out var package))
+                    package = YooAssets.CreatePackage(packageName);
 
-            // 单机运行模式
-            if (playMode == EPlayMode.OfflinePlayMode)
-            {
-                var createParameters = new OfflinePlayModeParameters();
-                createParameters.BuildinFileSystemParameters = FileSystemParameters.CreateDefaultBuildinFileSystemParameters();
-                initializationOperation = package.InitializeAsync(createParameters);
-            }
+                if (package.InitializeStatus != EOperationStatus.Succeeded)
+                {
+                    InitializePackageOptions options;
+                    switch (playMode)
+                    {
+                        case EPlayMode.EditorSimulateMode:
+                            var bundleType = contentType == PackageContentType.RawFile
+                                    ? EBundleType.VirtualRawBundle
+                                    : EBundleType.VirtualAssetBundle;
+                            var buildResult = EditorSimulateBuildInvoker.Build(packageName, (int) bundleType);
+                            options = new EditorSimulateModeOptions
+                            {
+                                EditorFileSystemParameters = FileSystemParameters.CreateDefaultEditorFileSystemParameters(buildResult.PackageRootDirectory),
+                            };
+                            break;
+                        case EPlayMode.OfflinePlayMode:
+                            options = new OfflinePlayModeOptions
+                            {
+                                BuiltinFileSystemParameters = FileSystemParameters.CreateDefaultBuiltinFileSystemParameters(),
+                            };
+                            break;
+                        case EPlayMode.HostPlayMode:
+                            var hostServer = GetHostServerURL();
+                            var remoteServices = new RemoteServices(hostServer, hostServer);
+                            options = new HostPlayModeOptions
+                            {
+                                BuiltinFileSystemParameters = FileSystemParameters.CreateDefaultBuiltinFileSystemParameters(),
+                                CacheFileSystemParameters = FileSystemParameters.CreateDefaultSandboxFileSystemParameters(remoteServices),
+                            };
+                            break;
+                        case EPlayMode.WebPlayMode:
+                            options = new WebPlayModeOptions
+                            {
+                                WebServerFileSystemParameters = FileSystemParameters.CreateDefaultWebServerFileSystemParameters(),
+                            };
+                            break;
+                        default:
+                            throw new NotSupportedException($"Unsupported play mode for {packageName}: {playMode}");
+                    }
 
-            // 联机运行模式
-            if (playMode == EPlayMode.HostPlayMode)
-            {
-                string defaultHostServer = GetHostServerURL();
-                string fallbackHostServer = GetHostServerURL();
-                IRemoteServices remoteServices = new RemoteServices(defaultHostServer, fallbackHostServer);
-                var createParameters = new HostPlayModeParameters();
-                createParameters.BuildinFileSystemParameters = FileSystemParameters.CreateDefaultBuildinFileSystemParameters();
-                createParameters.CacheFileSystemParameters = FileSystemParameters.CreateDefaultCacheFileSystemParameters(remoteServices);
-                initializationOperation = package.InitializeAsync(createParameters);
-            }
+                    var initializationOperation = package.InitializePackageAsync(options);
+                    await initializationOperation.ToUniTask();
+                    if (initializationOperation.Status != EOperationStatus.Succeeded)
+                    {
+                        Debug.LogWarning(initializationOperation.Error);
+                        EventData.Instance.FireAssetEvent(AssetEventType.InitFail, packageName);
+                        return;
+                    }
+                }
 
-            // WebGL运行模式
-            if (playMode == EPlayMode.WebPlayMode)
-            {
-#if UNITY_WEBGL && WEIXINMINIGAME && !UNITY_EDITOR
-            var createParameters = new WebPlayModeParameters();
-			string defaultHostServer = GetHostServerURL();
-            string fallbackHostServer = GetHostServerURL();
-            string packageRoot = $"{WeChatWASM.WX.env.USER_DATA_PATH}/__GAME_FILE_CACHE"; //注意：如果有子目录，请修改此处！
-            IRemoteServices remoteServices = new RemoteServices(defaultHostServer, fallbackHostServer);
-            createParameters.WebServerFileSystemParameters = WechatFileSystemCreater.CreateFileSystemParameters(packageRoot, remoteServices);
-            initializationOperation = package.InitializeAsync(createParameters);
-#else
-                var createParameters = new WebPlayModeParameters();
-                createParameters.WebServerFileSystemParameters = FileSystemParameters.CreateDefaultWebServerFileSystemParameters();
-                initializationOperation = package.InitializeAsync(createParameters);
-#endif
-            }
-
-            await initializationOperation.ToUniTask();
-
-            // 如果初始化失败弹出提示界面
-            if (initializationOperation.Status != EOperationStatus.Succeed)
-            {
-                Debug.LogWarning($"{initializationOperation.Error}");
-                EventData.Instance.FireAssetEvent(AssetEventType.InitFail);
-            }
-            else
-            {
                 ChangeState<PackageVersionUpdateState>();
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                EventData.Instance.FireAssetEvent(AssetEventType.InitFail, packageName);
             }
         }
 
@@ -95,7 +94,7 @@ namespace GameFrame.Runtime
         /// <summary>
         /// 远端资源地址查询服务类
         /// </summary>
-        private class RemoteServices : IRemoteServices
+        private class RemoteServices : IRemoteService
         {
             private readonly string _defaultHostServer;
             private readonly string _fallbackHostServer;
@@ -106,14 +105,13 @@ namespace GameFrame.Runtime
                 _fallbackHostServer = fallbackHostServer;
             }
 
-            string IRemoteServices.GetRemoteMainURL(string fileName)
+            public IReadOnlyList<string> GetRemoteUrls(string fileName)
             {
-                return $"{_defaultHostServer}/{fileName}";
-            }
-
-            string IRemoteServices.GetRemoteFallbackURL(string fileName)
-            {
-                return $"{_fallbackHostServer}/{fileName}";
+                return new[]
+                {
+                    $"{_defaultHostServer}/{fileName}",
+                    $"{_fallbackHostServer}/{fileName}",
+                };
             }
         }
     }

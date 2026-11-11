@@ -17,9 +17,9 @@ namespace GameFrame.Runtime
     public interface IAssetEvent : IEvent
     {
         public void OnAssetEvent(AssetEventType assetEvent,object obj);
-        public void OnAssetEvent(ResourceDownloaderOperation obj);
+        public void OnAssetEvent(string packageName, ResourceDownloaderOperation obj);
 
-        public void OnAssetEvent(DownloadUpdateData obj);
+        public void OnAssetEvent(DownloadProgressChangedEventArgs obj);
     }
 
     public partial class EventData
@@ -43,7 +43,7 @@ namespace GameFrame.Runtime
             HashSetPool<IEntity>.Release(allEntity);
         }
 
-        public void FireAssetEvent(ResourceDownloaderOperation obj)
+        public void FireAssetEvent(string packageName, ResourceDownloaderOperation obj)
         {
             var allEntity = GetEntity(typeof(IAssetEvent));
             if (allEntity == null)
@@ -55,14 +55,14 @@ namespace GameFrame.Runtime
             {
                 if (entity.State == IEntity.EntityState.IsRunning)
                 {
-                    ((IAssetEvent) entity).OnAssetEvent(obj);
+                    ((IAssetEvent) entity).OnAssetEvent(packageName, obj);
                 }
             }
 
             HashSetPool<IEntity>.Release(allEntity);
         }
 
-        public void FireAssetDownEvent(DownloadUpdateData obj)
+        public void FireAssetDownEvent(DownloadProgressChangedEventArgs obj)
         {
             var allEntity = GetEntity(typeof(IAssetEvent));
             if (allEntity == null)

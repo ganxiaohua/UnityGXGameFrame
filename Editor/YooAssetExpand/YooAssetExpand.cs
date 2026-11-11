@@ -26,14 +26,14 @@ namespace YooAsset.Editor
     }
     
     [DisplayName("打包路径OneSelf顶层路径")]
-    public class PackOneSelfDirectory : IPackRule
+    public class PackOneSelfDirectory : IBundlePackRule
     {
-        PackRuleResult IPackRule.GetPackRuleResult(PackRuleData data)
+        BundlePackRuleResult IBundlePackRule.GetPackRuleResult(BundlePackRuleData data)
         {
             var assetPath = data.AssetPath;
             var path = assetPath.Replace("Assets/Res/_OneSelf/", "");
             var foldName = path.Substring(0, path.IndexOf('/'));
-            PackRuleResult result = new PackRuleResult("Assets/Res/_OneSelf/"+foldName, DefaultPackRule.AssetBundleFileExtension);
+            BundlePackRuleResult result = new BundlePackRuleResult("Assets/Res/_OneSelf/"+foldName, DefaultBundlePackRule.AssetBundleFileExtension);
             return result;   
         }
     }

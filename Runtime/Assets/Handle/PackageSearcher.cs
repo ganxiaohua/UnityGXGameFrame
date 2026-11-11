@@ -12,7 +12,7 @@ namespace GameFrame.Runtime
             foreach (var packageSetting in YooConst.PackageSettings)
             {
                 var package = YooAssets.GetPackage(packageSetting.Name);
-                if (package.CheckLocationValid(location))
+                if (package.IsLocationValid(location))
                 {
                     info = package.GetAssetInfo(location, type);
                     return package;
@@ -30,7 +30,7 @@ namespace GameFrame.Runtime
             foreach (var packageSetting in YooConst.PackageSettings)
             {
                 var package = YooAssets.GetPackage(packageSetting.Name);
-                if (package.CheckLocationValid(location))
+                if (package.IsLocationValid(location))
                 {
                     return package;
                 }
