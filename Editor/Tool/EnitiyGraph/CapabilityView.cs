@@ -36,6 +36,7 @@ namespace GameFrame.Editor
         private static readonly Color ActiveColor = new Color(0.00f, 0.74f, 0.92f, 1f);
         private static readonly Color LockedColor = new Color(1.00f, 0.72f, 0.22f, 1f);
         private static readonly Color LateUpdateColor = new Color(0.45f, 0.84f, 0.36f, 1f);
+        private static readonly Color FixedUpdateForEndEcsColor = new Color(0.70f, 0.55f, 0.95f, 1f);
         private static readonly Color DimAccentColor = new Color(0.38f, 0.41f, 0.46f, 1f);
         private static readonly Color[] StateColor = {UnknownColor, IdleColor, ActiveColor, LockedColor};
 
@@ -61,9 +62,11 @@ namespace GameFrame.Editor
         private readonly List<CapabilityBase> capabilityBaseUpdateMode = new List<CapabilityBase>();
         private readonly List<CapabilityBase> capabilityBaseFixUpdateMode = new List<CapabilityBase>();
         private readonly List<CapabilityBase> capabilityBaseLateUpdateMode = new List<CapabilityBase>();
+        private readonly List<CapabilityBase> capabilityBaseFixUpdateForEndEcsMode = new List<CapabilityBase>();
         private ArrayExSimilar[] updateMode;
         private ArrayExSimilar[] fixUpdateMode;
         private ArrayExSimilar[] lateUpdateMode;
+        private ArrayExSimilar[] fixUpdateForEndEcsMode;
         private int tailFrame;
         private int headFrame;
         private bool isShowFocusedOnly;
@@ -110,10 +113,20 @@ namespace GameFrame.Editor
             capabilityBaseUpdateMode.Clear();
             capabilityBaseFixUpdateMode.Clear();
             capabilityBaseLateUpdateMode.Clear();
-            eccWorld.SetCapability(effEntity, capabilityBaseUpdateMode, capabilityBaseFixUpdateMode, capabilityBaseLateUpdateMode);
+            capabilityBaseFixUpdateForEndEcsMode.Clear();
+            if (eccWorld is ECCWorldUnityEcs unityEcsWorld)
+            {
+                unityEcsWorld.SetCapability(effEntity, capabilityBaseUpdateMode, capabilityBaseFixUpdateMode, capabilityBaseLateUpdateMode,
+                    capabilityBaseFixUpdateForEndEcsMode);
+            }
+            else
+            {
+                eccWorld.SetCapability(effEntity, capabilityBaseUpdateMode, capabilityBaseFixUpdateMode, capabilityBaseLateUpdateMode);
+            }
             updateMode = new ArrayExSimilar[capabilityBaseUpdateMode.Count];
             fixUpdateMode = new ArrayExSimilar[capabilityBaseFixUpdateMode.Count];
             lateUpdateMode = new ArrayExSimilar[capabilityBaseLateUpdateMode.Count];
+            fixUpdateForEndEcsMode = new ArrayExSimilar[capabilityBaseFixUpdateForEndEcsMode.Count];
         }
 
         protected override void OnBeginDrawEditors()
@@ -139,6 +152,7 @@ namespace GameFrame.Editor
                 SetData(capabilityBaseUpdateMode, updateMode);
                 SetData(capabilityBaseFixUpdateMode, fixUpdateMode);
                 SetData(capabilityBaseLateUpdateMode, lateUpdateMode);
+                SetData(capabilityBaseFixUpdateForEndEcsMode, fixUpdateForEndEcsMode);
                 tailFrame++;
                 if (tailFrame >= FrameSize)
                 {
@@ -156,6 +170,9 @@ namespace GameFrame.Editor
             DrawSection("Update", "Per-frame capability sampling", capabilityBaseUpdateMode, updateMode, ActiveColor);
             GUILayout.Space(10f);
             DrawSection("Fixed Update", "Physics-step capability sampling", capabilityBaseFixUpdateMode, fixUpdateMode, LockedColor);
+            GUILayout.Space(10f);
+            DrawSection("Fixed Update After ECS", "After ECS fixed-step completion", capabilityBaseFixUpdateForEndEcsMode,
+                fixUpdateForEndEcsMode, FixedUpdateForEndEcsColor);
             GUILayout.Space(10f);
             DrawSection("Late Update", "Post-animation capability sampling", capabilityBaseLateUpdateMode, lateUpdateMode, LateUpdateColor);
             GUILayout.Space(12f);
@@ -200,7 +217,8 @@ namespace GameFrame.Editor
 
         private void DrawToolbar()
         {
-            int totalCount = capabilityBaseUpdateMode.Count + capabilityBaseFixUpdateMode.Count + capabilityBaseLateUpdateMode.Count;
+            int totalCount = capabilityBaseUpdateMode.Count + capabilityBaseFixUpdateMode.Count + capabilityBaseLateUpdateMode.Count +
+                             capabilityBaseFixUpdateForEndEcsMode.Count;
             int focusedCount = CountFocusedRows();
             Rect rect = GUILayoutUtility.GetRect(0f, ToolbarHeight, GUILayout.ExpandWidth(true));
             EditorGUI.DrawRect(rect, PanelColor);
@@ -439,6 +457,7 @@ namespace GameFrame.Editor
         {
             return CountFocusedRows(capabilityBaseUpdateMode) +
                    CountFocusedRows(capabilityBaseFixUpdateMode) +
+                   CountFocusedRows(capabilityBaseFixUpdateForEndEcsMode) +
                    CountFocusedRows(capabilityBaseLateUpdateMode);
         }
 
@@ -459,6 +478,7 @@ namespace GameFrame.Editor
             ClearFocusedCapabilities(capabilityBaseUpdateMode);
             ClearFocusedCapabilities(capabilityBaseFixUpdateMode);
             ClearFocusedCapabilities(capabilityBaseLateUpdateMode);
+            ClearFocusedCapabilities(capabilityBaseFixUpdateForEndEcsMode);
             isShowFocusedOnly = false;
         }
 
@@ -722,9 +742,11 @@ namespace GameFrame.Editor
             capabilityBaseUpdateMode.Clear();
             capabilityBaseFixUpdateMode.Clear();
             capabilityBaseLateUpdateMode.Clear();
+            capabilityBaseFixUpdateForEndEcsMode.Clear();
             updateMode = null;
             fixUpdateMode = null;
             lateUpdateMode = null;
+            fixUpdateForEndEcsMode = null;
             sWindow = null;
         }
     }

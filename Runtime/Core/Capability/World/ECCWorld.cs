@@ -14,9 +14,16 @@ namespace GameFrame.Runtime
         protected void InitCapabilitys(int updateCapabilityCount, int fixedUpdateCapabilityCount, int lateUpdateCapabilityCount, int maxTag,
             int estimatePlayer)
         {
+            var scheduler = new Capabilitys();
+            scheduler.Init(this, updateCapabilityCount, fixedUpdateCapabilityCount, lateUpdateCapabilityCount, estimatePlayer);
+            InitCapabilitys(scheduler, maxTag);
+        }
+
+        // 派生世界提供已初始化的调度器，能力生命周期仍由本世界统一管理。
+        protected void InitCapabilitys(Capabilitys scheduler, int maxTag)
+        {
             maxCapabilityTag = maxTag;
-            capabilitys = new Capabilitys();
-            capabilitys.Init(this, updateCapabilityCount, fixedUpdateCapabilityCount, lateUpdateCapabilityCount, estimatePlayer);
+            capabilitys = scheduler;
         }
 
         protected override void OnEntityCreated(EffEntity child)
@@ -50,21 +57,7 @@ namespace GameFrame.Runtime
             if (!capabilityUpdateModes.TryGetValue(typeof(T), out var updateMode))
                 return;
 
-            int id;
-            switch (updateMode)
-            {
-                case CapabilitysUpdateMode.FixedUpdate:
-                    id = CapabilityID<T, IFixedUpdateSystem>.TID;
-                    break;
-                case CapabilitysUpdateMode.LateUpdate:
-                    id = CapabilityID<T, ILateUpdateSystem>.TID;
-                    break;
-                default:
-                    id = CapabilityID<T, IUpdateSystem>.TID;
-                    break;
-            }
-
-            capabilitys.Remove(player, id, updateMode);
+            capabilitys.Remove<T>(player, updateMode);
         }
 
 

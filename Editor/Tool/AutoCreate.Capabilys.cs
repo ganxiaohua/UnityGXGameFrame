@@ -29,6 +29,7 @@ namespace GameFrame.Editor
             var updateCount = 0;
             var fixedUpdateCount = 0;
             var lateUpdateCount = 0;
+            var fixedUpdateForEndEcsCount = 0;
             sTempStr.Clear();
             capabilitylist.Clear();
             foreach (var assembly in assemblys)
@@ -61,6 +62,9 @@ namespace GameFrame.Editor
                     case CapabilitysUpdateMode.LateUpdate:
                         lateUpdateCount++;
                         break;
+                    case CapabilitysUpdateMode.FixedUpdateForEndEcs:
+                        fixedUpdateForEndEcsCount++;
+                        break;
                     default:
                         updateCount++;
                         break;
@@ -69,7 +73,8 @@ namespace GameFrame.Editor
                 sTempStr.Append($"          _ =  CapabilityID<{item.GetType().FullName},{updateMode}>.TID;\n");
             }
 
-            var str = string.Format(sTextDictionary[CreateAuto.Capability], sTempStr, number, updateCount, fixedUpdateCount, lateUpdateCount);
+            var str = string.Format(sTextDictionary[CreateAuto.Capability], sTempStr, number, updateCount, fixedUpdateCount,
+                lateUpdateCount, fixedUpdateForEndEcsCount);
             File.WriteAllText($"{EditorString.GetPath("CompOutPutPath")}AllCapabilitys.cs", str);
             sTempStr.Clear();
         }
@@ -82,6 +87,8 @@ namespace GameFrame.Editor
                     return "IFixedUpdateSystem";
                 case CapabilitysUpdateMode.LateUpdate:
                     return "ILateUpdateSystem";
+                case CapabilitysUpdateMode.FixedUpdateForEndEcs:
+                    return "IFixedUpdateForEndEcsSystem";
                 default:
                     return "IUpdateSystem";
             }

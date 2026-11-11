@@ -5,5 +5,6 @@
         Update,
         FixedUpdate,
         LateUpdate,
+        FixedUpdateForEndEcs,
     }
 }

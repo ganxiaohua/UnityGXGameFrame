@@ -36,7 +36,7 @@ namespace GameFrame.Runtime
         }
 
 
-        private void ConvenientCapabilitys(JumpIndexArray<CapabilityBase>[] arrays, float delatTime, float realElapseSeconds)
+        protected void ConvenientCapabilitys(JumpIndexArray<CapabilityBase>[] arrays, float delatTime, float realElapseSeconds)
         {
             int count = arrays.Length;
             if (count == 0)
@@ -103,7 +103,7 @@ namespace GameFrame.Runtime
             }
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             ClearCapabilities(capabilitiesUpdateList);
             ClearCapabilities(capabilitiesFixUpdateList);
@@ -113,7 +113,7 @@ namespace GameFrame.Runtime
             capabilitiesLateUpdateList = null;
         }
 
-        private void ClearCapabilities(JumpIndexArray<CapabilityBase>[] arrays)
+        protected void ClearCapabilities(JumpIndexArray<CapabilityBase>[] arrays)
         {
             if (arrays == null)
                 return;
