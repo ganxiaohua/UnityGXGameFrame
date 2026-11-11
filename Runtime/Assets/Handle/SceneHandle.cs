@@ -75,11 +75,14 @@ namespace GameFrame.Runtime
 
         public void Release()
         {
-            if (internalHandle != null && internalHandle.IsValid)
-            {
-                internalHandle.UnloadSceneAsync();
-                internalHandle = default;
-            }
+            var handle = internalHandle;
+            internalHandle = null;
+
+            // 退出时不再提交异步卸载，避免任务随后的系统销毁被中止。
+            if (handle == null || GXGameFrame.IsQuitting || !YooAssets.IsInitialized || !handle.IsValid)
+                return;
+
+            handle.UnloadSceneAsync();
         }
     }
 }

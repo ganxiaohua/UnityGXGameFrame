@@ -1,13 +1,18 @@
 ﻿using UnityEngine;
+using YooAsset;
 
 namespace GameFrame.Runtime
 {
     public partial class GXGameFrame : SingletonMono<GXGameFrame>
     {
+        internal static bool IsQuitting { get; private set; }
+
         public RootEntity RootEntity { get; private set; }
+        
 
         public void Init()
         {
+            IsQuitting = false;
             TimerSystem.Instance.Clear();
             InexactCountdownSystem.Instance.Clear();
             RootEntity = ReferencePool.Acquire<RootEntity>();
@@ -50,10 +55,13 @@ namespace GameFrame.Runtime
 
         public void OnApplicationQuit()
         {
+            IsQuitting = true;
             DisposeUISystem();
             ReferencePool.Release(RootEntity);
             TimerSystem.Instance.Clear();
             InexactCountdownSystem.Instance.Clear();
+            //必须最后处理
+            YooAssets.Destroy();
             // EntityHouse.Instance.Disable();
             // ObjectPoolManager.Instance.Disable();
             // AssetManager.Instance.Dispose();
