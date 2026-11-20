@@ -13,13 +13,14 @@ namespace GameFrame.Runtime
             WorldDatas = new Dictionary<Type, IWorldData>();
         }
 
-        public void AddWorldData<T>() where T : IWorldData
+        public T AddWorldData<T>() where T : IWorldData
         {
             if (WorldDatas.ContainsKey(typeof(T)))
                 throw new InvalidOperationException("This world data has been added" + typeof(T).Name);
-            IWorldData worldData = (IWorldData) ReferencePool.Acquire(typeof(T));
+            T worldData = (T) ReferencePool.Acquire(typeof(T));
             worldData.Initialize();
             WorldDatas.Add(typeof(T), worldData);
+            return worldData;
         }
 
         public bool RemoveWorldData(IWorldData worldData)
@@ -29,6 +30,7 @@ namespace GameFrame.Runtime
                 ReferencePool.Release(worldData);
                 return true;
             }
+
             return false;
         }
 
