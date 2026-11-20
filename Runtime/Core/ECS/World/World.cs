@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using GameFrame.Runtime.WorldData;
 
 namespace GameFrame.Runtime
 {
@@ -60,6 +61,7 @@ namespace GameFrame.Runtime
             groups = new();
             InitializeChilds();
             SetMultiple(1);
+            InitializeWorld();
         }
 
         private void RequireWorld()
@@ -111,34 +113,34 @@ namespace GameFrame.Runtime
         }
 
 
-        protected virtual void OnDisposeSystems() { }
+        protected virtual void OnDisposeSystems()
+        {
+        }
 
         public virtual void Dispose()
         {
             if (disposing || !initialized) return;
             disposing = true;
-            try
+
+            DisposeChilds();
+            OnDisposeSystems();
+            DisposeWorld();
+
+            foreach (var group in groups)
             {
-                DisposeChilds();
-                OnDisposeSystems();
+                Matcher.ClearMatcher(group.Key);
+                Group.RemoveGroup(group.Value);
             }
-            finally
-            {
-                foreach (var group in groups)
-                {
-                    Matcher.ClearMatcher(group.Key);
-                    Group.RemoveGroup(group.Value);
-                }
-                Versions++;
-                State = IEntity.EntityState.IsClear;
-                ecsSerialId = 0;
-                groupsList = null;
-                groups.Clear();
-                groups = null;
-                DestroyComp();
-                initialized = false;
-                Parent = null;
-            }
+
+            Versions++;
+            State = IEntity.EntityState.IsClear;
+            ecsSerialId = 0;
+            groupsList = null;
+            groups.Clear();
+            groups = null;
+            DestroyComp();
+            initialized = false;
+            Parent = null;
         }
 
         public virtual void OnUpdate(float elapseSeconds, float realElapseSeconds)
