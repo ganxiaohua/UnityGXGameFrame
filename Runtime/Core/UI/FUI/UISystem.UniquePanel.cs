@@ -87,6 +87,9 @@ namespace GameFrame.Runtime
 
         public void HideUniquePanel(Type type)
         {
+            if (GXGameFrame.IsQuitting)
+                return;
+
             var panel = FindFirstOfPanel(type);
             if (panel != null)
             {
